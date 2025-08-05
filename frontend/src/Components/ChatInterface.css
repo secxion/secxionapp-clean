@@ -1,0 +1,243 @@
+/* ChatInterface.css */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Full viewport height */
+    background-color: #f4f6f8; /* Light, modern background */
+    padding: 1rem;
+}
+
+.chat-header {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.chat-close-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.chat-close-button:hover {
+    background-color: #e0e0e0;
+}
+
+.chat-close-icon {
+    font-size: 1.5rem;
+    color: #555;
+}
+
+.chat-history {
+    flex-grow: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: thin;
+    scrollbar-color: #cdd2d7 #f4f6f8;
+}
+
+.chat-history::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-history::-webkit-scrollbar-track {
+    background: #f4f6f8;
+    border-radius: 4px;
+}
+
+.chat-history::-webkit-scrollbar-thumb {
+    background-color: #cdd2d7;
+    border-radius: 4px;
+}
+
+.message {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 10px;
+    max-width: 80%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.message-self {
+    background-color: #e6f7ff; /* Light blue for user messages */
+    color: #333;
+    align-self: flex-end;
+    text-align: right;
+}
+
+.message-other {
+    background-color: #fff; /* White for admin messages */
+    color: #333;
+    align-self: flex-start;
+    text-align: left;
+}
+
+.message-text {
+    word-break: break-word;
+}
+
+.message-time {
+    font-size: 0.8rem;
+    color: #777;
+    margin-top: 0.5rem;
+    align-self: flex-end;
+}
+
+.message-self .message-time {
+    align-self: flex-start;
+}
+
+.message-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.chat-input-area {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.chat-input-box {
+    display: flex;
+    align-items: center;
+    background-color: #f0f0f0;
+    border-radius: 25px;
+    padding: 0.75rem 1rem;
+}
+
+.chat-input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    padding: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.4;
+    background-color: transparent;
+}
+
+.chat-input::placeholder {
+    color: #aaa;
+}
+
+.chat-input-actions {
+    display: flex;
+    align-items: center;
+    margin-left: 1rem;
+}
+
+.attach-image-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    margin-right: 0.75rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.attach-image-button:hover {
+    background-color: #e0e0e0;
+}
+
+.attach-icon {
+    font-size: 1.5rem;
+    color: #777;
+}
+
+.send-button {
+    background-color: #007bff; /* Modern blue */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.send-button:hover:enabled {
+    background-color: #0056b3;
+}
+
+.send-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.send-icon {
+    font-size: 1.2rem;
+}
+
+.reply-image-preview {
+    position: relative;
+    margin-top: 0.75rem;
+}
+
+.reply-image-preview img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.reply-image-preview button {
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+    background-color: #dc3545; /* Red for remove */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.uploading-text {
+    font-size: 0.9rem;
+    color: #777;
+    margin-top: 0.5rem;
+}
+
+.auto-reply {
+    background-color: #f9f9f9;
+    border-left: 4px solid #007bff; /* Highlight auto-reply */
+}
+
+.chat-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 1.2rem;
+    color: #777;
+}

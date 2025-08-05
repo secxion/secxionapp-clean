@@ -1,0 +1,86 @@
+    <div className="fixed top-20 py-2 mt-1 left-0 right-0 border-black border-r-2 border-l-2 md:mt-4 lg:mt-4 z-30 w-full bg-white overflow-hidden">
+<h1 className="font-extrabold text-2xl tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500">
+                SXN
+              </h1>
+              <div className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-full"></div>
+            
+
+
+            <div className="flex items-center">
+                        <a href="/" className="relative">
+                           <div className=" flex py-1 flex-col justify-center">
+                                                                          <div className="relative py-2  sm:mx-auto ">
+                                                                              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-blue-500 shadow-lg transform rounded-3xl border-4 border-yellow-700"></div>
+                                                                              <div className="relative px-4 p-1.5 bg-white shadow-lg rounded-2xl sm:p-1.5 border-4 border-yellow-700">
+                                                                                  <div className="">
+                                                                                      <div className="grid grid-cols-1">                    
+                                                                                          <LogoShimmer type="button" />
+                                                                                      </div>
+                                                                                  </div>
+                                                                              </div>
+                                                                          </div>
+                                                                      </div>
+                                      <div className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-full"></div>
+                          
+                        </a>
+                      </div>
+
+
+
+                      // filepath: c:\Users\BoardManXII\Desktop\secxionapp\frontend\src\Components\AddBankAccountForm.js
+import React, { useEffect, useState } from "react";
+import SummaryApi from "../common";
+
+const AddBankAccountForm = ({ onCancel, onSuccess }) => {
+    // ...existing code until handleSubmit...
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError("");
+        setSuccessMsg("");
+
+        if (!verificationCode) {
+            setError("Please enter the verification code sent to your email.");
+            return;
+        }
+
+        setSubmitLoading(true);
+        try {
+            const selectedBank = banks.find((b) => b.code === form.bankCode);
+            const res = await fetch(SummaryApi.verifyAddBank.url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({
+                    accountNumber: form.accountNumber,
+                    bankCode: form.bankCode,
+                    bankName: selectedBank?.name || "",
+                    accountHolderName: resolvedAccountName,
+                    code: verificationCode,
+                }),
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) throw new Error(data.message);
+
+            setSuccessMsg("Bank account added successfully.");
+            setForm({ accountNumber: "", bankCode: "" });
+            setResolvedAccountName("");
+            setVerificationCode("");
+            setShowConfirmModal(false);
+            setCodeSent(false);
+            
+            // Call success callback if provided
+            if (onSuccess) onSuccess();
+            if (onCancel) onCancel();
+            
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setSubmitLoading(false);
+        }
+    };
+
+    // ...rest of the existing code remains the same...
+};
+
+export default AddBankAccountForm;

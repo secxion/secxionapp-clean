@@ -1,0 +1,138 @@
+.login-page {
+  position: relative;
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+@media (max-width: 768px) {
+  .login-page {
+    background-position: center;
+  }
+}
+
+.bg-shapes .shape {
+  position: absolute;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke: rgba(80, 60, 40, 0.2);
+  animation: techFloat 25s infinite ease-in-out;
+  fill: none;
+}
+
+/* Grid+Circles layering */
+.shape-lines {
+  width: 200%;
+  height: 200%;
+  background:
+    linear-gradient(0deg, transparent 24%, rgba(80,60,40,0.1) 25%, rgba(80,60,40,0.1) 26%, transparent 27%) 0 0/40px 40px,
+    linear-gradient(90deg, transparent 24%, rgba(80,60,40,0.1) 25%, rgba(80,60,40,0.1) 26%, transparent 27%) 0 0/40px 40px;
+}
+.shape-circles {
+  top: 20%;
+  right: 15%;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  stroke-dasharray: 4 8;
+  animation-duration: 30s;
+}
+
+/* Gift card shape */
+.shape-card {
+  top: 10%;
+  left: 70%;
+  width: 120px;
+  height: 80px;
+  border: 2px dashed rgba(80,60,40,0.2);
+  border-radius: 6px;
+  animation-duration: 20s;
+  animation-direction: alternate;
+}
+
+/* SECXION watermark */
+.shape-secxion {
+  bottom: 10%;
+  left: 5%;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 48px;
+  color: rgba(80,60,40,0.08);
+  pointer-events: none;
+  user-select: none;
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+@keyframes techFloat {
+  0% { transform: translate(0,0) rotate(0deg); }
+  50% { transform: translate(15px,-15px) rotate(3deg); }
+  100% { transform: translate(0,0) rotate(0deg); }
+}
+
+.login-container {
+  position: relative;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 1rem;
+  max-width: 400px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  border: 1px solid #e1dbc8;
+  z-index: 2;
+}
+
+.verification-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+}
+
+/* Toast notification styles */
+.toast-box {
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-family: sans-serif;
+}
+
+.toast-body {
+  color: #333;
+  font-size: 14px;
+}
+.Toastify__toast--success {
+  border-left: 4px solid #28a745;
+}
+.Toastify__toast--error {
+  border-left: 4px solid #dc3545;
+}
+
+
+        @keyframes bubble-pop {
+          0% { transform: scale(0.7); opacity: 0.5; }
+          60% { transform: scale(1.15); opacity: 1; }
+          80% { transform: scale(0.95); }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        .bubble-pop {
+          animation: bubble-pop 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+        }
+        @keyframes animate-scroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-scroll {
+          animation: animate-scroll 30s linear infinite;
+        }
+        @keyframes blink {
+          50% { opacity: 0; }
+        }
+        .animate-blink {
+          animation: blink 1s step-end infinite;
+        }
+      
+
+

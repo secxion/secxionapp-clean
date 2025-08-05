@@ -1,0 +1,38 @@
+.lshimmer-wrapper {
+    background: #f0f0f0;
+    overflow: hidden;
+    border-radius: 1px;
+    height: 2px;
+    width: 2px;
+  }
+  
+  .lshimmer-effect {
+    background: linear-gradient(to right, #d1cfcf 8%, #a7a6a6 18%, #706f6f 33%);
+    background-size: 100px 100%;
+    height: 100%;
+    width: 100%;
+    animation: shimmer 1.6s infinite ease-in-out;
+
+  }
+  
+  .lshimmer-wrapper.heading {
+    height: 2px;
+    width: 2px;
+    margin-bottom: -40%;
+  }
+  
+  .lshimmer-wrapper.paragraph {
+    height: 1%;
+    width: 5%;
+    margin-bottom: -10px;
+  }
+  .lshimmer-wrapper.paragraph:last-child {
+    margin-bottom: 0;
+    width: 10%;
+  }
+  
+  .lshimmer-wrapper.button {
+    height: 10px;
+    width: 20px;
+    border-radius: 1px;
+  }
