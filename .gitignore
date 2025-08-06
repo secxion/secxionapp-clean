@@ -1,0 +1,78 @@
+# =========================
+# 🌍 Node.js (frontend & backend)
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# 🛠️ Build Output
+# =========================
+build/
+dist/
+out/
+
+# Specifically ignore frontend and backend builds
+frontend/build/
+frontend/dist/
+backend/build/
+
+# =========================
+# ⚙️ Environment files
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# 📂 Log files
+# =========================
+*.log
+logs/
+*.pid
+*.seed
+
+# =========================
+# 🧪 Testing
+# =========================
+coverage/
+*.lcov
+jest-cache/
+.vitest/
+
+# =========================
+# 🎨 Editor / IDE
+# =========================
+.vscode/
+.idea/
+*.swp
+
+# =========================
+# 🖥️ OS-specific
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# 🚫 Git conflict / backup
+# =========================
+*.orig
+*.rej
+*.bak
+
+# =========================
+# 📦 Packages / Archives
+# =========================
+*.tgz
+*.gz
+*.zip
+
+# =========================
+# 🧪 Misc
+# =========================
+.cache/
+.next/
+.nuxt/
+.vite/

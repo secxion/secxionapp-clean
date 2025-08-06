@@ -1,0 +1,27 @@
+/* Sidebar.css */
+/* You can add more advanced styling here, like transitions, animations, etc. */
+.sidebar {
+    /* Basic styles are already in the component's inline styles */
+  }
+  
+  /* Example of more advanced styling (optional) */
+  .sidebar nav ul li a:hover {
+    background-color: #e5e7eb; /* Light gray on hover */
+    color: #374151; /* Darker text on hover */
+  }
+  
+  .dark .sidebar nav ul li a:hover {
+    background-color: #374151; /* Darker gray on hover */
+    color: #e5e7eb; /* Lighter text on hover */
+  }
+  
+  .sidebar .active {
+    background-color: #d1d5db; /* Slightly darker background for active link */
+    color: #111827; /* Darker text for active link */
+    font-weight: 500;
+  }
+  
+  .dark .sidebar .active {
+    background-color: #4b5563; /* Darker gray for active link in dark mode */
+    color: #f3f4f6; /* Lighter text for active link in dark mode */
+  }
