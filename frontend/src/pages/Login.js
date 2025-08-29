@@ -6,10 +6,11 @@ import Context from "../Context";
 import loginBackground from "./loginbk.png";
 import thumbsUpGif from "./thumbsup.gif";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import LogoShimmer from "../Components/LogoShimmer";
 import Navigation from '../Components/Navigation';
 import { ArrowLeft } from "lucide-react";
 import "./Login.css";
+import SecxionLogo from "../app/slogo.png";
+import NFTBadge from "../Components/NFTBadge";
 
 const Button = ({ children, className = "", variant = "default", style = {}, ...props }) => {
   const baseClasses =
@@ -34,7 +35,6 @@ const Button = ({ children, className = "", variant = "default", style = {}, ...
   );
 };
 
-// Helper to get animation delay style
 const getBubbleStyle = (bubbleIn, index) =>
   bubbleIn
     ? { animationDelay: `${index * 0.05}s` }
@@ -55,7 +55,6 @@ const Login = () => {
   const [sliderSignature, setSliderSignature] = useState("");
   const [verifying, setVerifying] = useState(false);
 
-  // Bubble animation state
   const [bubbleIn, setBubbleIn] = useState(false);
   useEffect(() => {
     setBubbleIn(true);
@@ -173,7 +172,6 @@ const Login = () => {
     setFormSubmitting(true);
   };
 
-  // Back button handler
   const handleGoBack = () => {
     if (window.history.length > 1) {
       navigate(-1);
@@ -189,8 +187,21 @@ const Login = () => {
     >
       <Navigation currentPage="signin" />
 
-      {/* Animated geometric background */}
+      {/* Logo background overlay */}
       <div className="fixed inset-0 pointer-events-none z-0">
+        {/* Fix: Use absolute positioning and z-index for logo */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 w-[500px] h-[500px] flex items-center justify-center">
+          <img
+            src={SecxionLogo}
+            alt="Secxion Logo Background"
+            className="w-full h-full object-contain opacity-10 select-none pointer-events-none"
+            style={{
+              filter: "blur(2px)",
+              mixBlendMode: "screen",
+            }}
+          />
+        </div>
+        {/* ...existing geometric backgrounds... */}
         <div className="absolute top-10 left-10 w-32 h-32 border-4 border-yellow-700/20 rotate-45 animate-spin [animation-duration:20s]"></div>
         <div className="absolute top-1/4 right-20 w-20 h-20 bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 rounded-full animate-pulse"></div>
         <div className="absolute bottom-1/4 left-1/4 w-40 h-40 border-4 border-yellow-700/20 rounded-full animate-bounce [animation-duration:3s]"></div>
@@ -200,7 +211,7 @@ const Login = () => {
 
       <div className="absolute inset-0 bg-black/70 z-0"></div>
 
-      <div className="shape-lines relative bg-gray-900 bg-opacity-95 p-6 sm:p-8 mt-10 w-full max-w-md rounded-2xl shadow-2xl z-10">
+      <div className="shape-lines relative bg-gradient-to-br from-gray-900/80 to-gray-800/70 bg-opacity-95 p-6 sm:p-8 mt-10 w-full max-w-md rounded-2xl shadow-2xl z-10 backdrop-blur-xl border border-yellow-700/20">
         {/* Back Button */}
         <button
           onClick={handleGoBack}
@@ -217,20 +228,22 @@ const Login = () => {
           <a href="/" className="relative">
             <div className="flex py-1 flex-col justify-center">
               <div className={`relative py-2 sm:mx-auto ${bubbleIn ? "bubble-pop" : ""}`} style={getBubbleStyle(bubbleIn, 4)}>
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-blue-500 shadow-lg transform rounded-3xl border-4 border-yellow-700"></div>
-                <div className="relative px-4 p-1.5 bg-white shadow-lg rounded-2xl sm:p-1.5 border-4 border-yellow-700">
-                  <div className="grid grid-cols-1">
-                    <LogoShimmer type="button" style={getBubbleStyle(bubbleIn, 5)} />
-                  </div>
+                <div>
+                  {/* Replace shimmer logo with Secxion logo */}
+                  <img
+                    src={SecxionLogo}
+                    alt="Secxion Official Logo"
+                    className="w-14 h-14 object-contain rounded-2xl"
+                    style={{ display: "block" }}
+                  />
                 </div>
               </div>
             </div>
-            <div className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-full"></div>
           </a>
         </div>
 
         <div className="text-center mb-6">
-          <h1 className={`text-2xl font-bold text-yellow-200 ${bubbleIn ? "bubble-pop" : ""}`} style={getBubbleStyle(bubbleIn, 6)}>
+          <h1 className={`text-2xl font-bold text-yellow-400 ${bubbleIn ? "bubble-pop" : ""}`} style={getBubbleStyle(bubbleIn, 6)}>
             Welcome Back!
           </h1>
           <p className="text-sm text-gray-300 mt-1">Login to your account</p>
@@ -332,10 +345,17 @@ const Login = () => {
         </div>
       </div>
 
+      {/* Move NFTBadge to a fixed footer */}
+      <footer className="w-full flex justify-center items-center py-4 absolute bottom-0 left-0 z-20 bg-transparent pointer-events-none">
+        <div className="pointer-events-auto">
+          <NFTBadge />
+        </div>
+      </footer>
+
       {/* Verification Modal */}
       {verificationVisible && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900 p-6 rounded-xl border-2 border-yellow-700 shadow-lg w-full max-w-sm text-gray-100">
+          <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/70 p-6 rounded-xl border-2 border-yellow-700 shadow-lg w-full max-w-sm text-gray-100 backdrop-blur-xl">
             <h2 className="text-lg font-bold mb-2 text-center text-yellow-200">Human Verification</h2>
             <div className="text-sm text-gray-300 mb-4 text-center space-y-3">
               Slide to match <span className="font-semibold text-yellow-500 px-1 border-2 border-yellow-700 rounded-md">{targetValue}</span>

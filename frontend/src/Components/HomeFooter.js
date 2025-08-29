@@ -2,6 +2,8 @@ import { FaEthereum, FaCaretUp } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux'; 
+import NairaButtonImg from "../app/Buttons/nairabutton.png";
+import EthereumButtonImg from "../app/Buttons/ethereumbutton.png";
 
 const HomeFooter = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -19,41 +21,50 @@ const HomeFooter = () => {
   }, []);
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200  shadow-md w-full py-2 border-2 border-black">
-      <div className="flex justify-around items-center text-gray-700 dark:text-gray-300 text-xl">
+    <footer className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 border-t border-gray-600 shadow-lg w-full py-1 border-2 border-gray-700">
+      <div className="flex justify-around items-center text-gray-300 dark:text-gray-100 text-xl h-16">
 
         <Link
           to="/profile"
-          className="flex flex-col bg-transparent items-center text-blue-500 outline-none ring-2 ring-blue-500 ring-offset-1 transition-colors duration-300 ease-in-out border-4 border-yellow-500 rounded-lg p-2 glossy-text"
+          className="flex flex-col bg-transparent items-center text-blue-400 outline-none ring-2 ring-blue-400 ring-offset-1 transition-colors duration-300 ease-in-out border-4 border-yellow-500 rounded-lg p-2 glossy-text h-12 w-12"
           aria-label="Profile"
         >
           <div className="relative">
-           
-                        <img
-                            src={profilePic}
-                            alt="Profile"
-                            className="w-8 h-8 md:w-8 md:h-8 lg:w-8 lg:h-8 object-cover" // Added bold yellow border
-                        />
-            <FaCaretUp className="absolute -top-2 -right-2 text-yellow-500 text-sm" />
+            <img
+              src={profilePic}
+              alt="Profile"
+              className="w-8 h-8 object-cover rounded-full"
+            />
+            <FaCaretUp className="absolute -top-2 -right-2 text-yellow-400 text-sm" />
           </div>
         </Link>
 
         {/* Naira Wallet */}
         <Link
           to="/mywallet"
-          className="flex flex-col items-center  outline-none ring-2 ring-green-700 ring-offset-1 transition-colors duration-300 ease-in-out border-4 border-yellow-500 rounded-lg p-2 glossy-text"
+          className="flex flex-col items-center justify-center transition-colors duration-300 ease-in-out h-12 w-16 hover:scale-105"
           aria-label="Naira Wallet"
         >
-          <span className=" mb-0.5 text-green-500">₦</span>
+          <img
+            src={NairaButtonImg}
+            alt="Naira Wallet"
+            className="h-20 w-auto object-contain"
+            style={{ display: "block" }}
+          />
         </Link>
 
         {/* Ethereum */}
         <Link
           to="/eth"
-          className="flex flex-col items-center focus:outline-none ring-2 ring-indigo-500 ring-offset-1 transition-colors duration-300 ease-in-out border-4 border-yellow-500 rounded-lg p-2 glossy-text"
+          className="flex flex-col items-center justify-center transition-colors duration-300 ease-in-out h-12 w-16 hover:scale-105"
           aria-label="Ethereum"
         >
-          <FaEthereum className="mb-0.5 glossy-icon-text" />
+          <img
+            src={EthereumButtonImg}
+            alt="Ethereum"
+            className="h-20 w-auto object-contain"
+            style={{ display: "block" }}
+          />
         </Link>
         
       </div>

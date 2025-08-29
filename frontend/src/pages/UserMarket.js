@@ -7,7 +7,6 @@ import HistoryDetailView from "../Components/HistoryDetailView";
 import UserContext from "../Context";
 import Shimmer from "../Components/Shimmer";
 import { motion } from "framer-motion"; 
-import SXNSignature from "./signature"; 
 
 const UserMarket = () => {
   const [openUploadProduct, setOpenUploadProduct] = useState(false);
@@ -82,13 +81,13 @@ const UserMarket = () => {
 
   return (
     <motion.div
-      className="mt-28 min-h-screen bg-white text-gray-900"
+      className="mt-28 min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 text-gray-100"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="py-1 px-2 flex justify-between items-center bg-deep-golden-yellow-500 text-black shadow-md rounded-md">
+      <div className="py-1 px-2 flex justify-between items-center bg-gray-900/80 text-yellow-400 shadow-lg rounded-xl mb-4">
         <motion.h2
           className="font-extrabold text-2xl tracking-tight"
           initial={{ x: -50, opacity: 0 }}
@@ -97,10 +96,9 @@ const UserMarket = () => {
         >
           Status
         </motion.h2>
-       
       </div>
 
-      <div className="flex items-center flex-wrap gap-4 py-4 px-6 overflow-y-auto">
+      <div className="flex items-center flex-wrap gap-6 py-4 px-6 overflow-y-auto">
         {allProduct.map((product) => (
           <HistoryCard
             key={product._id}
@@ -110,11 +108,11 @@ const UserMarket = () => {
           />
         ))}
         {allProduct.length === 0 && !marketId && (
-          <div className="text-gray-600 text-center w-full">
+          <div className="text-gray-400 text-center w-full">
             <div className="min-h-screen py-6 flex flex-col justify-center sm:py-12">
               <div className="relative py-3 sm:max-w-xl sm:mx-auto">
-                <div className="absolute inset-0 bg-gradient-to-r from-deep-golden-yellow-400 to-deep-golden-yellow-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
-                <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/10 to-yellow-700/10 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
+                <div className="relative px-4 py-10 bg-gray-900/80 shadow-lg sm:rounded-3xl sm:p-20">
                   <Shimmer type="heading" />
                   <div className="mt-6 grid grid-cols-1 gap-6">
                     <Shimmer type="paragraph" />
@@ -128,12 +126,12 @@ const UserMarket = () => {
           </div>
         )}
         {allProduct.length === 0 && marketId && (
-          <p className="text-gray-600 text-center w-full">Market record not found.</p>
+          <p className="text-gray-400 text-center w-full">Market record not found.</p>
         )}
       </div>
 
       {selectedProductForDetail && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-60">
           <HistoryDetailView
             productDetails={{
               ...selectedProductForDetail,

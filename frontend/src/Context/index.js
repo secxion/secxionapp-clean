@@ -2,6 +2,7 @@ import { createContext, useState, useEffect, useCallback, useContext } from "rea
 import { useDispatch } from "react-redux";
 import { clearState, setUserDetails } from "../store/userSlice";
 import SummaryApi from "../common";
+import { persistor } from "../store/store";
 
 const Context = createContext(null);
 
@@ -62,15 +63,39 @@ export const ContextProvider = ({ children }) => {
         return headers;
     }, [token]);
 
-    const logout = useCallback(() => {
+    const logout = useCallback(async () => {
+        // Remove local/session storage
         localStorage.removeItem("user");
         localStorage.removeItem("token");
         setUser(null);
         setToken(null);
         setWalletBalance(null);
-        dispatch(clearState());
 
-        window.location.href = '/login';
+        // Clear Redux state and persisted state
+        dispatch(clearState());
+        if (persistor && persistor.purge) {
+            await persistor.purge();
+        }
+
+        // Call backend logout endpoint to clear cookie/session
+        try {
+            await fetch("/api/userLogout", {
+                method: "GET",
+                credentials: "include",
+            });
+        } catch (err) {
+            // Ignore errors, just ensure local state is cleared
+        }
+
+        // Remove all cookies (extra safety)
+        document.cookie.split(";").forEach((c) => {
+            document.cookie = c
+                .replace(/^ +/, "")
+                .replace(/=.*/, "=;expires=" + new Date(0).toUTCString() + ";path=/");
+        });
+
+        // Force reload to clear in-memory state
+        window.location.replace('/login');
     }, [dispatch]);
 
     const makeAuthenticatedRequest = useCallback(async (url, options = {}) => {

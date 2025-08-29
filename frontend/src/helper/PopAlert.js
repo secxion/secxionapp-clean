@@ -21,21 +21,21 @@ const PopAlert = ({ message = "", onClose }) => {
 
   const popup = (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4 sm:px-6 lg:px-8 bg-black bg-opacity-30 backdrop-blur-sm"
+      className="fixed inset-0 z-[1000] flex items-start justify-center pt-24 px-4 sm:px-6 lg:px-8 bg-black bg-opacity-30 backdrop-blur-sm"
       onClick={(e) => e.stopPropagation()}
     >
       <div
         ref={alertRef}
-        className="bg-white max-w-md w-full rounded-xl p-6 border border-gray-200 relative"
+        className="bg-gradient-to-br from-yellow-50/90 to-yellow-100/80 glass-effect max-w-md w-full rounded-2xl p-6 border border-yellow-300/30 relative shadow-none"
         onClick={handleAlertClick}
       >
         <button
-          className="absolute top-4 right-4 text-gray-400"
+          className="absolute top-4 right-4 text-yellow-400 hover:text-yellow-600"
           onClick={onClose}
         >
           <X className="w-5 h-5" />
         </button>
-        <h2 className="text-lg font-semibold text-black mb-2">Notification</h2>
+        <h2 className="text-lg font-semibold text-yellow-700 mb-2">Notification</h2>
         <p className="text-gray-800 text-sm leading-relaxed mb-4">
           {truncatedMessage}
           {shouldTruncate && (
@@ -43,7 +43,7 @@ const PopAlert = ({ message = "", onClose }) => {
               {' '}
               <button
                 onClick={handleViewMoreClick}
-                className="text-blue-600 font-medium text-sm underline"
+                className="text-yellow-600 font-medium text-sm underline"
               >
                 View more
               </button>
@@ -53,7 +53,7 @@ const PopAlert = ({ message = "", onClose }) => {
         {!shouldTruncate && (
           <button
             onClick={handleViewMoreClick}
-            className="inline-block text-blue-600 hover:text-blue-800 font-medium text-sm underline"
+            className="inline-block text-yellow-600 hover:text-yellow-800 font-medium text-sm underline"
           >
             View all notifications
           </button>

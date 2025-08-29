@@ -167,31 +167,6 @@ const Net = ({ blogs }) => {
         setSelectedBlog(blog);
         setIsDialogOpen(true);
     };
-    const handleLogout = useCallback(async () => {
-        setLoading(true);
-        try {
-            const response = await fetch(SummaryApi.logout_user.url, {
-                method: SummaryApi.logout_user.method,
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            const data = await response.json();
-            if (data.success) {
-                toast.success(data.message);
-                dispatch(setUserDetails(null));
-                navigate("/");
-            } else {
-                toast.error(data.message);
-            }
-        } catch (error) {
-            toast.error("Logout failed. Please try again.");
-        } finally {
-            setLoading(false);
-        }
-    }, [dispatch, navigate, token]);
     // Blog rotation with smooth transitions
     useEffect(() => {
         const resetTimeout = () => {
@@ -267,9 +242,16 @@ const Net = ({ blogs }) => {
                                 <p className="text-sm font-bold text-gray-800 truncate glossy-text">{name}</p> {/* Applied glossy-text */}
                                 {user?._id && (
                                     <button
-                                        onClick={handleLogout}
-                                        disabled={loading}
-                                        className="px-1 py-1 -mt-1 text-xs ml-20 border-4 border-red-700 text-black rounded flex items-center glossy-text" // Bold border and glossy-text
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setIsDropdownOpen(false);
+                                            if (token && typeof token.logout === "function") {
+                                                token.logout();
+                                            } else {
+                                                window.location.replace('/login');
+                                            }
+                                        }}
+                                        className="px-1 py-1 -mt-1 text-xs ml-20 border-4 border-red-700 text-black rounded flex items-center glossy-text"
                                     >
                                         <FontAwesomeIcon icon={faSignOutAlt} className="mr-1" />
                                     </button>

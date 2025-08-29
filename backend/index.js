@@ -16,7 +16,6 @@ dotenv.config();
 const app = express();
 app.set('trust proxy', 1);
 
-// Allowed frontend origins
 const allowedOrigins = process.env.FRONTEND_URLS
   ? process.env.FRONTEND_URLS.split(',').map(origin => origin.trim())
   : [];
@@ -34,7 +33,6 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
-// Middlewares
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
@@ -42,10 +40,8 @@ app.use(cookieParser());
 app.use(xss());
 app.use(mongoSanitize());
 
-// API routes
 app.use('/api', router);
 
-// Serve frontend from /build folder
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

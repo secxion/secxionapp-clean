@@ -12,26 +12,20 @@ import {
   ChevronUp,
   LayoutDashboard,
   Gift,
-  Bitcoin,
-  CreditCard,
   Wrench,
   Shapes,
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
   Smartphone,
   Code,
-  Settings,
   Star,
   CheckCircle,
   ArrowUpRight
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import HiRateSlider from "../Components/HiRateSlider";
-import LogoShimmer from "../Components/LogoShimmer";
+import { FaEthereum } from "react-icons/fa";
+import SecxionLogo from "../app/slogo.png";
+import NFTBadge from "../Components/NFTBadge";
 
-// Enhanced Button with glass and glow
 const Button = ({ children, className = "", variant = "default", ...props }) => {
   const baseClasses =
     "inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-lg";
@@ -116,48 +110,162 @@ const FeatureCard = ({ icon, title, description }) => (
   </motion.div>
 );
 
-const StepCard = ({ number, title, description, icon }) => (
-  <motion.div
-    className="relative text-center group"
-    whileHover={{ scale: 1.07 }}
-    transition={{ type: "spring", stiffness: 300 }}
-  >
-    <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/80 p-8 rounded-2xl shadow-xl border border-yellow-700/20 backdrop-blur-xl">
-      <div className="w-16 h-16 bg-gradient-to-r from-yellow-600 to-yellow-800 rounded-full flex items-center justify-center text-gray-900 font-bold text-xl mx-auto mb-4 shadow-lg">
-        {number}
+// NFT Showcase Card
+const NFTShowcase = () => {
+  const [showModal, setShowModal] = useState(false);
+
+  return (
+    <>
+      <motion.div
+        className="relative max-w-md mx-auto bg-gradient-to-br from-gray-900/80 via-gray-800/70 to-gray-950/90 rounded-3xl shadow-2xl border border-yellow-700/30 p-8 mb-12 backdrop-blur-2xl"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.7, type: "spring" }}
+      >
+        {/* <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-tr from-yellow-500/30 to-yellow-700/30 rounded-full blur-2xl animate-pulse"></div> */}
+        <div className="flex flex-col items-center z-10 relative">
+          <div className="relative w-32 h-32 mb-4">
+            <img
+              src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80"
+              alt="NFT Preview"
+              className="rounded-2xl border-4 border-yellow-500 shadow-lg object-cover w-full h-full"
+            />
+            <div className="absolute bottom-2 right-2 bg-gradient-to-r from-yellow-400 to-yellow-700 text-gray-900 px-2 py-1 rounded-lg text-xs font-bold shadow">
+              Featured NFT
+            </div>
+          </div>
+          <h3 className="text-2xl font-extrabold text-yellow-200 mb-2 drop-shadow-lg tracking-wide">
+            Secxion Genesis NFT
+          </h3>
+          <p className="text-gray-300 text-center mb-4 text-lg">
+            Unlock exclusive rewards and access by trading or holding our Genesis NFT. Powered by Ethereum.
+          </p>
+          <Button
+            className="bg-gradient-to-r from-yellow-500 to-yellow-700 text-gray-900 shadow-xl"
+            onClick={() => setShowModal(true)}
+          >
+            <FaEthereum className="mr-2" /> View NFT Collection
+          </Button>
+        </div>
+      </motion.div>
+      {showModal && (
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div
+            className="nft-glass max-w-sm w-full p-8 rounded-2xl shadow-2xl border border-yellow-700/30 flex flex-col items-center relative"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", duration: 0.4 }}
+          >
+            <div className="absolute top-4 right-4 cursor-pointer text-yellow-400 hover:text-yellow-600 text-xl"
+              onClick={() => setShowModal(false)}
+              title="Close"
+            >
+              <X className="w-6 h-6" />
+            </div>
+            <div className="mb-4">
+              <FaEthereum className="text-yellow-400 text-4xl animate-pulse" />
+            </div>
+            <h2 className="text-2xl font-bold text-yellow-200 mb-2 text-center tracking-wide">
+              NFT Collection
+            </h2>
+            <p className="text-gray-300 text-center mb-4 text-lg">
+              <span className="font-semibold text-yellow-400">Coming Soon</span>
+            </p>
+            <div className="w-full flex justify-center">
+              <div className="w-20 h-20 rounded-xl bg-gradient-to-tr from-yellow-500/30 to-yellow-700/30 blur-sm animate-pulse"></div>
+            </div>
+            <p className="mt-6 text-sm text-gray-400 text-center">
+              Stay tuned for exclusive digital assets, membership NFTs, and more. Follow us for updates!
+            </p>
+          </motion.div>
+        </motion.div>
+      )}
+    </>
+  );
+};
+
+// Testimonial Carousel
+const transactionTypes = [
+  "Gift Card Sale",
+  "Ethereum Trade",
+  "Bank Payment",
+  "Custom Tool Delivered",
+  "Open Source Integration"
+];
+const testimonials = Array.from({ length: 1200 }).map((_, i) => ({
+  name: ["Alex M.", "Jade L.", "Samir K.", "Chris O.", "Linda S.", "Mohammed T.", "Priya R.", "John D.", "Sophia W.", "Carlos F."][Math.floor(Math.random() * 10)],
+  avatar: `https://randomuser.me/api/portraits/${Math.random() > 0.5 ? "men" : "women"}/${Math.floor(Math.random() * 80)}.jpg`,
+  text: [
+    "Secxion made selling my gift cards effortless. The custom tools are a game changer!",
+    "The NFT showcase is stunning and the platform feels ultra-secure. Highly recommended.",
+    "Lightning-fast payouts and amazing support. Secxion is my go-to for digital assets.",
+    "Received my bank payment instantly. Trustworthy and reliable!",
+    "Traded Ethereum with the best rates. Secxion rocks!",
+    "Custom scripts delivered live, solved my workflow issues.",
+    "Support team helped me integrate open source tools in minutes.",
+    "Gift card sale completed in seconds, super fast!",
+    "Bank transfer successful, funds received immediately.",
+    "Secxion's NFT collection looks amazing, can't wait!"
+  ][Math.floor(Math.random() * 10)],
+  type: transactionTypes[Math.floor(Math.random() * transactionTypes.length)],
+  date: (() => {
+    const now = new Date();
+    const offset = Math.floor(Math.random() * 48 * 60 * 60 * 1000);
+    const d = new Date(now.getTime() - offset);
+    return d.toLocaleString("en-US", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "short", year: "numeric" });
+  })()
+}));
+
+const TestimonialCarousel = () => {
+  const [index, setIndex] = useState(Math.floor(Math.random() * testimonials.length));
+  useEffect(() => {
+    const timer = setTimeout(() => setIndex((i) => (i + 1) % testimonials.length), 3500);
+    return () => clearTimeout(timer);
+  }, [index]);
+  const t = testimonials[index];
+  return (
+    <motion.div
+      className="max-w-xl mx-auto bg-gradient-to-br from-gray-900/80 to-gray-800/80 rounded-2xl shadow-xl border border-yellow-700/20 p-8 mt-16 mb-8 backdrop-blur-xl"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, type: "spring" }}
+    >
+      <div className="flex items-center mb- 2">
+        <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-full border-2 border-yellow-500 mr-3 shadow" />
+        <span className="font-bold text-yellow-200">{t.name}</span>
+        <span className="ml-auto text-xs text-gray-400">{t.date}</span>
       </div>
-      <div className="mb-4 flex justify-center">{icon}</div>
-      <h3 className="text-xl font-bold text-yellow-200 mb-3">{title}</h3>
-      <p className="text-gray-200 leading-relaxed">{description}</p>
-    </div>
-  </motion.div>
-);
+      <div className="flex items-center mb-2">
+        <span className="px-2 py-1 bg-yellow-700/20 text-yellow-400 rounded font-mono text-xs mr-2">{t.type}</span>
+        <span className="text-xs text-gray-400">#{index + 1} of {testimonials.length} live</span>
+      </div>
+      <p className="text-gray-200 text-lg italic mb-2">"{t.text}"</p>
+      <div className="flex justify-center mt-2 space-x-2">
+        {[...Array(5)].map((_, i) => (
+          <span
+            key={i}
+            className={`w-3 h-3 rounded-full ${i === index % 5 ? "bg-yellow-500" : "bg-gray-700"}`}
+            style={{ transition: "background 0.3s" }}
+          />
+        ))}
+      </div>
+    </motion.div>
+  );
+};
 
 export default function Landing() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currencies, setCurrencies] = useState([
-    { name: 'BTC', price: '68,450.50', change: '+2.15%' },
-    { name: 'ETH', price: '3,550.75', change: '-0.50%' },
-    { name: 'USD/NGN', price: '1,450.20', change: '+0.10%' },
-    { name: 'EUR/USD', price: '1.0855', change: '-0.25%' },
-    { name: 'SOL', price: '150.80', change: '+5.75%' },
-    { name: 'DOGE', price: '0.162', change: '+3.20%' },
-  ]);
 
   useEffect(() => {
     const updateCurrencies = () => {
-      setCurrencies(prev =>
-        prev.map(currency => ({
-          ...currency,
-          price: (parseFloat(currency.price.replace(',', '')) * (0.98 + Math.random() * 0.04)).toLocaleString('en-US', {
-            minimumFractionDigits: currency.name === 'DOGE' ? 3 : 2,
-            maximumFractionDigits: currency.name === 'DOGE' ? 3 : 2
-          }),
-          change: `${Math.random() > 0.5 ? '+' : ''}${(Math.random() * 10 - 5).toFixed(2)}%`
-        }))
-      );
+     
     };
     const interval = setInterval(updateCurrencies, 5000);
     return () => clearInterval(interval);
@@ -182,12 +290,16 @@ export default function Landing() {
   return (
     <motion.div
       className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 text-gray-100 font-sans relative overflow-hidden"
-      initial="hidden"
+      initial={false}
       animate="visible"
       variants={containerVariants}
     >
       {/* Animated geometric background */}
       <div className="fixed inset-0 pointer-events-none z-0">
+        {/* Add animated SVG waves for NFT feel */}
+        <svg className="absolute top-0 left-0 w-full h-40" viewBox="0 0 1440 320">
+          <path fill="#facc15" fillOpacity="0.08" d="M0,160L60,165.3C120,171,240,181,360,165.3C480,149,600,107,720,117.3C840,128,960,192,1080,218.7C1200,245,1320,235,1380,229.3L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path>
+        </svg>
         <div className="absolute top-10 left-10 w-32 h-32 border-4 border-yellow-700/20 rotate-45 animate-spin [animation-duration:20s]"></div>
         <div className="absolute top-1/4 right-20 w-20 h-20 bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 rounded-full animate-pulse"></div>
         <div className="absolute bottom-1/4 left-1/4 w-40 h-40 border-4 border-yellow-700/20 rounded-full animate-bounce [animation-duration:3s]"></div>
@@ -200,21 +312,19 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-24">
             <div className="flex items-center space-x-4">
-              <a href="/" className="relative">
-                <div className="flex py-1 flex-col justify-center">
-                  <div className="relative py-2 sm:mx-auto">
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-blue-500 shadow-lg transform rounded-3xl border-4 border-yellow-700"></div>
-                    <div className="relative px-4 p-1.5 bg-white shadow-lg rounded-2xl sm:p-1.5 border-4 border-yellow-700">
-                      <div className="grid grid-cols-1">
-                        <LogoShimmer type="button" />
-                      </div>
+              <div className="relative">
+                    <div >
+                      <img
+                        src={SecxionLogo}
+                        alt="Secxion Official Logo"
+                        className="w-14 h-14 object-contain rounded-2xl"
+                        style={{ display: "block" }}
+                      />
                     </div>
-                  </div>
-                </div>
-                <div className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-full"></div>
-              </a>
+
+              </div>
               <div className="md:hidden flex items-center space-x-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+               
                 <p className="text-yellow-400 text-sm font-mono tracking-wider">
                   System Design in Progress<span className="animate-blink">_</span>
                 </p>
@@ -312,25 +422,27 @@ export default function Landing() {
 
       <main className="relative z-10 mt-24">
         {/* Hero Section */}
-        <motion.section className="relative overflow-hidden py-16 lg:py-36 flex items-center justify-center min-h-[70vh]">
+        <motion.section className="relative overflow-hidden py-16 lg:py-36 flex flex-col items-center justify-center min-h-[70vh]">
           {/* SVG Pattern/Blurred Background */}
-          <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
+          {/* <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-yellow-900/30 rounded-full filter blur-3xl opacity-50 animate-pulse"></div>
             <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-yellow-800/30 rounded-full filter blur-3xl opacity-50 animate-pulse"></div>
             <div className="absolute bottom-1/4 left-1/2 w-80 h-80 bg-yellow-700/30 rounded-full filter blur-3xl opacity-50 animate-pulse"></div>
-          </div>
+          </div> */}
+          {/* NFT Showcase Card */}
+          <NFTShowcase />
           {/* Main Card */}
           <motion.div
-            className="relative z-10 max-w-3xl w-full mx-auto bg-gray-950/80 backdrop-blur-2xl rounded-3xl shadow-2xl p-10 flex flex-col items-center"
+           
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.7, type: "spring" }}
           >
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-4 h-4 bg-yellow-500 rounded-full shadow-lg animate-pulse"></div>
+              {/* <div className="w-4 h-4 bg-yellow-500 rounded-full shadow-lg animate-pulse"></div> */}
               <span className="text-yellow-400 font-mono text-xs tracking-widest uppercase">System Design in Progress</span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-600 bg-clip-text text-transparent drop-shadow-lg text-center mb-6">
+            <h1 className="text-6xl md:text-8xl font-extrabold bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-600 bg-clip-text text-transparent text-center mb-8 tracking-tight">
               Welcome to Secxion
             </h1>
             <p className="text-xl md:text-2xl text-gray-200 mb-8 text-center font-medium drop-shadow">
@@ -380,7 +492,7 @@ export default function Landing() {
                 We provide secure, fast, and reliable services to help you maximize the value of your digital assets
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
               <ServiceCard
                 icon={<Gift className="h-12 w-12 text-yellow-500" />}
                 title="Gift Card Exchange"
@@ -422,7 +534,7 @@ export default function Landing() {
                 Built with security, speed, and user experience at the forefront
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <FeatureCard
                 icon={<ShieldCheck className="h-8 w-8 text-yellow-500" />}
                 title="Bank-Level Security"
@@ -456,6 +568,9 @@ export default function Landing() {
             </div>
           </div>
         </motion.section>
+
+        {/* Testimonial Carousel */}
+        <TestimonialCarousel />
 
         {/* CTA Section */}
         <motion.section className="py-24 bg-gradient-to-r from-black via-gray-900 to-gray-800 relative overflow-hidden">
@@ -551,6 +666,10 @@ export default function Landing() {
           </div>
           {/* Footer Bottom Line */}
           <div className="border-t border-gray-700 mt-12 pt-6 text-center text-sm">
+            {/* Feature NFTBadge */}
+            <div className="flex justify-center mb-4">
+              <NFTBadge />
+            </div>
             <p className="text-gray-500">
               © {new Date().getFullYear()} <span className="text-yellow-500 font-semibold">Secxion</span>. All Rights Reserved. Built with ❤️ by{" "}
               <a
@@ -579,6 +698,14 @@ export default function Landing() {
         }
         .animate-blink {
           animation: blink 1s step-end infinite;
+        }
+        /* NFT glassmorphism */
+        .nft-glass {
+          background: rgba(30, 30, 30, 0.7);
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+          backdrop-filter: blur(8px);
+          border-radius: 20px;
+          border: 1px solid rgba(255, 255, 255, 0.18);
         }
       `}</style>
     </motion.div>

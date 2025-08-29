@@ -9,6 +9,8 @@ import signupBackground from "./signupbk.png";
 import LogoShimmer from "../Components/LogoShimmer";
 import Navigation from '../Components/Navigation';
 import { ArrowLeft } from "lucide-react";
+import SecxionLogo from "../app/slogo.png";
+import NFTBadge from "../Components/NFTBadge";
 
 const SignUp = () => {
   const [step, setStep] = useState(1);
@@ -228,8 +230,20 @@ const SignUp = () => {
     >
       <Navigation currentPage="dashboard" />
 
-      {/* Animated geometric background */}
+      {/* Logo background overlay */}
       <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 w-[500px] h-[500px] flex items-center justify-center">
+          <img
+            src={SecxionLogo}
+            alt="Secxion Logo Background"
+            className="w-full h-full object-contain opacity-10 select-none pointer-events-none"
+            style={{
+              filter: "blur(2px)",
+              mixBlendMode: "screen",
+            }}
+          />
+        </div>
+        {/* Existing geometric backgrounds */}
         <div className="absolute top-10 left-10 w-32 h-32 border-4 border-yellow-700/20 rotate-45 animate-spin [animation-duration:20s]"></div>
         <div className="absolute top-1/4 right-20 w-20 h-20 bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 rounded-full animate-pulse"></div>
         <div className="absolute bottom-1/4 left-1/4 w-40 h-40 border-4 border-yellow-700/20 rounded-full animate-bounce [animation-duration:3s]"></div>
@@ -240,7 +254,7 @@ const SignUp = () => {
       <div className="absolute inset-0 bg-black/70 z-0"></div>
 
       <div className="relative z-10 flex items-center justify-center mt-11 grow px-4 py-8">
-        <div className="bg-gray-900 bg-opacity-70 w-full max-w-lg p-8 pt-4 py-2 shadow-2xl rounded-2xl backdrop-blur-md">
+        <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/70 bg-opacity-95 w-full max-w-lg p-8 pt-4 py-2 shadow-2xl rounded-2xl backdrop-blur-xl border border-yellow-700/20">
           {/* Back Button */}
           <button
             onClick={handleGoBack}
@@ -252,20 +266,22 @@ const SignUp = () => {
             <span>Back</span>
           </button>
           <div className="flex items-center justify-center mb-4">
-          <a href="/" className="relative">
-            <div className="flex py-1 flex-col justify-center">
-              <div className="relative py-2 sm:mx-auto">
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-blue-500 shadow-lg transform rounded-3xl border-4 border-yellow-700"></div>
-                <div className="relative px-4 p-1.5 bg-white shadow-lg rounded-2xl sm:p-1.5 border-4 border-yellow-700">
-                  <div className="grid grid-cols-1">
-                    <LogoShimmer type="button" />
+            <a href="/" className="relative">
+              <div className="flex py-1 flex-col justify-center">
+                <div className="relative py-2 sm:mx-auto">
+                  <div >
+                    {/* Replace shimmer logo with Secxion logo */}
+                    <img
+                      src={SecxionLogo}
+                      alt="Secxion Official Logo"
+                      className="w-14 h-14 object-contain rounded-2xl"
+                      style={{ display: "block" }}
+                    />
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-full"></div>
-          </a>
-        </div>
+            </a>
+          </div>
 
           <h2 className="text-xl font-bold mb-6 text-center text-gray-100">Sign Up Wizard</h2>
           <div className="flex items-center justify-between mb-4">
@@ -381,6 +397,11 @@ const SignUp = () => {
             </Link>
           </div>
         </div>
+      </div>
+
+      {/* Feature NFTBadge above footer */}
+      <div className="flex justify-center mt-6">
+        <NFTBadge />
       </div>
 
       <footer className="relative z-10 mt-2 text-center text-xs text-gray-400 p-3 bg-black/50 backdrop-blur-sm shadow-inner sm:shadow-none">

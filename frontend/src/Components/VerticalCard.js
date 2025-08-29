@@ -18,18 +18,16 @@ const VerticalCard = React.memo(({ loading, data = [] }) => {
         /* Glossy text styles for general use, reduced intensity */
         .glossy-text {
           text-shadow:
-            0.5px 0.5px 1px rgba(255,255,255,0.4), /* Reduced white shadow */
-            -0.5px -0.5px 1px rgba(0,0,0,0.2); /* Subtle black shadow */
-          -webkit-text-stroke: 0.2px #000; /* Thinner stroke */
-          color: #333; /* Darker base color for better contrast */
+            0.5px 0.5px 1px rgba(255,255,255,0.3), /* Reduced white shadow */
+            -0.5px -0.5px 1px rgba(0,0,0,0.15); /* Subtle black shadow */
+          color: #222; /* Darker base color for better contrast */
         }
         /* Glossy text styles for headings, reduced intensity */
         .glossy-heading {
           text-shadow:
-            0 0 3px rgba(255,255,255,0.5), /* Reduced white glow */
-            1px 1px 3px rgba(0,0,0,0.2); /* Reduced black shadow */
-          -webkit-text-stroke: 0.4px #333; /* Thinner stroke */
-          color: #000; /* Darker base color */
+            0 0 2px rgba(255,255,255,0.3), /* Reduced white glow */
+            1px 1px 2px rgba(0,0,0,0.15); /* Reduced black shadow */
+          color: #111; /* Darker base color */
         }
         /* A subtle gloss for icons */
         .glossy-icon-text {
@@ -38,8 +36,8 @@ const VerticalCard = React.memo(({ loading, data = [] }) => {
 
         /* Backdrop filter for card background */
         .vertical-card-backdrop {
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
         }
 
         /* Price text gradient fill */
@@ -62,14 +60,14 @@ const VerticalCard = React.memo(({ loading, data = [] }) => {
         .vertical-card__border-animation {
           position: absolute;
           inset: 0;
-          border-radius: 1.5rem; /* md:rounded-3xl */
+          border-radius: 1rem; /* md:rounded-3xl */
           padding: 1px;
           background: linear-gradient(
             45deg,
             transparent,
-            rgba(139, 92, 246, 0.5), /* purple-500 */
+            rgba(139, 92, 246, 0.3), /* purple-500 */
             transparent,
-            rgba(59, 130, 246, 0.5), /* blue-500 */
+            rgba(59, 130, 246, 0.3), /* blue-500 */
             transparent
           );
           background-size: 300% 300%;
@@ -96,32 +94,12 @@ const VerticalCard = React.memo(({ loading, data = [] }) => {
           animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
 
-        .skeleton-shimmer {
-            background: linear-gradient(
-                90deg,
-                rgba(51, 65, 85, 0.3) 25%,
-                rgba(71, 85, 105, 0.5) 50%,
-                rgba(51, 65, 85, 0.3) 75%
-            );
-            background-size: 200% 100%;
-            animation: shimmer 2s ease-in-out infinite;
-        }
-
         @keyframes pulse {
           0%, 100% {
-            opacity: 0.8;
+            opacity: 0.7;
           }
           50% {
             opacity: 0.4;
-          }
-        }
-
-        @keyframes shimmer {
-          0% {
-            background-position: -200% 0;
-          }
-          100% {
-            background-position: 200% 0;
           }
         }
 
@@ -142,19 +120,19 @@ const VerticalCard = React.memo(({ loading, data = [] }) => {
 
         /* Focus indicators for keyboard navigation */
         .focus-visible-purple:focus-visible {
-            outline: 2px solid rgba(139, 92, 246, 0.8);
+            outline: 2px solid #8b5cf6;
             outline-offset: 2px;
         }
       `}</style>
 
-      <div className="grid grid-cols-2 gap-4 p-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 md:gap-5 lg:grid-cols-5 xl:grid-cols-6 xl:gap-6">
+      <div className="grid grid-cols-2 gap-3 p-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 md:gap-4 lg:grid-cols-5 xl:grid-cols-6 xl:gap-5">
         {loading
           ? loadingList.map((_, index) => (
-              <div key={index} className="rounded-3xl overflow-hidden animate-pulse vertical-card-skeleton bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700">
-                <div className="aspect-square rounded-t-3xl skeleton-shimmer"></div>
-                <div className="p-4">
-                  <div className="h-4 bg-gray-700 rounded mb-2 w-5/6 skeleton-shimmer"></div>
-                  <div className="h-3 bg-gray-700 rounded w-3/5 skeleton-shimmer"></div>
+              <div key={index} className="rounded-xl overflow-hidden animate-pulse vertical-card-skeleton bg-gray-900 border border-gray-700" style={{ minWidth: 160, maxWidth: 180 }}>
+                <div className="aspect-square rounded-t-xl bg-gray-800"></div>
+                <div className="p-3">
+                  <div className="h-4 bg-gray-700 rounded mb-2 w-4/5"></div>
+                  <div className="h-3 bg-gray-700 rounded w-2/3"></div>
                 </div>
               </div>
             ))
@@ -163,56 +141,59 @@ const VerticalCard = React.memo(({ loading, data = [] }) => {
                 to={`/product/${product._id}`}
                 onClick={scrollTop}
                 key={product._id}
-                className="group relative block bg-gradient-to-br from-slate-800 to-slate-900 vertical-card-backdrop border border-gray-700 rounded-3xl overflow-hidden shadow-lg transition-all duration-400 ease-in-out hover:scale-[1.02] hover:shadow-2xl hover:border-purple-400 focus-visible-purple" // Added black border (gray-700) and yellow border (group-hover:border-yellow-500)
+                className="group relative block bg-gray-900 vertical-card-backdrop border border-gray-700 rounded-xl overflow-hidden shadow transition-all duration-300 hover:scale-[1.03] hover:shadow-lg hover:border-yellow-500 focus-visible-purple"
+                style={{ minWidth: 160, maxWidth: 180 }}
               >
-                {/* Bold yellow border overlay */}
-                <div className="absolute inset-0 rounded-3xl border-4 border-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                {/* Animated border */}
+                <div className="vertical-card__border-animation"></div>
 
-                {/* Image Container with Enhanced Styling */}
-                <div className="relative aspect-square overflow-hidden rounded-t-3xl bg-gradient-to-br from-gray-300 to-gray-800">
-                  <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
-                    {imageErrors[product._id] ? (
-                      <div className="flex flex-col items-center justify-center w-full h-full text-gray-500 bg-gradient-to-br from-gray-200 to-gray-300">
-                        <svg
-                          width="32"
-                          height="32"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="mb-2 opacity-70"
-                        >
-                          <path d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z" />
-                        </svg>
-                        <span className="text-xs font-medium opacity-80 glossy-text">No Image</span> {/* Applied glossy-text */}
-                      </div>
-                    ) : (
-                      <img
-                        src={product.productImage?.[0] || "/placeholder.jpg"}
-                        alt={product.productName}
-                        className="w-full h-full object-cover transition-all duration-600 ease-in-out brightness-95 contrast-105 group-hover:scale-110 group-hover:brightness-110 group-hover:contrast-110"
-                        loading="lazy"
-                        onError={() => handleImageError(product._id)}
-                      />
+                {/* Image */}
+                <div className="relative aspect-square overflow-hidden rounded-t-xl bg-gray-800 flex items-center justify-center">
+                  {imageErrors[product._id] ? (
+                    <div className="flex flex-col items-center justify-center w-full h-full text-gray-500 bg-gray-200">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" className="mb-2 opacity-70">
+                        <path d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z" />
+                      </svg>
+                      <span className="text-xs font-medium opacity-80 glossy-text">No Image</span>
+                    </div>
+                  ) : (
+                    <img
+                      src={product.productImage?.[0] || "/placeholder.jpg"}
+                      alt={product.productName}
+                      className="w-full h-full object-cover transition-all duration-400 ease-in-out group-hover:scale-105"
+                      loading="lazy"
+                      onError={() => handleImageError(product._id)}
+                    />
+                  )}
+                </div>
+
+                {/* Content */}
+                <div className="p-3 relative z-10">
+                  <h3 className="text-sm font-semibold text-gray-100 leading-tight my-1 line-clamp-2 transition-colors duration-300 group-hover:text-yellow-200 glossy-heading">
+                    {product.productName}
+                  </h3>
+                  <div className="flex flex-col gap-1 mt-2">
+                    <span className="text-xs text-gray-400">{product.category}</span>
+                    <span className="text-xs text-gray-400">{product.brand}</span>
+                  </div>
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="font-bold text-yellow-600 text-base">
+                      {product.amount?.toLocaleString()}
+                    </span>
+                    {product.oldAmount && (
+                      <span className="text-xs text-gray-500 line-through">
+                        {product.oldAmount?.toLocaleString()}
+                      </span>
                     )}
                   </div>
                 </div>
 
-                {/* Content Section */}
-                <div className="p-4 relative z-10">
-                  <h3 className="text-base font-normal text-gray-200 leading-tight my-2 line-clamp-2 transition-colors duration-300 group-hover:text-white glossy-heading"> {/* Applied glossy-heading */}
-                    {product.productName}
-                  </h3>
-                </div>
-
-                <div className="absolute bottom-3 right-3 z-20">
-                  <span className="relative z-10 inline-block text-white text-xs font-extrabold px-2 py-1 rounded-lg tracking-wider shadow-md transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg vertical-card__signature-text-gradient"> {/* Applied gradient class for text */}
+                {/* Signature */}
+                <div className="absolute bottom-2 right-2 z-20">
+                  <span className="inline-block text-yellow-600 text-xs font-extrabold px-2 py-1 rounded tracking-wider shadow transition-all duration-300 group-hover:scale-110 group-hover:text-yellow-800">
                     {signature}
                   </span>
-                  <div className="absolute inset-[-2px] rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-70 z-0"></div>
                 </div>
-
-                {/* Animated Border */}
-                <div className="vertical-card__border-animation"></div>
               </Link>
             ))}
       </div>

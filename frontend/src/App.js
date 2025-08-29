@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, Routes, Route } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,6 +14,8 @@ import {
     signinUserAPI,
 } from "./services/apiService";
 import Shimmer from "./Components/Shimmer";
+import { AnimatePresence } from "framer-motion";
+import { persistor } from "./store/store"; // already imported in index.js
 
 function setViewportHeight() {
     const vh = window.innerHeight * 0.01;
@@ -64,6 +66,24 @@ function Loader() {
     );
 }
 
+function globalLogout() {
+  localStorage.clear();
+  sessionStorage.clear();
+  if (window && window.indexedDB) {
+    window.indexedDB.deleteDatabase('localforage');
+  }
+  document.cookie.split(";").forEach((c) => {
+    document.cookie = c
+      .replace(/^ +/, "")
+      .replace(/=.*/, "=;expires=" + new Date(0).toUTCString() + ";path=/");
+  });
+  // Purge redux-persist state
+  if (persistor && persistor.purge) persistor.purge();
+  // Optionally call backend logout endpoint here
+  // Redirect to login page
+  window.location.replace("/login");
+}
+
 function App() {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user.user);
@@ -76,6 +96,13 @@ function App() {
             window.removeEventListener('resize', setViewportHeight);
         };
     }, []);
+
+    // Add a check for authentication before rendering protected components
+    useEffect(() => {
+        // Example: If user is not authenticated, redirect to login
+        // Optionally, check for a valid token/session here
+        // if (!user) window.location.replace("/login");
+    }, [user]);
 
     const { refetch: fetchUserDetails, isLoading: isUserLoading } = useQuery({
         queryKey: ["user"],
@@ -113,7 +140,8 @@ function App() {
         staleTime: 5 * 60 * 1000,
     });
 
-       if (isUserLoading || isMarketLoading || isBlogsLoading || isWalletLoading) {
+    // Move conditional return after all hooks
+    if (isUserLoading || isMarketLoading || isBlogsLoading || isWalletLoading) {
         return <Loader />;
     }
 
@@ -124,13 +152,15 @@ function App() {
         <Context.Provider value={{ fetchUserDetails, fetchMarketData, marketData, user, fetchBlogs, blogs, walletBalance, fetchWalletBalance, signinUserAPI }}>
             <div className="global-container">
                 <Suspense fallback={<Loader />}>
-                    {user && <Net blogs={blogs} fetchBlogs={fetchBlogs} />}
-                    <main className="main-content">
-                        {user && <Header />}
-                        <div>
-                            <Outlet />
-                        </div>
-                    </main>
+                    <AnimatePresence mode="wait">
+                        {user && <Net blogs={blogs} fetchBlogs={fetchBlogs} />}
+                        <main className="main-content">
+                            {user && <Header />}
+                            <div>
+                                <Outlet />
+                            </div>
+                        </main>
+                    </AnimatePresence>
                 </Suspense>
                 <ToastContainer
                     position="top-center"

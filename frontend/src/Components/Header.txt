@@ -8,61 +8,14 @@ import Context from "../Context";
 import { useSound } from "../Context/SoundContext";
 import { useDebounce } from "../hooks/useDebounce";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faVolumeUp, faVolumeMute, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faSignOutAlt, faVolumeUp, faVolumeMute, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { PiBell } from 'react-icons/pi';
 import notificationSound from '../Assets/notification.mp3';
 import SummaryApi from "../common";
 import { BiSearch } from 'react-icons/bi';
 import SidePanel from "./SidePanel";
-import SecxionLogo from "../app/slogo.png";
-import DataPadButtonImg from "../app/Buttons/datapadbutton.png";
-import TradeStatusButtonImg from "../app/Buttons/tradestatusbutton.png";
-
-const nftButton =
-  "nft-btn inline-flex items-center justify-center px-5 py-2 rounded-xl font-bold text-base transition-all duration-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] border-2 border-yellow-600 bg-gradient-to-br from-yellow-400 via-yellow-200 to-yellow-500 hover:from-yellow-500 hover:to-yellow-700 text-gray-900 hover:text-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2";
-
-const ghostButton =
-  "nft-btn inline-flex items-center justify-center px-4 py-1 rounded-xl font-bold text-base transition-all duration-200 border-2 border-yellow-600 bg-white/10 hover:bg-yellow-700/10 text-yellow-600 hover:text-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2";
-
-// Clean gradient search input style
-const searchInputStyle = `
-  w-full 
-  bg-gradient-to-r from-gray-50 to-white 
-  border-2 border-transparent 
-  bg-clip-padding
-  rounded-full 
-  py-3 px-4
-  text-gray-800 
-  placeholder-gray-500
-  shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)]
-  focus:outline-none 
-  focus:ring-2 
-  focus:ring-yellow-400/50
-  focus:border-yellow-400
-  focus:shadow-[inset_0_2px_4px_rgba(0,0,0,0.06),0_0_0_3px_rgba(251,191,36,0.1)]
-  transition-all 
-  duration-300 
-  ease-in-out
-  backdrop-blur-sm
-`;
-
-const mobileSearchInputStyle = `
-  w-full 
-  bg-gradient-to-r from-gray-50 to-white 
-  border border-gray-200
-  rounded-full 
-  py-2 px-3
-  text-gray-800 
-  placeholder-gray-500
-  shadow-sm
-  focus:outline-none 
-  focus:ring-2 
-  focus:ring-yellow-400/50
-  focus:border-yellow-400
-  transition-all 
-  duration-300 
-  ease-in-out
-  text-sm
-`;
+import NotificationBadge from "../helper/NotificationBadge";
+import LogoShimmer from "./LogoShimmer";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -216,23 +169,17 @@ const Header = () => {
       <div className="flex items-center justify-between min-h-[48px]">
         <div className="flex items-center justify-between md:mt-1 md:pt-1 lg:mt-1 lg:pt-1 w-full">
           <div className="flex items-center gap-4">
-            <button
-              onClick={toggleMobileMenu}
-              className={`${ghostButton} text-gray-700 mt-1 md:hidden`}
-              aria-label="Open menu"
-            >
-              <FontAwesomeIcon icon={faBars} className="h-6 w-6" />
+            <button onClick={toggleMobileMenu} className="text-gray-700 mt-1 md:hidden">
+              <FontAwesomeIcon icon={faBars} className="h-6 w-6 glossy-text" />
             </button>
 
             <div className="md:hidden flex-1 flex items-center mt-1 justify-center">
-              <div className="relative w-full max-w-[220px]">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                  <BiSearch className="text-yellow-600 h-4 w-4" />
-                </div>
+              <div className="flex items-center ml-4 py-1 w-full max-w-[200px]">
+                <BiSearch className="text-yellow-700 h-4 w-4 mr-1 glossy-text" />
                 <input
                   type="text"
-                  placeholder="Search assets..."
-                  className={mobileSearchInputStyle + " pl-10 pr-4"}
+                  placeholder="gift cards, vc, cc...."
+                  className="bg-transparent text-black text-xs outline-none w-full placeholder:text-[14px] placeholder-gray-500 glossy-text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -240,39 +187,34 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Logo block */}
           <Link to="/home" className="relative hidden md:flex items-center font-bold text-yellow-600 tracking-wide">
-            <div className="relative">
-              <div>
-                <img
-                  src={SecxionLogo}
-                  alt="Secxion Official Logo"
-                  className="w-14 h-14 object-contain rounded-2xl "
-                  style={{ display: "block" }}
-                />
+            <div className=" flex py-1 flex-col justify-center">
+              <div className="relative py-2  sm:mx-auto ">
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-blue-500 shadow-lg transform rounded-3xl border-4 border-yellow-700"></div>
+                <div className="relative px-4 p-1.5 bg-white shadow-lg rounded-2xl sm:p-1.5 border-4 border-yellow-700">
+                  <div className="">
+                    <div className="grid grid-cols-1">
+                      <LogoShimmer type="button" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </Link>
 
           <div className="hidden md:flex gap-3 items-center">
             {location.pathname === "/search" && (
-              <button
-                onClick={goBack}
-                className={ghostButton + " text-yellow-600 hover:text-yellow-800"}
-                aria-label="Go back"
-              >
-                <FontAwesomeIcon icon={faArrowLeft} className="h-5 w-5" />
+              <button onClick={goBack} className="text-yellow-600 hover:text-yellow-800">
+                <FontAwesomeIcon icon={faArrowLeft} className="h-5 w-5 glossy-text" />
               </button>
             )}
 
-            <div className="relative w-72">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                <FcSearch className="text-gray-500 h-5 w-5" />
-              </div>
+            <div className="flex items-center  px-3 py-1 w-64">
+              <FcSearch className="text-gray-600 h-4 w-4 mr-2 glossy-text" />
               <input
                 type="text"
-                placeholder="Search gift cards, vc, cc..."
-                className={searchInputStyle + " pl-12 pr-4"}
+                placeholder="gift cards, vc, cc..."
+                className="bg-transparent text-black text-sm outline-none w-full placeholder:text-sm placeholder-gray-500 glossy-text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -280,43 +222,13 @@ const Header = () => {
 
             <nav className="flex items-center justify-between mx-auto gap-3 text-xs">
               {!hideTradeStatus && (
-                <Link
-                  to="/record"
-                  className="flex items-center"
-                  style={{ padding: 0, border: "none", background: "none", height: "48px", alignItems: "center" }}
-                >
-                  <img
-                    src={TradeStatusButtonImg}
-                    alt="Trade Status"
-                    className="object-contain"
-                    style={{
-                      height: "100px",
-                      width: "auto",
-                      maxHeight: "110px",
-                      maxWidth: "120px",
-                      display: "block"
-                    }}
-                  />
+                <Link to="/record" className="px-2 py-1 border-4 border-cyan-700 text-black hover:bg-cyan-600 hover:text-black rounded glossy-text">
+                  Trade Status
                 </Link>
               )}
               {!hideDataPad && (
-                <Link
-                  to="/datapad"
-                  className="flex items-center"
-                  style={{ padding: 0, border: "none", background: "none", height: "48px", alignItems: "center" }}
-                >
-                  <img
-                    src={DataPadButtonImg}
-                    alt="DataPad"
-                    className="object-contain"
-                    style={{
-                      height: "80px",
-                      width: "auto",
-                      maxHeight: "80px",
-                      maxWidth: "120px",
-                      display: "block"
-                    }}
-                  />
+                <Link to="/datapad" className="px-3 py-1 border-4 border-yellow-700 text-black hover:bg-yellow-500 hover:text-black rounded glossy-text">
+                  DataPad
                 </Link>
               )}
             </nav>
@@ -324,8 +236,7 @@ const Header = () => {
 
           <button
             onClick={toggleSound}
-            className={ghostButton + " shadow-[0_2px_8px_rgba(0,0,0,0.08)] ml-4 text-black hover:text-blue-500 flex items-center"}
-            aria-label="Toggle sound"
+            className="px-3 py-1  ml-4  text-black hover:text-blue-500 rounded flex items-center glossy-text"
           >
             <FontAwesomeIcon icon={soundEnabled ? faVolumeUp : faVolumeMute} className="mr-1" />
           </button>

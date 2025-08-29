@@ -20,7 +20,7 @@ import {
 import Clock from 'react-live-clock';
 import timezones from '../helpers/timeZones';
 import './Header.css';
-import LogoShimmer from "./LogoShimmer";
+import SecxionLogo from "../app/slogo.png";
 
 const SidePanel = ({ open, setOpen, handleLogout, loading, onCloseMenu }) => {
   const [timezone, setTimezone] = useState('Africa/Lagos');
@@ -104,20 +104,18 @@ const SidePanel = ({ open, setOpen, handleLogout, loading, onCloseMenu }) => {
                 >
                   <XMarkIcon className="h-8 w-8" />
                 </button>
-                <Link to= "/home" className="relative">
-                  <div className=" flex py-1 flex-col justify-center">
-                    <div className="relative py-2  sm:mx-auto ">
-                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-blue-500 shadow-lg transform rounded-3xl border-4 border-yellow-700"></div>
-                      <div className="relative px-4 p-1.5 bg-white shadow-lg rounded-2xl sm:p-1.5 border-4 border-yellow-700">
-                        <div className="">
-                          <div className="grid grid-cols-1">
-                            <LogoShimmer type="button" />
-                          </div>
-                        </div>
-                      </div>
+                {/* Replace LogoShimmer with SecxionLogo */}
+                <Link to="/home" className="relative">
+                  <div className="flex py-1 flex-col justify-center">
+                    <div className="relative py-2 sm:mx-auto">
+                      <img
+                        src={SecxionLogo}
+                        alt="Secxion Official Logo"
+                        className="w-14 h-14 object-contain rounded-2xl"
+                        style={{ display: "block" }}
+                      />
                     </div>
                   </div>
-                  <div className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-full"></div>
                 </Link>
                 <button
                   onClick={handleLogoutClick}

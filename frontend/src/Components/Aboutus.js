@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Shield, Zap, Heart, TrendingUp, Users, Gift, Building, Target, Calendar, Code, Coins, ArrowLeft } from 'lucide-react';
 import Navigation from './Navigation';
 import { useNavigate } from 'react-router-dom';
+import SecxionLogo from '../app/slogo.png';
 
 const AboutUs = () => {
   const containerVariants = {
@@ -92,14 +93,24 @@ const AboutUs = () => {
   return (
     <motion.div
       className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 text-gray-100 font-sans relative overflow-hidden"
-      initial="hidden"
+      initial={false}
       animate="visible"
       variants={containerVariants}
     >
       <Navigation currentPage="about" />
 
-      {/* Animated geometric background */}
+      {/* Logo background overlay */}
       <div className="fixed inset-0 pointer-events-none z-0">
+        {/* Slogo background */}
+        <img
+          src={SecxionLogo}
+          alt="Secxion Logo Background"
+          className="absolute left-1/2 top-1/2 w-[600px] h-[600px] max-w-none opacity-10 -translate-x-1/2 -translate-y-1/2 select-none pointer-events-none"
+          style={{
+            mixBlendMode: "screen",
+          }}
+        />
+        {/* Animated geometric background */}
         <div className="absolute top-20 left-10 w-32 h-32 border-2 border-yellow-700/30 rotate-45 animate-spin [animation-duration:20s]"></div>
         <div className="absolute top-1/3 right-20 w-20 h-20 bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 rounded-full animate-pulse"></div>
         <div className="absolute bottom-1/4 left-1/4 w-40 h-40 border-2 border-yellow-700/30 rounded-full animate-bounce [animation-duration:3s]"></div>
@@ -135,9 +146,19 @@ const AboutUs = () => {
 
           {/* Content */}
           <motion.div
-            className="bg-gray-900 rounded-3xl shadow-2xl p-8 sm:p-12 relative overflow-hidden border border-yellow-700/20"
+            className="bg-gradient-to-br from-gray-900/80 to-gray-800/70 rounded-3xl shadow-2xl p-8 sm:p-12 relative overflow-hidden border border-yellow-700/20 backdrop-blur-xl"
             variants={itemVariants}
+            style={{
+              boxShadow: "0 8px 32px 0 rgba(31,38,135,0.37)",
+              border: "1px solid rgba(255,255,255,0.08)",
+            }}
           >
+            {/* Glassmorphism overlay */}
+            <div className="absolute inset-0 rounded-3xl pointer-events-none" style={{
+              background: "linear-gradient(120deg, rgba(40,40,60,0.7) 60%, rgba(250,204,21,0.08) 100%)",
+              backdropFilter: "blur(8px)",
+              zIndex: 1,
+            }}></div>
             {/* Decorative elements */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-gray-800 to-gray-700 rounded-full transform translate-x-16 -translate-y-16 opacity-50"></div>
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-gray-700 to-gray-600 rounded-full transform -translate-x-12 translate-y-12 opacity-50"></div>
@@ -249,6 +270,25 @@ const AboutUs = () => {
                   </p>
                 </div>
               </Section>
+
+              {/* Brand Story Section */}
+              <motion.div className="mt-16">
+                <h2 className="font-spaceGrotesk text-3xl font-bold text-yellow-200 mb-6 text-center">Secxion Story</h2>
+                <div className="flex flex-col gap-6">
+                  <div className="flex items-center gap-4">
+                    <span className="w-3 h-3 bg-yellow-400 rounded-full"></span>
+                    <span className="text-gray-300">2022: Secxion founded</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="w-3 h-3 bg-yellow-400 rounded-full"></span>
+                    <span className="text-gray-300">2023: Launched NFT Genesis Collection</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="w-3 h-3 bg-yellow-400 rounded-full"></span>
+                    <span className="text-gray-300">2024: 10,000+ users milestone</span>
+                  </div>
+                </div>
+              </motion.div>
             </div>
           </motion.div>
 

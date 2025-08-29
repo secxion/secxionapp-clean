@@ -33,3 +33,32 @@ root.render(
 );
 
 reportWebVitals();
+
+export function globalLogout() {
+  // Clear local/session storage
+  localStorage.clear();
+  sessionStorage.clear();
+
+  // Remove persisted redux state
+  if (window && window.indexedDB) {
+    // Remove redux-persist data (default key: 'persist:root')
+    window.indexedDB.deleteDatabase('localforage');
+  }
+
+  // Remove all cookies
+  document.cookie.split(";").forEach((c) => {
+    document.cookie = c
+      .replace(/^ +/, "")
+      .replace(/=.*/, "=;expires=" + new Date(0).toUTCString() + ";path=/");
+  });
+
+  // Optionally call backend logout endpoint here
+  // Example:
+  // fetch('/api/logout', { method: 'POST', credentials: 'include' }).catch(() => {});
+
+  // Force reload to clear in-memory state
+  window.location.replace("/login");
+}
+
+// Example: Make globalLogout available via window for testing
+window.globalLogout = globalLogout;

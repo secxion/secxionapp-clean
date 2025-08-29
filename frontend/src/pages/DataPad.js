@@ -28,14 +28,12 @@ const VIEW_MODES = {
 const DataPad = () => {
   const { user } = useSelector((state) => state.user);
 
-  // Core state
   const [editingDataPad, setEditingDataPad] = useState(null);
   const [dataPads, setDataPads] = useState([]);
-  const [isUploadOpen, setIsUploadOpen] = useState(true); // Always open on mount
+  const [isUploadOpen, setIsUploadOpen] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // UI state
   const [viewMode, setViewMode] = useState(VIEW_MODES.LIST);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState(SORT_OPTIONS.NEWEST);
@@ -98,16 +96,13 @@ const DataPad = () => {
     }
   }, [user]);
 
-  // Initial data fetch
   useEffect(() => {
     fetchDataPads();
   }, [fetchDataPads]);
 
-  // Filtered and sorted data pads
   const filteredAndSortedDataPads = useMemo(() => {
     let filtered = dataPads;
 
-    // Apply search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -117,14 +112,12 @@ const DataPad = () => {
       );
     }
 
-    // Apply tag filter
     if (selectedTags.length > 0) {
       filtered = filtered.filter(
         (pad) => pad.tags?.some(tag => selectedTags.includes(tag))
       );
     }
 
-    // Apply sorting
     filtered.sort((a, b) => {
       switch (sortBy) {
         case SORT_OPTIONS.NEWEST:
@@ -145,7 +138,6 @@ const DataPad = () => {
     return filtered;
   }, [dataPads, searchQuery, selectedTags, sortBy]);
 
-  // Get all unique tags from data pads
   const availableTags = useMemo(() => {
     const tagSet = new Set();
     dataPads.forEach(pad => {
@@ -305,7 +297,7 @@ const DataPad = () => {
                 key="content"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                exit={{ opacity: 0 }}  
                 className="pb-20"
               >
                 {viewMode === VIEW_MODES.LIST ? (
@@ -339,7 +331,6 @@ const DataPad = () => {
         )}
       </AnimatePresence>
 
-      {/* Floating Action Button (Mobile) */}
       {dataPads.length > 0 && (
         <motion.button
           initial={{ scale: 0 }}

@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-
 import userSignUpController from '../controller/user/userSignUp.js';
 import userSignInController from '../controller/user/userSignin.js';
 import userDetailsController from '../controller/user/userDetails.js';
@@ -57,9 +56,8 @@ import getLastUserMarketStatusController from '../controller/product/getLastUser
 
 const router = express.Router();
 
-
 const cache = {};
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 5 * 60 * 1000;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function verifyApiKey(req, res, next) {
@@ -82,7 +80,6 @@ async function axiosGetWithRetry(url, options = {}, retries = 3, backoff = 500) 
   }
 }
 
-// /api/eth-price → ETH price in NGN (fallback to USD)
 router.get('/eth-price', verifyApiKey, async (req, res) => {
   const cacheKey = 'eth-price';
   const now = Date.now();

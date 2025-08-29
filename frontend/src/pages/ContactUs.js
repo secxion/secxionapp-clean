@@ -5,6 +5,7 @@ import Navigation from '../Components/Navigation';
 import SummaryApi from '../common';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import SecxionLogo from '../app/slogo.png';
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -81,14 +82,26 @@ const ContactUs = () => {
   return (
     <motion.div
       className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 text-gray-100 font-sans relative overflow-hidden"
-      initial="hidden"
+      initial={false}
       animate="visible"
       variants={containerVariants}
     >
       <Navigation currentPage="contact" />
 
-      {/* Animated geometric background */}
+      {/* Logo background overlay */}
       <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 w-[600px] h-[600px] flex items-center justify-center">
+          <img
+            src={SecxionLogo}
+            alt="Secxion Logo Background"
+            className="w-full h-full object-contain opacity-10 select-none pointer-events-none"
+            style={{
+              filter: "blur(2px)",
+              mixBlendMode: "screen",
+            }}
+          />
+        </div>
+        {/* Animated geometric background */}
         <div className="absolute top-10 left-10 w-32 h-32 border-4 border-yellow-700/20 rotate-45 animate-spin [animation-duration:20s]"></div>
         <div className="absolute top-1/4 right-20 w-20 h-20 bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 rounded-full animate-pulse"></div>
         <div className="absolute bottom-1/4 left-1/4 w-40 h-40 border-4 border-yellow-700/20 rounded-full animate-bounce [animation-duration:3s]"></div>
@@ -130,7 +143,7 @@ const ContactUs = () => {
               <h3 className="text-lg font-semibold text-yellow-200 mb-2">Email Us</h3>
               <p className="text-gray-300 text-sm mb-3">Send us an email anytime</p>
               <a href="mailto:Secxion@mail.com" className="text-yellow-500 hover:text-yellow-400 font-medium">
-                Secxion@mail.com
+                moderator@mysecxion.com
               </a>
             </div>
             <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/80 rounded-2xl shadow-lg p-6 text-center border border-yellow-700/10 hover:shadow-xl transition-shadow duration-300">
@@ -152,7 +165,7 @@ const ContactUs = () => {
           </motion.div>
 
           {/* Contact Form */}
-          <motion.div className="bg-gradient-to-br from-gray-900/90 to-gray-800/80 rounded-3xl shadow-xl p-8 md:p-12 border border-yellow-700/20" variants={itemVariants}>
+          <motion.div className="bg-gradient-to-br from-gray-900/80 to-gray-800/70 rounded-3xl shadow-xl p-8 md:p-12 border border-yellow-700/20 backdrop-blur-xl" variants={itemVariants}>
             {submissionSuccess && (
               <motion.div
                 className="mb-8 p-6 bg-green-900 border border-green-700 rounded-2xl flex items-center"

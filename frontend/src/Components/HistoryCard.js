@@ -56,28 +56,28 @@ const HistoryCard = ({ data, isDetailViewOpen, onCloseDetailView }) => {
   return (
     <>
       <motion.div
-        className='container mt-4 bg-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105 duration-300 cursor-pointer border border-gray-200'
+        className='container mt-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 p-6 rounded-xl shadow-lg transition-transform transform hover:scale-105 duration-300 cursor-pointer border border-yellow-700/30'
         onClick={onCloseDetailView}
-        whileHover={{ backgroundColor: "#f9f9f9" }}
+        whileHover={{ backgroundColor: "#232323" }}
       >
         <div className='w-full'>
-          <p className="text-gray-700 font-semibold">
-            Market ID: <span className='truncate block'>{data._id}</span>
+          <p className="text-yellow-400 font-semibold">
+            Market ID: <span className='truncate block text-gray-200'>{data._id}</span>
           </p>
-          <p className="text-gray-600 text-sm mt-1">
+          <p className="text-gray-400 text-sm mt-1">
             Created At: <span className='truncate block'>{data.timestamp ? new Date(data.timestamp).toLocaleString() : "N/A"}</span>
           </p>
-          <p className="text-gray-600 text-sm mt-1">
+          <p className="text-gray-400 text-sm mt-1">
             Status: <span className='truncate block'>{renderStatusIndicator(initialStatus)}</span>
           </p>
           {initialStatus === 'CANCEL' && (
-            <p className="text-gray-600 text-sm mt-1">
+            <p className="text-gray-400 text-sm mt-1">
               Cancel Reason: <span className='truncate block'>{data.cancelReason || 'N/A'}</span>
             </p>
           )}
           <button
             onClick={handleViewMore}
-            className="mt-4 bg-yellow-600 text-white p-2 rounded-lg hover:bg-deep-golden-yellow-700 transition duration-200 w-full"
+            className="mt-4 bg-yellow-500 text-gray-900 font-bold p-2 rounded-lg hover:bg-yellow-600 transition duration-200 w-full shadow"
           >
             View More
           </button>

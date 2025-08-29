@@ -22,6 +22,7 @@ import HomeFooter from "../Components/HomeFooter";
 import NetBlog from "../Components/NetBlog";
 import HiRateSlider from "../Components/HiRateSlider";
 import LastMarketStatus from "../Components/LastMarketStatus";
+import SecxionLogo from "../app/slogo.png";
 
 const menuItems = [
   {
@@ -234,99 +235,146 @@ const Home = () => {
     : transactions.slice(0, visibleTransactions);
 
   return (
-    <div className="bg-white mb-16 mt-36  w-full px-4 space-y-16">
-            <div>
-              <div>
-                <HiRateSlider />
-              </div>
-             
-      {/* Hero */}
+    <div className="bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 min-h-screen w-full pt-32 pb-16 px-0 relative overflow-hidden">
+      {/* Animated geometry/cyber shapes background */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        {/* Cyber animated SVG lines */}
+        <svg className="absolute top-0 left-0 w-full h-32" viewBox="0 0 1440 320">
+          <path fill="#facc15" fillOpacity="0.05" d="M0,160L60,165.3C120,171,240,181,360,165.3C480,149,600,107,720,117.3C840,128,960,192,1080,218.7C1200,245,1320,235,1380,229.3L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path>
+        </svg>
+        {/* Versatile animated shapes */}
+        <div className="absolute top-10 left-10 w-24 h-24 border-4 border-yellow-700/20 rotate-45 animate-spin [animation-duration:12s] opacity-40"></div>
+        <div className="absolute top-1/4 right-20 w-16 h-16 bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 rounded-full animate-pulse opacity-30"></div>
+        <div className="absolute bottom-1/4 left-1/4 w-32 h-32 border-4 border-yellow-700/20 rounded-full animate-bounce [animation-duration:2.5s] opacity-40"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 border border-yellow-700/20 rounded-full opacity-30"></div>
+        <div className="absolute bottom-20 right-10 w-16 h-16 bg-gradient-to-br from-yellow-800/30 to-yellow-700/30 transform rotate-12 animate-pulse opacity-30"></div>
+        {/* Cyber lines */}
+        <div className="absolute top-0 left-1/2 w-1 h-full bg-gradient-to-b from-yellow-400/30 to-yellow-700/10 animate-cyberline opacity-20"></div>
+        <div className="absolute bottom-0 right-1/3 w-1 h-1/2 bg-gradient-to-t from-yellow-400/30 to-yellow-700/10 animate-cyberline opacity-20"></div>
+        {/* Polygon shapes */}
+        <div className="absolute top-32 left-1/3 w-20 h-20 bg-yellow-500/10 rounded-[30%] animate-cyberpoly opacity-20"></div>
+        <div className="absolute bottom-32 right-1/4 w-24 h-24 bg-yellow-400/10 rounded-[40%] animate-cyberpoly opacity-20"></div>
+      </div>
+
+      {/* Top branding bar */}
+      {/* <div className="fixed top-0 left-0 right-0 z-40 h-20 bg-gray-950/95 border-b border-yellow-700/10 shadow-lg flex items-center px-6">
+        <div className="flex items-center gap-4">
+          <img
+            src={SecxionLogo}
+            alt="Secxion Official Logo"
+            className="w-14 h-14 object-contain rounded-2xl"
+            style={{ display: "block" }}
+          />
+          <span className="text-yellow-400 font-mono text-lg tracking-widest uppercase">Secxion Home</span>
+        </div>
+      </div> */}
+
+      {/* Hero Section */}
       <header
-        className="relative h-[60vh] bg-center mt-20  sm:mt-20 md:mt-24 lg:mt-24 border-yellow-800 border-4 bg-cover flex items-center justify-center"
+        className="relative h-[48vh] sm:h-[60vh] bg-center mt-24 border-yellow-800 border-4 bg-cover flex items-center justify-center rounded-3xl shadow-xl overflow-hidden"
         style={{ backgroundImage: `url(${currentImage.url})` }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-40" />
-        <div className="relative z-10 text-center ">
+        <div className="relative z-10 text-center">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
             <Link
               to="/section"
-              className="inline-block bg-yellow-400 text-black border-2 border-yellow-600 px-6 py-3 uppercase font-semibold text-sm rounded-full shadow-md hover:bg-yellow-500 glossy-text" // Applied glossy-text
+              className="inline-block bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600 text-black border-2 border-yellow-600 px-8 py-4 uppercase font-bold text-lg rounded-full shadow-lg hover:bg-yellow-500 transition-all duration-200"
             >
               Explore Market
             </Link>
+            <div className="mt-6 text-white text-2xl font-semibold drop-shadow-lg">
+              {currentImage.title}
+            </div>
           </motion.div>
         </div>
       </header>
-</div>
-            
-        
-      {/* Stats */}
-      <section className="bg-white max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
+
+      {/* Stats Section */}
+      <section className="max-w-7xl mx-auto mt-16 mb-10 px-4">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
           <div>
-            <h2 className="text-2xl font-bold text-black glossy-heading">Account Overview</h2> {/* Applied glossy-heading */}
+            <h2 className="text-3xl font-extrabold text-yellow-200 mb-2 tracking-tight">Account Overview</h2>
           </div>
           <div className="flex items-center gap-3">
-            {/* 👁 Toggle Visibility */}
             <button
               onClick={() => setShowBalance(!showBalance)}
               title={showBalance ? "Hide Balance" : "Show Balance"}
-              className="p-2 rounded-full hover:bg-gray-100"
+              className="p-3 rounded-full bg-yellow-100 hover:bg-yellow-200 border-2 border-yellow-600 transition"
             >
-              {showBalance ? <Eye className="w-5 h-5 text-gray-700" /> : <EyeOff className="w-5 h-5 text-gray-700" />}
+              {showBalance ? <Eye className="w-5 h-5 text-yellow-700" /> : <EyeOff className="w-5 h-5 text-yellow-700" />}
+            </button>
+            <button
+              onClick={refreshAllData}
+              disabled={isRefreshing}
+              className="p-3 rounded-full bg-yellow-100 hover:bg-yellow-200 border-2 border-yellow-600 transition"
+              title="Refresh"
+            >
+              <RefreshCw className={`w-5 h-5 text-yellow-700 ${isRefreshing ? "animate-spin" : ""}`} />
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {quickStats.map((stat, idx) => (
             <div
               key={idx}
-              className="bg-white border-4 border-yellow-500 rounded-xl p-6 shadow hover:shadow-lg" // Border made bolder
+              className="bg-gradient-to-br from-yellow-50 via-yellow-100 to-yellow-200 border-2 border-yellow-600 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-200"
             >
-              <p className="text-gray-600 text-sm glossy-text">{stat.label}</p> {/* Applied glossy-text */}
-              <p className="text-3xl font-bold text-black glossy-heading"> {/* Applied glossy-heading */}
+              <p className="text-gray-700 text-lg font-semibold mb-2">{stat.label}</p>
+              <p className="text-4xl font-extrabold text-yellow-700 mb-2">
                 {showBalance ? stat.value : "••••••"}
               </p>
               <p
-                className={`mt-1 text-sm font-medium ${
+                className={`mt-1 text-base font-medium ${
                   stat.positive ? "text-green-600" : "text-red-600"
-                } glossy-text`} // Applied glossy-text
+                }`}
               >
                 {stat.positive ? (
-                  <TrendingUp className="inline w-4 h-4" />
+                  <TrendingUp className="inline w-5 h-5" />
                 ) : (
-                  <TrendingDown className="inline w-4 h-4" />
+                  <TrendingDown className="inline w-5 h-5" />
                 )}{" "}
                 {stat.change}
               </p>
             </div>
           ))}
         </div>
+        {lastUpdated && (
+          <div className="text-right text-xs text-gray-400 mt-2">
+            Last updated: {lastUpdated}
+          </div>
+        )}
       </section>
 
-      <LastMarketStatus />
+      {/* High Rate Slider */}
+      <section className="max-w-7xl mx-auto mb-10 px-4">
+        <HiRateSlider />
+      </section>
 
-      {/* Menu */}
-      <section className="bg-white max-w-7xl mx-auto">
-        <h2 className="text-2xl font-bold text-black mb-6 glossy-heading">Quick Access</h2> {/* Applied glossy-heading */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Last Market Status */}
+      <section className="max-w-7xl mx-auto mb-10 px-4">
+        <LastMarketStatus />
+      </section>
+
+      {/* Quick Access Menu */}
+      <section className="max-w-7xl mx-auto mb-10 px-4">
+        <h2 className="text-2xl font-bold text-yellow-200 mb-6 tracking-wide">Quick Access</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredMenuItems.map((item, i) => (
             <div
               key={i}
               onClick={() => handleNavigation(item.path)}
-              className={`${item.color} p-6 rounded-xl cursor-pointer transition hover:-translate-y-1`}
+              className={`${item.color} p-8 rounded-2xl cursor-pointer transition hover:-translate-y-1 shadow-lg hover:shadow-xl`}
             >
               <div className="text-center">
-                <div className="mb-2">{item.icon}</div>
-                <h3 className="text-lg font-semibold text-black glossy-text"> {/* Applied glossy-text */}
-                  {item.label}
-                </h3>
-                <p className="text-sm text-gray-700 glossy-text">{item.description}</p> {/* Applied glossy-text */}
+                <div className="mb-3">{item.icon}</div>
+                <h3 className="text-xl font-bold text-yellow-700 mb-1">{item.label}</h3>
+                <p className="text-base text-gray-700">{item.description}</p>
               </div>
             </div>
           ))}
@@ -334,30 +382,26 @@ const Home = () => {
       </section>
 
       {/* Transactions */}
-      <section className="bg-white max-w-7xl mx-auto">
-        <h2 className="text-2xl font-bold text-black mb-4 glossy-heading">Recent Transactions</h2> {/* Applied glossy-heading */}
+      <section className="max-w-7xl mx-auto mb-10 px-4">
+        <h2 className="text-2xl font-bold text-yellow-200 mb-4 tracking-wide">Recent Transactions</h2>
         {transactions.length === 0 ? (
-          <p className="text-gray-500 glossy-text">No transactions found.</p> // Applied glossy-text
+          <p className="text-gray-400">No transactions found.</p>
         ) : (
           <div className="space-y-4">
             {displayedTransactions.map((txn, i) => (
               <div
                 key={i}
-                className="flex items-center justify-between bg-yellow-50 border-4 border-yellow-500 p-4 rounded-lg shadow-sm" // Border made bolder
+                className="flex items-center justify-between bg-yellow-50 border-2 border-yellow-600 p-6 rounded-xl shadow"
               >
                 <div>
-                  <p className="font-medium text-black glossy-text"> {/* Applied glossy-text */}
-                    {txn.type} #{txn._id?.slice(-6)}
-                  </p>
-                  <p className="text-xs text-gray-600 glossy-text"> {/* Applied glossy-text */}
-                    {new Date(txn.createdAt).toLocaleDateString()}
-                  </p>
+                  <p className="font-bold text-yellow-700">{txn.type} #{txn._id?.slice(-6)}</p>
+                  <p className="text-xs text-gray-600">{new Date(txn.createdAt).toLocaleDateString()}</p>
                 </div>
                 <div className="text-right">
                   <p
-                    className={`font-semibold ${
+                    className={`font-bold ${
                       txn.amount > 0 ? "text-green-600" : "text-red-600"
-                    } glossy-text`} // Applied glossy-text
+                    }`}
                   >
                     {txn.amount > 0 ? "+" : "-"}₦
                     {Math.abs(txn.amount).toLocaleString()}
@@ -365,7 +409,7 @@ const Home = () => {
                   <span
                     className={`text-xs px-2 py-1 rounded-full ${getStatusColor(
                       txn.status
-                    )} glossy-text`} // Applied glossy-text
+                    )}`}
                   >
                     {formatTransactionStatus(txn.status)}
                   </span>
@@ -377,12 +421,32 @@ const Home = () => {
       </section>
 
       {/* Blog */}
-      <section className="bg-white glossy-text">
+      <section className="max-w-7xl mx-auto mb-10 px-4">
         <NetBlog />
       </section>
 
       {/* Footer */}
       <HomeFooter />
+
+      {/* Custom cyber animation styles */}
+      <style jsx>{`
+        @keyframes cyberline {
+          0% { transform: scaleY(1) translateY(0); opacity: 0.7; }
+          50% { transform: scaleY(1.2) translateY(-10px); opacity: 1; }
+          100% { transform: scaleY(1) translateY(0); opacity: 0.7; }
+        }
+        .animate-cyberline {
+          animation: cyberline 6s cubic-bezier(0.4,0,0.6,1) infinite;
+        }
+        @keyframes cyberpoly {
+          0% { transform: scale(1) rotate(0deg); opacity: 0.7; }
+          50% { transform: scale(1.15) rotate(12deg); opacity: 1; }
+          100% { transform: scale(1) rotate(0deg); opacity: 0.7; }
+        }
+        .animate-cyberpoly {
+          animation: cyberpoly 8s cubic-bezier(0.4,0,0.6,1) infinite;
+        }
+      `}</style>
     </div>
   );
 };
