@@ -22,9 +22,7 @@ backend/build/
 # =========================
 # ⚙️ Environment files
 # =========================
-.env
-.env.*
-!.env.example
+
 
 # =========================
 # 📂 Log files
