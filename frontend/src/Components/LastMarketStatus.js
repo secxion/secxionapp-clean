@@ -3,6 +3,7 @@ import SummaryApi from '../common';
 import UserContext from "../Context"; 
 import { CircleCheck, CircleX, Loader, Clock, Info, Image, X } from 'lucide-react';
 import currencyData from '../helpers/currencyData';
+import SecxionShimmer from './SecxionShimmer';
 
 const ImageModal = ({ imageUrl, onClose }) => {
     if (!imageUrl) return null;
@@ -143,9 +144,14 @@ const LastMarketStatus = () => {
 
     if (loading) {
         return (
-            <div className="bg-white border-4 border-yellow-500 rounded-xl p-6 shadow hover:shadow-lg flex items-center justify-center h-48 my-8">
-                <Loader className="w-8 h-8 animate-spin text-yellow-500" />
-                <p className="ml-3 text-lg text-gray-700">Loading last market status...</p>
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-950 via-purple-900 to-purple-800 shadow-xl border border-purple-700/30">
+                <div className="absolute inset-0 opacity-30 blur-md mix-blend-multiply" aria-hidden="true">
+                    {/* Background SVG or Image */}
+                </div>
+                <div className="relative z-10 p-6">
+                    <h2 className="text-2xl font-bold text-white mb-4">Last Market Activity</h2>
+                    <SecxionShimmer type="list" count={3} />
+                </div>
             </div>
         );
     }

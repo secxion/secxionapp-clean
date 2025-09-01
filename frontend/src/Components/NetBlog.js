@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import SummaryApi from '../common';
+import SecxionLoader from './SecxionLoader';
 import { formatDistanceToNow } from 'date-fns';
 import { FaCircle, FaExternalLinkAlt } from 'react-icons/fa';
-import { motion } from 'framer-motion';
 import FullBlogDialog from './FullBlogDialog';
 import { useNavigate } from 'react-router-dom';
 
@@ -81,6 +82,26 @@ const NetBlog = () => {
   const toggleBlogVisibility = () => setShowBlogs((prev) => !prev);
   const toggleMoreBlogs = () => setVisibleBlogs((prev) => (prev === 6 ? blogs.length : 6));
 
+  if (loadingBlogs) {
+    return <SecxionLoader size="medium" message="Loading latest updates..." />;
+  }
+
+  if (errorBlogs) {
+    return (
+      <div className="bg-gradient-to-br from-red-50 to-red-100 border border-red-300 rounded-xl p-6 text-center">
+        <p className="text-red-600 font-medium">{errorBlogs}</p>
+      </div>
+    );
+  }
+
+  if (blogs.length === 0) {
+    return (
+      <div className="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-300 rounded-xl p-6 text-center">
+        <p className="text-gray-600">No blog posts available at the moment.</p>
+      </div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -114,15 +135,7 @@ const NetBlog = () => {
         </div>
       </div>
 
-      {loadingBlogs ? (
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-500 border-4 border-yellow-500"></div>
-        </div>
-      ) : errorBlogs ? (
-        <p className="text-red-500 text-center py-8 text-md glossy-text border-2 border-black"> {/* Applied glossy-text */}
-          {errorBlogs}
-        </p>
-      ) : blogs.length > 0 && showBlogs ? (
+      {blogs.length > 0 && showBlogs ? (
         <>
           <motion.div
             initial="hidden"

@@ -6,15 +6,14 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaCaretDown } from "react-icons/fa";
 import ROLE from "../common/role";
 import "./Net.css";
-import SummaryApi from "../common";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
-import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import Context from "../Context";
-import { setUserDetails } from "../store/userSlice";
 import NotificationBadge from "../helper/NotificationBadge";
-
+import { toast } from "react-toastify";
+import { setUserDetails } from "../store/userSlice";
+import SummaryApi from "../common";
 
 // A custom, accessible dialog component
 const CustomDialog = ({ open, onOpenChange, children, title, description }) => {
@@ -208,6 +207,33 @@ const Net = ({ blogs }) => {
     // Determine the current route
     const currentRoute = location.pathname;
 
+    // Add logout function similar to SidePanel
+    const handleLogout = useCallback(async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(SummaryApi.logout_user.url, {
+                method: SummaryApi.logout_user.method,
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const data = await response.json();
+            if (data.success) {
+                toast.success(data.message);
+                dispatch(setUserDetails(null));
+                navigate("/");
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error("Logout failed. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    }, [dispatch, navigate, token]);
+
     return (
         <div className="net-container fixed top-0 left-0 w-full bg-yellow-400 h-9 shadow-sm md:h-11 px-2 md:px-4 lg:px-6 flex items-center font-mono text-gray-900 transition-all duration-300 z-50"> {/* Black border applied */}
 
@@ -227,7 +253,6 @@ const Net = ({ blogs }) => {
                         />
                     </div>
 
-
                     {/* Dropdown Menu */}
                     {isDropdownOpen && (
                         <motion.div
@@ -239,19 +264,16 @@ const Net = ({ blogs }) => {
                             className="absolute top-full left-0 mt-2 w-52 bg-white rounded-xl shadow-lg py-2 z-50 border-4 border-yellow-500" // Added bold yellow border
                         >
                             <div className=" flex px-4 py-3 border-b border-gray-100">
-                                <p className="text-sm font-bold text-gray-800 truncate glossy-text">{name}</p> {/* Applied glossy-text */}
+                                <p className="text-sm font-bold text-gray-800 truncate glossy-text">{name}</p>
                                 {user?._id && (
                                     <button
                                         onClick={(e) => {
                                             e.preventDefault();
                                             setIsDropdownOpen(false);
-                                            if (token && typeof token.logout === "function") {
-                                                token.logout();
-                                            } else {
-                                                window.location.replace('/login');
-                                            }
+                                            handleLogout();
                                         }}
-                                        className="px-1 py-1 -mt-1 text-xs ml-20 border-4 border-red-700 text-black rounded flex items-center glossy-text"
+                                        disabled={loading}
+                                        className="px-1 py-1 -mt-1 text-xs ml-20 border-4 border-red-700 text-black rounded flex items-center glossy-text disabled:opacity-50"
                                     >
                                         <FontAwesomeIcon icon={faSignOutAlt} className="mr-1" />
                                     </button>

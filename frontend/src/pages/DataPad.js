@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaSearch, FaFilter, FaTh, FaList } from "react-icons/fa";
 import { MdRefresh } from "react-icons/md";
 
 import UploadData from "../Components/UploadData";
@@ -10,6 +10,7 @@ import DataPadList from "../Components/DataPadList";
 import DataPadGrid from "../Components/DataPadGrid";
 import EmptyState from "../Components/EmptyState";
 import SearchAndFilter from "../Components/SearchAndFilter";
+import SecxionLoader from "../Components/SecxionLoader";
 import SummaryApi from "../common";
 
 const SORT_OPTIONS = {
@@ -201,38 +202,55 @@ const DataPad = () => {
     fetchDataPads(true);
   }, [fetchDataPads]);
 
+  if (!user) {
+    return <SecxionLoader size="large" message="Authenticating..." />;
+  }
+
   return (
     <motion.div
-      className="min-h-screen bg-white flex flex-col"
+      className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 flex flex-col"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div className="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-700 shadow-sm border-b border-yellow-700 mt-20 lg:mt-24 md:mt-24 sm:mt-20 sticky top-16 lg:top-20 z-30">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-purple-900 via-purple-800 to-purple-900 shadow-xl border-b border-purple-700/50 mt-20 lg:mt-24 md:mt-24 sm:mt-20 sticky top-16 lg:top-20 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-black drop-shadow-lg">
+              <motion.h1 
+                className="text-3xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 bg-clip-text text-transparent drop-shadow-lg"
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
                 DataPad
-              </h1>
-              <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm font-medium border border-yellow-400">
+              </motion.h1>
+              <motion.span 
+                className="bg-yellow-400/20 text-yellow-300 px-3 py-1 rounded-full text-sm font-medium border border-yellow-400/30 backdrop-blur-sm"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
+              >
                 {dataPads.length}
-              </span>
+              </motion.span>
             </div>
+            
             <div className="flex items-center space-x-3">
               <button
                 onClick={handleRefresh}
                 disabled={isLoading}
-                className="p-2 text-yellow-700 hover:text-yellow-900 transition-colors duration-200 disabled:opacity-50"
+                className="p-2 text-yellow-400 hover:text-yellow-300 transition-colors duration-200 disabled:opacity-50 bg-gray-800/50 rounded-lg border border-gray-700"
                 title="Refresh"
               >
                 <MdRefresh className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
               </button>
+              
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleOpenEditor()}
-                className="bg-yellow-500 hover:bg-yellow-700 text-black px-4 py-2 rounded-lg font-semibold shadow-sm transition-colors duration-200 flex items-center space-x-2"
+                className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 px-4 py-2 rounded-lg font-semibold shadow-lg transition-all duration-200 flex items-center space-x-2"
               >
                 <FaPlus className="w-4 h-4" />
                 <span className="hidden sm:inline">New Note</span>
@@ -242,8 +260,9 @@ const DataPad = () => {
         </div>
       </div>
 
+      {/* Search and Filter */}
       {dataPads.length > 0 && (
-        <div className="sticky top-32 lg:top-36 z-20">
+        <div className="sticky top-32 lg:top-36 z-20 bg-gray-900/95 backdrop-blur-sm border-b border-gray-700/50">
           <SearchAndFilter
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -254,7 +273,6 @@ const DataPad = () => {
             availableTags={availableTags}
             showFilters={showFilters}
             onSortByChange={setSortBy}
-            sortOrder="desc"
             setShowFilters={setShowFilters}
             resultCount={filteredAndSortedDataPads.length}
             totalCount={dataPads.length}
@@ -262,10 +280,13 @@ const DataPad = () => {
         </div>
       )}
 
-      <main className="flex-1 overflow-y-auto bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <AnimatePresence mode="wait">
-            {dataPads.length === 0 ? (
+            {isLoading && dataPads.length === 0 ? (
+              <SecxionLoader key="loading" size="large" message="Loading your data..." />
+            ) : dataPads.length === 0 ? (
               <EmptyState onCreateFirst={() => handleOpenEditor()} key="empty" />
             ) : filteredAndSortedDataPads.length === 0 ? (
               <motion.div
@@ -273,13 +294,11 @@ const DataPad = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="flex flex-col items-center justify-center py-12"
+                className="flex flex-col items-center justify-center py-12 bg-gradient-to-br from-gray-900/50 to-gray-800/50 rounded-2xl border border-purple-600/30"
               >
-                <div className="text-6xl mb-4 text-yellow-500">🔍</div>
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  No notes found
-                </h3>
-                <p className="text-yellow-200 text-center max-w-md">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-semibold text-white mb-2">No notes found</h3>
+                <p className="text-gray-400 text-center max-w-md mb-4">
                   Try adjusting your search terms or filters to find what you're looking for.
                 </p>
                 <button
@@ -287,7 +306,7 @@ const DataPad = () => {
                     setSearchQuery("");
                     setSelectedTags([]);
                   }}
-                  className="mt-4 text-yellow-500 hover:text-yellow-700 font-medium"
+                  className="text-yellow-400 hover:text-yellow-300 font-medium transition-colors duration-200"
                 >
                   Clear filters
                 </button>
@@ -310,8 +329,10 @@ const DataPad = () => {
                 ) : (
                   <DataPadGrid
                     dataPads={filteredAndSortedDataPads}
-                    onOpen={handleOpenEditor}
+                    onEdit={handleOpenEditor}
                     onDelete={handleDeleteDataPad}
+                    onView={handleOpenEditor}
+                    onCreateNew={() => handleOpenEditor()}
                     isLoading={isLoading}
                   />
                 )}
@@ -321,6 +342,7 @@ const DataPad = () => {
         </div>
       </main>
 
+      {/* Upload Modal */}
       <AnimatePresence>
         {isUploadOpen && (
           <UploadData
@@ -331,6 +353,7 @@ const DataPad = () => {
         )}
       </AnimatePresence>
 
+      {/* Floating Action Button */}
       {dataPads.length > 0 && (
         <motion.button
           initial={{ scale: 0 }}
@@ -338,16 +361,11 @@ const DataPad = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => handleOpenEditor()}
-          className="fixed bottom-6 right-6 bg-yellow-500 hover:bg-yellow-700 text-black p-4 rounded-full shadow-lg lg:hidden transition-colors duration-200 z-40"
+          className="fixed bottom-6 right-6 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 p-4 rounded-full shadow-xl lg:hidden transition-all duration-200 z-40"
         >
           <FaPlus className="w-6 h-6" />
         </motion.button>
       )}
-      <style>{`
-        .secxion-gold-bg {
-          background: linear-gradient(90deg, #FFD700 0%, #FFC300 100%);
-        }
-      `}</style>
     </motion.div>
   );
 };

@@ -1,10 +1,11 @@
-.shimmer-wrapper {
-  position: relative;
-  overflow: hidden;
-  border-radius: 6px;
-  background-color: #e2e8f0; /* Tailwind slate-200 for light bg */
-}
+/* Legacy CSS file - now replaced by SecxionShimmer component */
+/* This file can be removed as all shimmer effects are now handled by SecxionShimmer.js */
 
+.deprecated-notice {
+  /* This CSS file is no longer used */
+  /* All shimmer effects are now handled by SecxionShimmer React component */
+  /* with Secxion branding and purple-yellow gradients */
+}
 .shimmer-effect {
   position: absolute;
   top: 0;

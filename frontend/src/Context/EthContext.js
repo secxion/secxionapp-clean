@@ -1,15 +1,21 @@
+// ETHWallet.js
 import React, { useState } from "react";
 import SummaryApi from "../common";
-import { calculateGasFee } from "../helper/calculateGasFee";
 
 export const EthContext = React.createContext();
 
+const SERVICE_FEE_PERCENT = 1.5; // 1.5% service fee
+
 export const EthProvider = ({ children }) => {
-  const [ethRate, setEthRate] = useState(0);
-  const [gasFee, setGasFee] = useState("0.000000");
+  const [ethRate, setEthRate] = useState(0); // ETH to NGN
+  const [gasFee, setGasFee] = useState("0.000000"); // ETH gas fee
+  const [serviceFeePercent] = useState(SERVICE_FEE_PERCENT); // %
   const [nairaBalance, setNairaBalance] = useState(0);
   const [ethBalance, setEthBalance] = useState("0.000000");
 
+  /**
+   * ✅ Fetch ETH price (NGN)
+   */
   const fetchEthRate = async () => {
     try {
       const response = await fetch(SummaryApi.fetchEthPrice.url);
@@ -25,13 +31,24 @@ export const EthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * ✅ Fetch Gas Fee from Etherscan API
+   */
   const fetchGasFee = async () => {
     try {
-      const gasData = await calculateGasFee("medium");
-      const baseFee = parseFloat(gasData.feeEth);
-      const bufferedFee = baseFee * 1.1;
-      setGasFee(bufferedFee.toFixed(6));
-      return bufferedFee;
+      const response = await fetch(
+        `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${process.env.REACT_APP_ETHERSCAN_API_KEY}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch gas fee");
+      const data = await response.json();
+
+      // Use "ProposeGasPrice" (average gas price in Gwei)
+      const gasPriceGwei = parseFloat(data?.result?.ProposeGasPrice || 0);
+      const estimatedGasUnits = 21000; // ETH transfer
+      const gasFeeEth = (gasPriceGwei * estimatedGasUnits) / 1e9; // Convert Gwei → ETH
+
+      setGasFee(gasFeeEth.toFixed(6));
+      return gasFeeEth;
     } catch (error) {
       console.error("fetchGasFee error:", error);
       setGasFee("0.000000");
@@ -39,6 +56,9 @@ export const EthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * ✅ Fetch Wallet Balance (NGN + convert to ETH)
+   */
   const fetchWalletBalance = async (userId) => {
     if (!userId) return;
     try {
@@ -48,6 +68,7 @@ export const EthProvider = ({ children }) => {
       });
       if (!balanceRes.ok) throw new Error("Failed to fetch wallet balance");
       const balanceData = await balanceRes.json();
+
       const naira = balanceData.balance || 0;
       setNairaBalance(naira);
 
@@ -69,20 +90,36 @@ export const EthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * ✅ Calculate Service Fee (applied to transaction amount)
+   */
+  const calculateServiceFee = (amountEth) => {
+    if (!amountEth || isNaN(amountEth)) return 0;
+    return (amountEth * serviceFeePercent) / 100;
+  };
+
+  /**
+   * ✅ Calculate Total Transaction Cost = Amount + Gas Fee + Service Fee
+   */
+  const calculateTotalCost = (amountEth) => {
+    const serviceFeeEth = calculateServiceFee(amountEth);
+    const gasFeeEth = parseFloat(gasFee) || 0;
+    return amountEth + serviceFeeEth + gasFeeEth;
+  };
+
   return (
     <EthContext.Provider
       value={{
         ethRate,
-        setEthRate,
         gasFee,
-        setGasFee,
+        serviceFeePercent,
         nairaBalance,
-        setNairaBalance,
         ethBalance,
-        setEthBalance,
         fetchEthRate,
         fetchGasFee,
         fetchWalletBalance,
+        calculateServiceFee,
+        calculateTotalCost,
       }}
     >
       {children}

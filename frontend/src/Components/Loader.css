@@ -1,3 +1,12 @@
+/* Legacy CSS file - now replaced by SecxionLoader component */
+/* This file can be removed as all loader effects are now handled by SecxionLoader.js */
+
+.deprecated-notice {
+  /* This CSS file is no longer used */
+  /* All loader effects are now handled by SecxionLoader React component */
+  /* with Secxion logo and purple-yellow gradient animations */
+}
+
 .loader-container {
     display: flex;
     flex-direction: column;
@@ -27,4 +36,3 @@
       transform: rotate(360deg);
     }
   }
-  

@@ -1,32 +1,123 @@
-import React from "react";
-import { AiFillCloseSquare } from "react-icons/ai";
-
-
+import React, { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaTimes } from "react-icons/fa";
 
 const DisplayImage = ({ 
     imgUrl, 
     onClose 
 }) => {
+  // Add keyboard event handler for ESC key
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    // Add event listener
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup event listener on unmount
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
+
   return (
-    <div className="fixed bottom-0 top-0 right-0 left-0 flex justify-center items-center">
+    <AnimatePresence>
+      <motion.div 
+        className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        onClick={onClose}
+      >
+        {/* Close Button - Fixed Position */}
+        <motion.button
+          onClick={onClose}
+          className="fixed top-14 right-6 z-[10000] bg-red-600 hover:bg-red-700 text-white p-3 rounded-full shadow-2xl transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-500/50 border-2 border-white/20"
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          exit={{ scale: 0, rotate: 180 }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 300, 
+            damping: 20,
+            delay: 0.1 
+          }}
+          whileHover={{ 
+            rotate: 90,
+            boxShadow: "0 0 30px rgba(239, 68, 68, 0.5)"
+          }}
+          whileTap={{ scale: 0.9 }}
+          aria-label="Close image"
+        >
+          <FaTimes className="w-6 h-6" />
+        </motion.button>
 
-        <div className="bg-white shadow-lg rounded max-w-5xl mx-auto p-4">
-                <div className='w-fit ml-auto text-2xl hover:text-slate-400 cursor-pointer' onClick={onClose}>
-                    <AiFillCloseSquare />
-                </div>
+        {/* Image Container */}
+        <motion.div 
+          className="relative max-w-[95vw] max-h-[95vh] bg-white/5 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/10 overflow-hidden"
+          initial={{ scale: 0.8, opacity: 0, y: 50 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.8, opacity: 0, y: 50 }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 300, 
+            damping: 25 
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Image */}
+          <div className="flex items-center justify-center p-4">
+            <motion.img 
+              src={imgUrl} 
+              alt="Full size preview" 
+              className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-xl"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ delay: 0.2, duration: 0.3 }}
+              loading="lazy"
+            />
+          </div>
 
+          {/* Image Info Bar */}
+          <motion.div 
+            className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4"
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.3 }}
+          >
+            <div className="flex items-center justify-between text-white">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium">Image Preview</span>
+              </div>
+              <div className="text-xs text-gray-300">
+                Click outside or press ESC to close
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
 
+        {/* Keyboard hint */}
+        <motion.div
+          className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm border border-white/20"
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 50, opacity: 0 }}
+          transition={{ delay: 0.4, duration: 0.3 }}
+        >
+          <span className="flex items-center space-x-2">
+            <kbd className="bg-white/20 px-2 py-1 rounded text-xs">ESC</kbd>
+            <span>to close</span>
+          </span>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
 
-                <div className="flex justify-center max-w-[60vh] max-h-[60vh]">               
-                <img src={imgUrl} alt={imgUrl} className=""/>
-                </div>        
-        </div>
-
-
-
-
-    </div>
-  )
-}
-
-export default DisplayImage
+export default DisplayImage;

@@ -89,7 +89,7 @@ const HistoryCard = ({ data, isDetailViewOpen, onCloseDetailView }) => {
           <HistoryDetailView
             productDetails={{
               ...data,
-              crImage: data.crImage || null
+              crImage: data.crImage || data.cancelImage || data.image || null
             }}
             onClose={() => setShowDetailView(false)}
           />

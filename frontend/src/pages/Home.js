@@ -22,7 +22,7 @@ import HomeFooter from "../Components/HomeFooter";
 import NetBlog from "../Components/NetBlog";
 import HiRateSlider from "../Components/HiRateSlider";
 import LastMarketStatus from "../Components/LastMarketStatus";
-import SecxionLogo from "../app/slogo.png";
+import ExploreMarketButtonImg from "../app/Buttons/exploremarketbutton.png";
 
 const menuItems = [
   {
@@ -256,19 +256,6 @@ const Home = () => {
         <div className="absolute bottom-32 right-1/4 w-24 h-24 bg-yellow-400/10 rounded-[40%] animate-cyberpoly opacity-20"></div>
       </div>
 
-      {/* Top branding bar */}
-      {/* <div className="fixed top-0 left-0 right-0 z-40 h-20 bg-gray-950/95 border-b border-yellow-700/10 shadow-lg flex items-center px-6">
-        <div className="flex items-center gap-4">
-          <img
-            src={SecxionLogo}
-            alt="Secxion Official Logo"
-            className="w-14 h-14 object-contain rounded-2xl"
-            style={{ display: "block" }}
-          />
-          <span className="text-yellow-400 font-mono text-lg tracking-widest uppercase">Secxion Home</span>
-        </div>
-      </div> */}
-
       {/* Hero Section */}
       <header
         className="relative h-[48vh] sm:h-[60vh] bg-center mt-24 border-yellow-800 border-4 bg-cover flex items-center justify-center rounded-3xl shadow-xl overflow-hidden"
@@ -283,9 +270,14 @@ const Home = () => {
           >
             <Link
               to="/section"
-              className="inline-block bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600 text-black border-2 border-yellow-600 px-8 py-4 uppercase font-bold text-lg rounded-full shadow-lg hover:bg-yellow-500 transition-all duration-200"
+              className="inline-block"
             >
-              Explore Market
+              <img
+                src={ExploreMarketButtonImg}
+                alt="Explore Market"
+                className="h-64 w-auto object-contain hover:scale-105 transition-transform duration-200"
+                style={{ display: "block" }}
+              />
             </Link>
             <div className="mt-6 text-white text-2xl font-semibold drop-shadow-lg">
               {currentImage.title}
@@ -361,22 +353,59 @@ const Home = () => {
         <LastMarketStatus />
       </section>
 
-      {/* Quick Access Menu */}
+      {/* Quick Access Menu - Futuristic Design */}
       <section className="max-w-7xl mx-auto mb-10 px-4">
-        <h2 className="text-2xl font-bold text-yellow-200 mb-6 tracking-wide">Quick Access</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <motion.h2 
+          className="text-3xl font-bold bg-gradient-to-r from-yellow-200 via-yellow-100 to-white bg-clip-text text-transparent mb-8 tracking-wide"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          Quick Access
+        </motion.h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredMenuItems.map((item, i) => (
-            <div
+            <motion.div
               key={i}
               onClick={() => handleNavigation(item.path)}
-              className={`${item.color} p-8 rounded-2xl cursor-pointer transition hover:-translate-y-1 shadow-lg hover:shadow-xl`}
+              className="group relative cursor-pointer"
+              whileHover={{ scale: 1.05, y: -5 }}
+              whileTap={{ scale: 0.98 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: i * 0.1 }}
             >
-              <div className="text-center">
-                <div className="mb-3">{item.icon}</div>
-                <h3 className="text-xl font-bold text-yellow-700 mb-1">{item.label}</h3>
-                <p className="text-base text-gray-700">{item.description}</p>
+              {/* Static border effect - removed animation */}
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-400 via-purple-500 to-yellow-400 rounded-2xl blur opacity-30 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+              
+              {/* Card content */}
+              <div className="relative bg-gradient-to-br from-purple-900/60 to-purple-950/40 backdrop-blur-sm rounded-2xl p-8 border border-purple-600/30 hover:border-yellow-400/50 transition-all duration-300 shadow-xl">
+                {/* Glow effect on hover */}
+                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-yellow-400/10 to-orange-400/10 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <div className="relative z-10 text-center">
+                  {/* Icon container */}
+                  <div className="mb-6 flex justify-center">
+                    <div className="p-4 bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 rounded-xl backdrop-blur-sm border border-yellow-400/30 group-hover:scale-110 transition-transform duration-300">
+                      {React.cloneElement(item.icon, { 
+                        className: "w-10 h-10 text-yellow-300 group-hover:text-yellow-200 transition-colors duration-300" 
+                      })}
+                    </div>
+                  </div>
+                  
+                  {/* Text content */}
+                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-yellow-200 transition-colors duration-300">
+                    {item.label}
+                  </h3>
+                  <p className="text-purple-200 text-sm leading-relaxed group-hover:text-purple-100 transition-colors duration-300">
+                    {item.description}
+                  </p>
+                  
+                  {/* Subtle accent line */}
+                  <div className="mt-4 mx-auto w-12 h-0.5 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>

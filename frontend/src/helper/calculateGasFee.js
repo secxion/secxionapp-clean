@@ -3,21 +3,47 @@
  * @param {string} speed - "slow", "medium", or "fast"
  * @returns {Promise<{ feeEth: string, gasPriceGwei: number, speed: string }>}
  */
-export const calculateGasFee = async (speed = "medium") => {
-  const gasSpeeds = {
-    slow: 4.545,    // gwei
-    medium: 5,  // gwei
-    fast: 4.867     // gwei
-  };
+export const calculateGasFee = async (priority = "medium") => {
+  try {
+    console.log('🔄 Calculating gas fee with priority:', priority);
+    
+    // For now, return a mock gas fee calculation
+    // In a real implementation, this would call an Ethereum gas price API
+    const mockGasPrices = {
+      low: {
+        gasPrice: 20, // gwei
+        gasLimit: 21000,
+        feeEth: "0.00042",
+        feeUsd: 1.5
+      },
+      medium: {
+        gasPrice: 25, // gwei
+        gasLimit: 21000,
+        feeEth: "0.000525",
+        feeUsd: 1.8
+      },
+      high: {
+        gasPrice: 35, // gwei
+        gasLimit: 21000,
+        feeEth: "0.000735",
+        feeUsd: 2.5
+      }
+    };
 
-  const gasLimit = 21000; // standard ETH transfer
-
-  const gasPrice = gasSpeeds[speed] || gasSpeeds.medium;
-  const feeInEth = ((gasPrice * gasLimit) / 1e9).toFixed(6); // gwei to ETH
-
-  return {
-    feeEth: feeInEth,
-    gasPriceGwei: gasPrice,
-    speed,
-  };
+    const gasData = mockGasPrices[priority] || mockGasPrices.medium;
+    
+    console.log('⛽ Gas fee calculated:', gasData);
+    return gasData;
+    
+  } catch (error) {
+    console.error('❌ Error calculating gas fee:', error);
+    
+    // Return fallback gas fee
+    return {
+      gasPrice: 25,
+      gasLimit: 21000,
+      feeEth: "0.000525",
+      feeUsd: 1.8
+    };
+  }
 };

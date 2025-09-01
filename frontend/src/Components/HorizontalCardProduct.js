@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SummaryApi from "../common";
 import { Link } from "react-router-dom";
+import SecxionShimmer from './SecxionShimmer'
 
 const HorizontalCardProduct = ({ heading }) => {
   const [categoryProduct, setCategoryProduct] = useState([]);
@@ -35,17 +36,20 @@ const HorizontalCardProduct = ({ heading }) => {
     fetchCategoryProduct();
   }, []);
 
+  if (loading) {
+    return (
+      <div className='container mx-auto px-4 my-6 relative'>
+        <h2 className='text-2xl font-semibold py-4'>{heading}</h2>
+        <SecxionShimmer type="list" count={4} />
+      </div>
+    )
+  }
+
   return (
     <div className="grid container mx-auto p-4">
       <h2 className="text-2xl font-semibold py-4">{heading}</h2>
 
-      {loading ? (
-        <div className="flex gap-4">
-          {[...Array(3)].map((_, index) => (
-            <div key={index} className="animate-pulse bg-gray-300 w-16 h-16 md:w-20 md:h-20 rounded-full" />
-          ))}
-        </div>
-      ) : error ? (
+      {error ? (
         <p className="text-red-500">Error: {error}</p>
       ) : (
         <div className="flex items-center gap-2 justify-between overflow-scroll scrollbar-none">

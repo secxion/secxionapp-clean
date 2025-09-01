@@ -3,6 +3,7 @@ import AddBankAccountForm from './AddBankAccountForm';
 import SummaryApi from '../common';
 import { useSelector } from 'react-redux';
 import { FaPlusCircle, FaTrashAlt, FaUniversity, FaSpinner, } from 'react-icons/fa';
+import SecxionSpinner from './SecxionSpinner';
 
 const BankAccountList = ({ onBankAccountsUpdated, onBankAccountsUpdating }) => {
     const [bankAccounts, setBankAccounts] = useState([]);
@@ -99,32 +100,48 @@ const BankAccountList = ({ onBankAccountsUpdated, onBankAccountsUpdating }) => {
     };
 
     if (loading && !showAddAccountForm) {
-        return <div className="text-gray-600 italic">Loading bank accounts...</div>;
+        return (
+            <div className="">
+                <span className=""><SecxionSpinner size="medium" message="" />
+</span>
+            </div>
+        );
     }
 
     if (error && !showAddAccountForm) {
-        return <div className="text-red-500">{error}</div>;
+        return (
+            <div className="text-center py-12">
+                <div className="p-6 bg-red-900/20 border border-red-500/30 rounded-xl max-w-md mx-auto">
+                    <p className="text-red-400 mb-4">{error}</p>
+                    <button
+                        onClick={fetchBankAccounts}
+                        className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-gray-900 rounded-lg font-medium transition-colors"
+                    >
+                        Try Again
+                    </button>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <>
-            <div className='fixed w-screen h-screen px-4 right-0 left-0 mt-1'>
-
-                {!showAddAccountForm ? (
-                    <>
-                        {bankAccounts.length > 0 ? (
-                            bankAccounts.map((account) => (
-                                <div key={account._id} className="bg-gray-50 rounded-md p-6 mb-2 flex items-center justify-between border border-gray-200">
+        <div className="space-y-6">
+            {!showAddAccountForm ? (
+                <>
+                    {bankAccounts.length > 0 ? (
+                        <div className="space-y-4">
+                            {bankAccounts.map((account) => (
+                                <div key={account._id} className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-xl p-6 flex items-center justify-between border border-yellow-600/20 hover:border-yellow-600/40 transition-all duration-200 shadow-lg">
                                     <div>
-                                        <h4 className="font-semibold text-gray-800 flex items-center">
-                                            <FaUniversity className="mr-2 text-gray-600" /> {account.accountNumber}
+                                        <h4 className="font-semibold text-yellow-400 flex items-center text-lg">
+                                            <FaUniversity className="mr-3 text-yellow-400" /> {account.accountNumber}
                                         </h4>
-                                        <p className="text-sm text-gray-600">{account.bankName}</p>
-                                        <p className="text-xs text-gray-500">Holder: {account.accountHolderName}</p>
+                                        <p className="text-sm text-gray-300 mt-1">{account.bankName}</p>
+                                        <p className="text-xs text-gray-400 mt-1">Holder: {account.accountHolderName}</p>
                                     </div>
                                     <button
                                         onClick={() => handleDeleteAccount(account._id)}
-                                        className="text-red-500 hover:text-red-700 focus:outline-none text-sm ml-4 flex items-center"
+                                        className="text-red-400 hover:text-red-300 hover:bg-red-900/20 focus:outline-none text-sm ml-4 flex items-center px-3 py-2 rounded-lg transition-all duration-200"
                                         disabled={deleteLoading === account._id}
                                     >
                                         {deleteLoading === account._id ? (
@@ -135,29 +152,35 @@ const BankAccountList = ({ onBankAccountsUpdated, onBankAccountsUpdating }) => {
                                         Delete
                                     </button>
                                 </div>
-                            ))
-                        ) : (
-                            <p className="text-gray-500 mt-6 ml-20 italic">No bank accounts added yet.</p>
-                        )}
-                        {deleteError && <p className="text-red-500 mt-2">{deleteError}</p>}
-                        <button
-                            className="inline-flex items-center px-4 py-2 mt-6 border border-dashed border-green-300 rounded-md shadow-sm text-sm font-medium text-black bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 mt-3"
-                            onClick={handleAddAccountClick}
-                            disabled={showAddAccountForm || bankAccounts.length >= 2}
-                        >
-                            <FaPlusCircle className="mr-2" /> Add New Account
-                        </button>
-                        {bankAccounts.length >= 2 && (
-                            <p className="text-sm text-gray-500 mt-1">You can have a maximum of 2 bank accounts.</p>
-                        )}
-                    </>
-                ) : (
-                    <div className="bg-white shadow rounded-md p-3 border border-gray-200">
-                        <AddBankAccountForm onAccountAdded={handleAccountAdded} onCancel={handleCancelAddAccount} userId={user?.id || user?._id} />
-                    </div>
-                )}
-            </div>
-        </>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-12">
+                            <div className="p-8 bg-gray-800/50 rounded-xl border border-gray-700 max-w-md mx-auto">
+                                <FaUniversity className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+                                <p className="text-gray-400 text-lg mb-2">No bank accounts added yet.</p>
+                                <p className="text-gray-500 text-sm">Add a bank account to start receiving withdrawals</p>
+                            </div>
+                        </div>
+                    )}
+                    {deleteError && <p className="text-red-400 mt-4 text-center bg-red-900/20 border border-red-500/30 rounded-lg p-3">{deleteError}</p>}
+                    <button
+                        className="w-full inline-flex items-center justify-center px-6 py-3 mt-6 border-2 border-dashed border-yellow-600/50 hover:border-yellow-600 rounded-xl shadow-sm text-sm font-medium text-yellow-400 bg-transparent hover:bg-yellow-600/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-all duration-200"
+                        onClick={handleAddAccountClick}
+                        disabled={showAddAccountForm || bankAccounts.length >= 2}
+                    >
+                        <FaPlusCircle className="mr-2" /> Add New Account
+                    </button>
+                    {bankAccounts.length >= 2 && (
+                        <p className="text-sm text-gray-500 mt-2 text-center bg-gray-800/30 border border-gray-600 rounded-lg p-3">You can have a maximum of 2 bank accounts.</p>
+                    )}
+                </>
+            ) : (
+                <div className="bg-gradient-to-br from-gray-900 to-gray-800 shadow-xl rounded-xl p-6 border border-yellow-600/30 backdrop-blur-sm">
+                    <AddBankAccountForm onAccountAdded={handleAccountAdded} onCancel={handleCancelAddAccount} userId={user?.id || user?._id} />
+                </div>
+            )}
+        </div>
     );
 };
 

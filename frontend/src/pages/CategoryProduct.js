@@ -11,6 +11,7 @@ import {
 import VerticalCard from "../Components/VerticalCard";
 import debounce from "lodash.debounce";
 import ClipLoader from "react-spinners/ClipLoader";
+import SecxionSpinner from "../Components/SecxionSpinner";
 
 const iconMap = {
   "gift cards": <FaGift className="text-emerald-400 w-4 h-4 glossy-icon-text" />, // Applied glossy-icon-text
@@ -149,7 +150,7 @@ const CategoryProduct = () => {
           <div className="flex-1 overflow-y-auto rounded-lg border border-blue-700 bg-gray-900 p-3 shadow-inner scrollbar-thin scrollbar-thumb-blue-500 border-4 border-yellow-500">
             {loading ? (
               <div className="flex items-center justify-center h-full">
-                <ClipLoader loading={loading} size={40} color="#3b82f6" />
+                <SecxionSpinner size="large" message="Loading products..." />
               </div>
             ) : error ? (
               <p className="text-red-400 font-semibold text-center glossy-text">

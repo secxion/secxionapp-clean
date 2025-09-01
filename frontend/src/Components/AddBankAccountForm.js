@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SummaryApi from "../common";
+import SecxionSpinner from "./SecxionSpinner";
 
 const AddBankAccountForm = ({ onCancel, onSuccess  }) => {
   const [banks, setBanks] = useState([]);
@@ -192,7 +193,8 @@ const AddBankAccountForm = ({ onCancel, onSuccess  }) => {
             maxLength={10}
           />
           {loadingResolve && (
-            <p className="text-sm text-gray-500 mt-1">Resolving account name...</p>
+            <p className="text-sm text-gray-500 mt-1"><SecxionSpinner size="small" message="" />
+</p>
           )}
         </label>
 

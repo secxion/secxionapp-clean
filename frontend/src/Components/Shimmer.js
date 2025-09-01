@@ -1,13 +1,8 @@
 import React from 'react';
-import './Shimmer.css';
+import SecxionShimmer from './SecxionShimmer';
 
-const Shimmer = ({ type }) => {
-  const className = `shimmer-wrapper ${type}`;
-  return (
-    <div className={className}>
-      <div className="shimmer-effect"></div>
-    </div>
-  );
+const Shimmer = ({ type = "card", count = 3 }) => {
+  return <SecxionShimmer type={type} count={count} />;
 };
 
 export default Shimmer;

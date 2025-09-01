@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import SummaryApi from "../common";
-import { FaFire, FaEthereum } from 'react-icons/fa';
+import FireIcon from "../app/Icons/fireicon.png";
+import EthereumIcon from "../app/Icons/ethereumicon.png";
+import SecxionShimmer from './SecxionShimmer';
 
 const ethApiUrl = "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd";
 
 const HiRateSlider = () => {
   const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -116,13 +119,30 @@ const HiRateSlider = () => {
           setSlides([]);
         }
 
+        setLoading(false);
+
       } catch (error) {
         console.error("Slider Fetch Error:", error);
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-950 via-purple-900 to-purple-800 p-6 shadow-xl border border-purple-700/30">
+        <div className="absolute inset-0 opacity-30">
+          {/* Background elements, e.g., SVGs or images */}
+        </div>
+        <div className="relative z-10">
+          <h2 className="text-white text-2xl font-semibold mb-4">Loading Rates...</h2>
+          <SecxionShimmer type="grid" count={4} />
+        </div>
+      </div>
+    );
+  }
 
   if (slides.length === 0) {
     return null;
@@ -130,12 +150,12 @@ const HiRateSlider = () => {
 
   const animationDuration = slides.length * 5;
   return (
-    <div className="fixed top-20 py-1 mt-1 left-0 right-0 shadow-sm md:mt-4 lg:mt-4 z-30 w-full bg-white overflow-hidden">
+    <div className="fixed top-20 py-1 mt-1 left-0 right-0 shadow-sm md:mt-3 lg:mt-3 z-30 w-full bg-gradient-to-r from-purple-950 via-purple-900 to-purple-950 overflow-hidden">
       <div className="hirate-slider-track" style={{ animationDuration: `${animationDuration}s`}}>
         {slides.map((slide, index) => (
           <div key={index} className="hirate-slide">
             {slide.isEthereum ? (
-              <FaEthereum className="slide-ethereum-icon" />
+              <img src={EthereumIcon} alt="Ethereum" className="slide-ethereum-icon w-5 h-5" />
             ) : (
               slide.image && (
                 <img src={slide.image} alt={slide.productName} className="slide-image" />
@@ -143,7 +163,7 @@ const HiRateSlider = () => {
             )}
             <p className="slide-text">
               <span className="slide-product-name">
-                <FaFire className="fire-icon" />
+                <img src={FireIcon} alt="Fire" className="fire-icon w-4 h-4" />
                 {slide.productName}
               </span>
               <span className="slide-price">

@@ -7,6 +7,7 @@ import displayINRCurrency from '../helpers/displayCurrency';
 import addToCart from '../helpers/addToCart';
 import Context from '../Context';
 import CategroyWiseProductDisplay from '../Components/CategroyWiseProductDisplay';
+import SecxionLoader from '../Components/SecxionLoader'
 
 const ProductDetails = () => {
   const [data,setData] = useState({
@@ -88,9 +89,13 @@ const ProductDetails = () => {
   const handleBuyProduct = async(e,id)=>{
     await addToCart(e,id)
     fetchUserAddToCart()
-    navigate(obscureRoute("/cart"))
+    navigate("/cart")
 
   }
+
+  if (loading) {
+    return <SecxionLoader size="large" message="Loading product details..." />
+}
 
   return (
     

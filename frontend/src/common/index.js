@@ -1,4 +1,6 @@
-const backendDomain = process.env.REACT_APP_BACKEND_URL
+const backendDomain = process.env.NODE_ENV === 'development' 
+  ? "http://localhost:5000" 
+  : process.env.REACT_APP_BACKEND_URL || "https://secxion.com";
 
 const SummaryApi = {
     signUP : {
@@ -378,8 +380,35 @@ confirmReset: {
     myposts: {
         url: `${backendDomain}/api/myposts`,
         method: "GET",
-      }
+      },
+      // ETH Wallet endpoints
+    getEthWallet: {
+        url: `${backendDomain}/api/eth-wallet`,
+        method: "get"
+    },
+    saveEthAddress: {
+        url: `${backendDomain}/api/save-eth-address`,
+        method: "post"
+    },
+    createEthWithdrawal: {
+        url: `${backendDomain}/api/eth/withdrawal-request`,
+        method: "post"
+    },
+    getEthWithdrawalStatus: {
+        url: `${backendDomain}/api/eth/get-withdrawal-status`,
+        method: "get"
+    },
+    // ETH Price API
+    ethPrice: {
+        url: `${backendDomain}/api/eth-price`,
+        method: "GET"
+    },
     
+    // USD to NGN rate
+    usdToNgn: {
+        url: `${backendDomain}/api/usd-to-ngn`,
+        method: "GET"
+    },
 }
 
-export default SummaryApi;
+export default SummaryApi

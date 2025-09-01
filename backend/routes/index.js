@@ -80,23 +80,102 @@ async function axiosGetWithRetry(url, options = {}, retries = 3, backoff = 500) 
   }
 }
 
-router.get('/eth-price', verifyApiKey, async (req, res) => {
+// Updated ETH price endpoint using CoinGecko API
+router.get('/eth-price', async (req, res) => {
   const cacheKey = 'eth-price';
   const now = Date.now();
 
+  // Check cache first
   if (cache[cacheKey] && cache[cacheKey].expiry > now) {
     return res.json(cache[cacheKey].data);
   }
 
   try {
-    const { data } = await axiosGetWithRetry('https://api.coingecko.com/api/v3/simple/price', {
-      params: { ids: 'ethereum', vs_currencies: 'ngn' },
+    console.log('Fetching ETH price from CoinGecko...');
+    const url = new URL('https://api.coingecko.com/api/v3/simple/price');
+    url.searchParams.set('ids', 'ethereum');
+    url.searchParams.set('vs_currencies', 'usd,ngn');
+    url.searchParams.set('include_24hr_change', 'true');
+    url.searchParams.set('include_last_updated_at', 'true');
+
+    const response = await axios.get(url.toString(), {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'Secxion-App/1.0',
+      },
+      timeout: 10000,
     });
-    cache[cacheKey] = { data, expiry: now + CACHE_TTL };
-    res.json(data);
+
+    const data = response.data.ethereum;
+    if (!data) throw new Error('Invalid response from CoinGecko');
+
+    const result = {
+      ethereum: {
+        usd: data.usd,
+        ngn: data.ngn,
+        change_24h: data.usd_24h_change,
+        last_updated: data.last_updated_at,
+      },
+      source: 'coingecko',
+      timestamp: now,
+    };
+
+    // Cache the result for 10 seconds
+    cache[cacheKey] = { data: result, expiry: now + 10000 };
+    res.json(result);
   } catch (error) {
-    console.error('[eth-price] Fetch failed:', error.message);
+    console.error('[eth-price] Error fetching ETH price:', error.message);
     res.status(500).json({ error: 'Failed to fetch ETH price' });
+  }
+});
+
+// Additional endpoint for detailed market data
+router.get('/eth-market', async (req, res) => {
+  try {
+    console.log('Fetching ETH market data from CoinGecko...');
+    const url = new URL('https://api.coingecko.com/api/v3/coins/markets');
+    url.searchParams.set('vs_currency', 'usd');
+    url.searchParams.set('ids', 'ethereum');
+    url.searchParams.set('price_change_percentage', '1h,24h,7d,30d');
+    url.searchParams.set('order', 'market_cap_desc');
+    url.searchParams.set('sparkline', 'true');
+
+    const response = await axios.get(url.toString(), {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'Secxion-App/1.0',
+      },
+      timeout: 10000,
+    });
+
+    res.json(response.data[0]); // Return the first result (Ethereum)
+  } catch (error) {
+    console.error('[eth-market] Error fetching ETH market data:', error.message);
+    res.status(500).json({ error: 'Failed to fetch ETH market data' });
+  }
+});
+
+// Additional endpoint for intraday chart data
+router.get('/eth-chart', async (req, res) => {
+  try {
+    console.log('Fetching ETH chart data from CoinGecko...');
+    const url = new URL('https://api.coingecko.com/api/v3/coins/ethereum/market_chart');
+    url.searchParams.set('vs_currency', 'usd');
+    url.searchParams.set('days', '1');
+    url.searchParams.set('interval', 'minute');
+
+    const response = await axios.get(url.toString(), {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'Secxion-App/1.0',
+      },
+      timeout: 10000,
+    });
+
+    res.json(response.data); // Return the chart data
+  } catch (error) {
+    console.error('[eth-chart] Error fetching ETH chart data:', error.message);
+    res.status(500).json({ error: 'Failed to fetch ETH chart data' });
   }
 });
 

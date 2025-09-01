@@ -3,21 +3,21 @@ import { CgClose } from "react-icons/cg";
 import DisplayImage from './DisplayImage';
 import { toast } from 'react-toastify';
 import SummaryApi from '../common';
-import { motion } from "framer-motion"; // Import motion
+import { motion } from "framer-motion";
 
 const HistoryDetailView = ({
   onClose = () => { },
   fetchData = () => { },
   productDetails = {},
 }) => {
-  // Fix: Ensure crImage and cancelReason are picked from all possible sources
   const [data] = useState({
     _id: productDetails?._id || "",
     Image: productDetails?.Image || [],
     totalAmount: productDetails?.totalAmount || "",
     calculatedTotalAmount: productDetails?.calculatedTotalAmount || "",
     userRemark: productDetails?.userRemark || "",
-    crImage: productDetails?.crImage || productDetails?.image || productDetails?.cancelImage || "",
+    // Fix: Properly handle cancel image - check multiple possible field names
+    crImage: productDetails?.crImage || productDetails?.cancelImage || productDetails?.image || null,
     status: productDetails?.status || "WAIT",
     cancelReason: productDetails?.cancelReason || productDetails?.reason || "",
   });
@@ -53,6 +53,17 @@ const HistoryDetailView = ({
     }
   };
 
+  // Helper function to get cancel image(s)
+  const getCancelImages = () => {
+    // Handle both single image and array of images
+    if (data.crImage) {
+      return Array.isArray(data.crImage) ? data.crImage : [data.crImage];
+    }
+    return [];
+  };
+
+  const cancelImages = getCancelImages();
+
   return (
     <motion.div
       className="fixed inset-0 flex items-start justify-center bg-black bg-opacity-70 p-4 z-50"
@@ -64,12 +75,13 @@ const HistoryDetailView = ({
         style={{ maxHeight: '85vh', overflowY: 'auto' }}>
 
         <div className="flex justify-between items-center mb-6">
-          <h2 className="font-extrabold text-2xl text-yellow-400">Details</h2>
+          <h2 className="font-extrabold text-2xl text-yellow-400">Transaction Details</h2>
           <button className="text-2xl text-gray-400 hover:text-yellow-400 cursor-pointer" onClick={onClose}>
             <CgClose />
           </button>
         </div>
 
+        {/* Product Overview */}
         {productDetails && (
           <div className="border overflow-x-hidden rounded-lg p-4 bg-gray-950 shadow-inner mb-6">
             <div className="flex items-center gap-4">
@@ -83,7 +95,6 @@ const HistoryDetailView = ({
               <div>
                 <h3 className="font-bold text-yellow-400 text-lg">{productDetails.productName}</h3>
                 <p className="text-gray-300">Currency: {productDetails.pricing?.[0]?.currency || 'N/A'}</p>
-
                 <p className="text-gray-300">Face Value: {productDetails.pricing?.[0]?.faceValues?.[0]?.faceValue || 'N/A'}</p>
                 <p className="text-gray-300">Rate: {productDetails.pricing?.[0]?.faceValues?.[0]?.sellingPrice || 'N/A'}</p>
               </div>
@@ -95,16 +106,17 @@ const HistoryDetailView = ({
         )}
 
         <form className="space-y-6" onSubmit={handleSubmit}>
+          {/* User Uploaded Images */}
           <div>
-            <label className="block font-medium text-yellow-400 mb-2">Images:</label>
+            <label className="block font-medium text-yellow-400 mb-2">Your Uploaded Images:</label>
             <div className="flex gap-2 mt-4 flex-wrap">
-              {data?.Image.length > 0 ? (
+              {data?.Image && data.Image.length > 0 ? (
                 data.Image.map((el, index) => (
                   <div className="relative group" key={index}>
                     <img
                       src={el}
                       alt={`product-${index}`}
-                      className="w-20 h-20 object-cover rounded-lg border border-yellow-700 cursor-pointer "
+                      className="w-20 h-20 object-cover rounded-lg border border-yellow-700 cursor-pointer hover:scale-105 transition-transform duration-200"
                       onClick={() => {
                         setOpenFullScreenImage(true);
                         setFullScreenImage(el);
@@ -113,54 +125,101 @@ const HistoryDetailView = ({
                   </div>
                 ))
               ) : (
-                <p className="text-red-400 text-sm">*No image uploaded</p>
+                <p className="text-red-400 text-sm">*No images uploaded</p>
               )}
             </div>
           </div>
 
-          <div>
-            <label htmlFor="totalAmount" className="block font-medium text-yellow-400 mb-2">Total FaceValue:</label>
-            <div className="text-gray-200">{productDetails.totalAmount}</div>
-          </div>
-          <div>
-            <label htmlFor="calculatedTotalAmount" className="block font-medium text-yellow-400 mb-2">Total Amount:</label>
-            <div className="text-gray-200">{productDetails.calculatedTotalAmount}</div>
-          </div>
-          <div>
-            <label htmlFor="userRemark" className="block font-medium text-yellow-400 mb-2">Remarks:</label>
-            <div className="text-gray-200">{productDetails.userRemark}</div>
+          {/* Transaction Details */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block font-medium text-yellow-400 mb-2">Total Face Value:</label>
+              <div className="text-gray-200 bg-gray-800 p-3 rounded-lg">{data.totalAmount || 'N/A'}</div>
+            </div>
+            <div>
+              <label className="block font-medium text-yellow-400 mb-2">Total Amount (NGN):</label>
+              <div className="text-gray-200 bg-gray-800 p-3 rounded-lg">₦{parseFloat(data.calculatedTotalAmount || 0).toLocaleString()}</div>
+            </div>
           </div>
 
-          {/* Cancel Reason Image (fix: use data.crImage) */}
-          {data.crImage && (
+          {/* Card Code */}
+          {productDetails.cardcode && (
             <div>
-              <label className="block font-medium text-yellow-400 mb-2">Cancel Reason Image:</label>
-              <img
-                src={data.crImage}
-                alt="Cancel Reason"
-                className="w-20 h-20 object-cover rounded-lg border border-yellow-700 cursor-pointer"
-                onClick={() => {
-                  setOpenFullScreenCrImage(true);
-                  setFullScreenImage(data.crImage);
-                }}
-              />
+              <label className="block font-medium text-yellow-400 mb-2">Card Code:</label>
+              <div className="text-gray-200 bg-gray-800 p-3 rounded-lg font-mono text-sm break-all">{productDetails.cardcode}</div>
             </div>
           )}
 
+          {/* Remarks */}
           <div>
-            <label className="block font-medium text-yellow-400 mb-2">Status:</label>
-            <div className="text-gray-200">{data.status || 'N/A'}</div>
+            <label className="block font-medium text-yellow-400 mb-2">Your Remarks:</label>
+            <div className="text-gray-200 bg-gray-800 p-3 rounded-lg whitespace-pre-wrap">{data.userRemark || 'No remarks provided'}</div>
           </div>
 
-          {data.status === "CANCELLED" && (
+          {/* Status */}
+          <div>
+            <label className="block font-medium text-yellow-400 mb-2">Status:</label>
+            <div className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
+              data.status === 'DONE' ? 'bg-green-900 text-green-200' :
+              data.status === 'PROCESSING' ? 'bg-yellow-900 text-yellow-200' :
+              data.status === 'CANCEL' ? 'bg-red-900 text-red-200' :
+              'bg-gray-700 text-gray-300'
+            }`}>
+              {data.status || 'PENDING'}
+            </div>
+          </div>
+
+          {/* Cancel Reason and Images (only show if status is CANCEL) */}
+          {data.status === 'CANCEL' && (
+            <>
+              {data.cancelReason && (
+                <div>
+                  <label className="block font-medium text-red-400 mb-2">Cancel Reason:</label>
+                  <div className="text-red-200 bg-red-900/20 border border-red-500/30 p-3 rounded-lg whitespace-pre-wrap">
+                    {data.cancelReason}
+                  </div>
+                </div>
+              )}
+
+              {cancelImages.length > 0 && (
+                <div>
+                  <label className="block font-medium text-red-400 mb-2">Cancel Reason Images:</label>
+                  <div className="flex gap-2 flex-wrap">
+                    {cancelImages.map((imageUrl, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={imageUrl}
+                          alt={`Cancel reason ${index + 1}`}
+                          className="w-20 h-20 object-cover rounded-lg border border-red-500 cursor-pointer hover:scale-105 transition-transform duration-200"
+                          onClick={() => {
+                            setOpenFullScreenCrImage(true);
+                            setFullScreenImage(imageUrl);
+                          }}
+                        />
+                        <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                          {index + 1}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Timestamp */}
+          {productDetails.timestamp && (
             <div>
-              <label className="block font-medium text-yellow-400 mb-2">Cancel Reason:</label>
-              <div className="text-gray-200">{data.cancelReason || 'N/A'}</div>
+              <label className="block font-medium text-yellow-400 mb-2">Transaction Date:</label>
+              <div className="text-gray-200 bg-gray-800 p-3 rounded-lg">
+                {new Date(productDetails.timestamp).toLocaleString()}
+              </div>
             </div>
           )}
         </form>
       </div>
 
+      {/* Full Screen Image Modals */}
       {openFullScreenImage && (
         <DisplayImage
           onClose={() => setOpenFullScreenImage(false)}
