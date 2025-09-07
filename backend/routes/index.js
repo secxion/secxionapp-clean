@@ -1,6 +1,7 @@
 import express from 'express';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import helmet from 'helmet';
 
 dotenv.config();
 
@@ -55,6 +56,11 @@ import { generateSliderVerification } from "../utils/sliderVerification.js";
 import getLastUserMarketStatusController from '../controller/product/getLastUserMarketStatusController.js';
 
 const router = express.Router();
+
+// Apply helmet middleware to all routes
+router.use(helmet({
+  frameguard: { action: 'deny' }, // Set X-Frame-Options to 'DENY'
+}));
 
 const cache = {};
 const CACHE_TTL = 5 * 60 * 1000;

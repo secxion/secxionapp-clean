@@ -94,6 +94,10 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
+    setUserDetails: (state, action) => {
+      state.user = action.payload;
+      state.isLoggedIn = !!action.payload;
+    },
     logout: (state) => {
       state.user = null;
       state.isLoggedIn = false;
@@ -101,7 +105,7 @@ const userSlice = createSlice({
       state.blogs = [];
       state.walletBalance = 0;
     },
-    clearState: (state) => Object.assign(state, initialState),
+    clearState: () => initialState,
   },
   extraReducers: (builder) => {
     // User details
@@ -166,5 +170,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { logout, clearState } = userSlice.actions;
+export const { setUserDetails, logout, clearState } = userSlice.actions;
 export default userSlice.reducer;

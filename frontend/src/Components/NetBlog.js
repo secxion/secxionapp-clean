@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import SummaryApi from '../common';
 import SecxionLoader from './SecxionLoader';
 import { formatDistanceToNow } from 'date-fns';
-import { FaCircle, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaCircle, FaExternalLinkAlt, FaTimes } from 'react-icons/fa';
 import FullBlogDialog from './FullBlogDialog';
 import { useNavigate } from 'react-router-dom';
 
@@ -195,7 +195,36 @@ const NetBlog = () => {
       )}
 
       {selectedBlog && (
-        <FullBlogDialog blog={selectedBlog} onClose={() => setSelectedBlog(null)} />
+        <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-md flex items-center justify-center z-50">
+          <div className="relative bg-gray-900 bg-opacity-90 rounded-lg shadow-lg p-6 max-w-2xl w-full">
+            {/* Close Button - Brand Design */}
+            <motion.button
+              onClick={() => setSelectedBlog(null)}
+              className="fixed top-14 right-6 z-[10000] bg-red-600 hover:bg-red-700 text-white p-3 rounded-full shadow-2xl transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-500/50 border-2 border-white/20"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              exit={{ scale: 0, rotate: 180 }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 20,
+                delay: 0.1,
+              }}
+              whileHover={{
+                rotate: 90,
+                boxShadow: "0 0 30px rgba(239, 68, 68, 0.5)",
+              }}
+              whileTap={{ scale: 0.9 }}
+              aria-label="Close blog dialog"
+            >
+              <FaTimes className="w-6 h-6" />
+            </motion.button>
+
+            {/* Blog Content */}
+            <h2 className="text-2xl font-bold text-gray-100 mb-4">{selectedBlog.title}</h2>
+            <p className="text-gray-300">{selectedBlog.content}</p>
+          </div>
+        </div>
       )}
     </motion.div>
   );

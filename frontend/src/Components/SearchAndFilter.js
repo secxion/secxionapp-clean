@@ -87,9 +87,9 @@ const SearchAndFilter = ({
                   <span className="text-white dark:text-white font-medium">Filter by Tags</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {availableTags.map(tag => (
+                  {availableTags.map((tag) => (
                     <button
-                      key={tag}
+                      key={tag} // Ensure unique keys
                       onClick={() => toggleTag(tag)}
                       className={`px-3 py-1 rounded-full text-sm border transition-all duration-200 ${
                         tempTags.includes(tag)

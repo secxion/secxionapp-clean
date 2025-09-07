@@ -17,6 +17,8 @@ import {
   CheckIcon,
   ArrowRightOnRectangleIcon,
 } from '@heroicons/react/24/outline';
+import { motion } from "framer-motion";
+import { FaTimes } from "react-icons/fa";
 import Clock from 'react-live-clock';
 import timezones from '../helpers/timeZones';
 import './Header.css';
@@ -97,13 +99,27 @@ const SidePanel = ({ open, setOpen, handleLogout, loading, onCloseMenu }) => {
             <div className="relative z-10 flex flex-col w-full h-full">
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-2 mt-6 pt-4 border-b border-gray-200">
-                <button
-                  type="button"
-                  className="text-gray-500 hover:text-black transition-colors duration-400 glossy-text"
+                <motion.button
                   onClick={() => setOpen(false)}
+                  className="fixed top-14 right-6 z-[10000] bg-red-600 hover:bg-red-700 text-white p-3 rounded-full shadow-2xl transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-500/50 border-2 border-white/20"
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  exit={{ scale: 0, rotate: 180 }}
+                  transition={{ 
+                    type: "spring", 
+                    stiffness: 300, 
+                    damping: 20,
+                    delay: 0.1 
+                  }}
+                  whileHover={{ 
+                    rotate: 90,
+                    boxShadow: "0 0 30px rgba(239, 68, 68, 0.5)"
+                  }}
+                  whileTap={{ scale: 0.9 }}
+                  aria-label="Close side panel"
                 >
-                  <XMarkIcon className="h-8 w-8" />
-                </button>
+                  <FaTimes className="w-6 h-6" />
+                </motion.button>
                 {/* Replace LogoShimmer with SecxionLogo */}
                 <Link to="/home" className="relative">
                   <div className="flex py-1 flex-col justify-center">

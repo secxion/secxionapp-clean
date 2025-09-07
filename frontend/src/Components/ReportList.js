@@ -62,8 +62,8 @@ const ReportList = ({ newReport }) => {
             ) : reports.length === 0 ? (
                 <p className="text-gray-700">No reports submitted yet.</p>
             ) : (
-                reports.map((report) => (
-                    <div key={report._id} className="mb-4 p-4 border border-secxion-gold rounded-lg hover:bg-secxion-cream transition-colors duration-200">
+                reports.map((report, index) => (
+                    <div key={report._id || `report-${index}`} className="mb-4 p-4 border border-secxion-gold rounded-lg hover:bg-secxion-cream transition-colors duration-200">
                         <div className="flex justify-between items-center mb-2">
                             <p className="font-semibold text-secxion-black">{report.category}</p>
                             <button onClick={() => handleOpenChat(report._id)} className="bg-secxion-gold text-white py-2 px-4 rounded hover:bg-secxion-gold-dark focus:outline-none focus:ring-2 focus:ring-secxion-gold-light">Open Chat</button>

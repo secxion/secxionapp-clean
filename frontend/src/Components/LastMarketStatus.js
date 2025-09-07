@@ -4,6 +4,8 @@ import UserContext from "../Context";
 import { CircleCheck, CircleX, Loader, Clock, Info, Image, X } from 'lucide-react';
 import currencyData from '../helpers/currencyData';
 import SecxionShimmer from './SecxionShimmer';
+import { motion } from "framer-motion";
+import { FaTimes } from "react-icons/fa";
 
 const ImageModal = ({ imageUrl, onClose }) => {
     if (!imageUrl) return null;
@@ -17,13 +19,29 @@ const ImageModal = ({ imageUrl, onClose }) => {
                 className="relative bg-white p-2 rounded-lg shadow-xl max-w-full max-h-full flex flex-col items-center"
                 onClick={e => e.stopPropagation()}
             >
-                <button
+                {/* Close Button - Fixed Position */}
+                <motion.button
                     onClick={onClose}
-                    className="absolute top-2 right-2 text-gray-800 hover:text-gray-900 bg-white rounded-full p-1 z-10"
+                    className="fixed top-14 right-6 z-[10000] bg-red-600 hover:bg-red-700 text-white p-3 rounded-full shadow-2xl transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-500/50 border-2 border-white/20"
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    exit={{ scale: 0, rotate: 180 }}
+                    transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 20,
+                        delay: 0.1,
+                    }}
+                    whileHover={{
+                        rotate: 90,
+                        boxShadow: "0 0 30px rgba(239, 68, 68, 0.5)",
+                    }}
+                    whileTap={{ scale: 0.9 }}
                     aria-label="Close image viewer"
                 >
-                    <X size={24} />
-                </button>
+                    <FaTimes className="w-6 h-6" />
+                </motion.button>
+
                 <img
                     src={imageUrl}
                     alt="Expanded view"

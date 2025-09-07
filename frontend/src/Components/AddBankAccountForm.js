@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import SummaryApi from "../common";
 import SecxionSpinner from "./SecxionSpinner";
+import { motion } from "framer-motion";
+import { FaTimes } from "react-icons/fa";
 
-const AddBankAccountForm = ({ onCancel, onSuccess  }) => {
+const AddBankAccountForm = ({ onCancel, onSuccess }) => {
   const [banks, setBanks] = useState([]);
   const [loadingBanks, setLoadingBanks] = useState(false);
   const [form, setForm] = useState({ accountNumber: "", bankCode: "" });
@@ -106,51 +108,50 @@ const AddBankAccountForm = ({ onCancel, onSuccess  }) => {
     }
   };
 
-   const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError("");
-        setSuccessMsg("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccessMsg("");
 
-        if (!verificationCode) {
-            setError("Please enter the verification code sent to your email.");
-            return;
-        }
+    if (!verificationCode) {
+      setError("Please enter the verification code sent to your email.");
+      return;
+    }
 
-        setSubmitLoading(true);
-        try {
-            const selectedBank = banks.find((b) => b.code === form.bankCode);
-            const res = await fetch(SummaryApi.verifyAddBank.url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({
-                    accountNumber: form.accountNumber,
-                    bankCode: form.bankCode,
-                    bankName: selectedBank?.name || "",
-                    accountHolderName: resolvedAccountName,
-                    code: verificationCode,
-                }),
-            });
-            const data = await res.json();
-            if (!res.ok || !data.success) throw new Error(data.message);
+    setSubmitLoading(true);
+    try {
+      const selectedBank = banks.find((b) => b.code === form.bankCode);
+      const res = await fetch(SummaryApi.verifyAddBank.url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          accountNumber: form.accountNumber,
+          bankCode: form.bankCode,
+          bankName: selectedBank?.name || "",
+          accountHolderName: resolvedAccountName,
+          code: verificationCode,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message);
 
-            setSuccessMsg("Bank account added successfully.");
-            setForm({ accountNumber: "", bankCode: "" });
-            setResolvedAccountName("");
-            setVerificationCode("");
-            setShowConfirmModal(false);
-            setCodeSent(false);
-            
-            // Call success callback if provided
-            if (onSuccess) onSuccess();
-            if (onCancel) onCancel();
-            
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setSubmitLoading(false);
-        }
-    };
+      setSuccessMsg("Bank account added successfully.");
+      setForm({ accountNumber: "", bankCode: "" });
+      setResolvedAccountName("");
+      setVerificationCode("");
+      setShowConfirmModal(false);
+      setCodeSent(false);
+
+      // Call success callback if provided
+      if (onSuccess) onSuccess();
+      if (onCancel) onCancel();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitLoading(false);
+    }
+  };
 
   return (
     <>
@@ -193,8 +194,9 @@ const AddBankAccountForm = ({ onCancel, onSuccess  }) => {
             maxLength={10}
           />
           {loadingResolve && (
-            <p className="text-sm text-gray-500 mt-1"><SecxionSpinner size="small" message="" />
-</p>
+            <p className="text-sm text-gray-500 mt-1">
+              <SecxionSpinner size="small" message="" />
+            </p>
           )}
         </label>
 
@@ -274,6 +276,29 @@ const AddBankAccountForm = ({ onCancel, onSuccess  }) => {
           </div>
         </div>
       )}
+
+      {/* Close Button - Fixed Position */}
+      <motion.button
+        onClick={onCancel}
+        className="fixed top-14 right-6 z-[10000] bg-red-600 hover:bg-red-700 text-white p-3 rounded-full shadow-2xl transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-500/50 border-2 border-white/20"
+        initial={{ scale: 0, rotate: -180 }}
+        animate={{ scale: 1, rotate: 0 }}
+        exit={{ scale: 0, rotate: 180 }}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          damping: 20,
+          delay: 0.1,
+        }}
+        whileHover={{
+          rotate: 90,
+          boxShadow: "0 0 30px rgba(239, 68, 68, 0.5)",
+        }}
+        whileTap={{ scale: 0.9 }}
+        aria-label="Close add bank account form"
+      >
+        <FaTimes className="w-6 h-6" />
+      </motion.button>
     </>
   );
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import SecxionLogo from "../app/slogo.png";
 
-const SecxionLoader = ({ size = "large", message = "Loading..." }) => {
+const SecxionLoader = ({ size = "medium", message = "" }) => {
   const logoSize = size === "small" ? "w-12 h-12" : size === "medium" ? "w-16 h-16" : "w-20 h-20";
   const containerHeight = size === "small" ? "min-h-[200px]" : size === "medium" ? "min-h-[300px]" : "min-h-screen";
 
@@ -36,7 +36,8 @@ const SecxionLoader = ({ size = "large", message = "Loading..." }) => {
         <div className="absolute -bottom-5 -right-10 w-5 h-5 bg-purple-500/20 rounded-full animate-float-4"></div>
       </div>
 
-      <style jsx>{`
+      <style>
+        {`
         @keyframes loading-bar {
           0% {
             transform: translateX(-100%);
@@ -91,7 +92,8 @@ const SecxionLoader = ({ size = "large", message = "Loading..." }) => {
         .animate-float-4 {
           animation: float-4 2.8s ease-in-out infinite 1.5s;
         }
-      `}</style>
+      `}
+      </style>
     </div>
   );
 };

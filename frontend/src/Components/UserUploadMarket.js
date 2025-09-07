@@ -4,11 +4,13 @@ import { FaCloudUploadAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { motion } from "framer-motion";
 import uploadImage from '../helpers/uploadImage';
 import DisplayImage from './DisplayImage';
 import SummaryApi from '../common';
 import currencyData from '../helpers/currencyData';
 import flagImageMap from '../helpers/flagImageMap';
+import { FaTimes } from "react-icons/fa";
 
 const UserUploadMarket = ({
     onClose = () => {},
@@ -146,9 +148,27 @@ const UserUploadMarket = ({
                 {/* Header */}
                 <div className="flex justify-between items-center border-b pb-4 mb-4 border-gray-800">
                     <h2 className="text-xl md:text-2xl font-bold text-yellow-400">📦 Upload Product Details</h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-yellow-400 text-2xl">
-                        <CgClose />
-                    </button>
+                    <motion.button
+                        onClick={onClose}
+                        className="fixed top-14 right-6 z-[10000] bg-red-600 hover:bg-red-700 text-white p-3 rounded-full shadow-2xl transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-500/50 border-2 border-white/20"
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        exit={{ scale: 0, rotate: 180 }}
+                        transition={{ 
+                            type: "spring", 
+                            stiffness: 300, 
+                            damping: 20,
+                            delay: 0.1 
+                        }}
+                        whileHover={{ 
+                            rotate: 90,
+                            boxShadow: "0 0 30px rgba(239, 68, 68, 0.5)"
+                        }}
+                        whileTap={{ scale: 0.9 }}
+                        aria-label="Close upload market"
+                    >
+                        <FaTimes className="w-6 h-6" />
+                    </motion.button>
                 </div>
 
                 {/* Product Overview */}

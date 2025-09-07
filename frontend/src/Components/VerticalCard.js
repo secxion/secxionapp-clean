@@ -140,7 +140,7 @@ const VerticalCard = React.memo(({ loading, data = [] }) => {
               <Link
                 to={`/product/${product._id}`}
                 onClick={scrollTop}
-                key={product._id}
+                key={product._id || `product-${product.productName}`} // Ensure unique keys
                 className="group relative block bg-gray-900 vertical-card-backdrop border border-gray-700 rounded-xl overflow-hidden shadow transition-all duration-300 hover:scale-[1.03] hover:shadow-lg hover:border-yellow-500 focus-visible-purple"
                 style={{ minWidth: 160, maxWidth: 180 }}
               >

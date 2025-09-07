@@ -185,17 +185,6 @@ const SignUp = () => {
         if (backendMessage.includes("email already exists") || (backendMessage.includes("user with email") && backendMessage.includes("already exists"))) {
           toast.error("This email is already registered. Please use a different email or log in.");
           setStep(2);
-        }
-        else if (
-            backendMessage.includes("display name") &&
-            (backendMessage.includes("already exists") || backendMessage.includes("already taken"))
-        ) {
-          toast.error(responseData.message);
-          setStep(1);
-        }
-        else if (backendMessage.includes("password")) {
-          toast.error("Password issue: " + responseData.message);
-          setStep(4);
         } else {
           toast.error(responseData?.message || "Signup failed. Please try again.");
         }

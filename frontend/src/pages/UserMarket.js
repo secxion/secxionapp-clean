@@ -5,7 +5,7 @@ import UserUploadMarket from "../Components/UserUploadMarket";
 import HistoryCard from "../Components/HistoryCard";
 import HistoryDetailView from "../Components/HistoryDetailView";
 import UserContext from "../Context";
-import SecxionShimmer from "../Components/SecxionShimmer";
+import SecxionSpinner from "../Components/SecxionSpinner"; // Ensure SecxionSpinner is imported
 import { motion } from "framer-motion"; 
 
 const UserMarket = () => {
@@ -123,9 +123,10 @@ const UserMarket = () => {
       {/* Main Content Area - with top padding to account for fixed header */}
       <div className="pt-40 pb-6">
         <div className="flex items-center flex-wrap gap-6 py-4 px-6"> 
+          {/* Render History Cards */}
           {allProduct.map((product) => (
             <HistoryCard
-              key={product._id}
+              key={product._id || `product-${product.name}`} // Ensure unique keys
               data={{
                 ...product,
                 crImage: product.crImage || product.cancelImage || product.image || null
@@ -139,12 +140,7 @@ const UserMarket = () => {
           {allProduct.length === 0 && !marketId && (
             <div className="w-full flex justify-center items-center min-h-[400px]">
               <div className="text-center">
-                <div className="relative py-3 sm:max-w-xl sm:mx-auto">
-                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/10 to-yellow-700/10 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
-                  <div className="relative px-4 py-10 bg-gray-900/80 shadow-lg sm:rounded-3xl sm:p-20">
-                    <SecxionShimmer type="card" count={3} />
-                  </div>
-                </div>
+                <SecxionSpinner size="large" message="Loading trade status..." /> {/* Updated loader */}
               </div>
             </div>
           )}

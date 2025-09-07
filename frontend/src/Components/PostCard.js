@@ -83,9 +83,12 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
   return (
     <motion.div
       key={post._id}
-      className="postcard-container mb-6 px-4 py-5 bg-white dark:bg-gray-900 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 transition-all duration-300 break-words"
+      className="postcard-container mb-6 px-4 py-5 bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 shadow-lg rounded-lg border border-gray-700 transition-all duration-300 text-white"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+      whileHover={{ scale: 1.02, boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)" }}
+      transition={{ duration: 0.4, ease: "easeInOut" }}
     >
       <div className="flex flex-col sm:flex-row gap-4 break-words">
         {/* Avatar */}
@@ -101,10 +104,10 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
 
         {/* Post Content */}
         <div className="flex-grow text-sm">
-          <p className="font-semibold text-gray-900 dark:text-gray-100">{post.userId?.name || 'Anonymous'}</p>
+          <p className="font-semibold text-gray-100">{post.userId?.name || 'Anonymous'}</p>
 
           <div
-            className={`text-gray-700 dark:text-gray-300 mt-1 text-sm whitespace-pre-line break-words ${!showFullPost ? 'line-clamp-4' : ''}`}
+            className="text-gray-300 mt-1 text-sm whitespace-pre-line break-words"
             dangerouslySetInnerHTML={{ __html: showFullPost ? formattedContent : truncatedContent }}
           />
 

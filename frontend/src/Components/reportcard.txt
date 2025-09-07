@@ -71,7 +71,7 @@ const ReportCard = () => {
             status: "pending",
         };
 
-        setPendingMessages((prev) => [...prev, newMessage]); 
+        setPendingMessages((prev) => [...prev, newMessage]); // Add the message to pending messages
         setUserReplyText(""); // Clear the input field
 
         try {

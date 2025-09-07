@@ -33,7 +33,10 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP if not configured
+  frameguard: { action: 'deny' }, // Set X-Frame-Options to 'DENY'
+}));
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
@@ -45,7 +48,11 @@ app.use('/api', router);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, 'build'), {
+  setHeaders: (res) => {
+    res.setHeader('X-Frame-Options', 'DENY'); // Add X-Frame-Options header
+  },
+}));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));

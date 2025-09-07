@@ -34,7 +34,7 @@ const DataPadList = ({ dataPads, onOpen, onDelete, isLoading }) => {
                   <div className="flex flex-wrap gap-2">
                     {pad.tags.slice(0, 3).map((tag, tagIndex) => (
                       <span
-                        key={tagIndex}
+                        key={`${pad._id}-tag-${tagIndex}`}
                         className="bg-purple-600/20 text-purple-200 px-2 py-1 rounded text-xs border border-purple-500/30"
                       >
                         {tag}

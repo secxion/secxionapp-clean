@@ -7,7 +7,10 @@ const reportSchema = new mongoose.Schema(
         name: { type: String, required: true },
         category: { type: String, required: true },
         message: { type: String, required: true },
-        image: { type: String, default: "" },
+        image: {
+            type: [String], // Change from String to [String] to allow storing multiple image URLs
+            default: [],
+        },
         adminReply: { type: String, default: "" },
         adminReplyImage: { type: String, default: "" },
         status: { type: String, enum: ["Pending", "Resolved", "Rejected"], default: "Pending" },
@@ -15,7 +18,7 @@ const reportSchema = new mongoose.Schema(
             {
                 sender: { type: String, enum: ["admin", "user"], required: true },
                 message: { type: String, default: "" },
-                image: { type: String, default: "" },
+                image: { type: [String], default: [] }, // Allow multiple image URLs
                 createdAt: { type: Date, default: Date.now },
             },
         ],

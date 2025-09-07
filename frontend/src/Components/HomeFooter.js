@@ -1,4 +1,4 @@
-import { FaEthereum, FaCaretUp } from 'react-icons/fa';
+import { FaCaretUp } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux'; 
@@ -21,7 +21,7 @@ const HomeFooter = () => {
   }, []);
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 border-t border-gray-600 shadow-lg w-full py-1 border-2 border-gray-700">
+    <footer className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 py-2 shadow-lg w-full">
       <div className="flex justify-around items-center text-gray-300 dark:text-gray-100 text-xl h-16">
 
         <Link

@@ -1,14 +1,22 @@
 import React, { useState } from "react";
 import HistoryDetailView from './HistoryDetailView';
 import { motion } from "framer-motion";
+import DisplayImage from './DisplayImage'; // Import the DisplayImage component
 
 const HistoryCard = ({ data, isDetailViewOpen, onCloseDetailView }) => {
   const [showDetailView, setShowDetailView] = useState(false);
+  const [openFullScreenImage, setOpenFullScreenImage] = useState(false); // State for full-screen image
+  const [fullScreenImage, setFullScreenImage] = useState(""); // State for the selected image
 
   const initialStatus = data.status || 'WAIT';
 
   const handleViewMore = () => {
     setShowDetailView(true);
+  };
+
+  const handleImageClick = (imageUrl) => {
+    setFullScreenImage(imageUrl); // Set the selected image URL
+    setOpenFullScreenImage(true); // Open the full-screen image viewer
   };
 
   const renderStatusIndicator = (status) => {
@@ -75,6 +83,21 @@ const HistoryCard = ({ data, isDetailViewOpen, onCloseDetailView }) => {
               Cancel Reason: <span className='truncate block'>{data.cancelReason || 'N/A'}</span>
             </p>
           )}
+          {/* Messages */}
+          {data.image && (
+            <div className="mt-4">
+              <img
+                key={`${data.image}-${data._id}`} // Ensure unique keys
+                src={data.image}
+                alt="Transaction"
+                className="w-full h-40 object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform"
+                onClick={() => {
+                  setFullScreenImage(data.image);
+                  setOpenFullScreenImage(true);
+                }}
+              />
+            </div>
+          )}
           <button
             onClick={handleViewMore}
             className="mt-4 bg-yellow-500 text-gray-900 font-bold p-2 rounded-lg hover:bg-yellow-600 transition duration-200 w-full shadow"
@@ -83,6 +106,18 @@ const HistoryCard = ({ data, isDetailViewOpen, onCloseDetailView }) => {
           </button>
         </div>
       </motion.div>
+
+      {/* Full-Screen Image Viewer */}
+      {openFullScreenImage && fullScreenImage && (
+        console.log("Rendering DisplayImage with:", fullScreenImage), // Debug log
+        <DisplayImage
+          imgUrl={fullScreenImage} // Pass the selected image URL
+          onClose={() => {
+            console.log("Closing DisplayImage from HistoryCard"); // Debug log
+            setOpenFullScreenImage(false);
+          }}
+        />
+      )}
 
       {showDetailView && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">

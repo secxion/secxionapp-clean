@@ -3,5 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "deploy": "./deploy.sh"
+  },
+  "dependencies": {
+    "react-image-file-resizer": "^0.4.8"
   }
 }

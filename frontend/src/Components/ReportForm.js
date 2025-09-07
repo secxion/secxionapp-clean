@@ -158,7 +158,7 @@ const ReportForm = ({ onReportSubmit }) => {
                 disabled={loading}
             >
                 <MdSend className="inline-block mr-2" />
-                {loading ? "Submitting..." : "Submit"}
+                {loading && uploadedImage === null ? "Uploading Image..." : loading ? "Submitting..." : "Submit"}
             </button>
         </div>
     );
