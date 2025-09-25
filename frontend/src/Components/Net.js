@@ -321,11 +321,9 @@ const Net = ({ blogs }) => {
                     )}
                 </div>
             )}
-            <Link to="/notifications" title="Notifications" aria-label="Notifications">
-                <div className="relative ml-2 h-6 w-7 pr-8 mr-4">
-                    <NotificationBadge />
-                </div>
-            </Link>
+            <div className="relative ml-2 h-6 w-7 pr-8 mr-4" title="Notifications" aria-label="Notifications">
+                <NotificationBadge />
+            </div>
 
             {/* News Ticker Section */}
             <div className="flex-grow relative h-8 md:h-10 overflow-hidden flex items-center min-w-0">

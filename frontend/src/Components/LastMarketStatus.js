@@ -104,7 +104,7 @@ const LastMarketStatus = () => {
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error("Non-OK response for last market status:", response.status, errorText);
+                    // console.error("Non-OK response for last market status:", response.status, errorText);
                     setError(`Failed to fetch last market status: ${response.status} ${response.statusText}. Check server logs for details.`);
                     setLastMarket(null);
                     setLoading(false);
@@ -120,7 +120,7 @@ const LastMarketStatus = () => {
                     setLastMarket(null);
                 }
             } catch (err) {
-                console.error("Error fetching last market status:", err);
+                // console.error("Error fetching last market status:", err);
                 setError("An error occurred while fetching data. Please try again.");
                 setLastMarket(null);
             } finally {
@@ -155,7 +155,7 @@ const LastMarketStatus = () => {
         };
 
         const currencyInfo = currencyData.find(c => c.value === currencyCode);
-        const symbol = currencyInfo ? currencyInfo.symbol : currencyCode; // Fallback to code if symbol not found
+        const symbol = currencyInfo ? currencyInfo.symbol : currencyCode;
 
         return `${symbol} ${amount.toLocaleString(undefined, options)}`;
     };
@@ -228,13 +228,14 @@ const LastMarketStatus = () => {
                                 {priceBlock.faceValues && priceBlock.faceValues.length > 0 ? (
                                     <><ul className="list-disc list-inside text-sm text-gray-700">
                                         {priceBlock.faceValues.map((fv, fvIndex) => (
-                                            <><li key={fvIndex} className="mb-1">
-                                                Face Value: <span className="font-medium">{fv.faceValue || 'N/A'}</span>
-                                            </li>
+                                            <React.Fragment key={fvIndex}>
+                                                <li className="mb-1">
+                                                    Face Value: <span className="font-medium">{fv.faceValue || 'N/A'}</span>
+                                                </li>
                                                 <span className="mb-1 ml-5">
                                                     Rate: <span className="font-medium">{formatCurrency(fv.sellingPrice)}</span>
                                                 </span>
-                                            </>
+                                            </React.Fragment>
                                         ))}
                                     </ul>
                                     
@@ -246,7 +247,7 @@ const LastMarketStatus = () => {
                                                     <div className="ml-3 flex -space-x-2 overflow-hidden">
                                                         {lastMarket.productImage.slice(0, 3).map((img, idx) => ( // Show max 3 thumbnails
                                                             <img
-                                                                key={idx}
+                                                                key={`product-thumb-${idx}`}
                                                                 src={img}
                                                                 alt={`${lastMarket.productName} thumbnail ${idx + 1}`}
                                                                 className="inline-block h-8 w-8 rounded-full ring-2 object-cover cursor-pointer ring-blue-500 transition-all duration-200" />
@@ -270,7 +271,7 @@ const LastMarketStatus = () => {
                                                         <div className="ml-3 flex -space-x-2 overflow-hidden">
                                                             {lastMarket.Image.slice(0, 3).map((img, idx) => ( // Show max 3 thumbnails
                                                                 <img
-                                                                    key={idx}
+                                                                    key={`market-thumb-${idx}`}
                                                                     src={img}
                                                                     alt={`${lastMarket._id} thumbnail ${idx + 1}`}
                                                                     className="inline-block h-12 w-12 ring-2 ring-white object-cover cursor-pointer hover:ring-blue-500 transition-all duration-200"
@@ -322,7 +323,7 @@ const LastMarketStatus = () => {
                                                         <div className="grid grid-cols-3 gap-2 mt-2">
                                                             {lastMarket.crImage.map((img, idx) => (
                                                                 <img
-                                                                    key={idx}
+                                                                    key={`cancel-img-${idx}`}
                                                                     src={img}
                                                                     alt={`Cancellation Proof ${idx + 1}`}
                                                                     className="w-full h-24 object-cover rounded-md shadow-sm border border-gray-200 cursor-pointer hover:border-blue-500 transition-all duration-200"

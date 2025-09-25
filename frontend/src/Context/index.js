@@ -13,7 +13,6 @@ export const ContextProvider = ({ children }) => {
     const [walletBalance, setWalletBalance] = useState(null);
     const dispatch = useDispatch();
 
-    // ✅ Define isTokenExpired early to avoid "cannot access before initialization"
     const isTokenExpired = useCallback((token) => {
         if (!token) return true;
 
@@ -22,7 +21,7 @@ export const ContextProvider = ({ children }) => {
             const currentTime = Date.now() / 1000;
             return payload.exp < currentTime;
         } catch (error) {
-            console.error("Error checking token expiry:", error);
+            // console.error("Error checking token expiry:", error);
             return true;
         }
     }, []);
@@ -44,7 +43,7 @@ export const ContextProvider = ({ children }) => {
                     localStorage.removeItem("token");
                 }
             } catch (error) {
-                console.error("Error parsing user/token:", error);
+                // console.error("Error parsing user/token:", error);
                 localStorage.removeItem("user");
                 localStorage.removeItem("token");
             }
@@ -64,43 +63,37 @@ export const ContextProvider = ({ children }) => {
     }, [token]);
 
     const logout = useCallback(async () => {
-        // Remove local/session storage
+        // 1. Clear local storage
         localStorage.removeItem("user");
         localStorage.removeItem("token");
+
+        // 2. Clear component state
         setUser(null);
         setToken(null);
         setWalletBalance(null);
 
-        // Clear Redux state and persisted state
+        // 3. Clear Redux state
         dispatch(clearState());
-        if (persistor && persistor.purge) {
+
+        // 4. Purge persisted Redux state (CRITICAL STEP)
+        if (persistor) {
             await persistor.purge();
         }
 
-        // Call backend logout endpoint to clear cookie/session
+        // 5. Call backend to clear httpOnly cookies/session (optional but good practice)
         try {
-            await fetch("/api/userLogout", {
-                method: "GET",
-                credentials: "include",
-            });
+            await fetch(SummaryApi.logout_user.url, { method: 'GET', credentials: 'include' });
         } catch (err) {
-            // Ignore errors, just ensure local state is cleared
+            // Ignore errors, frontend state is already cleared
         }
 
-        // Remove all cookies (extra safety)
-        document.cookie.split(";").forEach((c) => {
-            document.cookie = c
-                .replace(/^ +/, "")
-                .replace(/=.*/, "=;expires=" + new Date(0).toUTCString() + ";path=/");
-        });
-
-        // Force reload to clear in-memory state
+        // 6. Force a full page reload and replace history state
         window.location.replace('/login');
     }, [dispatch]);
 
     const makeAuthenticatedRequest = useCallback(async (url, options = {}) => {
         if (!token || isTokenExpired(token)) {
-            console.warn("Token expired or missing, logging out...");
+            // console.warn("Token expired or missing, logging out...");
             logout();
             return null;
         }
@@ -116,14 +109,14 @@ export const ContextProvider = ({ children }) => {
             });
 
             if (response.status === 401 || response.status === 403) {
-                console.warn("Authentication failed, logging out...");
+                // console.warn("Authentication failed, logging out...");
                 logout();
                 return null;
             }
 
             return response;
         } catch (error) {
-            console.error("Request failed:", error);
+            // console.error("Request failed:", error);
             throw error;
         }
     }, [token, isTokenExpired, logout, getAuthHeaders]);
@@ -143,11 +136,11 @@ export const ContextProvider = ({ children }) => {
                 setUser(data);
                 dispatch(setUserDetails(data));
             } else {
-                console.warn("Failed to fetch user details");
+                // console.warn("Failed to fetch user details");
                 logout();
             }
         } catch (error) {
-            console.error("Error fetching user details:", error);
+            // console.error("Error fetching user details:", error);
             logout();
         }
     }, [makeAuthenticatedRequest, dispatch, token, logout]);
@@ -177,14 +170,14 @@ export const ContextProvider = ({ children }) => {
                 setWalletBalance(data.balance);
             } else {
                 setWalletBalance(null);
-                console.warn("Wallet fetch failed:", data.message);
+                // console.warn("Wallet fetch failed:", data.message);
 
                 if (response.status === 401 || response.status === 403) {
                     logout();
                 }
             }
         } catch (error) {
-            console.error("Error fetching wallet:", error);
+            // console.error("Error fetching wallet:", error);
             setWalletBalance(null);
         }
     }, [token, user, makeAuthenticatedRequest, logout]);
@@ -194,7 +187,7 @@ export const ContextProvider = ({ children }) => {
 
         const validateToken = () => {
             if (isTokenExpired(token)) {
-                console.warn("Token expired during session, logging out...");
+                // console.warn("Token expired during session, logging out...");
                 logout();
             }
         };
@@ -217,12 +210,12 @@ export const ContextProvider = ({ children }) => {
 
     const login = async (userData, userToken) => {
         if (!userData || !userToken) {
-            console.error("Missing user or token in login()");
+            // console.error("Missing user or token in login()");
             return;
         }
 
         if (isTokenExpired(userToken)) {
-            console.error("Cannot login with expired token");
+            // console.error("Cannot login with expired token");
             return;
         }
 

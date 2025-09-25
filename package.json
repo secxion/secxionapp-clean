@@ -1,10 +1,17 @@
 {
-  "name": "secxion",
+  "name": "secxion-app-root",
   "version": "1.0.0",
+  "private": true,
+  "description": "Root for Secxion app, containing frontend and backend.",
   "scripts": {
+    "compress:images": "node scripts/compress-images.mjs",
     "deploy": "./deploy.sh"
   },
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "react-image-file-resizer": "^0.4.8"
+    "glob": "^11.0.3",
+    "react-image-file-resizer": "^0.4.8",
+    "sharp": "^0.34.3"
   }
 }

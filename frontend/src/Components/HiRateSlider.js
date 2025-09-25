@@ -132,12 +132,9 @@ const HiRateSlider = () => {
 
   if (loading) {
     return (
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-950 via-purple-900 to-purple-800 p-6 shadow-xl border border-purple-700/30">
-        <div className="absolute inset-0 opacity-30">
-          {/* Background elements, e.g., SVGs or images */}
-        </div>
+      <div className="relative overflow-hidden rounded-2xl bg-gray-100 p-6 shadow-inner border border-gray-200">
         <div className="relative z-10">
-          <h2 className="text-white text-2xl font-semibold mb-4">Loading Rates...</h2>
+          <h2 className="text-gray-800 text-2xl font-semibold mb-4">Loading Rates...</h2>
           <SecxionShimmer type="grid" count={4} />
         </div>
       </div>
@@ -150,7 +147,7 @@ const HiRateSlider = () => {
 
   const animationDuration = slides.length * 5;
   return (
-    <div className="fixed top-20 py-1 mt-1 left-0 right-0 shadow-sm md:mt-3 lg:mt-3 z-30 w-full bg-gradient-to-r from-purple-950 via-purple-900 to-purple-950 overflow-hidden">
+    <div className="fixed top-20 py-1 mt-1 left-0 right-0 shadow-sm md:mt-3 lg:mt-3 z-30 w-full bg-white border-b border-gray-200 overflow-hidden">
       <div className="hirate-slider-track" style={{ animationDuration: `${animationDuration}s`}}>
         {slides.map((slide, index) => (
           <div key={index} className="hirate-slide">
@@ -161,12 +158,12 @@ const HiRateSlider = () => {
                 <img src={slide.image} alt={slide.productName} className="slide-image" />
               )
             )}
-            <p className="slide-text">
+            <p className="slide-text text-gray-800">
               <span className="slide-product-name">
                 <img src={FireIcon} alt="Fire" className="fire-icon w-4 h-4" />
                 {slide.productName}
               </span>
-              <span className="slide-price">
+              <span className="slide-price font-semibold text-purple-700">
                  1 {slide.currency === "GBP" ? "£" : slide.currency} ={" "}
                     {Number(slide.sellingPrice).toLocaleString(undefined, {
                       minimumFractionDigits: 2,

@@ -11,6 +11,9 @@ SSH_KEY=~/.ssh/id_ed25519
 function deploy() {
   echo "🌀 Starting deployment to $VPS_IP..."
   
+  echo "🖼️  Compressing images before deployment..."
+  npm run compress:images
+
   echo "🧹 Cleaning up remote directories..."
   ssh -i "$SSH_KEY" $VPS_USER@$VPS_IP << 'ENDSSH'
     rm -rf /root/secxionapp/*
@@ -47,7 +50,7 @@ ENDSSH
     if pm2 list | grep -q "secxion-backend"; then
       pm2 delete secxion-backend
     fi
-    pm2 start index.js --name secxion-backend
+    pm2 start index.mjs --name secxion-backend
     pm2 save
 
     echo "✅ Server deploy complete."

@@ -12,7 +12,7 @@ export const fetchUserDetailsAPI = async () => {
 
         return await response.json();
     } catch (error) {
-        console.error("Error fetching user details:", error);
+        // console.error("Error fetching user details:", error);
         return { success: false };
     }
 };
@@ -29,7 +29,7 @@ export const fetchMarketDataAPI = async () => {
 
         return await response.json();
     } catch (error) {
-        console.error("Error fetching market data:", error);
+        // console.error("Error fetching market data:", error);
         return { success: false };
     }
 };
@@ -41,7 +41,7 @@ export const fetchBlogsAPI = async () => {
 
         return await response.json();
     } catch (error) {
-        console.error("Error fetching blogs:", error);
+        // console.error("Error fetching blogs:", error);
         return [];
     }
 };
@@ -57,7 +57,7 @@ export const fetchWalletBalanceAPI = async () => {
 
         return await response.json();
     } catch (error) {
-        console.error("Error fetching wallet balance:", error);
+        // console.error("Error fetching wallet balance:", error);
         return { success: false, balance: 0 };
     }
 };
@@ -75,7 +75,7 @@ export const signinUserAPI = async (userData) => {
 
         return await response.json();
     } catch (error) {
-        console.error("Error signing up user:", error);
+        // console.error("Error signing up user:", error);
         return { success: false, message: "Signup failed." };
     }
 };

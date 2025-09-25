@@ -132,21 +132,6 @@ const Profile = () => {
     fetchUserDetails();
   }, [fetchUserProfile, fetchUserDetails, user?.name]);
 
-  // Add debug logging to see what verification fields are available
-  useEffect(() => {
-    if (profileData) {
-      console.log('Profile data verification fields:', {
-        isEmailVerified: profileData.isEmailVerified,
-        emailVerified: profileData.emailVerified,
-        verified: profileData.verified,
-        isVerified: profileData.isVerified,
-        email_verified: profileData.email_verified,
-        // Log the entire user object to see what fields exist
-        allFields: Object.keys(profileData)
-      });
-    }
-  }, [profileData]);
-
   if (isLoading) {
     return (
       <div className="mt-20 p-4 sm:p-6 max-w-4xl mx-auto">

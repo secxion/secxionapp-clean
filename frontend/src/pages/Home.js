@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 import {
   Wallet,
   User,
@@ -17,73 +16,29 @@ import {
   EyeOff,
 } from "lucide-react";
 import SummaryApi from "../common";
-import giftCardImages from "../helper/heroimages";
 import HomeFooter from "../Components/HomeFooter";
 import NetBlog from "../Components/NetBlog";
 import HiRateSlider from "../Components/HiRateSlider";
 import LastMarketStatus from "../Components/LastMarketStatus";
-import ExploreMarketButtonImg from "../app/Buttons/exploremarketbutton.png";
+import Hero from "../Components/Hero";
 
 const menuItems = [
-  {
-    label: "Market",
-    path: "/section",
-    color: "bg-yellow-100 hover:bg-yellow-200 border-4 border-yellow-500", // Border made bolder
-    icon: <Store className="w-10 h-10 text-yellow-700" />,
-    description: "Explore marketplace",
-  },
-  {
-    label: "Transaction Record",
-    path: "/record",
-    color: "bg-yellow-100 hover:bg-yellow-200 border-4 border-yellow-500", // Border made bolder
-    icon: <ClipboardList className="w-10 h-10 text-yellow-700" />,
-    description: "View transaction history",
-  },
-  {
-    label: "Wallet",
-    path: "/mywallet",
-    color: "bg-yellow-100 hover:bg-yellow-200 border-4 border-yellow-500", // Border made bolder
-    icon: <Wallet className="w-10 h-10 text-yellow-700" />,
-    description: "Manage your assets",
-  },
-  {
-    label: "Profile",
-    path: "/profile",
-    color: "bg-yellow-100 hover:bg-yellow-200 border-4 border-yellow-500", // Border made bolder
-    icon: <User className="w-10 h-10 text-yellow-700" />,
-    description: "Account settings",
-  },
-  {
-    label: "Data Pad",
-    path: "/datapad",
-    color: "bg-yellow-100 hover:bg-yellow-200 border-4 border-yellow-500", // Border made bolder
-    icon: <Book className="w-10 h-10 text-yellow-700" />,
-    description: "Access your data",
-  },
-  {
-    label: "Contact Support",
-    path: "/report",
-    color: "bg-yellow-100 hover:bg-yellow-200 border-4 border-yellow-500", // Border made bolder
-    icon: <MessageCircle className="w-10 h-10 text-yellow-700" />,
-    description: "Get help and support",
-  },
+  { label: "Market", path: "/section", icon: <Store className="w-8 h-8" />, description: "Explore marketplace" },
+  { label: "Transaction Record", path: "/record", icon: <ClipboardList className="w-8 h-8" />, description: "View transaction history" },
+  { label: "Wallet", path: "/mywallet", icon: <Wallet className="w-8 h-8" />, description: "Manage your assets" },
+  { label: "Profile", path: "/profile", icon: <User className="w-8 h-8" />, description: "Account settings" },
+  { label: "Data Pad", path: "/datapad", icon: <Book className="w-8 h-8" />, description: "Access your data" },
+  { label: "Contact Support", path: "/report", icon: <MessageCircle className="w-8 h-8" />, description: "Get help and support" },
 ];
 
 const Home = () => {
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const menuSectionRef = useRef(null);
 
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [heroImages] = useState(giftCardImages);
-
-  const [searchTerm, setSearchTerm] = useState("");
   const [walletBalance, setWalletBalance] = useState(0);
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
   const [errorBalance, setErrorBalance] = useState("");
-  const [showBalance, setShowBalance] = useState(false); // ⬅️ Start hidden
-  const [ethBalance, setEthBalance] = useState(0);
-  const [ethRate, setEthRate] = useState(0);
+  const [showBalance, setShowBalance] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [loadingTransactions, setLoadingTransactions] = useState(false);
   const [errorTransactions, setErrorTransactions] = useState("");
@@ -93,34 +48,20 @@ const Home = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, [heroImages.length]);
-
-  const currentImage = heroImages[currentImageIndex];
-
-  const handleNavigation = (path) => {
-    navigate(path);
-  };
+  const handleNavigation = (path) => navigate(path);
 
   const fetchWalletBalance = useCallback(async () => {
     if (!user?.id && !user?._id) return;
     setIsLoadingBalance(true);
     setErrorBalance("");
     try {
-      const response = await fetch(
-        `${SummaryApi.getWalletBalance.url}/${user._id || user.id}`,
-        { method: "GET", credentials: "include" }
-      );
+      const response = await fetch(`${SummaryApi.getWalletBalance.url}/${user._id || user.id}`, {
+        method: "GET",
+        credentials: "include",
+      });
       const data = await response.json();
-      if (data.success) {
-        setWalletBalance(data.balance || 0);
-      } else {
-        setErrorBalance(data.message || "Failed to fetch wallet balance.");
-      }
+      if (data.success) setWalletBalance(data.balance || 0);
+      else setErrorBalance(data.message || "Failed to fetch wallet balance.");
     } catch (err) {
       setErrorBalance("Error fetching wallet balance.");
       console.error(err);
@@ -137,16 +78,10 @@ const Home = () => {
       try {
         let url = `${SummaryApi.transactions.url}?userId=${user.id || user._id}`;
         if (currentStatusFilter !== "all") url += `&status=${currentStatusFilter}`;
-        const response = await fetch(url, {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(url, { method: "GET", credentials: "include" });
         const data = await response.json();
-        if (data.success && data.transactions) {
-          setTransactions(data.transactions);
-        } else {
-          setErrorTransactions(data.message || "Failed to fetch transactions.");
-        }
+        if (data.success && data.transactions) setTransactions(data.transactions);
+        else setErrorTransactions(data.message || "Failed to fetch transactions.");
       } catch (err) {
         setErrorTransactions("Error loading transactions.");
         console.error(err);
@@ -162,14 +97,7 @@ const Home = () => {
     setLastUpdated(null);
     try {
       await Promise.all([fetchWalletBalance(), fetchTransactions(statusFilter)]);
-      setLastUpdated(
-        new Date().toLocaleTimeString([], {
-          hour12: false,
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        })
-      );
+      setLastUpdated(new Date().toLocaleTimeString([], { hour12: false }));
     } catch (err) {
       console.error(err);
     } finally {
@@ -184,17 +112,8 @@ const Home = () => {
     }
   }, [user, fetchWalletBalance, fetchTransactions, statusFilter]);
 
-  const portfolioValue = walletBalance + ethBalance * ethRate;
-  const portfolioGrowth =
-    walletBalance > 0
-      ? ((portfolioValue - walletBalance) / walletBalance) * 100
-      : 0;
-  const recentTransactionCount = transactions.filter((t) => {
-    const date = new Date(t.createdAt || t.timestamp);
-    const dayAgo = new Date();
-    dayAgo.setDate(dayAgo.getDate() - 1);
-    return date >= dayAgo;
-  }).length;
+  const portfolioValue = walletBalance;
+  const portfolioGrowth = 0; // Placeholder
 
   const quickStats = [
     {
@@ -205,142 +124,63 @@ const Home = () => {
     },
     {
       label: "Recent Transactions",
-      value: `${recentTransactionCount}`,
+      value: `${transactions.length}`,
       change: `${transactions.length} total`,
-      positive: recentTransactionCount > 0,
+      positive: transactions.length > 0,
     },
   ];
 
-  const formatTransactionStatus = (status) =>
-    ({
-      pending: "Pending",
-      "approved-processing": "Processing",
-      completed: "Completed",
-      rejected: "Rejected",
-    }[status] || status);
-
   const getStatusColor = (status) =>
     ({
-      pending: "bg-yellow-200 text-yellow-900",
-      "approved-processing": "bg-yellow-300 text-yellow-900",
-      completed: "bg-green-200 text-green-800",
-      rejected: "bg-red-200 text-red-800",
-    }[status] || "bg-gray-100 text-gray-800");
+      pending: "bg-yellow-600/20 text-yellow-400",
+      "approved-processing": "bg-yellow-600/30 text-yellow-300",
+      completed: "bg-green-600/20 text-green-400",
+      rejected: "bg-red-600/20 text-red-400",
+    }[status] || "bg-gray-700 text-gray-300");
 
-  const filteredMenuItems = menuItems.filter((item) =>
-    item.label.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-  const displayedTransactions = showAll
-    ? transactions
-    : transactions.slice(0, visibleTransactions);
+  const displayedTransactions = showAll ? transactions : transactions.slice(0, visibleTransactions);
 
   return (
-    <div className="bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 min-h-screen w-full pt-32 pb-16 px-0 relative overflow-hidden">
-      {/* Animated geometry/cyber shapes background */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        {/* Cyber animated SVG lines */}
-        <svg className="absolute top-0 left-0 w-full h-32" viewBox="0 0 1440 320">
-          <path fill="#facc15" fillOpacity="0.05" d="M0,160L60,165.3C120,171,240,181,360,165.3C480,149,600,107,720,117.3C840,128,960,192,1080,218.7C1200,245,1320,235,1380,229.3L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path>
-        </svg>
-        {/* Versatile animated shapes */}
-        <div className="absolute top-10 left-10 w-24 h-24 border-4 border-yellow-700/20 rotate-45 animate-spin [animation-duration:12s] opacity-40"></div>
-        <div className="absolute top-1/4 right-20 w-16 h-16 bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 rounded-full animate-pulse opacity-30"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-32 h-32 border-4 border-yellow-700/20 rounded-full animate-bounce [animation-duration:2.5s] opacity-40"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 border border-yellow-700/20 rounded-full opacity-30"></div>
-        <div className="absolute bottom-20 right-10 w-16 h-16 bg-gradient-to-br from-yellow-800/30 to-yellow-700/30 transform rotate-12 animate-pulse opacity-30"></div>
-        {/* Cyber lines */}
-        <div className="absolute top-0 left-1/2 w-1 h-full bg-gradient-to-b from-yellow-400/30 to-yellow-700/10 animate-cyberline opacity-20"></div>
-        <div className="absolute bottom-0 right-1/3 w-1 h-1/2 bg-gradient-to-t from-yellow-400/30 to-yellow-700/10 animate-cyberline opacity-20"></div>
-        {/* Polygon shapes */}
-        <div className="absolute top-32 left-1/3 w-20 h-20 bg-yellow-500/10 rounded-[30%] animate-cyberpoly opacity-20"></div>
-        <div className="absolute bottom-32 right-1/4 w-24 h-24 bg-yellow-400/10 rounded-[40%] animate-cyberpoly opacity-20"></div>
-      </div>
+    <div className="bg-gray-950 min-h-screen w-full pt-32 pb-16 relative overflow-hidden">
+      {/* Hero */}
+      <Hero />
 
-      {/* Hero Section */}
-      <header
-        className="relative h-[48vh] sm:h-[60vh] bg-center mt-24 border-yellow-800 border-4 bg-cover flex items-center justify-center rounded-3xl shadow-xl overflow-hidden"
-        style={{ backgroundImage: `url(${currentImage.url})` }}
-      >
-        <div className="absolute inset-0 bg-black bg-opacity-40" />
-        <div className="relative z-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <Link
-              to="/section"
-              className="inline-block"
-            >
-              <img
-                src={ExploreMarketButtonImg}
-                alt="Explore Market"
-                className="h-64 w-auto object-contain hover:scale-105 transition-transform duration-200"
-                style={{ display: "block" }}
-              />
-            </Link>
-            <div className="mt-6 text-white text-2xl font-semibold drop-shadow-lg">
-              {currentImage.title}
-            </div>
-          </motion.div>
-        </div>
-      </header>
-
-      {/* Stats Section */}
+      {/* Stats */}
       <section className="max-w-7xl mx-auto mt-16 mb-10 px-4">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
-          <div>
-            <h2 className="text-3xl font-extrabold text-yellow-200 mb-2 tracking-tight">Account Overview</h2>
-          </div>
+          <h2 className="text-2xl font-bold text-yellow-300">Account Overview</h2>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowBalance(!showBalance)}
-              title={showBalance ? "Hide Balance" : "Show Balance"}
-              className="p-3 rounded-full bg-yellow-100 hover:bg-yellow-200 border-2 border-yellow-600 transition"
+              className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 text-yellow-400 transition"
             >
-              {showBalance ? <Eye className="w-5 h-5 text-yellow-700" /> : <EyeOff className="w-5 h-5 text-yellow-700" />}
+              {showBalance ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
             </button>
             <button
               onClick={refreshAllData}
               disabled={isRefreshing}
-              className="p-3 rounded-full bg-yellow-100 hover:bg-yellow-200 border-2 border-yellow-600 transition"
-              title="Refresh"
+              className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 text-yellow-400 transition"
             >
-              <RefreshCw className={`w-5 h-5 text-yellow-700 ${isRefreshing ? "animate-spin" : ""}`} />
+              <RefreshCw className={`w-5 h-5 ${isRefreshing ? "animate-spin" : ""}`} />
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {quickStats.map((stat, idx) => (
-            <div
-              key={idx}
-              className="bg-gradient-to-br from-yellow-50 via-yellow-100 to-yellow-200 border-2 border-yellow-600 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              <p className="text-gray-700 text-lg font-semibold mb-2">{stat.label}</p>
-              <p className="text-4xl font-extrabold text-yellow-700 mb-2">
+            <div key={idx} className="bg-gray-900 border border-gray-700 rounded-xl p-6 shadow hover:shadow-lg transition">
+              <p className="text-gray-400 text-sm mb-1">{stat.label}</p>
+              <p className="text-3xl font-bold text-yellow-300 mb-1">
                 {showBalance ? stat.value : "••••••"}
               </p>
-              <p
-                className={`mt-1 text-base font-medium ${
-                  stat.positive ? "text-green-600" : "text-red-600"
-                }`}
-              >
-                {stat.positive ? (
-                  <TrendingUp className="inline w-5 h-5" />
-                ) : (
-                  <TrendingDown className="inline w-5 h-5" />
-                )}{" "}
+              <p className={`text-sm ${stat.positive ? "text-green-400" : "text-red-400"}`}>
+                {stat.positive ? <TrendingUp className="inline w-4 h-4" /> : <TrendingDown className="inline w-4 h-4" />}{" "}
                 {stat.change}
               </p>
             </div>
           ))}
         </div>
-        {lastUpdated && (
-          <div className="text-right text-xs text-gray-400 mt-2">
-            Last updated: {lastUpdated}
-          </div>
-        )}
+        {lastUpdated && <p className="text-xs text-gray-500 mt-2 text-right">Last updated: {lastUpdated}</p>}
       </section>
 
       {/* High Rate Slider */}
@@ -353,56 +193,23 @@ const Home = () => {
         <LastMarketStatus />
       </section>
 
-      {/* Quick Access Menu - Futuristic Design */}
+      {/* Quick Access */}
       <section className="max-w-7xl mx-auto mb-10 px-4">
-        <motion.h2 
-          className="text-3xl font-bold bg-gradient-to-r from-yellow-200 via-yellow-100 to-white bg-clip-text text-transparent mb-8 tracking-wide"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          Quick Access
-        </motion.h2>
+        <h2 className="text-xl font-semibold text-yellow-300 mb-6">Quick Access</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredMenuItems.map((item, i) => (
+          {menuItems.map((item, i) => (
             <motion.div
               key={i}
               onClick={() => handleNavigation(item.path)}
-              className="group relative cursor-pointer"
-              whileHover={{ scale: 1.05, y: -5 }}
+              className="bg-gray-900 border border-gray-700 rounded-xl p-6 hover:border-yellow-400 transition cursor-pointer"
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: i * 0.1 }}
             >
-              {/* Static border effect - removed animation */}
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-400 via-purple-500 to-yellow-400 rounded-2xl blur opacity-30 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
-              
-              {/* Card content */}
-              <div className="relative bg-gradient-to-br from-purple-900/60 to-purple-950/40 backdrop-blur-sm rounded-2xl p-8 border border-purple-600/30 hover:border-yellow-400/50 transition-all duration-300 shadow-xl">
-                {/* Glow effect on hover */}
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-yellow-400/10 to-orange-400/10 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
-                <div className="relative z-10 text-center">
-                  {/* Icon container */}
-                  <div className="mb-6 flex justify-center">
-                    <div className="p-4 bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 rounded-xl backdrop-blur-sm border border-yellow-400/30 group-hover:scale-110 transition-transform duration-300">
-                      {React.cloneElement(item.icon, { 
-                        className: "w-10 h-10 text-yellow-300 group-hover:text-yellow-200 transition-colors duration-300" 
-                      })}
-                    </div>
-                  </div>
-                  
-                  {/* Text content */}
-                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-yellow-200 transition-colors duration-300">
-                    {item.label}
-                  </h3>
-                  <p className="text-purple-200 text-sm leading-relaxed group-hover:text-purple-100 transition-colors duration-300">
-                    {item.description}
-                  </p>
-                  
-                  {/* Subtle accent line */}
-                  <div className="mt-4 mx-auto w-12 h-0.5 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-lg bg-gray-800 text-yellow-400">{item.icon}</div>
+                <div>
+                  <h3 className="text-white font-medium">{item.label}</h3>
+                  <p className="text-sm text-gray-400">{item.description}</p>
                 </div>
               </div>
             </motion.div>
@@ -412,35 +219,23 @@ const Home = () => {
 
       {/* Transactions */}
       <section className="max-w-7xl mx-auto mb-10 px-4">
-        <h2 className="text-2xl font-bold text-yellow-200 mb-4 tracking-wide">Recent Transactions</h2>
+        <h2 className="text-xl font-semibold text-yellow-300 mb-4">Recent Transactions</h2>
         {transactions.length === 0 ? (
-          <p className="text-gray-400">No transactions found.</p>
+          <p className="text-gray-500">No transactions found.</p>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {displayedTransactions.map((txn, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between bg-yellow-50 border-2 border-yellow-600 p-6 rounded-xl shadow"
-              >
+              <div key={i} className="flex items-center justify-between bg-gray-900 border border-gray-700 p-4 rounded-lg">
                 <div>
-                  <p className="font-bold text-yellow-700">{txn.type} #{txn._id?.slice(-6)}</p>
-                  <p className="text-xs text-gray-600">{new Date(txn.createdAt).toLocaleDateString()}</p>
+                  <p className="text-white font-medium">{txn.type} #{txn._id?.slice(-6)}</p>
+                  <p className="text-xs text-gray-500">{new Date(txn.createdAt).toLocaleDateString()}</p>
                 </div>
                 <div className="text-right">
-                  <p
-                    className={`font-bold ${
-                      txn.amount > 0 ? "text-green-600" : "text-red-600"
-                    }`}
-                  >
-                    {txn.amount > 0 ? "+" : "-"}₦
-                    {Math.abs(txn.amount).toLocaleString()}
+                  <p className={`font-bold ${txn.amount > 0 ? "text-green-400" : "text-red-400"}`}>
+                    {txn.amount > 0 ? "+" : "-"}₦{Math.abs(txn.amount).toLocaleString()}
                   </p>
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full ${getStatusColor(
-                      txn.status
-                    )}`}
-                  >
-                    {formatTransactionStatus(txn.status)}
+                  <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(txn.status)}`}>
+                    {txn.status}
                   </span>
                 </div>
               </div>
@@ -456,26 +251,6 @@ const Home = () => {
 
       {/* Footer */}
       <HomeFooter />
-
-      {/* Custom cyber animation styles */}
-      <style jsx>{`
-        @keyframes cyberline {
-          0% { transform: scaleY(1) translateY(0); opacity: 0.7; }
-          50% { transform: scaleY(1.2) translateY(-10px); opacity: 1; }
-          100% { transform: scaleY(1) translateY(0); opacity: 0.7; }
-        }
-        .animate-cyberline {
-          animation: cyberline 6s cubic-bezier(0.4,0,0.6,1) infinite;
-        }
-        @keyframes cyberpoly {
-          0% { transform: scale(1) rotate(0deg); opacity: 0.7; }
-          50% { transform: scale(1.15) rotate(12deg); opacity: 1; }
-          100% { transform: scale(1) rotate(0deg); opacity: 0.7; }
-        }
-        .animate-cyberpoly {
-          animation: cyberpoly 8s cubic-bezier(0.4,0,0.6,1) infinite;
-        }
-      `}</style>
     </div>
   );
 };

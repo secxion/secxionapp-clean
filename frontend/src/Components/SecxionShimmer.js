@@ -74,7 +74,7 @@ const SecxionShimmer = ({ type = "card", count = 1 }) => {
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         @keyframes shimmer {
           0% {
             background-position: -200% 0;

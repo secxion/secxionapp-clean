@@ -54,6 +54,7 @@ import { getUserEthWallet, saveEthWalletAddress, withdrawEth } from '../controll
 import { createEthWithdrawalRequest, getAllEthWithdrawalRequests, getEthWithdrawalStatus, getSingleEthWithdrawalRequest, updateEthWithdrawalStatus } from '../controller/ethWithdrawalController.js';
 import { generateSliderVerification } from "../utils/sliderVerification.js";
 import getLastUserMarketStatusController from '../controller/product/getLastUserMarketStatusController.js';
+import noCache from '../middleware/noCache.js';
 
 const router = express.Router();
 
@@ -97,7 +98,6 @@ router.get('/eth-price', async (req, res) => {
   }
 
   try {
-    console.log('Fetching ETH price from CoinGecko...');
     const url = new URL('https://api.coingecko.com/api/v3/simple/price');
     url.searchParams.set('ids', 'ethereum');
     url.searchParams.set('vs_currencies', 'usd,ngn');
@@ -138,7 +138,6 @@ router.get('/eth-price', async (req, res) => {
 // Additional endpoint for detailed market data
 router.get('/eth-market', async (req, res) => {
   try {
-    console.log('Fetching ETH market data from CoinGecko...');
     const url = new URL('https://api.coingecko.com/api/v3/coins/markets');
     url.searchParams.set('vs_currency', 'usd');
     url.searchParams.set('ids', 'ethereum');
@@ -164,7 +163,6 @@ router.get('/eth-market', async (req, res) => {
 // Additional endpoint for intraday chart data
 router.get('/eth-chart', async (req, res) => {
   try {
-    console.log('Fetching ETH chart data from CoinGecko...');
     const url = new URL('https://api.coingecko.com/api/v3/coins/ethereum/market_chart');
     url.searchParams.set('vs_currency', 'usd');
     url.searchParams.set('days', '1');
@@ -218,8 +216,8 @@ router.get("/slider-verification", (req, res) => {
 router.post("/signup", userSignUpController);
 router.get('/verify-email', verifyEmailController);
 router.post("/signin", userSignInController);
-router.get("/user-details", authToken, userDetailsController);
-router.get("/userLogout", userLogout);
+router.get("/user-details", authToken, noCache, userDetailsController);
+router.get("/userLogout", authToken, noCache, userLogout);
 router.post("/request-reset", sendResetCode); 
 router.post("/confirm-reset", verifyReset); 
 router.post("/resend-verification", resendVerificationEmailController);
@@ -227,31 +225,31 @@ router.post("/send-bank-code", authToken, sendBankAddCode);
 router.post("/verify-add-bank", authToken, verifyAndAddBankAccount);
 
 // Admin panel
-router.get("/all-user", authToken, allUsers);
-router.post("/update-user", authToken, updateUser);
-router.get("/get-all-users-market", authToken, getAllUserMarkets);
+router.get("/all-user", authToken, noCache, allUsers);
+router.post("/update-user", authToken, noCache, updateUser);
+router.get("/get-all-users-market", authToken, noCache, getAllUserMarkets);
 router.post("/update-market-status/:id", updateMarketStatus);
-router.get("/getAllDataForAdmin", authToken, getAllUserDataPadsForAdmin);
+router.get("/getAllDataForAdmin", authToken, noCache, getAllUserDataPadsForAdmin);
 router.delete("/delete-user", deleteUser);
 
 // Wallet balance
-router.get("/wallet/balane/:userId", authToken, getOtherUserWalletBalance);
+router.get("/wallet/balane/:userId", authToken, noCache, getOtherUserWalletBalance);
 
 // ETH
-router.post("/save-eth-address", authToken, saveEthWalletAddress);
-router.get("/eth-wallet", authToken, getUserEthWallet);
-router.post("/eth/withdrawal-request", authToken, createEthWithdrawalRequest);
-router.get("/eth/get-withdrawal-status", authToken, getEthWithdrawalStatus);
+router.post("/save-eth-address", authToken, noCache, saveEthWalletAddress);
+router.get("/eth-wallet", authToken, noCache, getUserEthWallet);
+router.post("/eth/withdrawal-request", authToken, noCache, createEthWithdrawalRequest);
+router.get("/eth/get-withdrawal-status", authToken, noCache, getEthWithdrawalStatus);
 
 // Admin routes
-router.get("/eth-withdrawals", authToken, getAllEthWithdrawalRequests);
-router.get("/eth-withdrawal/:requestId", authToken, getSingleEthWithdrawalRequest);
-router.put("/eth-withdrawal-status/:requestId", authToken, updateEthWithdrawalStatus);
+router.get("/eth-withdrawals", authToken, noCache, getAllEthWithdrawalRequests);
+router.get("/eth-withdrawal/:requestId", authToken, noCache, getSingleEthWithdrawalRequest);
+router.put("/eth-withdrawal-status/:requestId", authToken, noCache, updateEthWithdrawalStatus);
 
 // Product
-router.post("/upload-product", authToken, UploadProductController);
+router.post("/upload-product", authToken, noCache, UploadProductController);
 router.get("/get-product", getProductController);
-router.post("/update-product", authToken, updateProductController);
+router.post("/update-product", authToken, noCache, updateProductController);
 router.get("/get-categoryProduct", getCategoryProduct);
 router.post("/category-product", getCategoryWiseProduct);
 router.post("/product-details", getProductDetails);
@@ -259,11 +257,11 @@ router.get("/search", SearchProduct);
 router.post("/filter-product", filterProductController);
 
 // User market
-router.post("/upload-market", authToken, UserUploadMarketController);
-router.get("/get-market", authToken, getMarketController);
-router.get("/get-market/:marketId", authToken, getMarketByIdController);
-router.get("/market-record", authToken, marketRecordController);
-router.get('/last-market-status', authToken, getLastUserMarketStatusController);
+router.post("/upload-market", authToken, noCache, UserUploadMarketController);
+router.get("/get-market", authToken, noCache, getMarketController);
+router.get("/get-market/:marketId", authToken, noCache, getMarketByIdController);
+router.get("/market-record", authToken, noCache, marketRecordController);
+router.get('/last-market-status', authToken, noCache, getLastUserMarketStatusController);
 
 
 // System blog
@@ -273,74 +271,74 @@ router.put("/update-blog/:id", updateBlogNote);
 router.delete("/delete-blog/:id", deleteBlogNote);
 
 // Reports
-router.post("/submit-report", authToken, submitReportController);
-router.get("/get-reports", authToken, getUserReportsController);
-router.get("/all-reports", authToken, getAllReportsController);
-router.post("/reply-report/:id", authToken, replyToReportController);
-router.post("/reports/:id/reply", authToken, userReplyReportController);
-router.get("/reports/admin/:id/chat", authToken, getReportChatController);
-router.post("/reports/admin/:id/sendchat", authToken, sendChatMessageController);
+router.post("/submit-report", authToken, noCache, submitReportController);
+router.get("/get-reports", authToken, noCache, getUserReportsController);
+router.get("/all-reports", authToken, noCache, getAllReportsController);
+router.post("/reply-report/:id", authToken, noCache, replyToReportController);
+router.post("/reports/:id/reply", authToken, noCache, userReplyReportController);
+router.get("/reports/admin/:id/chat", authToken, noCache, getReportChatController);
+router.post("/reports/admin/:id/sendchat", authToken, noCache, sendChatMessageController);
 
 // DataPad
-router.get("/alldata", authToken, getAllDataPads);
-router.post("/createdata", authToken, createDataPad);
-router.put("/updatedata/:id", authToken, updateDataPad);
-router.delete("/deletedata/:id", authToken, deleteDataPad);
+router.get("/alldata", authToken, noCache, getAllDataPads);
+router.post("/createdata", authToken, noCache, createDataPad);
+router.put("/updatedata/:id", authToken, noCache, updateDataPad);
+router.delete("/deletedata/:id", authToken, noCache, deleteDataPad);
 
 // Contact us
 router.post("/contact-us-message", createContactUsMessage);
 router.get("/get-contact-us-messages", getAllContactUsMessages);
 
 // Wallet
-router.get("/wallet/balance", authToken, getWalletBalance);
+router.get("/wallet/balance", authToken, noCache, getWalletBalance);
 
 // Payment request
-router.post("/pr/create", authToken, createPaymentRequest);
-router.get("/pr/getall", authToken, getAllPaymentRequests);
-router.get("/pr/getuser", authToken, getUserPaymentRequests);
-router.patch("/pr/update/:id", authToken, updatePaymentRequestStatus);
+router.post("/pr/create", authToken, noCache, createPaymentRequest);
+router.get("/pr/getall", authToken, noCache, getAllPaymentRequests);
+router.get("/pr/getuser", authToken, noCache, getUserPaymentRequests);
+router.patch("/pr/update/:id", authToken, noCache, updatePaymentRequestStatus);
 
 // Bank account
-router.post("/ba/add", authToken, addBankAccount);
-router.get("/ba/get", authToken, getBankAccounts);
-router.delete("/ba/delete/:accountId", authToken, deleteBankAccount);
-router.post('/verify-account', authToken, resolveBankAccount);
-router.get('/banks', authToken, getPaystackBanks);
+router.post("/ba/add", authToken, noCache, addBankAccount);
+router.get("/ba/get", authToken, noCache, getBankAccounts);
+router.delete("/ba/delete/:accountId", authToken, noCache, deleteBankAccount);
+router.post('/verify-account', authToken, noCache, resolveBankAccount);
+router.get('/banks', authToken, noCache, getPaystackBanks);
 
 // Transactions
-router.get("/transactions/get", authToken, getUserTransactions);
+router.get("/transactions/get", authToken, noCache, getUserTransactions);
 
 // Notifications
-router.get("/tr-notifications/get", authToken, getUserTransactionNotifications);
-router.patch("/tr-notifications/read/:notificationId", authToken, markNotificationAsRead);
-router.delete("/tr-notifications/delete/:notificationId", authToken, deleteNotification);
-router.put("/tr-notifications/read-all", authToken, markAllNotificationsAsRead);
-router.delete("/tr-notifications/all", authToken, deleteAllNotifications);
-router.get("/report/notifications", authToken, getUserReportNotifications);
-router.get("/report-details/:reportId", authToken, fetchReportDetails);
-router.get("/user-report-details/:reportId", authToken, getReportDetailsController);
-router.get("/unread-notificationCount", authToken, getUnreadNotificationCount);
-router.get("/get-new-notifications", authToken, getNewNotifications);
-router.get("/get-market-notifications", authToken, getMarketNotifications);
+router.get("/tr-notifications/get", authToken, noCache, getUserTransactionNotifications);
+router.patch("/tr-notifications/read/:notificationId", authToken, noCache, markNotificationAsRead);
+router.delete("/tr-notifications/delete/:notificationId", authToken, noCache, deleteNotification);
+router.put("/tr-notifications/read-all", authToken, noCache, markAllNotificationsAsRead);
+router.delete("/tr-notifications/all", authToken, noCache, deleteAllNotifications);
+router.get("/report/notifications", authToken, noCache, getUserReportNotifications);
+router.get("/report-details/:reportId", authToken, noCache, fetchReportDetails);
+router.get("/user-report-details/:reportId", authToken, noCache, getReportDetailsController);
+router.get("/unread-notificationCount", authToken, noCache, getUnreadNotificationCount);
+router.get("/get-new-notifications", authToken, noCache, getNewNotifications);
+router.get("/get-market-notifications", authToken, noCache, getMarketNotifications);
 
 // Profile
 
-router.get("/profile", authToken, userProfileController.userProfileController);
-router.get("/profile/bank-accounts", authToken, userProfileController.getUserBankAccountsController);
-router.get("/profile/wallet-balance", authToken, userProfileController.getUserWalletBalanceController);
-router.put("/profile/edit", authToken, userProfileController.editProfileController);
+router.get("/profile", authToken, noCache, userProfileController.userProfileController);
+router.get("/profile/bank-accounts", authToken, noCache, userProfileController.getUserBankAccountsController);
+router.get("/profile/wallet-balance", authToken, noCache, userProfileController.getUserWalletBalanceController);
+router.put("/profile/edit", authToken, noCache, userProfileController.editProfileController);
 
 
 // Community
 router.get("/posts/approved", getApprovedPostsController);
-router.post("/posts/submit", authToken, submitNewPostController);
-router.delete("/posts/:postId/delete", authToken, deletePostController);
-router.post("/posts/:postId/comment", authToken, addCommentController);
+router.post("/posts/submit", authToken, noCache, submitNewPostController);
+router.delete("/posts/:postId/delete", authToken, noCache, deletePostController);
+router.post("/posts/:postId/comment", authToken, noCache, addCommentController);
 
 // Admin community
-router.get("/community/pending", authToken, getPendingPostsController);
-router.put("/community/post/:postId/approve", authToken, approvePostController);
-router.put("/community/post/:postId/reject", authToken, rejectPostController);
-router.get("/myposts", authToken, getUserPostsController);
+router.get("/community/pending", authToken, noCache, getPendingPostsController);
+router.put("/community/post/:postId/approve", authToken, noCache, approvePostController);
+router.put("/community/post/:postId/reject", authToken, noCache, rejectPostController);
+router.get("/myposts", authToken, noCache, getUserPostsController);
 
 export default router;

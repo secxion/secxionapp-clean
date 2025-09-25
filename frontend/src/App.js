@@ -13,7 +13,6 @@ import {
     fetchWalletBalanceAPI,
     signinUserAPI,
 } from "./services/apiService";
-import Shimmer from "./Components/Shimmer";
 import SecxionLoader from "./Components/SecxionLoader";
 
 function setViewportHeight() {

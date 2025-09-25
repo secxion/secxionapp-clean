@@ -13,7 +13,7 @@ import notificationSound from '../Assets/notification.mp3';
 import SummaryApi from "../common";
 import { BiSearch } from 'react-icons/bi';
 import SidePanel from "./SidePanel";
-import SecxionLogo from "../app/slogo.png";
+import Slogo from "../app/slogo.png";
 import DataPadButtonImg from "../app/Buttons/datapadbutton.png";
 import TradeStatusButtonImg from "../app/Buttons/tradestatusbutton.png";
 
@@ -297,8 +297,8 @@ const Header = () => {
           {/* Logo block */}
           <Link to="/home" className="relative hidden md:flex items-center font-bold text-yellow-400 tracking-wide">
             <img
-              src={SecxionLogo}
-              alt="Secxion Official Logo"
+              src={Slogo}
+              alt="Slogo Logo"
               className="w-12 h-12 object-contain"
               style={{ display: "block" }}
             />

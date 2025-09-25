@@ -1,105 +1,3 @@
-.hero-section {
-  position: relative;
-  background-size: cover;
-  background-position: center;
-  border-radius: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.5s ease-in-out;
-  overflow: hidden;
-}
-
-@media (min-width: 640px) {
-  .hero-section {
-    border-radius: 0.75rem;
-  }
-}
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  border-radius: inherit;
-}
-
-.hero-content {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  padding: 1rem;
-  max-width: 100%;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-
-.hero-title {
-  font-weight: bold;
-  color: white;
-  margin-bottom: 0.5rem;
-  text-shadow: 0 0 6px #00f7ff, 0 0 12px #00f7ff;
-  line-height: 1.2;
-  word-break: break-word;
-  hyphens: auto;
-}
-
-.hero-description {
-  color: #eee;
-  text-shadow: 0 0 6px #0ff;
-  font-style: italic;
-  line-height: 1.4;
-  word-break: break-word;
-  hyphens: auto;
-}
-
-.hero-button-container {
-  margin-top: 1rem;
-}
-
-.hero-button {
-  font-family: 'Press Start 2P', cursive;
-  background-color: #ffcc00;
-  color: #000;
-  border: 2px solid #000;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  display: inline-block;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  word-break: keep-all;
-  white-space: nowrap;
-}
-
-.hero-button:hover {
-  background-color: #ffaa00;
-  transform: translateY(-1px);
-}
-
-.hero-button:focus {
-  outline: 2px dashed #00f7ff;
-  outline-offset: 4px;
-}
-
-.dark .hero-title {
-  text-shadow: 0 0 6px #0ff, 0 0 12px #0ff;
-  color: #00e0ff;
-}
-
-.dark .hero-description {
-  color: #ccc;
-  text-shadow: 0 0 6px #0ff;
-}
-
-.dark .hero-button {
-  background-color: #ffd700;
-  color: #000;
-  border-color: #ffd700;
-}
-
-.dark .hero-button:hover {
-  background-color: #ffed4e;
-}
-
 .menu-grid {
   max-width: 100%;
   margin: 0 auto;
@@ -108,8 +6,6 @@
 .menu-card {
   position: relative;
   overflow: hidden;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
 }
 
 .menu-link {
@@ -268,7 +164,6 @@
   margin-bottom: 1rem;
   color: #1a1a1a;
   text-align: center;
-  word-break: break-word;
 }
 
 .dark .blog-header {

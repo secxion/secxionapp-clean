@@ -678,14 +678,14 @@ export default function Landing() {
                 rel="noopener noreferrer"
                 className="font-semibold text-yellow-400 hover:underline"
               >
-                BMXII.org
+                bmxii.org
               </a>.
             </p>
           </div>
         </div>
       </footer>
       {/* Custom Styles */}
-      <style jsx>{`
+      <style>{`
         @keyframes animate-scroll {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
