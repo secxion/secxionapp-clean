@@ -534,7 +534,7 @@ const Header = () => {
       />
 
       {/* Enhanced CSS for smooth button interactions */}
-      <style jsx>{`
+  <style>{`
         /* Prevent image selection and dragging */
         .group img {
           -webkit-user-select: none;

@@ -2,12 +2,12 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
-import { FaPlus, FaSearch, FaFilter, FaTh, FaList } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import { MdRefresh } from "react-icons/md";
 
 import UploadData from "../Components/UploadData";
 import DataPadList from "../Components/DataPadList";
-import DataPadGrid from "../Components/DataPadGrid";
+
 import EmptyState from "../Components/EmptyState";
 import SearchAndFilter from "../Components/SearchAndFilter";
 import SecxionLoader from "../Components/SecxionLoader";
@@ -21,10 +21,7 @@ const SORT_OPTIONS = {
   UPDATED: 'updated'
 };
 
-const VIEW_MODES = {
-  LIST: 'list',
-  GRID: 'grid'
-};
+
 
 const DataPad = () => {
   const { user } = useSelector((state) => state.user);
@@ -33,9 +30,9 @@ const DataPad = () => {
   const [dataPads, setDataPads] = useState([]);
   const [isUploadOpen, setIsUploadOpen] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null); // Removed unused error state
 
-  const [viewMode, setViewMode] = useState(VIEW_MODES.LIST);
+  // const [viewMode, setViewMode] = useState(VIEW_MODES.LIST); // Removed unused viewMode state
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState(SORT_OPTIONS.NEWEST);
   const [selectedTags, setSelectedTags] = useState([]);
@@ -47,8 +44,7 @@ const DataPad = () => {
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
+  setIsLoading(true);
 
     try {
       const response = await fetch(SummaryApi.allData.url, {
@@ -82,9 +78,8 @@ const DataPad = () => {
         throw new Error(data.message || "Failed to fetch data");
       }
     } catch (error) {
-      console.error("Error fetching data:", error);
-      setError(error.message);
-      toast.error("Failed to load data. Please try again.", {
+  console.error("Error fetching data:", error);
+  toast.error("Failed to load data. Please try again.", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -240,17 +235,19 @@ const DataPad = () => {
               <button
                 onClick={handleRefresh}
                 disabled={isLoading}
-                className="p-2 text-yellow-400 hover:text-yellow-300 transition-colors duration-200 disabled:opacity-50 bg-gray-800/50 rounded-lg border border-gray-700"
+                className="p-2 text-yellow-400 hover:text-yellow-300 transition-colors duration-200 disabled:opacity-50 bg-gray-800/50 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400"
                 title="Refresh"
+                aria-label="Refresh notes"
               >
                 <MdRefresh className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
               </button>
-              
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleOpenEditor()}
-                className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 px-4 py-2 rounded-lg font-semibold shadow-lg transition-all duration-200 flex items-center space-x-2"
+                className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 px-4 py-2 rounded-lg font-semibold shadow-lg transition-all duration-200 flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                aria-label="Create new note"
+                title="Create new note"
               >
                 <FaPlus className="w-4 h-4" />
                 <span className="hidden sm:inline">New Note</span>
@@ -262,7 +259,7 @@ const DataPad = () => {
 
       {/* Search and Filter */}
       {dataPads.length > 0 && (
-        <div className="sticky top-32 lg:top-36 z-20 bg-gray-900/95 backdrop-blur-sm border-b border-gray-700/50">
+        <div className="sticky top-32 lg:top-36 z-20 bg-gray-900/95 backdrop-blur-sm border-b border-gray-700/50 shadow-sm">
           <SearchAndFilter
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -319,23 +316,13 @@ const DataPad = () => {
                 exit={{ opacity: 0 }}  
                 className="pb-20"
               >
-                {viewMode === VIEW_MODES.LIST ? (
-                  <DataPadList
-                    dataPads={filteredAndSortedDataPads}
-                    onOpen={handleOpenEditor}
-                    onDelete={handleDeleteDataPad}
-                    isLoading={isLoading}
-                  />
-                ) : (
-                  <DataPadGrid
-                    dataPads={filteredAndSortedDataPads}
-                    onEdit={handleOpenEditor}
-                    onDelete={handleDeleteDataPad}
-                    onView={handleOpenEditor}
-                    onCreateNew={() => handleOpenEditor()}
-                    isLoading={isLoading}
-                  />
-                )}
+                {/* Always use DataPadList (list view) for now, or switch to DataPadGrid if you want grid view. */}
+                <DataPadList
+                  dataPads={filteredAndSortedDataPads}
+                  onOpen={handleOpenEditor}
+                  onDelete={handleDeleteDataPad}
+                  isLoading={isLoading}
+                />
               </motion.div>
             )}
           </AnimatePresence>
@@ -361,9 +348,11 @@ const DataPad = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => handleOpenEditor()}
-          className="fixed bottom-6 right-6 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 p-4 rounded-full shadow-xl lg:hidden transition-all duration-200 z-40"
+          className="fixed bottom-6 right-6 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 p-4 rounded-full shadow-xl lg:hidden transition-all duration-200 z-40 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          aria-label="Create new note"
+          title="Create new note"
         >
-          <FaPlus className="w-6 h-6" />
+          <FaPlus className="w-6 h-6" aria-hidden="true" />
         </motion.button>
       )}
     </motion.div>

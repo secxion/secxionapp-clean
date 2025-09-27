@@ -1,46 +1,39 @@
 import productModel from "../../models/productModel.js";
 import uploadProductPermission from "../../helpers/permission.js";
 
-async function updateProductController(req, res) {
+
+async function updateProductController(req, res, next) {
   try {
     if (!uploadProductPermission(req.userId)) {
-      throw new Error("Permission denied");
+      const err = new Error("You do not have permission to update products.");
+      err.status = 403;
+      throw err;
     }
-
     const { _id, ...resBody } = req.body;
-
     if (!_id) {
-      throw new Error("Product ID (_id) is required");
+      const err = new Error("Product ID (_id) is required.");
+      err.status = 400;
+      throw err;
     }
-
     const updatedProduct = await productModel.findByIdAndUpdate(
       _id,
       resBody,
-      { new: true, runValidators: true } 
+      { new: true, runValidators: true }
     );
-
     if (!updatedProduct) {
-      return res.status(404).json({
-        message: "Product not found",
-        data: null,
-        success: false,
-        error: true,
-      });
+      const err = new Error("Product not found.");
+      err.status = 404;
+      throw err;
     }
-
     res.json({
-      message: "Update successfully",
+      message: "Product updated successfully.",
       data: updatedProduct,
       success: true,
       error: false,
     });
   } catch (err) {
-    console.error("Error updating product:", err);
-    res.status(400).json({
-      message: err.message || err,
-      error: true,
-      success: false,
-    });
+    err.message = err.message || 'Could not update product. Please try again.';
+    next(err);
   }
 }
 

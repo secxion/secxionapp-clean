@@ -65,27 +65,32 @@ const DataPadList = ({ dataPads, onOpen, onDelete, isLoading }) => {
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-2 ml-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            {/* Actions: always visible on mobile, hover/focus on desktop */}
+            <div
+              className="flex items-center gap-2 ml-4 transition-opacity duration-200
+                opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"
+            >
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onOpen(pad);
                 }}
-                className="p-2 text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10 rounded-lg transition-all duration-200"
+                className="p-2 text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400"
                 title="Edit"
+                aria-label={`Edit note: ${pad.title || 'Untitled'}`}
               >
-                <FaEdit className="w-4 h-4" />
+                <FaEdit className="w-4 h-4" aria-hidden="true" />
               </button>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onDelete(pad._id);
                 }}
-                className="p-2 text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-lg transition-all duration-200"
+                className="p-2 text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400"
                 title="Delete"
+                aria-label={`Delete note: ${pad.title || 'Untitled'}`}
               >
-                <FaTrash className="w-4 h-4" />
+                <FaTrash className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
           </div>

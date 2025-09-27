@@ -323,24 +323,19 @@ const EthWallet = () => {
       }
 
       return () => {
-        if (countdownRef.current) { clearInterval(countdownRef.current); countdownRef.current = null; }
-        if (statusIntervalRef.current) { clearInterval(statusIntervalRef.current); statusIntervalRef.current = null; }
+        if (countdownRef.current) {
+          clearInterval(countdownRef.current);
+          countdownRef.current = null;
+        }
+        if (statusIntervalRef.current) {
+          clearInterval(statusIntervalRef.current);
+          statusIntervalRef.current = null;
+        }
       };
     }
-  }, [countdown, withdrawalStatus]);
+  }, [withdrawalStatus, countdown]);
 
-  // Load recent address history from localStorage for this user
-  useEffect(() => {
-    try {
-      const stored = JSON.parse(localStorage.getItem("eth_addresses") || "[]");
-      const userSpecific = stored.filter((addr) => addr.userId === (user?._id || user?.id));
-      setAddressHistory(userSpecific.map((a) => a.address).slice(0, MAX_ADDRESS_HISTORY));
-    } catch (err) {
-      setAddressHistory([]);
-    }
-  }, [user]);
-
-  // Recalculate ETH equivalents when amount, rate or fees change
+  // Calculate ETH equivalent and net to send when dependencies change
   useEffect(() => {
     const naira = parseFloat(nairaWithdrawAmount);
     const rate = parseFloat(ethRate) || 0;

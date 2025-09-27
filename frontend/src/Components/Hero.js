@@ -32,21 +32,24 @@ const Hero = () => {
 
   const imageIndex = ((page % heroImages.length) + heroImages.length) % heroImages.length;
 
-  const paginate = (newDirection) => {
-    setPage([page + newDirection, newDirection]);
-  };
+  const paginate = React.useCallback(
+    (newDirection) => {
+      setPage([page + newDirection, newDirection]);
+    },
+    [page]
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
       paginate(1);
     }, 6000);
     return () => clearInterval(interval);
-  }, [page]);
+  }, [page, paginate]);
 
   const currentImage = heroImages[imageIndex];
 
-  return (
-    <header className="relative w-full h-[75vh] md:h-[80vh] overflow-hidden">
+    return (
+      <header className="relative w-full h-56 sm:h-72 md:h-[75vh] md:h-[80vh] overflow-hidden rounded-2xl shadow-xl border-4 border-yellow-800 mt-6">
       {/* Image Slider */}
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
@@ -76,7 +79,8 @@ const Hero = () => {
           <img
             src={currentImage.url}
             alt={currentImage.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain sm:object-cover"
+            style={{ background: '#222' }}
           />
         </motion.div>
       </AnimatePresence>
@@ -87,19 +91,21 @@ const Hero = () => {
       {/* Navigation Arrows */}
       <button
         onClick={() => paginate(-1)}
-        className="hero-swiper-nav prev left-4 md:left-10 z-[3]"
+        className="hero-swiper-nav prev left-2 sm:left-4 md:left-10 z-[3] top-1/2 -translate-y-1/2"
+        aria-label="Previous slide"
       >
-        <ChevronLeft size={28} className="text-white" />
+        <ChevronLeft size={24} className="text-white" />
       </button>
       <button
         onClick={() => paginate(1)}
-        className="hero-swiper-nav next right-4 md:right-10 z-[3]"
+        className="hero-swiper-nav next right-2 sm:right-4 md:right-10 z-[3] top-1/2 -translate-y-1/2"
+        aria-label="Next slide"
       >
-        <ChevronRight size={28} className="text-white" />
+        <ChevronRight size={24} className="text-white" />
       </button>
 
       {/* Pagination Dots */}
-      <div className="hero-swiper-pagination z-[3]">
+  <div className="hero-swiper-pagination z-[3] mb-2 sm:mb-0">
         {heroImages.map((_, i) => (
           <div
             key={i}
@@ -110,7 +116,7 @@ const Hero = () => {
       </div>
 
       {/* Hero Content */}
-      <div className="relative z-[3] text-center flex flex-col items-center justify-center h-full px-4">
+  <div className="relative z-[3] text-center flex flex-col items-center justify-center h-full px-2 sm:px-4">
         <motion.div
           key={page}
           initial={{ opacity: 0, y: 30 }}
@@ -121,10 +127,10 @@ const Hero = () => {
             <img
               src={ExploreMarketButtonImg}
               alt="Explore Market"
-              className="h-32 sm:h-48 md:h-56 w-auto object-contain hover:scale-105 transition-transform duration-200"
+              className="h-16 xs:h-24 sm:h-32 md:h-48 w-auto object-contain hover:scale-105 transition-transform duration-200"
             />
           </Link>
-          <div className="mt-6 text-white text-xl md:text-2xl font-semibold drop-shadow-lg">
+          <div className="mt-3 sm:mt-6 text-white text-base xs:text-lg sm:text-xl md:text-2xl font-semibold drop-shadow-lg bg-black/40 px-2 py-1 rounded-lg inline-block">
             {currentImage.title}
           </div>
         </motion.div>

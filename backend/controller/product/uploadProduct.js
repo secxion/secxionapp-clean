@@ -1,30 +1,26 @@
 import uploadProductPermission from "../../helpers/permission.js";
 import productModel from "../../models/productModel.js";
 
-async function UploadProductController(req,res){
-    try{
-        const sessionUserId = req.userId
 
-        if(!uploadProductPermission(sessionUserId)){
-            throw new Error("Permission denied")
+async function UploadProductController(req, res, next) {
+    try {
+        const sessionUserId = req.userId;
+        if (!uploadProductPermission(sessionUserId)) {
+            const err = new Error("You do not have permission to upload products.");
+            err.status = 403;
+            throw err;
         }
-    
-        const uploadProduct = new productModel(req.body)
-        const saveProduct = await uploadProduct.save()
-
+        const uploadProduct = new productModel(req.body);
+        const saveProduct = await uploadProduct.save();
         res.status(201).json({
-            message : "Product upload successfully",
-            error : false,
-            success : true,
-            data : saveProduct
-        })
-
-    }catch(err){
-        res.status(400).json({
-            message : err.message || err,
-            error : true,
-            success : false
-        })
+            message: "Product uploaded successfully.",
+            error: false,
+            success: true,
+            data: saveProduct
+        });
+    } catch (err) {
+        err.message = err.message || 'Could not upload product. Please try again.';
+        next(err);
     }
 }
 

@@ -1,26 +1,28 @@
 import BlogNote from "../models/systemBlogModel.js";
 
-export const createBlogNote = async (req, res) => {
+export const createBlogNote = async (req, res, next) => {
   try {
     const { title, content } = req.body;
     const newNote = new BlogNote({ title, content });
     await newNote.save();
     res.status(201).json(newNote);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating note', error });
+    error.message = 'Could not create blog note. Please try again later.';
+    next(error);
   }
 };
 
-export const getAllBlogNotes = async (req, res) => {
+export const getAllBlogNotes = async (req, res, next) => {
   try {
     const notes = await BlogNote.find({ isActive: true }).sort({ createdAt: -1 });
     res.status(200).json(notes);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching notes', error });
+    error.message = 'Unable to fetch blog notes at this time.';
+    next(error);
   }
 };
 
-export const updateBlogNote = async (req, res) => {
+export const updateBlogNote = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { title, content } = req.body;
@@ -30,15 +32,18 @@ export const updateBlogNote = async (req, res) => {
       { new: true }
     );
     if (!updatedNote) {
-      return res.status(404).json({ message: 'Note not found' });
+      const err = new Error('Blog note not found.');
+      err.status = 404;
+      return next(err);
     }
     res.status(200).json(updatedNote);
   } catch (error) {
-    res.status(500).json({ message: 'Error updating note', error });
+    error.message = 'Could not update blog note. Please try again.';
+    next(error);
   }
 };
 
-export const deleteBlogNote = async (req, res) => {
+export const deleteBlogNote = async (req, res, next) => {
   try {
     const { id } = req.params;
     const deletedNote = await BlogNote.findByIdAndUpdate(
@@ -47,10 +52,13 @@ export const deleteBlogNote = async (req, res) => {
       { new: true }
     );
     if (!deletedNote) {
-      return res.status(404).json({ message: 'Note not found' });
+      const err = new Error('Blog note not found.');
+      err.status = 404;
+      return next(err);
     }
     res.status(200).json({ message: 'Note deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting note', error });
+    error.message = 'Could not delete blog note. Please try again.';
+    next(error);
   }
 };

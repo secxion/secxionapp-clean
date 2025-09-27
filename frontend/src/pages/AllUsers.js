@@ -76,21 +76,22 @@ const AllUsers = () => {
     };
 
     return (
-        <div className='container pt-6 pb-4 h-full flex flex-col'>
+    <main className='container pt-6 pb-4 h-full flex flex-col' role="main" aria-label="All Users Main Content">
             {/* Bulk Actions */}
-            <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-end items-center">
+            <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-end items-center" aria-label="Bulk Actions">
                 <button
                     className={`inline-flex  items-center px-4 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 ${selectedUsers.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                     onClick={() => deleteUsers(selectedUsers, refetch, setSelectedUsers)}
                     disabled={selectedUsers.length === 0}
+                    aria-label="Delete Selected Users"
                 >
-                    <FaTrashAlt className="mr-2" /> Delete Selected
+                    <FaTrashAlt className="mr-2" aria-hidden="true" /> Delete Selected
                 </button>
             </div>
 
             {/* Scrollable Table Container */}
-            <div className="flex-1 overflow-auto">
-                <table className='w-full border-collapse min-w-[900px]'>
+            <div className="flex-1 overflow-auto" aria-label="Users Table Container">
+                <table className='w-full border-collapse min-w-[900px]' aria-label="All Users Table">
                     <thead className="sticky top-0 bg-gray-100 border-b border-gray-200 text-left z-10">
                         <tr>
                             <th className="p-3 text-sm font-semibold text-gray-700">
@@ -99,6 +100,7 @@ const AllUsers = () => {
                                     onChange={toggleSelectAll}
                                     checked={selectedUsers.length === allUser.length && allUser.length > 0}
                                     className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4"
+                                    aria-label="Select All Users"
                                 />
                             </th>
                             <th className="p-3 text-sm font-semibold text-gray-700">#</th>
@@ -127,6 +129,7 @@ const AllUsers = () => {
                                             checked={selectedUsers.includes(el._id)}
                                             onChange={() => toggleUserSelection(el._id)}
                                             className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4"
+                                            aria-label={`Select user ${el?.name}`}
                                         />
                                     </td>
                                     <td className="p-3 text-sm text-gray-500">{index + 1}</td>
@@ -141,16 +144,16 @@ const AllUsers = () => {
                                                 setUpdateUserDetails(el);
                                                 setOpenUpdateRole(true);
                                             }}
-                                            aria-label="Edit User Role"
+                                            aria-label={`Edit role for user ${el?.name}`}
                                         >
-                                            <MdModeEdit size={16} className="mr-1" /> Edit Role
+                                            <MdModeEdit size={16} className="mr-1" aria-hidden="true" /> Edit Role
                                         </button>
                                         <button
                                             className='inline-flex items-center px-3 py-1.5 border border-red-300 rounded-md shadow-sm text-xs font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500'
                                             onClick={() => deleteUsers([el._id], refetch, setSelectedUsers)}
-                                            aria-label="Delete User"
+                                            aria-label={`Delete user ${el?.name}`}
                                         >
-                                            <FaTrashAlt size={14} className="mr-1" /> Delete
+                                            <FaTrashAlt size={14} className="mr-1" aria-hidden="true" /> Delete
                                         </button>
                                     </td>
                                 </tr>
@@ -174,7 +177,7 @@ const AllUsers = () => {
                     callFunc={refetch}
                 />
             )}
-        </div>
+    </main>
     );
 };
 

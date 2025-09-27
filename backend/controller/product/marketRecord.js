@@ -1,63 +1,46 @@
 import userProduct from "../../models/userProduct.js";
 
-async function marketRecordController(req, res) {
+
+async function marketRecordController(req, res, next) {
     try {
         const { _id, ...resBody } = req.body;
-
         if (!req.userId) {
-            return res.status(401).json({
-                message: "Unauthorized! Please login.",
-                error: true,
-                success: false
-            });
+            const err = new Error("Unauthorized! Please login.");
+            err.status = 401;
+            throw err;
         }
-
         if (!_id) {
-            throw new Error("Product ID (_id) is required");
+            const err = new Error("Product ID (_id) is required.");
+            err.status = 400;
+            throw err;
         }
-
         const existingProduct = await userProduct.findById(_id);
-
         if (!existingProduct) {
-            return res.status(404).json({
-                message: "Product not found",
-                data: null,
-                success: false,
-                error: true,
-            });
+            const err = new Error("Product not found.");
+            err.status = 404;
+            throw err;
         }
-
         if (existingProduct.userId.toString() !== req.userId) {
-            return res.status(403).json({
-                message: "Forbidden! You are not authorized to modify this product.",
-                error: true,
-                success: false,
-            });
+            const err = new Error("You are not authorized to modify this product.");
+            err.status = 403;
+            throw err;
         }
-
         if (!resBody.pricing && existingProduct.pricing) {
             resBody.pricing = existingProduct.pricing;
         }
-
         const marketRecord = await userProduct.findByIdAndUpdate(_id, resBody, {
             new: true,
             runValidators: true,
         });
-
-
         res.json({
-            message: "Updated successfully",
+            message: "Product updated successfully.",
             data: marketRecord,
             success: true,
             error: false,
         });
     } catch (err) {
-        console.error("Error updating product:", err);
-        res.status(400).json({
-            message: err.message || err,
-            error: true,
-            success: false,
-        });
+        err.message = err.message || 'Could not update product. Please try again.';
+        next(err);
     }
 }
 

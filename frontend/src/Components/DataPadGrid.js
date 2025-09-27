@@ -64,7 +64,7 @@ const GridCard = ({ dataPad, onEdit, onDelete, onView }) => {
         <div className="relative h-32 overflow-hidden rounded-t-lg">
           <img
             src={dataPad.media[0]}
-            alt="Note preview"
+            alt={dataPad.title ? `Preview for ${dataPad.title}` : "Note preview"}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
           />
           {dataPad.media.length > 1 && (
@@ -82,7 +82,6 @@ const GridCard = ({ dataPad, onEdit, onDelete, onView }) => {
           <h3 className="text-lg font-semibold text-white dark:text-white truncate group-hover:text-blue-400 dark:group-hover:text-blue-400 transition-colors duration-200">
             {dataPad.title || "Untitled Note"}
           </h3>
-          
           <div className="relative">
             <button
               onClick={(e) => {
@@ -90,10 +89,11 @@ const GridCard = ({ dataPad, onEdit, onDelete, onView }) => {
                 setShowActions(!showActions);
               }}
               className="p-1 text-gray-400 hover:text-gray-300 dark:hover:text-gray-300 rounded-full hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+              aria-label="Show actions"
+              title="Show actions"
             >
               <FaEllipsisV className="w-4 h-4" />
             </button>
-            
             <AnimatePresence>
               {showActions && (
                 <motion.div
@@ -106,15 +106,18 @@ const GridCard = ({ dataPad, onEdit, onDelete, onView }) => {
                   <button
                     onClick={handleEdit}
                     className="w-full px-3 py-2 text-left text-sm text-gray-300 dark:text-gray-300 hover:bg-gray-700 dark:hover:bg-gray-700 flex items-center space-x-2"
+                    aria-label={`Edit note: ${dataPad.title || 'Untitled'}`}
+                    title="Edit"
                   >
                     <FaEdit className="w-3 h-3" />
                     <span>Edit</span>
                   </button>
-                  
                   <button
                     onClick={handleDelete}
                     disabled={isDeleting}
                     className="w-full px-3 py-2 text-left text-sm text-red-400 dark:text-red-400 hover:bg-red-900/20 dark:hover:bg-red-900/20 flex items-center space-x-2 disabled:opacity-50"
+                    aria-label={`Delete note: ${dataPad.title || 'Untitled'}`}
+                    title="Delete"
                   >
                     <FaTrash className="w-3 h-3" />
                     <span>{isDeleting ? 'Deleting...' : 'Delete'}</span>
@@ -124,14 +127,12 @@ const GridCard = ({ dataPad, onEdit, onDelete, onView }) => {
             </AnimatePresence>
           </div>
         </div>
-
         {/* Content */}
         {dataPad.content && (
           <p className="text-gray-400 dark:text-gray-400 text-sm mb-3 flex-1">
             {truncateText(dataPad.content)}
           </p>
         )}
-
         {/* Tags */}
         {dataPad.tags && dataPad.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-3">
@@ -150,28 +151,29 @@ const GridCard = ({ dataPad, onEdit, onDelete, onView }) => {
             )}
           </div>
         )}
-
         {/* Footer */}
         <div className="flex items-center justify-between text-xs text-gray-400 dark:text-gray-400 mt-auto">
           <div className="flex items-center">
             <FaCalendarAlt className="w-3 h-3 mr-1" />
             <span>{formatDate(dataPad.createdAt)}</span>
           </div>
-          
-          <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="flex items-center space-x-2 ml-4 transition-opacity duration-200 opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
             <button
               onClick={handleEdit}
-              className="p-1 text-gray-400 hover:text-blue-400 dark:hover:text-blue-400 rounded transition-colors duration-200"
+              className="p-1 text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              title="Edit"
+              aria-label={`Edit note: ${dataPad.title || 'Untitled'}`}
             >
-              <FaEdit className="w-3 h-3" />
+              <FaEdit className="w-3 h-3" aria-hidden="true" />
             </button>
-            
             <button
               onClick={handleDelete}
               disabled={isDeleting}
-              className="p-1 text-gray-400 hover:text-red-400 dark:hover:text-red-400 rounded transition-colors duration-200 disabled:opacity-50"
+              className="p-1 text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 disabled:opacity-50"
+              title="Delete"
+              aria-label={`Delete note: ${dataPad.title || 'Untitled'}`}
             >
-              <FaTrash className="w-3 h-3" />
+              <FaTrash className="w-3 h-3" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -216,7 +218,7 @@ const ListCard = ({ dataPad, onEdit, onDelete, onView }) => {
           <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden">
             <img
               src={dataPad.media[0]}
-              alt="Note preview"
+              alt={dataPad.title ? `Preview for ${dataPad.title}` : "Note preview"}
               className="w-full h-full object-cover"
             />
             {dataPad.media.length > 1 && (
@@ -226,7 +228,6 @@ const ListCard = ({ dataPad, onEdit, onDelete, onView }) => {
             )}
           </div>
         )}
-
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between">
@@ -234,13 +235,11 @@ const ListCard = ({ dataPad, onEdit, onDelete, onView }) => {
               <h3 className="text-lg font-semibold text-white dark:text-white truncate group-hover:text-blue-400 dark:group-hover:text-blue-400 transition-colors duration-200">
                 {dataPad.title || "Untitled Note"}
               </h3>
-              
               {dataPad.content && (
                 <p className="text-gray-400 dark:text-gray-400 text-sm mt-1 line-clamp-2">
                   {truncateText(dataPad.content, 150)}
                 </p>
               )}
-
               {dataPad.tags && dataPad.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {dataPad.tags.slice(0, 3).map((tag, index) => (
@@ -258,28 +257,29 @@ const ListCard = ({ dataPad, onEdit, onDelete, onView }) => {
                   )}
                 </div>
               )}
-
               <div className="flex items-center text-xs text-gray-400 dark:text-gray-400 mt-2">
                 <FaCalendarAlt className="w-3 h-3 mr-1" />
                 <span>{formatDate(dataPad.createdAt)}</span>
               </div>
             </div>
-
             {/* Actions */}
-            <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ml-4">
+            <div className="flex items-center space-x-2 ml-4 transition-opacity duration-200 opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
               <button
                 onClick={handleEdit}
-                className="p-2 text-gray-400 hover:text-blue-400 dark:hover:text-blue-400 rounded-full hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors duration-200"
+                className="p-2 text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                title="Edit"
+                aria-label={`Edit note: ${dataPad.title || 'Untitled'}`}
               >
-                <FaEdit className="w-4 h-4" />
+                <FaEdit className="w-4 h-4" aria-hidden="true" />
               </button>
-              
               <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="p-2 text-gray-400 hover:text-red-400 dark:hover:text-red-400 rounded-full hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50"
+                className="p-2 text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 disabled:opacity-50"
+                title="Delete"
+                aria-label={`Delete note: ${dataPad.title || 'Untitled'}`}
               >
-                <FaTrash className="w-4 h-4" />
+                <FaTrash className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
           </div>

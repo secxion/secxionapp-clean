@@ -80,12 +80,12 @@ const ContactUs = () => {
   };
 
   return (
-    <motion.div
-      className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 text-gray-100 font-sans relative overflow-hidden"
-      initial={false}
-      animate="visible"
-      variants={containerVariants}
-    >
+  <>
+      <main
+        className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 text-gray-100 font-sans relative overflow-hidden"
+        role="main"
+        aria-label="Contact Us Main Content"
+      >
       <Navigation currentPage="contact" />
 
       {/* Logo background overlay */}
@@ -109,24 +109,25 @@ const ContactUs = () => {
         <div className="absolute bottom-20 right-10 w-24 h-24 bg-gradient-to-br from-yellow-800/30 to-yellow-700/30 transform rotate-12 animate-pulse"></div>
       </div>
 
-      <main className="relative z-10 pt-24 pb-16 px-4 sm:px-6 lg:px-8 flex-1 overflow-y-auto">
+      <section className="relative z-10 pt-24 pb-16 px-4 sm:px-6 lg:px-8 flex-1 overflow-y-auto" aria-labelledby="contact-us-heading">
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
           <button
             onClick={handleGoBack}
-            className="flex items-center gap-2 mb-6 text-yellow-400 hover:text-yellow-200 font-semibold transition-colors focus:outline-none"
+            className="flex items-center gap-2 mb-6 text-yellow-400 hover:text-yellow-200 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400"
             aria-label="Go back"
             type="button"
+            tabIndex={0}
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5" aria-hidden="true" />
             <span>Back</span>
           </button>
           {/* Header */}
           <motion.div className="text-center mb-16" variants={itemVariants}>
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-700 rounded-2xl mb-6 shadow-lg">
-              <Mail className="h-8 w-8 text-yellow-400" />
+              <Mail className="h-8 w-8 text-yellow-400" aria-hidden="true" />
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold text-yellow-200 mb-4">
+            <h1 id="contact-us-heading" className="text-4xl sm:text-5xl font-bold text-yellow-200 mb-4">
               Contact Us
             </h1>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -135,8 +136,8 @@ const ContactUs = () => {
           </motion.div>
 
           {/* Contact Info Cards */}
-          <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12" variants={itemVariants}>
-            <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/80 rounded-2xl shadow-lg p-6 text-center border border-yellow-700/10 hover:shadow-xl transition-shadow duration-300">
+          <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12" variants={itemVariants} aria-label="Contact Information Cards">
+            <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/80 rounded-2xl shadow-lg p-6 text-center border border-yellow-700/10 hover:shadow-xl transition-shadow duration-300" role="region" aria-label="Email Contact Card">
               <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-800 rounded-xl mb-4">
                 <Mail className="h-6 w-6 text-yellow-500" />
               </div>
@@ -146,7 +147,7 @@ const ContactUs = () => {
                 moderator@mysecxion.com
               </a>
             </div>
-            <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/80 rounded-2xl shadow-lg p-6 text-center border border-yellow-700/10 hover:shadow-xl transition-shadow duration-300">
+            <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/80 rounded-2xl shadow-lg p-6 text-center border border-yellow-700/10 hover:shadow-xl transition-shadow duration-300" role="region" aria-label="Support Contact Card">
               <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-800 rounded-xl mb-4">
                 <Phone className="h-6 w-6 text-yellow-500" />
               </div>
@@ -154,7 +155,7 @@ const ContactUs = () => {
               <p className="text-gray-300 text-sm mb-3">24/7 customer support</p>
               <span className="text-yellow-500 font-medium">Available 24/7</span>
             </div>
-            <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/80 rounded-2xl shadow-lg p-6 text-center border border-yellow-700/10 hover:shadow-xl transition-shadow duration-300">
+            <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/80 rounded-2xl shadow-lg p-6 text-center border border-yellow-700/10 hover:shadow-xl transition-shadow duration-300" role="region" aria-label="Quick Response Card">
               <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-800 rounded-xl mb-4">
                 <CheckCircle className="h-6 w-6 text-yellow-500" />
               </div>
@@ -165,13 +166,16 @@ const ContactUs = () => {
           </motion.div>
 
           {/* Contact Form */}
-          <motion.div className="bg-gradient-to-br from-gray-900/80 to-gray-800/70 rounded-3xl shadow-xl p-8 md:p-12 border border-yellow-700/20 backdrop-blur-xl" variants={itemVariants}>
+          <motion.div className="bg-gradient-to-br from-gray-900/80 to-gray-800/70 rounded-3xl shadow-xl p-8 md:p-12 border border-yellow-700/20 backdrop-blur-xl" variants={itemVariants} aria-label="Contact Form Section">
             {submissionSuccess && (
               <motion.div
                 className="mb-8 p-6 bg-green-900 border border-green-700 rounded-2xl flex items-center"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
+                aria-live="polite"
+                role="status"
+                tabIndex={-1}
               >
                 <CheckCircle className="h-6 w-6 text-green-400 mr-4 flex-shrink-0" />
                 <div>
@@ -186,6 +190,9 @@ const ContactUs = () => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
+                aria-live="polite"
+                role="alert"
+                tabIndex={-1}
               >
                 <AlertCircle className="h-6 w-6 text-red-400 mr-4 flex-shrink-0" />
                 <div>
@@ -194,7 +201,7 @@ const ContactUs = () => {
                 </div>
               </motion.div>
             )}
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-8" aria-label="Contact Us Form" autoComplete="on">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-semibold text-yellow-200 mb-3">
@@ -209,6 +216,8 @@ const ContactUs = () => {
                     required
                     className="w-full px-4 py-4 bg-gray-800 border border-yellow-700 rounded-xl focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-colors duration-200 text-gray-100 placeholder-gray-400"
                     placeholder="Enter your full name"
+                    aria-required="true"
+                    aria-label="Full Name"
                   />
                 </div>
                 <div>
@@ -224,6 +233,8 @@ const ContactUs = () => {
                     required
                     className="w-full px-4 py-4 bg-gray-800 border border-yellow-700 rounded-xl focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-colors duration-200 text-gray-100 placeholder-gray-400"
                     placeholder="Enter your email address"
+                    aria-required="true"
+                    aria-label="Email Address"
                   />
                 </div>
               </div>
@@ -239,6 +250,7 @@ const ContactUs = () => {
                   onChange={handleChange}
                   className="w-full px-4 py-4 bg-gray-800 border border-yellow-700 rounded-xl focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-colors duration-200 text-gray-100 placeholder-gray-400"
                   placeholder="Enter your telegram number"
+                  aria-label="Telegram Number (Optional)"
                 />
               </div>
               <div>
@@ -254,6 +266,8 @@ const ContactUs = () => {
                   rows={6}
                   className="w-full px-4 py-4 bg-gray-800 border border-yellow-700 rounded-xl focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-colors duration-200 text-gray-100 placeholder-gray-400 resize-none"
                   placeholder="Tell us how we can help you..."
+                  aria-required="true"
+                  aria-label="Message"
                 />
               </div>
               <div className="flex justify-center">
@@ -263,15 +277,16 @@ const ContactUs = () => {
                   className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-yellow-600 to-yellow-800 text-gray-900 font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  aria-label="Send Message"
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-yellow-400 mr-3"></div>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-yellow-400 mr-3" aria-hidden="true"></div>
                       Sending Message...
                     </>
                   ) : (
                     <>
-                      <Send className="h-5 w-5 mr-3" />
+                      <Send className="h-5 w-5 mr-3" aria-hidden="true" />
                       Send Message
                     </>
                   )}
@@ -281,7 +296,7 @@ const ContactUs = () => {
           </motion.div>
 
           {/* Additional Info */}
-          <motion.div className="mt-12 text-center" variants={itemVariants}>
+          <motion.div className="mt-12 text-center" variants={itemVariants} aria-label="Additional Contact Info">
             <p className="text-gray-400 mb-4">
               Need immediate assistance? We're here to help!
             </p>
@@ -297,7 +312,8 @@ const ContactUs = () => {
             </div>
           </motion.div>
         </div>
-      </main>
+      </section>
+    </main>
       <style jsx>{`
         @keyframes animate-scroll {
           0% { transform: translateX(0); }
@@ -313,7 +329,7 @@ const ContactUs = () => {
           animation: blink 1s step-end infinite;
         }
       `}</style>
-    </motion.div>
+    </>
   );
 };
 

@@ -46,40 +46,44 @@ const BlogManagement = () => {
     }
   };
 
-  return (
-    <div className="container mx-auto p-4">
-      <header className="bg-white py-2 px-4 flex justify-between items-center shadow-md rounded">
-        <button
-          className="border-2 border-purple-900 text-black hover:bg-purple-800 hover:text-white transition-all py-1 px-3 rounded"
-          onClick={handleCreateBlog}
-        >
-          Create Blog
-        </button>
-      </header>
+    return (
+      <div className="container mx-auto p-4">
+        <header className="bg-white py-2 px-4 flex justify-between items-center shadow-md rounded" role="banner">
+          <button
+            className="border-2 border-purple-900 text-black hover:bg-purple-800 hover:text-white transition-all py-1 px-3 rounded focus:outline-none focus:ring-2 focus:ring-purple-400"
+            onClick={handleCreateBlog}
+            aria-label="Create Blog"
+            tabIndex={0}
+          >
+            Create Blog
+          </button>
+        </header>
 
-      {isCreating && (
-        <BlogForm
-          onClose={() => setIsCreating(false)}
-          fetchBlogs={fetchBlogs}
-          editingBlog={editingBlog}
-        />
-      )}
-
-      <main className="flex items-center flex-wrap gap-3 py-8 h-[calc(100vh-190px)] overflow-y-auto">
-        {blogs.length > 0 ? (
-          blogs.map((blog) => (
-            <BlogCard
-              key={blog._id}
-              blog={blog}
-              onEdit={handleEditBlog}
-              onDelete={handleDeleteBlog}
-            />
-          ))
-        ) : (
-          <p className="text-center w-full">No Blogs Available.</p>
+        {isCreating && (
+          <BlogForm
+            onClose={() => setIsCreating(false)}
+            fetchBlogs={fetchBlogs}
+            editingBlog={editingBlog}
+          />
         )}
-      </main>
-    </div>
+
+        <main className="flex items-center flex-wrap gap-3 py-8 h-[calc(100vh-190px)] overflow-y-auto" role="main" aria-label="Blog List">
+          {blogs.length > 0 ? (
+            blogs.map((blog) => (
+              <BlogCard
+                key={blog._id}
+                blog={blog}
+                onEdit={handleEditBlog}
+                onDelete={handleDeleteBlog}
+                tabIndex={0}
+                aria-label={`Blog ${blog.title}`}
+              />
+            ))
+          ) : (
+            <p className="text-center w-full">No Blogs Available.</p>
+          )}
+        </main>
+      </div>
   );
 };
 

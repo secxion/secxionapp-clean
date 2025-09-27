@@ -36,15 +36,10 @@ const Home = () => {
   const navigate = useNavigate();
 
   const [walletBalance, setWalletBalance] = useState(0);
-  const [isLoadingBalance, setIsLoadingBalance] = useState(false);
-  const [errorBalance, setErrorBalance] = useState("");
+  // Removed unused: isLoadingBalance, errorBalance
   const [showBalance, setShowBalance] = useState(false);
   const [transactions, setTransactions] = useState([]);
-  const [loadingTransactions, setLoadingTransactions] = useState(false);
-  const [errorTransactions, setErrorTransactions] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [visibleTransactions, setVisibleTransactions] = useState(3);
-  const [showAll, setShowAll] = useState(false);
+  // Removed unused: loadingTransactions, errorTransactions, setStatusFilter, setVisibleTransactions, setShowAll
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
 
@@ -52,8 +47,6 @@ const Home = () => {
 
   const fetchWalletBalance = useCallback(async () => {
     if (!user?.id && !user?._id) return;
-    setIsLoadingBalance(true);
-    setErrorBalance("");
     try {
       const response = await fetch(`${SummaryApi.getWalletBalance.url}/${user._id || user.id}`, {
         method: "GET",
@@ -61,32 +54,21 @@ const Home = () => {
       });
       const data = await response.json();
       if (data.success) setWalletBalance(data.balance || 0);
-      else setErrorBalance(data.message || "Failed to fetch wallet balance.");
     } catch (err) {
-      setErrorBalance("Error fetching wallet balance.");
       console.error(err);
-    } finally {
-      setIsLoadingBalance(false);
     }
   }, [user]);
 
   const fetchTransactions = useCallback(
-    async (currentStatusFilter) => {
+    async () => {
       if (!user?.id && !user?._id) return;
-      setLoadingTransactions(true);
-      setErrorTransactions("");
       try {
         let url = `${SummaryApi.transactions.url}?userId=${user.id || user._id}`;
-        if (currentStatusFilter !== "all") url += `&status=${currentStatusFilter}`;
         const response = await fetch(url, { method: "GET", credentials: "include" });
         const data = await response.json();
         if (data.success && data.transactions) setTransactions(data.transactions);
-        else setErrorTransactions(data.message || "Failed to fetch transactions.");
       } catch (err) {
-        setErrorTransactions("Error loading transactions.");
         console.error(err);
-      } finally {
-        setLoadingTransactions(false);
       }
     },
     [user]
@@ -96,31 +78,30 @@ const Home = () => {
     setIsRefreshing(true);
     setLastUpdated(null);
     try {
-      await Promise.all([fetchWalletBalance(), fetchTransactions(statusFilter)]);
+      await Promise.all([fetchWalletBalance(), fetchTransactions()]);
       setLastUpdated(new Date().toLocaleTimeString([], { hour12: false }));
     } catch (err) {
       console.error(err);
     } finally {
       setIsRefreshing(false);
     }
-  }, [fetchWalletBalance, fetchTransactions, statusFilter]);
+  }, [fetchWalletBalance, fetchTransactions]);
 
   useEffect(() => {
     if (user) {
       fetchWalletBalance();
-      fetchTransactions(statusFilter);
+      fetchTransactions();
     }
-  }, [user, fetchWalletBalance, fetchTransactions, statusFilter]);
+  }, [user, fetchWalletBalance, fetchTransactions]);
 
   const portfolioValue = walletBalance;
-  const portfolioGrowth = 0; // Placeholder
+  // Removed unused portfolioGrowth
 
   const quickStats = [
     {
       label: "Portfolio Value",
       value: `₦${portfolioValue.toLocaleString()}`,
-      change: `${portfolioGrowth > 0 ? "+" : ""}${portfolioGrowth.toFixed(1)}%`,
-      positive: portfolioGrowth >= 0,
+      // Remove change and positive for Portfolio Value
     },
     {
       label: "Recent Transactions",
@@ -138,45 +119,50 @@ const Home = () => {
       rejected: "bg-red-600/20 text-red-400",
     }[status] || "bg-gray-700 text-gray-300");
 
-  const displayedTransactions = showAll ? transactions : transactions.slice(0, visibleTransactions);
+  // Show up to 3 transactions by default (no showAll toggle)
+  const displayedTransactions = transactions.slice(0, 3);
 
   return (
-    <div className="bg-gray-950 min-h-screen w-full pt-32 pb-16 relative overflow-hidden">
+    <main className="bg-gray-950 min-h-screen w-full pt-28 pb-20 relative overflow-x-hidden" role="main" aria-label="Home Page Main Content">
       {/* Hero */}
       <Hero />
 
       {/* Stats */}
-      <section className="max-w-7xl mx-auto mt-16 mb-10 px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
-          <h2 className="text-2xl font-bold text-yellow-300">Account Overview</h2>
-          <div className="flex items-center gap-3">
+  <section className="max-w-7xl mx-auto mt-10 mb-8 px-2 sm:px-4" aria-labelledby="account-overview-heading">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 sm:gap-6">
+      <h2 id="account-overview-heading" className="text-2xl sm:text-3xl font-bold text-yellow-300">Account Overview</h2>
+      <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setShowBalance(!showBalance)}
-              className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 text-yellow-400 transition"
+              className="p-3 sm:p-2 rounded-full bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-yellow-400 transition focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              aria-label={showBalance ? "Hide balance" : "Show balance"}
             >
-              {showBalance ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+              {showBalance ? <Eye className="w-6 h-6 sm:w-5 sm:h-5" aria-hidden="true" /> : <EyeOff className="w-6 h-6 sm:w-5 sm:h-5" aria-hidden="true" />}
             </button>
             <button
               onClick={refreshAllData}
               disabled={isRefreshing}
-              className="p-2 rounded-full bg-gray-800 hover:bg-gray-700 text-yellow-400 transition"
+              className="p-3 sm:p-2 rounded-full bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-yellow-400 transition focus:outline-none focus:ring-2 focus:ring-yellow-400 disabled:opacity-60"
+              aria-label="Refresh account data"
             >
-              <RefreshCw className={`w-5 h-5 ${isRefreshing ? "animate-spin" : ""}`} />
+              <RefreshCw className={`w-6 h-6 sm:w-5 sm:h-5 ${isRefreshing ? "animate-spin" : ""}`} aria-hidden="true" />
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {quickStats.map((stat, idx) => (
-            <div key={idx} className="bg-gray-900 border border-gray-700 rounded-xl p-6 shadow hover:shadow-lg transition">
-              <p className="text-gray-400 text-sm mb-1">{stat.label}</p>
-              <p className="text-3xl font-bold text-yellow-300 mb-1">
+            <div key={idx} className="bg-gray-900 border border-gray-700 rounded-xl p-5 sm:p-6 shadow hover:shadow-lg transition min-h-[110px] flex flex-col justify-center">
+              <p className="text-gray-400 text-base sm:text-sm mb-1">{stat.label}</p>
+              <p className="text-3xl sm:text-4xl font-bold text-yellow-300 mb-1">
                 {showBalance ? stat.value : "••••••"}
               </p>
-              <p className={`text-sm ${stat.positive ? "text-green-400" : "text-red-400"}`}>
-                {stat.positive ? <TrendingUp className="inline w-4 h-4" /> : <TrendingDown className="inline w-4 h-4" />}{" "}
-                {stat.change}
-              </p>
+              {stat.change && (
+                <p className={`text-base sm:text-sm ${stat.positive ? "text-green-400" : "text-red-400"}`}>
+                  {stat.positive ? <TrendingUp className="inline w-5 h-5 sm:w-4 sm:h-4" /> : <TrendingDown className="inline w-5 h-5 sm:w-4 sm:h-4" />} {" "}
+                  {stat.change}
+                </p>
+              )}
             </div>
           ))}
         </div>
@@ -184,57 +170,59 @@ const Home = () => {
       </section>
 
       {/* High Rate Slider */}
-      <section className="max-w-7xl mx-auto mb-10 px-4">
+  <section className="max-w-7xl mx-auto mb-8 px-2 sm:px-4" aria-label="High Rate Slider">
         <HiRateSlider />
       </section>
 
       {/* Last Market Status */}
-      <section className="max-w-7xl mx-auto mb-10 px-4">
+  <section className="max-w-7xl mx-auto mb-8 px-2 sm:px-4" aria-label="Last Market Status">
         <LastMarketStatus />
       </section>
 
       {/* Quick Access */}
-      <section className="max-w-7xl mx-auto mb-10 px-4">
-        <h2 className="text-xl font-semibold text-yellow-300 mb-6">Quick Access</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <section className="max-w-7xl mx-auto mb-8 px-2 sm:px-4" aria-labelledby="quick-access-heading">
+        <h2 id="quick-access-heading" className="text-xl sm:text-2xl font-semibold text-yellow-300 mb-4 sm:mb-6">Quick Access</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {menuItems.map((item, i) => (
-            <motion.div
+            <motion.button
               key={i}
               onClick={() => handleNavigation(item.path)}
-              className="bg-gray-900 border border-gray-700 rounded-xl p-6 hover:border-yellow-400 transition cursor-pointer"
+              className="bg-gray-900 border border-gray-700 rounded-xl p-5 sm:p-6 hover:border-yellow-400 active:bg-gray-800 transition cursor-pointer text-left min-h-[72px] focus:outline-none focus:ring-2 focus:ring-yellow-400"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              aria-label={item.label + ' - ' + item.description}
+              tabIndex={0}
             >
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-lg bg-gray-800 text-yellow-400">{item.icon}</div>
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="p-3 sm:p-4 rounded-lg bg-gray-800 text-yellow-400 flex items-center justify-center min-w-[44px] min-h-[44px]" aria-hidden="true">{item.icon}</div>
                 <div>
-                  <h3 className="text-white font-medium">{item.label}</h3>
+                  <h3 className="text-white font-medium text-base sm:text-lg">{item.label}</h3>
                   <p className="text-sm text-gray-400">{item.description}</p>
                 </div>
               </div>
-            </motion.div>
+            </motion.button>
           ))}
         </div>
       </section>
 
       {/* Transactions */}
-      <section className="max-w-7xl mx-auto mb-10 px-4">
-        <h2 className="text-xl font-semibold text-yellow-300 mb-4">Recent Transactions</h2>
+      <section className="max-w-7xl mx-auto mb-8 px-2 sm:px-4" aria-labelledby="recent-transactions-heading">
+        <h2 id="recent-transactions-heading" className="text-xl sm:text-2xl font-semibold text-yellow-300 mb-3 sm:mb-4">Recent Transactions</h2>
         {transactions.length === 0 ? (
           <p className="text-gray-500">No transactions found.</p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {displayedTransactions.map((txn, i) => (
-              <div key={i} className="flex items-center justify-between bg-gray-900 border border-gray-700 p-4 rounded-lg">
+              <div key={i} className="flex items-center justify-between bg-gray-900 border border-gray-700 p-3 sm:p-4 rounded-lg min-h-[56px] focus:outline-none focus:ring-2 focus:ring-yellow-400" tabIndex={0} aria-label={`Transaction ${txn.type} ${txn._id?.slice(-6)}, amount ${txn.amount}, status ${txn.status}`}> 
                 <div>
-                  <p className="text-white font-medium">{txn.type} #{txn._id?.slice(-6)}</p>
+                  <p className="text-white font-medium text-base sm:text-lg">{txn.type} #{txn._id?.slice(-6)}</p>
                   <p className="text-xs text-gray-500">{new Date(txn.createdAt).toLocaleDateString()}</p>
                 </div>
                 <div className="text-right">
-                  <p className={`font-bold ${txn.amount > 0 ? "text-green-400" : "text-red-400"}`}>
+                  <p className={`font-bold ${txn.amount > 0 ? "text-green-400" : "text-red-400"} text-base sm:text-lg`}> 
                     {txn.amount > 0 ? "+" : "-"}₦{Math.abs(txn.amount).toLocaleString()}
                   </p>
-                  <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(txn.status)}`}>
+                  <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(txn.status)}`} aria-label={`Status: ${txn.status}`}>
                     {txn.status}
                   </span>
                 </div>
@@ -245,13 +233,13 @@ const Home = () => {
       </section>
 
       {/* Blog */}
-      <section className="max-w-7xl mx-auto mb-10 px-4">
+  <section className="max-w-7xl mx-auto mb-8 px-2 sm:px-4" aria-label="Blog Section">
         <NetBlog />
       </section>
 
       {/* Footer */}
       <HomeFooter />
-    </div>
+    </main>
   );
 };
 
