@@ -20,10 +20,11 @@ const AdminProductCard = ({ data, fetchdata }) => {
                 <h1 className='text-ellipsis line-clamp-2 font-semibold'>{productName}</h1>
 
                 <div className='flex justify-end'>
-                    <button 
-                        className='w-fit p-2 bg-green-100 hover:bg-green-600 rounded-full hover:text-white cursor-pointer' 
-                        onClick={() => setIsEditing(true)} 
-                        aria-label={`Edit ${productName}`} 
+                    <button
+                        className='w-fit p-3 bg-green-100 hover:bg-green-600 rounded-full hover:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500'
+                        onClick={() => setIsEditing(true)}
+                        aria-label={`Edit ${productName}`}
+                        tabIndex={0}
                     >
                         <MdModeEditOutline />
                     </button>

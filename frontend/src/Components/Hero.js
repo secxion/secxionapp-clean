@@ -123,11 +123,16 @@ const Hero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.5 }}
         >
-          <Link to="/section" className="inline-block">
+          <Link
+            to="/section"
+            className="inline-block focus:outline-none focus:ring-4 focus:ring-yellow-400 rounded-lg"
+            tabIndex={0}
+            aria-label="Explore Market"
+          >
             <img
               src={ExploreMarketButtonImg}
               alt="Explore Market"
-              className="h-16 xs:h-24 sm:h-32 md:h-48 w-auto object-contain hover:scale-105 transition-transform duration-200"
+              className="h-32 xs:h-40 sm:h-56 md:h-60 w-auto object-contain hover:scale-110 transition-transform duration-200 drop-shadow-2xl rounded-2xl shadow-lg"
             />
           </Link>
           <div className="mt-3 sm:mt-6 text-white text-base xs:text-lg sm:text-xl md:text-2xl font-semibold drop-shadow-lg bg-black/40 px-2 py-1 rounded-lg inline-block">

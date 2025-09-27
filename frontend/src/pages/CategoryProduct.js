@@ -10,7 +10,6 @@ import {
 } from "react-icons/fa";
 import VerticalCard from "../Components/VerticalCard";
 import debounce from "lodash.debounce";
-import ClipLoader from "react-spinners/ClipLoader";
 import SecxionSpinner from "../Components/SecxionSpinner";
 
 const iconMap = {
@@ -89,14 +88,21 @@ const CategoryProduct = () => {
       {/* Mobile Top Bar Filter */}
       <div className="md:hidden w-full bg-white px-2 py-1 flex overflow-x-auto gap-3 scrollbar-thin scrollbar-thumb-gray-400">
         {productCategory.map((category) => (
-          <label key={category.id} className="flex items-center gap-1 bg-gray-900 px-2 py-2 rounded whitespace-nowrap text-xs border border-gray-700 hover:border-yellow-400 transition-all duration-200">
+          <label
+            key={category.id}
+            className="flex items-center gap-1 bg-gray-900 px-2 py-2 rounded whitespace-nowrap text-xs border border-gray-700 hover:border-yellow-400 transition-all duration-200 focus-within:ring-2 focus-within:ring-yellow-400"
+            tabIndex={0}
+            aria-label={`Filter by ${category.label}`}
+          >
             {iconMap[category.value]}
             <input
               type="checkbox"
               value={category.value}
               checked={!!selectCategory[category.value]}
               onChange={handleSelectCategory}
-              className="accent-blue-500 h-4 w-4 text-gray-500"
+              className="accent-blue-500 h-5 w-5 text-gray-500 focus:ring-2 focus:ring-yellow-400"
+              aria-checked={!!selectCategory[category.value]}
+              aria-label={category.label}
             />
             <span>{category.label}</span>
           </label>
@@ -112,7 +118,9 @@ const CategoryProduct = () => {
           {productCategory.map((category) => (
             <label
               key={category.id}
-              className="flex items-center gap-2 p-2 rounded-lg cursor-pointer hover:bg-blue-600/50 transition border border-gray-700 hover:border-yellow-400 "
+              className="flex items-center gap-2 p-2 rounded-lg cursor-pointer hover:bg-blue-600/50 transition border border-gray-700 hover:border-yellow-400 focus-within:ring-2 focus-within:ring-yellow-400"
+              tabIndex={0}
+              aria-label={`Filter by ${category.label}`}
             >
               {iconMap[category.value]}
               <input
@@ -120,7 +128,9 @@ const CategoryProduct = () => {
                 value={category.value}
                 checked={!!selectCategory[category.value]}
                 onChange={handleSelectCategory}
-                className="accent-blue-500 h-4 w-4"
+                className="accent-blue-500 h-5 w-5 focus:ring-2 focus:ring-yellow-400"
+                aria-checked={!!selectCategory[category.value]}
+                aria-label={category.label}
               />
               <span className="text-sm text-gray-400">{category.label}</span>
             </label>
@@ -128,7 +138,14 @@ const CategoryProduct = () => {
         </form>
         <div className="mt-6 text-sm text-gray-400 border-t border-gray-800 pt-3 ">
           Can't find it? <br />
-          <Link to="/report" className="text-green-400 underline hover:text-green-300">Report here</Link>
+          <Link
+            to="/report"
+            className="text-green-400 underline hover:text-green-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded"
+            tabIndex={0}
+            aria-label="Report missing category"
+          >
+            Report here
+          </Link>
         </div>
       </aside>
       {/* Product List */}
@@ -153,11 +170,21 @@ const CategoryProduct = () => {
                 <SecxionSpinner size="large" message="Loading products..." />
               </div>
             ) : error ? (
-              <p className="text-red-400 font-semibold text-center glossy-text">
+              <p
+                className="text-red-400 font-semibold text-center glossy-text"
+                aria-live="assertive"
+                role="alert"
+                tabIndex={0}
+              >
                 {error}
               </p>
             ) : data.length === 0 ? (
-              <p className="text-gray-400 text-center text-sm glossy-text">
+              <p
+                className="text-gray-400 text-center text-sm glossy-text"
+                aria-live="polite"
+                role="status"
+                tabIndex={0}
+              >
                 {filterCategoryList.length === 0
                   ? "Select a category."
                   : "No products found."}

@@ -191,8 +191,16 @@ const UploadProduct = ({ onClose, fetchData }) => {
                                 </div>
                             ))}
                         </div>
-                        {!data.productImage[0] && <p className="text-red-500 text-sm">*Please upload a product image</p>}
-                        {uploading && <p className="text-blue-500 text-sm">Uploading image...</p>}
+                                                {!data.productImage[0] && (
+                                                    <p className="text-red-500 text-sm" aria-live="assertive" role="alert" tabIndex={0}>
+                                                        *Please upload a product image
+                                                    </p>
+                                                )}
+                                                {uploading && (
+                                                    <p className="text-blue-500 text-sm" aria-live="polite" role="status" tabIndex={0}>
+                                                        Uploading image...
+                                                    </p>
+                                                )}
                     </div>
 
                      <div>
@@ -231,9 +239,15 @@ const UploadProduct = ({ onClose, fetchData }) => {
                                 <input type="text" placeholder="Enter FV Requirement" value={newRequirement} onChange={(e) => setNewRequirement(e.target.value)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                             </div>
                         </div>
-                        <button type="button" onClick={handleAddPricing} className="inline-flex items-center px-4 py-2 border border-green-500 rounded-md shadow-sm text-sm font-medium text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                            <FaPlusCircle className="mr-2" /> Add Pricing
-                        </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleAddPricing}
+                                                    className="inline-flex items-center px-4 py-2 border border-green-500 rounded-md shadow-sm text-sm font-medium text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                                    tabIndex={0}
+                                                    aria-label="Add Pricing"
+                                                >
+                                                    <FaPlusCircle className="mr-2" /> Add Pricing
+                                                </button>
                         <div className="mt-4">
                             {data.pricing.map((pricing, currencyIndex) => (
                                 <div key={currencyIndex} className="mb-3 border rounded p-3">
@@ -259,12 +273,23 @@ const UploadProduct = ({ onClose, fetchData }) => {
                     </div>
 
                     <div className="pt-4 border-t border-gray-200">
-                        <button type="submit" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Upload Product
-                        </button>
-                        <button type="button" onClick={onClose} className="ml-3 bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Cancel
-                        </button>
+                                                <button
+                                                    type="submit"
+                                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                    tabIndex={0}
+                                                    aria-label="Upload Product"
+                                                >
+                                                    Upload Product
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={onClose}
+                                                    className="ml-3 bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                    tabIndex={0}
+                                                    aria-label="Cancel Upload"
+                                                >
+                                                    Cancel
+                                                </button>
                     </div>
                 </form>
             </div>

@@ -201,7 +201,11 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
                                     </button>
                                 </div>
                             ))}
-                            {uploading && <p className="text-blue-500 text-sm">Uploading image...</p>}
+                                        {uploading && (
+                                            <p className="text-blue-500 text-sm" aria-live="polite" role="status" tabIndex={0}>
+                                                Uploading image...
+                                            </p>
+                                        )}
                         </div>
                     </div>
 
@@ -251,7 +255,9 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
                                             <button
                                                 type="button"
                                                 onClick={() => handleDeleteFaceValue(currencyIndex, faceValueIndex)}
-                                                className="text-red-500 hover:text-red-700 focus:outline-none"
+                                                className="text-red-500 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                                tabIndex={0}
+                                                aria-label="Delete Face Value"
                                             >
                                                 <MdDelete className="h-5 w-5" />
                                             </button>
@@ -261,6 +267,8 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
                                         type="button"
                                         onClick={() => handleAddFaceValue(currencyIndex)}
                                         className="inline-flex items-center mt-2 px-3 py-1.5 border border-gray-300 rounded-md shadow-sm text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                        tabIndex={0}
+                                        aria-label="Add Face Value"
                                     >
                                         <MdAddCircleOutline className="mr-1 h-4 w-4" /> Add Face Value
                                     </button>
@@ -271,6 +279,8 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
                             type="button"
                             onClick={handleAddCurrency}
                             className="inline-flex items-center px-4 py-2 border border-green-500 rounded-md shadow-sm text-sm font-medium text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                            tabIndex={0}
+                            aria-label="Add Currency"
                         >
                             <MdAddCircleOutline className="mr-2" /> Add Currency
                         </button>
@@ -289,10 +299,21 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
                     </div>
 
                     <div className="pt-4 border-t border-gray-200">
-                        <button type="submit" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <button
+                            type="submit"
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            tabIndex={0}
+                            aria-label="Update Product"
+                        >
                             Update Product
                         </button>
-                        <button type="button" onClick={onClose} className="ml-3 bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="ml-3 bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            tabIndex={0}
+                            aria-label="Cancel Edit"
+                        >
                             Cancel
                         </button>
                     </div>

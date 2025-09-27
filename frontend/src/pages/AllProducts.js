@@ -51,9 +51,21 @@ const AllProducts = () => {
 
     <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-8 h-[calc(100vh-190px)] overflow-y-auto" aria-label="Products List">
         {isLoading ? (
-          <p className="text-center w-full text-gray-500 italic">Loading products...</p>
+          <p
+            className="text-center w-full text-gray-500 italic"
+            aria-live="polite"
+            role="status"
+            tabIndex={0}
+          >
+            Loading products...
+          </p>
         ) : error ? (
-          <p className="text-center w-full text-red-500 flex items-center justify-center">
+          <p
+            className="text-center w-full text-red-500 flex items-center justify-center"
+            aria-live="assertive"
+            role="alert"
+            tabIndex={0}
+          >
             <FaExclamationTriangle className="mr-2" aria-hidden="true" /> Error fetching products.
           </p>
         ) : allProduct.length > 0 ? (
@@ -61,12 +73,25 @@ const AllProducts = () => {
             <AdminProductCard data={product} key={index} fetchdata={refetch} tabIndex={0} aria-label={`Product card for ${product?.name || 'product'}`} />
           ))
         ) : (
-          <p className="text-center w-full text-gray-500 italic">No Products Available.</p>
+          <p
+            className="text-center w-full text-gray-500 italic"
+            aria-live="polite"
+            role="status"
+            tabIndex={0}
+          >
+            No Products Available.
+          </p>
         )}
       </section>
 
       {openUploadProduct && (
-        <div className="fixed inset-0 z-50 bg-gray-900 bg-opacity-50 flex justify-center items-center" aria-modal="true" role="dialog" aria-label="Upload Product Modal">
+        <div
+          className="fixed inset-0 z-50 bg-gray-900 bg-opacity-50 flex justify-center items-center"
+          aria-modal="true"
+          role="dialog"
+          aria-label="Upload Product Modal"
+          tabIndex={-1}
+        >
           <UploadProduct onClose={() => setOpenUploadProduct(false)} fetchData={refetch} />
         </div>
       )}
