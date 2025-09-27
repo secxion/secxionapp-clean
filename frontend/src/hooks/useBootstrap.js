@@ -1,12 +1,12 @@
 // src/hooks/useBootstrap.js
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import {
   fetchUserDetails,
   fetchMarketData,
   fetchBlogs,
   fetchWalletBalance,
-} from "../redux/userSlice";
+} from '../redux/userSlice';
 
 const useBootstrap = (shouldRun = true) => {
   const dispatch = useDispatch();
@@ -25,7 +25,7 @@ const useBootstrap = (shouldRun = true) => {
         await dispatch(fetchBlogs()).unwrap();
         await dispatch(fetchWalletBalance()).unwrap();
       } catch (err) {
-        console.error("Bootstrap error:", err.message || err);
+        console.error('Bootstrap error:', err.message || err);
       } finally {
         setIsLoading(false);
       }

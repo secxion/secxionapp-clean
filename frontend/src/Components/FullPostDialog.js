@@ -21,9 +21,9 @@ const FullPostDialog = ({ post, onClose, onCommentAdded }) => {
     try {
       const response = await fetch(SummaryApi.addComment(post._id).url, {
         method: SummaryApi.addComment(post._id).method,
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: dialogCommentContent })
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: dialogCommentContent }),
       });
       const data = await response.json();
       if (data.success) {
@@ -37,9 +37,19 @@ const FullPostDialog = ({ post, onClose, onCommentAdded }) => {
     } finally {
       setIsCommentingInDialog(false);
     }
-  }, [user, post._id, dialogCommentContent, setIsCommentingInDialog, toast, SummaryApi, onCommentAdded]);
+  }, [
+    user,
+    post._id,
+    dialogCommentContent,
+    setIsCommentingInDialog,
+    toast,
+    SummaryApi,
+    onCommentAdded,
+  ]);
 
-  const formattedContent = post.content ? post.content.replace(/\n/g, '<br />') : '';
+  const formattedContent = post.content
+    ? post.content.replace(/\n/g, '<br />')
+    : '';
 
   return (
     <motion.div
@@ -54,13 +64,25 @@ const FullPostDialog = ({ post, onClose, onCommentAdded }) => {
         animate={{ scale: 1 }}
         exit={{ scale: 0.8 }}
       >
-        <button onClick={onClose} className="absolute top-2 right-2 text-gray-300 hover:text-gray-100 focus:outline-none">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-300 hover:text-gray-100 focus:outline-none"
+        >
           <MdClose size={24} />
         </button>
-        <p className="font-semibold text-gray-100 mb-2">{post.userId?.name || 'Anonymous'}</p>
-        <div className="text-gray-300 mb-4" dangerouslySetInnerHTML={{ __html: formattedContent }} />
+        <p className="font-semibold text-gray-100 mb-2">
+          {post.userId?.name || 'Anonymous'}
+        </p>
+        <div
+          className="text-gray-300 mb-4"
+          dangerouslySetInnerHTML={{ __html: formattedContent }}
+        />
         {post.feedImage && (
-          <img src={post.feedImage} alt='' className="mt-2 rounded-md max-w-full h-auto" />
+          <img
+            src={post.feedImage}
+            alt=""
+            className="mt-2 rounded-md max-w-full h-auto"
+          />
         )}
         <p className="text-gray-400 text-xs mt-2">
           {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
@@ -68,22 +90,41 @@ const FullPostDialog = ({ post, onClose, onCommentAdded }) => {
 
         {/* Comment Section in Dialog */}
         <div className="mt-4">
-          <h6 className="text-sm font-semibold text-gray-200 mb-2">Comments:</h6>
-          {post.comments?.map(comment => (
-            <div key={comment._id} className="p-3 mb-2 bg-gray-800 rounded-md text-sm flex items-start space-x-2">
+          <h6 className="text-sm font-semibold text-gray-200 mb-2">
+            Comments:
+          </h6>
+          {post.comments?.map((comment) => (
+            <div
+              key={comment._id}
+              className="p-3 mb-2 bg-gray-800 rounded-md text-sm flex items-start space-x-2"
+            >
               {comment.userId?.profilePic ? (
-                <img src={comment.userId.profilePic} alt={comment.userId.name} className="w-6 h-6 rounded-full object-cover" />
+                <img
+                  src={comment.userId.profilePic}
+                  alt={comment.userId.name}
+                  className="w-6 h-6 rounded-full object-cover"
+                />
               ) : (
                 <div className="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center text-white text-xs">
                   {comment.userId?.name?.charAt(0)?.toUpperCase() || '?'}
                 </div>
               )}
               <div>
-                <p className="text-gray-100 font-semibold">{comment.userId?.name || 'Anonymous'}</p>
+                <p className="text-gray-100 font-semibold">
+                  {comment.userId?.name || 'Anonymous'}
+                </p>
                 <p className="text-gray-300">{comment.content}</p>
-                {comment.feedImage && <img src={comment.feedImage} alt='' className="mt-1 rounded-md max-w-full h-auto" />}
+                {comment.feedImage && (
+                  <img
+                    src={comment.feedImage}
+                    alt=""
+                    className="mt-1 rounded-md max-w-full h-auto"
+                  />
+                )}
                 <p className="text-gray-400 text-xs mt-0.5">
-                  {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                  {formatDistanceToNow(new Date(comment.createdAt), {
+                    addSuffix: true,
+                  })}
                 </p>
               </div>
             </div>

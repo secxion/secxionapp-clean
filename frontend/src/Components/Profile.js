@@ -3,19 +3,19 @@ import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import SummaryApi from '../common';
 import { toast } from 'react-toastify';
-import { 
-  FaEdit, 
-  FaUser, 
-  FaEnvelope, 
-  FaTelegram, 
-  FaCalendarAlt, 
-  FaCheckCircle, 
+import {
+  FaEdit,
+  FaUser,
+  FaEnvelope,
+  FaTelegram,
+  FaCalendarAlt,
+  FaCheckCircle,
   FaTimesCircle,
   FaUserShield,
   FaUserCheck,
-  FaImage
+  FaImage,
 } from 'react-icons/fa';
-import { PiUserSquare } from "react-icons/pi";
+import { PiUserSquare } from 'react-icons/pi';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 import SecxionShimmer from './SecxionShimmer';
@@ -62,10 +62,10 @@ const Profile = () => {
       if (response.ok && data.success) {
         setProfileData(data.data);
       } else {
-        toast.error(data.message || "Failed to fetch updated user details.");
+        toast.error(data.message || 'Failed to fetch updated user details.');
       }
     } catch (error) {
-      toast.error("Error fetching updated user details.");
+      toast.error('Error fetching updated user details.');
     }
   }, []);
 
@@ -85,7 +85,9 @@ const Profile = () => {
 
   const truncateText = (text, maxLength) => {
     if (!text) return '';
-    return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+    return text.length > maxLength
+      ? `${text.substring(0, maxLength)}...`
+      : text;
   };
 
   const getDaysActive = () => {
@@ -95,7 +97,9 @@ const Profile = () => {
 
   const getAccountAge = () => {
     if (!profileData?.createdAt) return 'Unknown';
-    const duration = moment.duration(moment().diff(moment(profileData.createdAt)));
+    const duration = moment.duration(
+      moment().diff(moment(profileData.createdAt)),
+    );
     const years = duration.years();
     const months = duration.months();
     const days = duration.days();
@@ -111,11 +115,13 @@ const Profile = () => {
 
   const isEmailVerified = () => {
     // Check multiple possible field names for email verification
-    return profileData?.isEmailVerified === true || 
-           profileData?.emailVerified === true || 
-           profileData?.verified === true ||
-           profileData?.isVerified === true ||
-           profileData?.email_verified === true;
+    return (
+      profileData?.isEmailVerified === true ||
+      profileData?.emailVerified === true ||
+      profileData?.verified === true ||
+      profileData?.isVerified === true ||
+      profileData?.email_verified === true
+    );
   };
 
   const hasCompletedProfile = () => {
@@ -227,7 +233,10 @@ const Profile = () => {
                     {profileData.name || 'Unnamed User'}
                   </h1>
                   {hasCompletedProfile() && (
-                    <FaUserCheck className="text-blue-500 text-xl" title="Profile Complete" />
+                    <FaUserCheck
+                      className="text-blue-500 text-xl"
+                      title="Profile Complete"
+                    />
                   )}
                 </div>
 
@@ -236,13 +245,22 @@ const Profile = () => {
                   {profileData.email && (
                     <div className="flex items-center justify-center sm:justify-start space-x-2">
                       <FaEnvelope className="text-gray-500 flex-shrink-0" />
-                      <span className="text-gray-600 break-all" title={profileData.email}>
+                      <span
+                        className="text-gray-600 break-all"
+                        title={profileData.email}
+                      >
                         {truncateText(profileData.email, 25)}
                       </span>
                       {isEmailVerified() ? (
-                        <FaCheckCircle className="text-green-500 flex-shrink-0" title="Email Verified" />
+                        <FaCheckCircle
+                          className="text-green-500 flex-shrink-0"
+                          title="Email Verified"
+                        />
                       ) : (
-                        <FaTimesCircle className="text-red-500 flex-shrink-0" title="Email Not Verified" />
+                        <FaTimesCircle
+                          className="text-red-500 flex-shrink-0"
+                          title="Email Not Verified"
+                        />
                       )}
                     </div>
                   )}
@@ -259,7 +277,9 @@ const Profile = () => {
                   {profileData.telegramNumber && (
                     <div className="flex items-center justify-center sm:justify-start space-x-2">
                       <FaTelegram className="text-blue-500 flex-shrink-0" />
-                      <span className="text-gray-700 font-medium">{profileData.telegramNumber}</span>
+                      <span className="text-gray-700 font-medium">
+                        {profileData.telegramNumber}
+                      </span>
                     </div>
                   )}
 
@@ -331,7 +351,6 @@ const Profile = () => {
               <div className="text-sm font-medium text-green-700 uppercase tracking-wide">
                 Email Status
               </div>
-              
             </div>
           </div>
         </motion.div>
@@ -373,7 +392,12 @@ const Profile = () => {
                   <FaCheckCircle className="inline text-green-600" />
                 ) : (
                   <span className="text-orange-500">
-                    {Math.round((Object.values(profileData || {}).filter(Boolean).length / 5) * 100)}%
+                    {Math.round(
+                      (Object.values(profileData || {}).filter(Boolean).length /
+                        5) *
+                        100,
+                    )}
+                    %
                   </span>
                 )}
               </div>
@@ -394,21 +418,31 @@ const Profile = () => {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="font-medium text-gray-600">Account Created:</span>
+              <span className="font-medium text-gray-600">
+                Account Created:
+              </span>
               <span className="ml-2 text-gray-800">
-                {profileData.createdAt ? moment(profileData.createdAt).format('MMMM D, YYYY [at] h:mm A') : 'Unknown'}
+                {profileData.createdAt
+                  ? moment(profileData.createdAt).format(
+                      'MMMM D, YYYY [at] h:mm A',
+                    )
+                  : 'Unknown'}
               </span>
             </div>
             <div>
               <span className="font-medium text-gray-600">Last Updated:</span>
               <span className="ml-2 text-gray-800">
-                {profileData.updatedAt ? moment(profileData.updatedAt).fromNow() : 'Unknown'}
+                {profileData.updatedAt
+                  ? moment(profileData.updatedAt).fromNow()
+                  : 'Unknown'}
               </span>
             </div>
             <div>
               <span className="font-medium text-gray-600">User ID:</span>
               <span className="ml-2 text-gray-800 font-mono text-xs">
-                {profileData._id ? `${profileData._id.slice(0, 8)}...${profileData._id.slice(-8)}` : 'Unknown'}
+                {profileData._id
+                  ? `${profileData._id.slice(0, 8)}...${profileData._id.slice(-8)}`
+                  : 'Unknown'}
               </span>
             </div>
             <div>

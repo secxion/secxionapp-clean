@@ -3,17 +3,22 @@ import ReactDOM from 'react-dom';
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const PopAlert = ({ message = "", onClose }) => {
+const PopAlert = ({ message = '', onClose }) => {
   const shouldTruncate = message.length > 100;
-  const truncatedMessage = shouldTruncate ? message.slice(0, 100) + "..." : message;
+  const truncatedMessage = shouldTruncate
+    ? message.slice(0, 100) + '...'
+    : message;
   const navigate = useNavigate();
   const alertRef = useRef(null);
 
-  const handleViewMoreClick = useCallback((e) => {
-    e.stopPropagation();
-    navigate('/notifications');
-    if (onClose) onClose();
-  }, [navigate, onClose]);
+  const handleViewMoreClick = useCallback(
+    (e) => {
+      e.stopPropagation();
+      navigate('/notifications');
+      if (onClose) onClose();
+    },
+    [navigate, onClose],
+  );
 
   const handleAlertClick = useCallback((e) => {
     e.stopPropagation();
@@ -35,7 +40,9 @@ const PopAlert = ({ message = "", onClose }) => {
         >
           <X className="w-5 h-5" />
         </button>
-        <h2 className="text-lg font-semibold text-yellow-700 mb-2">Notification</h2>
+        <h2 className="text-lg font-semibold text-yellow-700 mb-2">
+          Notification
+        </h2>
         <p className="text-gray-800 text-sm leading-relaxed mb-4">
           {truncatedMessage}
           {shouldTruncate && (

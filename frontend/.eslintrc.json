@@ -1,18 +1,13 @@
 {
-  "env": {
-    "browser": true,
-    "es2021": true
-  },
-  "extends": [
-    "react-app",
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:jsx-a11y/recommended",
-    "plugin:prettier/recommended"
-  ],
-  "plugins": ["react", "jsx-a11y"],
+  "extends": ["react-app", "plugin:prettier/recommended"],
   "rules": {
-    "react/prop-types": "off",
-    "react/react-in-jsx-scope": "off"
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto",
+        "singleQuote": true
+      }
+    ],
+    "no-prototype-builtins": "off"
   }
 }

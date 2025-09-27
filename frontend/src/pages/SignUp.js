@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { FaEye, FaEyeSlash, FaSpinner } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
-import uploadImage from "../helpers/uploadImage";
-import SummaryApi from "../common";
-import { toast } from "react-toastify";
-import { motion, AnimatePresence } from "framer-motion";
-import signupBackground from "./signupbk.png";
-import LogoShimmer from "../Components/LogoShimmer";
+import React, { useState, useEffect } from 'react';
+import { FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import uploadImage from '../helpers/uploadImage';
+import SummaryApi from '../common';
+import { toast } from 'react-toastify';
+import { motion, AnimatePresence } from 'framer-motion';
+import signupBackground from './signupbk.png';
+import LogoShimmer from '../Components/LogoShimmer';
 import Navigation from '../Components/Navigation';
-import { ArrowLeft } from "lucide-react";
-import SecxionLogo from "../app/slogo.png";
-import NFTBadge from "../Components/NFTBadge";
+import { ArrowLeft } from 'lucide-react';
+import SecxionLogo from '../app/slogo.png';
+import NFTBadge from '../Components/NFTBadge';
 
 const SignUp = () => {
   const [step, setStep] = useState(1);
@@ -22,24 +22,24 @@ const SignUp = () => {
   const [clock, setClock] = useState(new Date());
 
   const [data, setData] = useState(() => {
-    const saved = localStorage.getItem("signupData");
+    const saved = localStorage.getItem('signupData');
     return saved
       ? JSON.parse(saved)
       : {
-          email: "",
-          password: "",
-          name: "",
-          confirmPassword: "",
-          profilePic: "",
-          tag: "",
-          telegramNumber: "",
+          email: '',
+          password: '',
+          name: '',
+          confirmPassword: '',
+          profilePic: '',
+          tag: '',
+          telegramNumber: '',
         };
   });
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    localStorage.setItem("signupData", JSON.stringify(data));
+    localStorage.setItem('signupData', JSON.stringify(data));
   }, [data]);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ const SignUp = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Current form step state:", step);
+    console.log('Current form step state:', step);
   }, [step]);
 
   const handleOnChange = (e) => {
@@ -87,15 +87,23 @@ const SignUp = () => {
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
-          canvas.toBlob((blob) => {
-            if (blob.size > 2 * 1024 * 1024) {
-                canvas.toBlob((smallerBlob) => {
+          canvas.toBlob(
+            (blob) => {
+              if (blob.size > 2 * 1024 * 1024) {
+                canvas.toBlob(
+                  (smallerBlob) => {
                     resolve(smallerBlob);
-                }, 'image/jpeg', 0.7);
-            } else {
+                  },
+                  'image/jpeg',
+                  0.7,
+                );
+              } else {
                 resolve(blob);
-            }
-          }, 'image/jpeg', 0.9);
+              }
+            },
+            'image/jpeg',
+            0.9,
+          );
         };
       };
       reader.onerror = (error) => reject(error);
@@ -106,7 +114,7 @@ const SignUp = () => {
   const handleUploadPic = async (e) => {
     const file = e.target.files[0];
     if (!file) {
-      toast.error("No file selected.");
+      toast.error('No file selected.');
       return;
     }
     setUploading(true);
@@ -115,21 +123,23 @@ const SignUp = () => {
       if (file.size > 1 * 1024 * 1024) {
         const resizedBlob = await resizeImage(file);
         imageToUpload = new File([resizedBlob], file.name, {
-            type: resizedBlob.type,
-            lastModified: Date.now(),
+          type: resizedBlob.type,
+          lastModified: Date.now(),
         });
       }
       if (imageToUpload.size > 2 * 1024 * 1024) {
-        toast.error("Even after processing, the image is too large. Please choose a different image.");
+        toast.error(
+          'Even after processing, the image is too large. Please choose a different image.',
+        );
         setUploading(false);
         return;
       }
       const uploadedImage = await uploadImage(imageToUpload);
       setData((prev) => ({ ...prev, profilePic: uploadedImage.url }));
-      toast.success("Your avatar successfully uploaded! 📸");
+      toast.success('Your avatar successfully uploaded! 📸');
     } catch (error) {
-      console.error("Upload or resize error:", error);
-      toast.error("Failed to process or upload image. Please try again.");
+      console.error('Upload or resize error:', error);
+      toast.error('Failed to process or upload image. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -140,58 +150,74 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!data.name) {
-      toast.error("Please enter your name.");
+      toast.error('Please enter your name.');
       return setStep(1);
     }
     if (!data.email || !isValidEmail(data.email)) {
-      toast.error("Please enter a valid email address.");
+      toast.error('Please enter a valid email address.');
       return setStep(2);
     }
     if (data.telegramNumber && !isValidTelegram(data.telegramNumber)) {
-      toast.error("Please enter a valid Telegram number (7-15 digits, optional leading +).");
+      toast.error(
+        'Please enter a valid Telegram number (7-15 digits, optional leading +).',
+      );
       return setStep(3);
     }
     if (!isValidPassword(data.password)) {
-      toast.error("Password must be at least 6 characters long.");
+      toast.error('Password must be at least 6 characters long.');
       return setStep(4);
     }
     if (data.password !== data.confirmPassword) {
-      toast.error("Passwords do not match.");
+      toast.error('Passwords do not match.');
       return setStep(4);
     }
     if (!data.profilePic) {
-      toast.error("Please upload a profile picture.");
+      toast.error('Please upload a profile picture.');
       return setStep(5);
     }
     if (!agreedToTerms) {
-      toast.error("You must agree to the terms and conditions to sign up.");
+      toast.error('You must agree to the terms and conditions to sign up.');
       return setStep(5);
     }
     setLoading(true);
     try {
       const response = await fetch(SummaryApi.signUP.url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(data),
       });
       const responseData = await response.json();
       if (response.ok) {
-        localStorage.removeItem("signupData");
-        toast.success("🎉 Signup successful! Check your email inbox or spam for verification.");
-        setTimeout(() => navigate("/login"), 2500);
+        localStorage.removeItem('signupData');
+        toast.success(
+          '🎉 Signup successful! Check your email inbox or spam for verification.',
+        );
+        setTimeout(() => navigate('/login'), 2500);
       } else {
-        const backendMessage = responseData.message ? String(responseData.message).toLowerCase() : "";
-        if (backendMessage.includes("email already exists") || (backendMessage.includes("user with email") && backendMessage.includes("already exists"))) {
-          toast.error("This email is already registered. Please use a different email or log in.");
+        const backendMessage = responseData.message
+          ? String(responseData.message).toLowerCase()
+          : '';
+        if (
+          backendMessage.includes('email already exists') ||
+          (backendMessage.includes('user with email') &&
+            backendMessage.includes('already exists'))
+        ) {
+          toast.error(
+            'This email is already registered. Please use a different email or log in.',
+          );
           setStep(2);
         } else {
-          toast.error(responseData?.message || "Signup failed. Please try again.");
+          toast.error(
+            responseData?.message || 'Signup failed. Please try again.',
+          );
         }
       }
     } catch (error) {
-      console.error("Network or API error:", error);
-      toast.error("🚫 Signup failed due to a network error. Please check your connection and try again.");
+      console.error('Network or API error:', error);
+      toast.error(
+        '🚫 Signup failed due to a network error. Please check your connection and try again.',
+      );
     } finally {
       setLoading(false);
     }
@@ -202,7 +228,7 @@ const SignUp = () => {
     if (window.history.length > 1) {
       navigate(-1);
     } else {
-      navigate("/");
+      navigate('/');
     }
   };
 
@@ -227,8 +253,8 @@ const SignUp = () => {
             alt="Secxion Logo Background"
             className="w-full h-full object-contain opacity-10 select-none pointer-events-none"
             style={{
-              filter: "blur(2px)",
-              mixBlendMode: "screen",
+              filter: 'blur(2px)',
+              mixBlendMode: 'screen',
             }}
           />
         </div>
@@ -258,13 +284,13 @@ const SignUp = () => {
             <a href="/" className="relative">
               <div className="flex py-1 flex-col justify-center">
                 <div className="relative py-2 sm:mx-auto">
-                  <div >
+                  <div>
                     {/* Replace shimmer logo with Secxion logo */}
                     <img
                       src={SecxionLogo}
                       alt="Secxion Official Logo"
                       className="w-14 h-14 object-contain rounded-2xl"
-                      style={{ display: "block" }}
+                      style={{ display: 'block' }}
                     />
                   </div>
                 </div>
@@ -272,13 +298,15 @@ const SignUp = () => {
             </a>
           </div>
 
-          <h2 className="text-xl font-bold mb-6 text-center text-gray-100">Sign Up Wizard</h2>
+          <h2 className="text-xl font-bold mb-6 text-center text-gray-100">
+            Sign Up Wizard
+          </h2>
           <div className="flex items-center justify-between mb-4">
             {[1, 2, 3, 4, 5].map((n) => (
               <div
                 key={n}
                 className={`h-2 flex-1 mx-1 rounded-full transition-all ${
-                  n <= step ? "bg-yellow-600" : "bg-gray-700"
+                  n <= step ? 'bg-yellow-600' : 'bg-gray-700'
                 }`}
               />
             ))}
@@ -287,47 +315,167 @@ const SignUp = () => {
           <form onSubmit={handleSubmit} className="overflow-hidden">
             <AnimatePresence mode="wait">
               {step === 1 && (
-                <motion.div key="step1" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="space-y-4">
-                  <InputField label="Display Name" name="name" value={data.name} onChange={handleOnChange} required placeholder="Your unique username or display name" />
-                  <InputField label="Tag (Optional)" name="tag" value={data.tag} onChange={handleOnChange} placeholder="e.g., ProTrader, CryptoEnthusiast" />
+                <motion.div
+                  key="step1"
+                  variants={stepVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="space-y-4"
+                >
+                  <InputField
+                    label="Display Name"
+                    name="name"
+                    value={data.name}
+                    onChange={handleOnChange}
+                    required
+                    placeholder="Your unique username or display name"
+                  />
+                  <InputField
+                    label="Tag (Optional)"
+                    name="tag"
+                    value={data.tag}
+                    onChange={handleOnChange}
+                    placeholder="e.g., ProTrader, CryptoEnthusiast"
+                  />
                   <div className="flex justify-between mt-6">
                     <div />
-                    <button type="button" onClick={() => goToStep(2)} className="btn-next bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-medium py-2 px-4 rounded transition">Next →</button>
+                    <button
+                      type="button"
+                      onClick={() => goToStep(2)}
+                      className="btn-next bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-medium py-2 px-4 rounded transition"
+                    >
+                      Next →
+                    </button>
                   </div>
                 </motion.div>
               )}
               {step === 2 && (
-                <motion.div key="step2" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="space-y-4">
-                  <InputField label="Email" name="email" type="email" value={data.email} onChange={handleOnChange} required placeholder="you@example.com" />
+                <motion.div
+                  key="step2"
+                  variants={stepVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="space-y-4"
+                >
+                  <InputField
+                    label="Email"
+                    name="email"
+                    type="email"
+                    value={data.email}
+                    onChange={handleOnChange}
+                    required
+                    placeholder="you@example.com"
+                  />
                   <div className="flex justify-between mt-6">
-                    <button type="button" onClick={() => goToStep(1)} className="btn-back bg-gray-700 hover:bg-gray-600 text-gray-100 font-medium py-2 px-4 rounded transition">← Back</button>
-                    <button type="button" onClick={() => goToStep(3)} className="btn-next bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-medium py-2 px-4 rounded transition">Next →</button>
+                    <button
+                      type="button"
+                      onClick={() => goToStep(1)}
+                      className="btn-back bg-gray-700 hover:bg-gray-600 text-gray-100 font-medium py-2 px-4 rounded transition"
+                    >
+                      ← Back
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => goToStep(3)}
+                      className="btn-next bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-medium py-2 px-4 rounded transition"
+                    >
+                      Next →
+                    </button>
                   </div>
                 </motion.div>
               )}
               {step === 3 && (
-                <motion.div key="step3" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="space-y-4">
-                  <InputField label="Telegram Number (Optional)" name="telegramNumber" value={data.telegramNumber} onChange={handleOnChange} placeholder="+1234567890 (optional)" />
+                <motion.div
+                  key="step3"
+                  variants={stepVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="space-y-4"
+                >
+                  <InputField
+                    label="Telegram Number (Optional)"
+                    name="telegramNumber"
+                    value={data.telegramNumber}
+                    onChange={handleOnChange}
+                    placeholder="+1234567890 (optional)"
+                  />
                   <div className="flex justify-between mt-6">
-                    <button type="button" onClick={() => goToStep(2)} className="btn-back bg-gray-700 hover:bg-gray-600 text-gray-100 font-medium py-2 px-4 rounded transition">← Back</button>
-                    <button type="button" onClick={() => goToStep(4)} className="btn-next bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-medium py-2 px-4 rounded transition">Next →</button>
+                    <button
+                      type="button"
+                      onClick={() => goToStep(2)}
+                      className="btn-back bg-gray-700 hover:bg-gray-600 text-gray-100 font-medium py-2 px-4 rounded transition"
+                    >
+                      ← Back
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => goToStep(4)}
+                      className="btn-next bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-medium py-2 px-4 rounded transition"
+                    >
+                      Next →
+                    </button>
                   </div>
                 </motion.div>
               )}
               {step === 4 && (
-                <motion.div key="step4" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="space-y-4">
-                  <PasswordField label="Password" name="password" value={data.password} onChange={handleOnChange} show={showPassword} toggle={() => setShowPassword((prev) => !prev)} />
-                  <PasswordField label="Confirm Password" name="confirmPassword" value={data.confirmPassword} onChange={handleOnChange} show={showConfirmPassword} toggle={() => setShowConfirmPassword((prev) => !prev)} />
+                <motion.div
+                  key="step4"
+                  variants={stepVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="space-y-4"
+                >
+                  <PasswordField
+                    label="Password"
+                    name="password"
+                    value={data.password}
+                    onChange={handleOnChange}
+                    show={showPassword}
+                    toggle={() => setShowPassword((prev) => !prev)}
+                  />
+                  <PasswordField
+                    label="Confirm Password"
+                    name="confirmPassword"
+                    value={data.confirmPassword}
+                    onChange={handleOnChange}
+                    show={showConfirmPassword}
+                    toggle={() => setShowConfirmPassword((prev) => !prev)}
+                  />
                   <div className="flex justify-between mt-6">
-                    <button type="button" onClick={() => goToStep(3)} className="btn-back bg-gray-700 hover:bg-gray-600 text-gray-100 font-medium py-2 px-4 rounded transition">← Back</button>
-                    <button type="button" onClick={() => goToStep(5)} className="btn-next bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-medium py-2 px-4 rounded transition">Next →</button>
+                    <button
+                      type="button"
+                      onClick={() => goToStep(3)}
+                      className="btn-back bg-gray-700 hover:bg-gray-600 text-gray-100 font-medium py-2 px-4 rounded transition"
+                    >
+                      ← Back
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => goToStep(5)}
+                      className="btn-next bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-medium py-2 px-4 rounded transition"
+                    >
+                      Next →
+                    </button>
                   </div>
                 </motion.div>
               )}
               {step === 5 && (
-                <motion.div key="step5" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="space-y-4">
+                <motion.div
+                  key="step5"
+                  variants={stepVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="space-y-4"
+                >
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Profile Picture</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                      Profile Picture
+                    </label>
                     <div className="flex items-center gap-2">
                       <input
                         type="file"
@@ -346,7 +494,11 @@ const SignUp = () => {
                   </div>
                   {data.profilePic && (
                     <div className="flex justify-center my-4">
-                       <img src={data.profilePic} alt="Profile Preview" className="h-24 w-24 rounded-full object-cover shadow-lg border-2 border-yellow-500" />
+                      <img
+                        src={data.profilePic}
+                        alt="Profile Preview"
+                        className="h-24 w-24 rounded-full object-cover shadow-lg border-2 border-yellow-500"
+                      />
                     </div>
                   )}
                   <div className="flex items-center space-x-2">
@@ -359,19 +511,42 @@ const SignUp = () => {
                         className="w-4 h-4 text-yellow-600 border-gray-700 rounded focus:ring-yellow-500 bg-gray-800 checked:bg-yellow-500"
                       />
                     </div>
-                    <label htmlFor="terms" className="text-sm text-gray-300 leading-snug">
-                      I agree to the{" "}
-                      <Link to="/terms" className="text-yellow-500 hover:underline">terms and conditions</Link>
+                    <label
+                      htmlFor="terms"
+                      className="text-sm text-gray-300 leading-snug"
+                    >
+                      I agree to the{' '}
+                      <Link
+                        to="/terms"
+                        className="text-yellow-500 hover:underline"
+                      >
+                        terms and conditions
+                      </Link>
                     </label>
                   </div>
                   <div className="flex justify-between mt-6">
-                    <button type="button" onClick={() => goToStep(4)} className="btn-back bg-gray-700 hover:bg-gray-600 text-gray-100 font-medium py-2 px-4 rounded transition">← Back</button>
+                    <button
+                      type="button"
+                      onClick={() => goToStep(4)}
+                      className="btn-back bg-gray-700 hover:bg-gray-600 text-gray-100 font-medium py-2 px-4 rounded transition"
+                    >
+                      ← Back
+                    </button>
                     <button
                       type="submit"
-                      disabled={loading || uploading || !data.profilePic || !agreedToTerms}
+                      disabled={
+                        loading ||
+                        uploading ||
+                        !data.profilePic ||
+                        !agreedToTerms
+                      }
                       className="bg-yellow-600 hover:bg-yellow-700 text-gray-900 text-sm font-medium py-2 px-4 rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {loading ? "Signing Up..." : uploading ? "Uploading..." : "Sign Up 🚀"}
+                      {loading
+                        ? 'Signing Up...'
+                        : uploading
+                          ? 'Uploading...'
+                          : 'Sign Up 🚀'}
                     </button>
                   </div>
                 </motion.div>
@@ -380,8 +555,11 @@ const SignUp = () => {
           </form>
 
           <div className="mt-6 text-center text-sm text-gray-400">
-            Already have an account?{" "}
-            <Link to="/login" className="text-yellow-500 hover:underline font-medium">
+            Already have an account?{' '}
+            <Link
+              to="/login"
+              className="text-yellow-500 hover:underline font-medium"
+            >
               Login
             </Link>
           </div>
@@ -400,14 +578,20 @@ const SignUp = () => {
       </footer>
       <style jsx>{`
         @keyframes animate-scroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
         }
         .animate-scroll {
           animation: animate-scroll 30s linear infinite;
         }
         @keyframes blink {
-          50% { opacity: 0; }
+          50% {
+            opacity: 0;
+          }
         }
         .animate-blink {
           animation: blink 1s step-end infinite;
@@ -417,9 +601,22 @@ const SignUp = () => {
   );
 };
 
-const InputField = ({ label, name, value, onChange, type = "text", placeholder = "", required = false }) => (
+const InputField = ({
+  label,
+  name,
+  value,
+  onChange,
+  type = 'text',
+  placeholder = '',
+  required = false,
+}) => (
   <div>
-    <label htmlFor={name} className="block text-sm font-medium text-gray-300 mb-1">{label}</label>
+    <label
+      htmlFor={name}
+      className="block text-sm font-medium text-gray-300 mb-1"
+    >
+      {label}
+    </label>
     <div className="flex items-center p-2 bg-gray-800 border-2 border-yellow-600 rounded focus-within:ring-yellow-500 focus-within:border-yellow-500">
       <input
         id={name}
@@ -437,11 +634,16 @@ const InputField = ({ label, name, value, onChange, type = "text", placeholder =
 
 const PasswordField = ({ label, name, value, onChange, show, toggle }) => (
   <div>
-    <label htmlFor={name} className="block text-sm font-medium text-gray-300 mb-1">{label}</label>
+    <label
+      htmlFor={name}
+      className="block text-sm font-medium text-gray-300 mb-1"
+    >
+      {label}
+    </label>
     <div className="relative flex items-center w-full p-1 rounded-lg border-2 border-yellow-600 bg-gray-800 focus-within:ring-2 focus-within:ring-yellow-500">
       <input
         id={name}
-        type={show ? "text" : "password"}
+        type={show ? 'text' : 'password'}
         name={name}
         value={value}
         onChange={onChange}
@@ -449,10 +651,16 @@ const PasswordField = ({ label, name, value, onChange, show, toggle }) => (
         required
         className="flex-1 bg-transparent outline-none text-gray-100 placeholder-gray-400"
       />
-      <button type="button" onClick={toggle}
+      <button
+        type="button"
+        onClick={toggle}
         className="absolute right-3 top-3 text-yellow-500 hover:text-yellow-400"
       >
-        {show ? <FaEyeSlash className="h-5 w-5" /> : <FaEye className="h-5 w-5" />}
+        {show ? (
+          <FaEyeSlash className="h-5 w-5" />
+        ) : (
+          <FaEye className="h-5 w-5" />
+        )}
       </button>
     </div>
   </div>

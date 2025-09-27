@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import scrollTop from "../helpers/scrollTop";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import scrollTop from '../helpers/scrollTop';
 
 const VerticalCard = React.memo(({ loading, data = [] }) => {
   const loadingList = new Array(12).fill(null);
-  const signature = "SXN";
+  const signature = 'SXN';
   const [imageErrors, setImageErrors] = useState({});
 
   const handleImageError = (productId) => {
@@ -128,7 +128,11 @@ const VerticalCard = React.memo(({ loading, data = [] }) => {
       <div className="grid grid-cols-2 gap-3 p-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 md:gap-4 lg:grid-cols-5 xl:grid-cols-6 xl:gap-5">
         {loading
           ? loadingList.map((_, index) => (
-              <div key={index} className="rounded-xl overflow-hidden animate-pulse vertical-card-skeleton bg-gray-900 border border-gray-700" style={{ minWidth: 160, maxWidth: 180 }}>
+              <div
+                key={index}
+                className="rounded-xl overflow-hidden animate-pulse vertical-card-skeleton bg-gray-900 border border-gray-700"
+                style={{ minWidth: 160, maxWidth: 180 }}
+              >
                 <div className="aspect-square rounded-t-xl bg-gray-800"></div>
                 <div className="p-3">
                   <div className="h-4 bg-gray-700 rounded mb-2 w-4/5"></div>
@@ -151,14 +155,22 @@ const VerticalCard = React.memo(({ loading, data = [] }) => {
                 <div className="relative aspect-square overflow-hidden rounded-t-xl bg-gray-800 flex items-center justify-center">
                   {imageErrors[product._id] ? (
                     <div className="flex flex-col items-center justify-center w-full h-full text-gray-500 bg-gray-200">
-                      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" className="mb-2 opacity-70">
+                      <svg
+                        width="28"
+                        height="28"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="mb-2 opacity-70"
+                      >
                         <path d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z" />
                       </svg>
-                      <span className="text-xs font-medium opacity-80 glossy-text">No Image</span>
+                      <span className="text-xs font-medium opacity-80 glossy-text">
+                        No Image
+                      </span>
                     </div>
                   ) : (
                     <img
-                      src={product.productImage?.[0] || "/placeholder.jpg"}
+                      src={product.productImage?.[0] || '/placeholder.jpg'}
                       alt={product.productName}
                       className="w-full h-full object-cover transition-all duration-400 ease-in-out group-hover:scale-105"
                       loading="lazy"
@@ -173,8 +185,12 @@ const VerticalCard = React.memo(({ loading, data = [] }) => {
                     {product.productName}
                   </h3>
                   <div className="flex flex-col gap-1 mt-2">
-                    <span className="text-xs text-gray-400">{product.category}</span>
-                    <span className="text-xs text-gray-400">{product.brand}</span>
+                    <span className="text-xs text-gray-400">
+                      {product.category}
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      {product.brand}
+                    </span>
                   </div>
                   <div className="mt-2 flex items-center gap-2">
                     <span className="font-bold text-yellow-600 text-base">

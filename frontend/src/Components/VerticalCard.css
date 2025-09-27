@@ -35,14 +35,18 @@
 .vertical-card {
   position: relative;
   display: block;
-  background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+  background: linear-gradient(
+    145deg,
+    rgba(30, 41, 59, 0.95),
+    rgba(15, 23, 42, 0.95)
+  );
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(244, 245, 244, 0.89);
   border-radius: 1.5rem;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 
+  box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.15),
     0 0 0 1px rgba(139, 92, 246, 0.1);
   transform: translateY(0);
@@ -51,7 +55,7 @@
 
 .vertical-card:hover {
   transform: translateY(-8px) scale(1.02);
-  box-shadow: 
+  box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(139, 92, 246, 0.3),
     0 0 30px rgba(139, 92, 246, 0.2);
@@ -60,7 +64,7 @@
 
 .vertical-card:focus {
   outline: none;
-  box-shadow: 
+  box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.3),
     0 0 0 2px rgba(139, 92, 246, 0.6);
 }
@@ -70,7 +74,11 @@
   aspect-ratio: 1;
   overflow: hidden;
   border-radius: 1.25rem 1.25rem 0 0;
-  background: linear-gradient(135deg, rgba(207, 204, 204, 0.8), rgba(12, 12, 12, 0.8));
+  background: linear-gradient(
+    135deg,
+    rgba(207, 204, 204, 0.8),
+    rgba(12, 12, 12, 0.8)
+  );
 }
 
 .vertical-card__image-container {
@@ -104,7 +112,11 @@
   width: 100%;
   height: 100%;
   color: rgba(148, 163, 184, 0.6);
-  background: linear-gradient(135deg, rgba(246, 246, 247, 0.3), rgba(248, 248, 248, 0.3));
+  background: linear-gradient(
+    135deg,
+    rgba(246, 246, 247, 0.3),
+    rgba(248, 248, 248, 0.3)
+  );
 }
 
 .vertical-card__placeholder-icon {
@@ -299,7 +311,8 @@
 }
 
 @keyframes borderGlow {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {
@@ -308,7 +321,11 @@
 }
 
 .vertical-card-skeleton {
-  background: linear-gradient(145deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.5));
+  background: linear-gradient(
+    145deg,
+    rgba(30, 41, 59, 0.5),
+    rgba(15, 23, 42, 0.5)
+  );
   border: 1px solid rgba(148, 163, 184, 0.1);
   border-radius: 1.5rem;
   overflow: hidden;
@@ -362,7 +379,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.8;
   }
   50% {
@@ -416,7 +434,11 @@
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   .vertical-card {
-    background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.95));
+    background: linear-gradient(
+      145deg,
+      rgba(15, 23, 42, 0.95),
+      rgba(2, 6, 23, 0.95)
+    );
     border-color: rgba(148, 163, 184, 0.1);
   }
 }

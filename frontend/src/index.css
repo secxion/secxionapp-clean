@@ -2,16 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Press+Start+2P&display=swap');
 
-
-html, body, #root {
+html,
+body,
+#root {
   margin: 0;
   padding: 0;
   width: 100%;
-  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  font-size:medium;
+  font-family:
+    'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans',
+    Arial, sans-serif;
+  font-size: medium;
   background-color: white;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -19,26 +21,21 @@ html, body, #root {
   scroll-behavior: smooth;
 }
 
-.glossy-icon-text{
-
+.glossy-icon-text {
 }
 .glossy-text {
-                text-shadow:
-                  
-                  white;
-                -webkit-text-stroke: 0.5px #000;
-                color: #000;
-              }
-              .glossy-heading {
-                text-shadow:
-                  white;
-                -webkit-text-stroke: 0.7px #000000;
-                color: #000;
-              }
+  text-shadow: white;
+  -webkit-text-stroke: 0.5px #000;
+  color: #000;
+}
+.glossy-heading {
+  text-shadow: white;
+  -webkit-text-stroke: 0.7px #000000;
+  color: #000;
+}
 .animate-fade-in {
   animation: fade-in 0.3s ease-out;
 }
-
 
 .animate-fade-in-up {
   animation: fadeInUp 0.4s ease-out;
@@ -77,7 +74,6 @@ html, body, #root {
   }
 }
 
-
 /* Individual slide styling */
 .hirate-slide {
   display: flex;
@@ -101,25 +97,26 @@ html, body, #root {
 }
 
 .slide-product-name {
-  color: #B45309;
+  color: #b45309;
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
 }
 
 .fire-icon {
-  color: #EF4444;
+  color: #ef4444;
   animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
-  50% { opacity: 0.6; }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .slide-price {
   margin-left: 0.75rem;
-    color: #0a6b02;
-
+  color: #0a6b02;
 }
 
 @keyframes marquee {
@@ -127,7 +124,9 @@ html, body, #root {
     transform: translateX(0%);
   }
   100% {
-    transform: translateX(-50%); /* Translates exactly the width of the original content */
+    transform: translateX(
+      -50%
+    ); /* Translates exactly the width of the original content */
   }
 }
 
@@ -152,4 +151,3 @@ html, body, #root {
   display: flex;
   animation: scrollLoop 60s linear infinite;
 }
-

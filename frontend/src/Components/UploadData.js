@@ -1,22 +1,42 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useSelector } from "react-redux";
-import { FaCloudUploadAlt, FaTrash, FaArrowLeft, FaTag, FaImage, FaFileAlt, FaPalette, FaBars, FaTimes, FaEdit } from "react-icons/fa";
-import { MdSend, MdClose, MdUpdate, MdEdit, MdSave, MdCancel, MdFullscreen, MdFullscreenExit } from "react-icons/md";
-import { toast } from "react-toastify";
-import { motion, AnimatePresence } from "framer-motion";
-import SummaryApi from "../common";
-import uploadImage from "../helpers/uploadImage";
-import SecxionSpinner from "./SecxionSpinner";
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSelector } from 'react-redux';
+import {
+  FaCloudUploadAlt,
+  FaTrash,
+  FaArrowLeft,
+  FaTag,
+  FaImage,
+  FaFileAlt,
+  FaPalette,
+  FaBars,
+  FaTimes,
+  FaEdit,
+} from 'react-icons/fa';
+import {
+  MdSend,
+  MdClose,
+  MdUpdate,
+  MdEdit,
+  MdSave,
+  MdCancel,
+  MdFullscreen,
+  MdFullscreenExit,
+} from 'react-icons/md';
+import { toast } from 'react-toastify';
+import { motion, AnimatePresence } from 'framer-motion';
+import SummaryApi from '../common';
+import uploadImage from '../helpers/uploadImage';
+import SecxionSpinner from './SecxionSpinner';
 
 const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
   const { user } = useSelector((state) => state.user);
 
   // Form data state
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
   const [media, setMedia] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
-  const [tagInput, setTagInput] = useState("");
+  const [tagInput, setTagInput] = useState('');
 
   // UI state
   const [loading, setLoading] = useState(false);
@@ -37,25 +57,25 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
   // Fetch saved notes
   const fetchSavedNotes = useCallback(async () => {
     if (!user) return;
-    
+
     setLoadingNotes(true);
     try {
       const response = await fetch(SummaryApi.allData.url, {
         method: SummaryApi.allData.method,
-        credentials: "include",
+        credentials: 'include',
       });
 
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
           const userNotes = data.data.filter(
-            (item) => item.userId === user?.id || item.userId === user?._id
+            (item) => item.userId === user?.id || item.userId === user?._id,
           );
           setSavedNotes(userNotes.slice(0, 10)); // Show only first 10 notes
         }
       }
     } catch (error) {
-      console.error("Error fetching saved notes:", error);
+      console.error('Error fetching saved notes:', error);
     } finally {
       setLoadingNotes(false);
     }
@@ -64,41 +84,41 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
   // Load existing note data when editing
   useEffect(() => {
     if (editingDataPad) {
-      const loadedTitle = editingDataPad.title || "";
-      const loadedContent = editingDataPad.content || "";
+      const loadedTitle = editingDataPad.title || '';
+      const loadedContent = editingDataPad.content || '';
       const loadedMedia = editingDataPad.media || [];
-      
+
       setTitle(loadedTitle);
       setContent(loadedContent);
       setMedia(loadedMedia);
-      
+
       // Store original data for comparison
       setOriginalData({
         title: loadedTitle,
         content: loadedContent,
-        media: loadedMedia
+        media: loadedMedia,
       });
-      
+
       // Fix: Set up previewImages for existing media
       if (editingDataPad.media && editingDataPad.media.length > 0) {
-        const existingImages = editingDataPad.media.map(url => ({
+        const existingImages = editingDataPad.media.map((url) => ({
           url: url,
           file: null,
-          isUploading: false
+          isUploading: false,
         }));
         setPreviewImages(existingImages);
       } else {
         setPreviewImages([]);
       }
     } else {
-      setTitle("");
-      setContent("");
+      setTitle('');
+      setContent('');
       setMedia([]);
       setPreviewImages([]);
       setOriginalData({
-        title: "",
-        content: "",
-        media: []
+        title: '',
+        content: '',
+        media: [],
       });
     }
     setHasUnsavedChanges(false);
@@ -113,7 +133,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
   useEffect(() => {
     if (!originalData) return;
 
-    const hasChanges = 
+    const hasChanges =
       title !== originalData.title ||
       content !== originalData.content ||
       JSON.stringify(media) !== JSON.stringify(originalData.media);
@@ -123,130 +143,134 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
 
   // Update word count when content changes
   useEffect(() => {
-    const words = content.split(/\s+/).filter(word => word.length > 0).length;
+    const words = content.split(/\s+/).filter((word) => word.length > 0).length;
     setWordCount(words);
   }, [content]);
 
   // Handle image selection with validation
-  const handleImageSelection = useCallback((e) => {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
+  const handleImageSelection = useCallback(
+    (e) => {
+      const files = Array.from(e.target.files);
+      if (!files.length) return;
 
-    const validFiles = files.filter(file => {
-      const isValidType = file.type.startsWith('image/');
-      const isValidSize = file.size <= 10 * 1024 * 1024;
+      const validFiles = files.filter((file) => {
+        const isValidType = file.type.startsWith('image/');
+        const isValidSize = file.size <= 10 * 1024 * 1024;
 
-      if (!isValidType) {
-        toast.error(`${file.name} is not a valid image file`, {
-          position: "top-right",
-          autoClose: 3000,
-        });
-        return false;
-      }
+        if (!isValidType) {
+          toast.error(`${file.name} is not a valid image file`, {
+            position: 'top-right',
+            autoClose: 3000,
+          });
+          return false;
+        }
 
-      if (!isValidSize) {
-        toast.error(`${file.name} is too large. Maximum size is 10MB`, {
-          position: "top-right",
-          autoClose: 3000,
-        });
-        return false;
-      }
+        if (!isValidSize) {
+          toast.error(`${file.name} is too large. Maximum size is 10MB`, {
+            position: 'top-right',
+            autoClose: 3000,
+          });
+          return false;
+        }
 
-      return true;
-    });
-
-    if (validFiles.length === 0) return;
-
-    if (previewImages.length + validFiles.length > 10) {
-      toast.error("Maximum 10 images allowed per note", {
-        position: "top-right",
-        autoClose: 3000,
+        return true;
       });
-      return;
-    }
 
-    const previews = validFiles.map((file) => ({
-      url: URL.createObjectURL(file),
-      file: file,
-      isUploading: true
-    }));
+      if (validFiles.length === 0) return;
 
-    setPreviewImages(prev => [...prev, ...previews]);
-    uploadImages(validFiles);
-  }, [previewImages.length]);
+      if (previewImages.length + validFiles.length > 10) {
+        toast.error('Maximum 10 images allowed per note', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+        return;
+      }
+
+      const previews = validFiles.map((file) => ({
+        url: URL.createObjectURL(file),
+        file: file,
+        isUploading: true,
+      }));
+
+      setPreviewImages((prev) => [...prev, ...previews]);
+      uploadImages(validFiles);
+    },
+    [previewImages.length],
+  );
 
   // Upload images to the server with progress tracking
   const uploadImages = useCallback(async (files) => {
     try {
       const uploadPromises = files.map(async (file, index) => {
         const fileId = `${Date.now()}-${index}`;
-        setUploadProgress(prev => ({ ...prev, [fileId]: 0 }));
+        setUploadProgress((prev) => ({ ...prev, [fileId]: 0 }));
 
         try {
           const uploadResponse = await uploadImage(file);
-          setUploadProgress(prev => ({ ...prev, [fileId]: 100 }));
+          setUploadProgress((prev) => ({ ...prev, [fileId]: 100 }));
           return uploadResponse.url;
         } catch (error) {
           console.error(`Failed to upload ${file.name}:`, error);
-          setUploadProgress(prev => ({ ...prev, [fileId]: -1 }));
+          setUploadProgress((prev) => ({ ...prev, [fileId]: -1 }));
           throw error;
         }
       });
 
       const uploadedUrls = await Promise.all(uploadPromises);
 
-      setMedia(prev => [...prev, ...uploadedUrls]);
-      setPreviewImages(prev =>
-        prev.map(img =>
-          img.isUploading ? { ...img, isUploading: false } : img
-        )
+      setMedia((prev) => [...prev, ...uploadedUrls]);
+      setPreviewImages((prev) =>
+        prev.map((img) =>
+          img.isUploading ? { ...img, isUploading: false } : img,
+        ),
       );
 
       toast.success(`${uploadedUrls.length} image(s) uploaded successfully!`, {
-        position: "top-right",
+        position: 'top-right',
         autoClose: 3000,
       });
     } catch (error) {
-      console.error("Image upload failed:", error);
-      toast.error("Some images failed to upload. Please try again.", {
-        position: "top-right",
+      console.error('Image upload failed:', error);
+      toast.error('Some images failed to upload. Please try again.', {
+        position: 'top-right',
         autoClose: 5000,
       });
 
-      setPreviewImages(prev => prev.filter(img => !img.isUploading));
+      setPreviewImages((prev) => prev.filter((img) => !img.isUploading));
     } finally {
       setUploadProgress({});
     }
   }, []);
 
   // Remove an image from preview & media array
-  const removeImage = useCallback((index) => {
-    const imageToRemove = previewImages[index];
+  const removeImage = useCallback(
+    (index) => {
+      const imageToRemove = previewImages[index];
 
-    // Only revoke blob URLs (not server URLs)
-    if (imageToRemove?.url?.startsWith('blob:')) {
-      URL.revokeObjectURL(imageToRemove.url);
-    }
+      // Only revoke blob URLs (not server URLs)
+      if (imageToRemove?.url?.startsWith('blob:')) {
+        URL.revokeObjectURL(imageToRemove.url);
+      }
 
-    const updatedPreviews = previewImages.filter((_, i) => i !== index);
-    const updatedMedia = media.filter((_, i) => i !== index);
+      const updatedPreviews = previewImages.filter((_, i) => i !== index);
+      const updatedMedia = media.filter((_, i) => i !== index);
 
-    setPreviewImages(updatedPreviews);
-    setMedia(updatedMedia);
+      setPreviewImages(updatedPreviews);
+      setMedia(updatedMedia);
 
-    toast.info("Image removed", {
-      position: "top-right",
-      autoClose: 2000,
-    });
-  }, [previewImages, media]);
-
-  
+      toast.info('Image removed', {
+        position: 'top-right',
+        autoClose: 2000,
+      });
+    },
+    [previewImages, media],
+  );
 
   // Handle form submission with enhanced validation
   const handleSubmitDataPad = useCallback(async () => {
     if (!user) {
-      toast.error("User not found. Please log in again.", {
-        position: "top-right",
+      toast.error('User not found. Please log in again.', {
+        position: 'top-right',
         autoClose: 5000,
       });
       return;
@@ -256,24 +280,27 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
     const trimmedContent = content.trim();
 
     if (!trimmedTitle && !trimmedContent && media.length === 0) {
-      toast.error("Please enter a title, content, or upload at least one image.", {
-        position: "top-right",
-        autoClose: 5000,
-      });
+      toast.error(
+        'Please enter a title, content, or upload at least one image.',
+        {
+          position: 'top-right',
+          autoClose: 5000,
+        },
+      );
       return;
     }
 
     if (trimmedTitle.length > 200) {
-      toast.error("Title must be less than 200 characters.", {
-        position: "top-right",
+      toast.error('Title must be less than 200 characters.', {
+        position: 'top-right',
         autoClose: 5000,
       });
       return;
     }
 
     if (trimmedContent.length > 10000) {
-      toast.error("Content must be less than 10,000 characters.", {
-        position: "top-right",
+      toast.error('Content must be less than 10,000 characters.', {
+        position: 'top-right',
         autoClose: 5000,
       });
       return;
@@ -288,7 +315,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
         userId: user.id || user._id,
         title: trimmedTitle,
         content: trimmedContent,
-        media: media.filter(url => url && url.trim()) // This should contain the URLs
+        media: media.filter((url) => url && url.trim()), // This should contain the URLs
       };
 
       const url = editingDataPad
@@ -300,10 +327,10 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
 
       const response = await fetch(url, {
         method,
-        credentials: "include",
+        credentials: 'include',
         headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
         },
         body: JSON.stringify(noteData),
       });
@@ -316,11 +343,11 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
 
       if (responseData.success) {
         const successMessage = editingDataPad
-          ? "Data updated successfully!"
-          : "Data created successfully!";
+          ? 'Data updated successfully!'
+          : 'Data created successfully!';
 
         toast.success(successMessage, {
-          position: "top-right",
+          position: 'top-right',
           autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
@@ -328,7 +355,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
           draggable: true,
         });
 
-        previewImages.forEach(img => {
+        previewImages.forEach((img) => {
           if (img.url?.startsWith('blob:')) {
             URL.revokeObjectURL(img.url);
           }
@@ -341,12 +368,12 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
         }
         closeUpload();
       } else {
-        throw new Error(responseData.message || "Failed to save data");
+        throw new Error(responseData.message || 'Failed to save data');
       }
     } catch (error) {
-      console.error("Error submitting data:", error);
-      toast.error(error.message || "Error submitting data. Please try again.", {
-        position: "top-right",
+      console.error('Error submitting data:', error);
+      toast.error(error.message || 'Error submitting data. Please try again.', {
+        position: 'top-right',
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -357,20 +384,33 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
       setLoading(false);
       setIsSubmitting(false);
     }
-  }, [user, title, content, media, editingDataPad, previewImages, refreshData, closeUpload]);
+  }, [
+    user,
+    title,
+    content,
+    media,
+    editingDataPad,
+    previewImages,
+    refreshData,
+    closeUpload,
+  ]);
 
   // Handle close with unsaved changes warning - Simplified logic
   const handleClose = useCallback(() => {
     // Simple check against original data
-    const currentHasChanges = originalData && (
-      title !== originalData.title ||
-      content !== originalData.content ||
-      JSON.stringify(media) !== JSON.stringify(originalData.media)
-    );
+    const currentHasChanges =
+      originalData &&
+      (title !== originalData.title ||
+        content !== originalData.content ||
+        JSON.stringify(media) !== JSON.stringify(originalData.media));
 
     if (currentHasChanges) {
-      if (window.confirm("You have unsaved changes. Are you sure you want to close?")) {
-        previewImages.forEach(img => {
+      if (
+        window.confirm(
+          'You have unsaved changes. Are you sure you want to close?',
+        )
+      ) {
+        previewImages.forEach((img) => {
           if (img.url?.startsWith('blob:')) {
             URL.revokeObjectURL(img.url);
           }
@@ -389,72 +429,76 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
 
   const handleContentSave = useCallback(() => {
     setIsEditingContent(false);
-    toast.info("Content saved", {
-      position: "top-right",
+    toast.info('Content saved', {
+      position: 'top-right',
       autoClose: 2000,
     });
   }, []);
 
   // Handle opening a saved note - Simplified logic
-  const handleOpenSavedNote = useCallback((note) => {
-    if (!note || !user?._id) {
-      console.error('Note or user ID missing');
-      return;
-    }
+  const handleOpenSavedNote = useCallback(
+    (note) => {
+      if (!note || !user?._id) {
+        console.error('Note or user ID missing');
+        return;
+      }
 
-    try {
-      // Simple check - only show confirmation if actual changes exist
-      const currentHasChanges = originalData && (
-        title !== originalData.title ||
-        content !== originalData.content ||
-        JSON.stringify(media) !== JSON.stringify(originalData.media)
-      );
+      try {
+        // Simple check - only show confirmation if actual changes exist
+        const currentHasChanges =
+          originalData &&
+          (title !== originalData.title ||
+            content !== originalData.content ||
+            JSON.stringify(media) !== JSON.stringify(originalData.media));
 
-      if (currentHasChanges) {
-        const confirmLoad = window.confirm(
-          'You have unsaved changes. Loading this note will discard them. Continue?'
-        );
-        if (!confirmLoad) {
-          return;
+        if (currentHasChanges) {
+          const confirmLoad = window.confirm(
+            'You have unsaved changes. Loading this note will discard them. Continue?',
+          );
+          if (!confirmLoad) {
+            return;
+          }
         }
+
+        // Load the note data
+        const newTitle = note.title || '';
+        const newContent = note.content || '';
+        const newMedia = note.media || [];
+
+        setTitle(newTitle);
+        setContent(newContent);
+        setMedia(newMedia);
+
+        // Update original data reference
+        setOriginalData({
+          title: newTitle,
+          content: newContent,
+          media: newMedia,
+        });
+
+        // Handle media if present
+        if (note.media && note.media.length > 0) {
+          setPreviewImages(
+            note.media.map((mediaItem) => ({
+              url: mediaItem.url || mediaItem,
+              file: null,
+              isUploading: false,
+            })),
+          );
+        } else {
+          setPreviewImages([]);
+        }
+
+        // Reset states
+        setHasUnsavedChanges(false);
+        setActiveTab('content');
+      } catch (error) {
+        console.error('Error loading saved note:', error);
+        toast.error('Failed to load note');
       }
-
-      // Load the note data
-      const newTitle = note.title || '';
-      const newContent = note.content || '';
-      const newMedia = note.media || [];
-
-      setTitle(newTitle);
-      setContent(newContent);
-      setMedia(newMedia);
-      
-      // Update original data reference
-      setOriginalData({
-        title: newTitle,
-        content: newContent,
-        media: newMedia
-      });
-      
-      // Handle media if present
-      if (note.media && note.media.length > 0) {
-        setPreviewImages(note.media.map(mediaItem => ({
-          url: mediaItem.url || mediaItem,
-          file: null,
-          isUploading: false
-        })));
-      } else {
-        setPreviewImages([]);
-      }
-
-      // Reset states
-      setHasUnsavedChanges(false);
-      setActiveTab('content');
-      
-    } catch (error) {
-      console.error('Error loading saved note:', error);
-      toast.error('Failed to load note');
-    }
-  }, [title, content, media, originalData, user?._id]);
+    },
+    [title, content, media, originalData, user?._id],
+  );
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -479,28 +523,43 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
   const addTag = () => {
     const tag = tagInput.trim();
     if (tag && !media.includes(tag)) {
-      setMedia(prev => [...prev, tag]);
-      setTagInput("");
+      setMedia((prev) => [...prev, tag]);
+      setTagInput('');
     }
   };
 
   const removeTag = (tagToRemove) => {
-    setMedia(prev => prev.filter(tag => tag !== tagToRemove));
+    setMedia((prev) => prev.filter((tag) => tag !== tagToRemove));
   };
 
   // Mobile-optimized tabs with better touch targets
   const tabs = [
-    { id: 'content', label: 'Write', icon: <FaFileAlt className="w-4 h-4" />, color: 'blue' },
-    { id: 'images', label: 'Photos', icon: <FaImage className="w-4 h-4" />, color: 'green' },
-    { id: 'tags', label: 'Tags', icon: <FaTag className="w-4 h-4" />, color: 'purple' },
+    {
+      id: 'content',
+      label: 'Write',
+      icon: <FaFileAlt className="w-4 h-4" />,
+      color: 'blue',
+    },
+    {
+      id: 'images',
+      label: 'Photos',
+      icon: <FaImage className="w-4 h-4" />,
+      color: 'green',
+    },
+    {
+      id: 'tags',
+      label: 'Tags',
+      icon: <FaTag className="w-4 h-4" />,
+      color: 'purple',
+    },
   ];
 
   const writingTips = [
-    "💡 Start with a clear title",
-    "📝 Use bullet points for lists", 
-    "🔍 Add relevant tags for easy searching",
-    "📸 Include images to make notes visual",
-    "💭 Write as if explaining to a friend"
+    '💡 Start with a clear title',
+    '📝 Use bullet points for lists',
+    '🔍 Add relevant tags for easy searching',
+    '📸 Include images to make notes visual',
+    '💭 Write as if explaining to a friend',
   ];
 
   const toggleSidebar = () => setShowSidebar(!showSidebar);
@@ -524,27 +583,29 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
               <FaArrowLeft className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
               <span className="font-semibold">MyData</span>
             </button>
-            
+
             <button
               onClick={toggleSidebar}
               className="md:hidden p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-700 rounded-lg transition-colors duration-200"
               title="Toggle menu"
             >
-              {showSidebar ? <FaTimes className="w-4 h-4" /> : <FaBars className="w-4 h-4" />}
+              {showSidebar ? (
+                <FaTimes className="w-4 h-4" />
+              ) : (
+                <FaBars className="w-4 h-4" />
+              )}
             </button>
           </div>
-          
+
           <div className="flex-1 text-center md:text-left md:ml-4 md:border-l md:border-gray-600 md:pl-4">
             <h1 className="text-lg md:text-xl font-semibold text-white">
-              {editingDataPad ? "Edit Note" : "New Note"}
+              {editingDataPad ? 'Edit Note' : 'New Note'}
             </h1>
             {hasUnsavedChanges && (
-              <p className="text-sm text-orange-400 mt-1">
-                Unsaved changes
-              </p>
+              <p className="text-sm text-orange-400 mt-1">Unsaved changes</p>
             )}
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <button
               onClick={handleSubmitDataPad}
@@ -555,8 +616,14 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                 <SecxionSpinner size="small" message="" />
               ) : (
                 <>
-                  {editingDataPad ? <MdUpdate className="w-4 h-4" /> : <MdSend className="w-4 h-4" />}
-                  <span className="hidden sm:inline">{editingDataPad ? "Update" : "Save"}</span>
+                  {editingDataPad ? (
+                    <MdUpdate className="w-4 h-4" />
+                  ) : (
+                    <MdSend className="w-4 h-4" />
+                  )}
+                  <span className="hidden sm:inline">
+                    {editingDataPad ? 'Update' : 'Save'}
+                  </span>
                 </>
               )}
             </button>
@@ -586,13 +653,13 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                 whileTap={{ scale: 0.98 }}
               >
                 <FaEdit className="w-3 h-3 flex-shrink-0" />
-                <span className="truncate">
-                  {note.title || "Untitled"}
-                </span>
+                <span className="truncate">{note.title || 'Untitled'}</span>
               </motion.button>
             ))}
             {savedNotes.length === 0 && !loadingNotes && (
-              <div className="text-xs text-gray-500 italic">No saved notes yet</div>
+              <div className="text-xs text-gray-500 italic">
+                No saved notes yet
+              </div>
             )}
           </div>
         </div>
@@ -641,7 +708,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
               ))}
             </nav>
           </div>
-          
+
           {/* Desktop Stats */}
           <div className="p-4 space-y-3 text-sm text-slate-600">
             <div className="flex justify-between">
@@ -665,7 +732,9 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
               className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2"
             >
               💡 Writing Tips
-              <span className={`transform transition-transform ${showWritingTips ? 'rotate-180' : ''}`}>
+              <span
+                className={`transform transition-transform ${showWritingTips ? 'rotate-180' : ''}`}
+              >
                 ▼
               </span>
             </button>
@@ -673,12 +742,14 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
               {showWritingTips && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
+                  animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   className="space-y-1 text-xs text-slate-600 overflow-hidden"
                 >
                   {writingTips.map((tip, index) => (
-                    <div key={index} className="py-1">{tip}</div>
+                    <div key={index} className="py-1">
+                      {tip}
+                    </div>
                   ))}
                 </motion.div>
               )}
@@ -712,12 +783,14 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                     <FaTimes className="w-4 h-4" />
                   </button>
                 </div>
-                
+
                 {/* Mobile Stats */}
                 <div className="p-4 space-y-3 text-sm text-slate-600">
                   <div className="flex justify-between">
                     <span>Characters:</span>
-                    <span className="font-medium">{(title + content).length}</span>
+                    <span className="font-medium">
+                      {(title + content).length}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Words:</span>
@@ -731,10 +804,14 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
 
                 {/* Mobile Writing Tips */}
                 <div className="p-4 border-t border-slate-200">
-                  <h3 className="text-sm font-medium text-slate-700 mb-2">💡 Writing Tips</h3>
+                  <h3 className="text-sm font-medium text-slate-700 mb-2">
+                    💡 Writing Tips
+                  </h3>
                   <div className="space-y-1 text-xs text-slate-600">
                     {writingTips.map((tip, index) => (
-                      <div key={index} className="py-1">{tip}</div>
+                      <div key={index} className="py-1">
+                        {tip}
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -786,7 +863,9 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                     </div>
                     <div className="px-4 md:px-6 py-3 border-t border-gray-700 bg-gray-800/50 flex items-center justify-between text-xs text-gray-500">
                       <span>{content.length}/10,000 characters</span>
-                      <span className="hidden md:inline">{wordCount} words</span>
+                      <span className="hidden md:inline">
+                        {wordCount} words
+                      </span>
                     </div>
                   </div>
                 </motion.div>
@@ -804,7 +883,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                     <label className="block text-sm font-medium text-slate-700 mb-3">
                       Upload Images ({previewImages.length}/10)
                     </label>
-                    
+
                     {/* Mobile-optimized upload area */}
                     <label className="group relative block w-full border-2 border-dashed border-slate-300 rounded-xl p-6 md:p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 cursor-pointer touch-manipulation">
                       <FaCloudUploadAlt className="mx-auto h-10 w-10 md:h-12 md:w-12 text-slate-400 group-hover:text-blue-500 transition-colors duration-200" />
@@ -848,7 +927,9 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                                   src={imageData.url || imageData}
                                   alt={`Upload ${index + 1}`}
                                   className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
-                                  onClick={() => setSelectedImage(imageData.url || imageData)}
+                                  onClick={() =>
+                                    setSelectedImage(imageData.url || imageData)
+                                  }
                                 />
                               </div>
 
@@ -899,7 +980,11 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                         type="text"
                         value={tagInput}
                         onChange={(e) => setTagInput(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' ? (e.preventDefault(), addTag()) : null}
+                        onKeyPress={(e) =>
+                          e.key === 'Enter'
+                            ? (e.preventDefault(), addTag())
+                            : null
+                        }
                         className="flex-1 px-3 py-3 md:py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors duration-200 touch-manipulation"
                         placeholder="Enter a tag..."
                       />

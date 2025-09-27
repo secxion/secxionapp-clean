@@ -1,9 +1,7 @@
-import React from 'react'
+import React from 'react';
 
 const AdminChatBox = () => {
-  return (
-    <div>AdminChatBox</div>
-  )
-}
+  return <div>AdminChatBox</div>;
+};
 
-export default AdminChatBox
+export default AdminChatBox;

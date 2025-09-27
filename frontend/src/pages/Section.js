@@ -4,10 +4,10 @@ import './Section.css';
 
 const Section = () => {
   return (
-    <div className='container sticky'>
+    <div className="container sticky">
       <CategoryProduct />
     </div>
   );
-}
+};
 
 export default Section;

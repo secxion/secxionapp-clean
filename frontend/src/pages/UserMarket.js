@@ -1,67 +1,77 @@
-import React, { useContext, useEffect, useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
-import SummaryApi from "../common";
-import UserUploadMarket from "../Components/UserUploadMarket";
-import HistoryCard from "../Components/HistoryCard";
-import HistoryDetailView from "../Components/HistoryDetailView";
-import UserContext from "../Context";
-import SecxionSpinner from "../Components/SecxionSpinner"; // Ensure SecxionSpinner is imported
-import { motion } from "framer-motion"; 
+import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
+import SummaryApi from '../common';
+import UserUploadMarket from '../Components/UserUploadMarket';
+import HistoryCard from '../Components/HistoryCard';
+import HistoryDetailView from '../Components/HistoryDetailView';
+import UserContext from '../Context';
+import SecxionSpinner from '../Components/SecxionSpinner'; // Ensure SecxionSpinner is imported
+import { motion } from 'framer-motion';
 
 const UserMarket = () => {
   const [openUploadProduct, setOpenUploadProduct] = useState(false);
   const [allProduct, setAllProduct] = useState([]);
   const { user } = useContext(UserContext);
   const { marketId } = useParams();
-  const [selectedProductForDetail, setSelectedProductForDetail] = useState(null);
+  const [selectedProductForDetail, setSelectedProductForDetail] =
+    useState(null);
 
   const fetchAllProduct = useCallback(async () => {
     if (!user || !user._id) {
-      console.warn("User is not defined or userId is missing.");
+      console.warn('User is not defined or userId is missing.');
       return;
     }
 
     try {
-      const response = await fetch(`${SummaryApi.myMarket.url}?userId=${user._id}`, {
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
+      const response = await fetch(
+        `${SummaryApi.myMarket.url}?userId=${user._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+          credentials: 'include',
         },
-        credentials: "include",
-      });
+      );
 
       const dataResponse = await response.json();
-      console.log("all product data", dataResponse);
+      console.log('all product data', dataResponse);
       setAllProduct(dataResponse?.data || []);
     } catch (error) {
-      console.error("Failed to fetch all products:", error);
+      console.error('Failed to fetch all products:', error);
     }
   }, [user]);
 
-  const fetchProductById = useCallback(async (id) => {
-    if (!user || !user._id || !id) {
-      console.warn("User or market ID is missing.");
-      setAllProduct([]);
-      return;
-    }
+  const fetchProductById = useCallback(
+    async (id) => {
+      if (!user || !user._id || !id) {
+        console.warn('User or market ID is missing.');
+        setAllProduct([]);
+        return;
+      }
 
-    try {
-      const response = await fetch(SummaryApi.myMarketById.url.replace(':marketId', id), {
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
-        },
-        credentials: "include",
-      });
+      try {
+        const response = await fetch(
+          SummaryApi.myMarketById.url.replace(':marketId', id),
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+            credentials: 'include',
+          },
+        );
 
-      const dataResponse = await response.json();
-      console.log("specific product data", dataResponse);
-      setAllProduct(dataResponse?.data ? [dataResponse.data] : []);
-      setSelectedProductForDetail(dataResponse?.data || null);
-    } catch (error) {
-      console.error(`Failed to fetch product with ID ${id}:`, error);
-      setAllProduct([]);
-      setSelectedProductForDetail(null);
-    }
-  }, [user]);
+        const dataResponse = await response.json();
+        console.log('specific product data', dataResponse);
+        setAllProduct(dataResponse?.data ? [dataResponse.data] : []);
+        setSelectedProductForDetail(dataResponse?.data || null);
+      } catch (error) {
+        console.error(`Failed to fetch product with ID ${id}:`, error);
+        setAllProduct([]);
+        setSelectedProductForDetail(null);
+      }
+    },
+    [user],
+  );
 
   useEffect(() => {
     if (marketId) {
@@ -98,11 +108,12 @@ const UserMarket = () => {
           >
             Trade Status Dashboard
           </motion.h2>
-          
+
           {/* Summary stats and controls */}
           <div className="flex items-center space-x-4">
             <div className="text-sm text-gray-400">
-              {allProduct.length} transaction{allProduct.length !== 1 ? 's' : ''}
+              {allProduct.length} transaction
+              {allProduct.length !== 1 ? 's' : ''}
             </div>
             <button
               onClick={() => {
@@ -122,36 +133,48 @@ const UserMarket = () => {
 
       {/* Main Content Area - with top padding to account for fixed header */}
       <div className="pt-40 pb-6">
-        <div className="flex items-center flex-wrap gap-6 py-4 px-6"> 
+        <div className="flex items-center flex-wrap gap-6 py-4 px-6">
           {/* Render History Cards */}
           {allProduct.map((product) => (
             <HistoryCard
               key={product._id || `product-${product.name}`} // Ensure unique keys
               data={{
                 ...product,
-                crImage: product.crImage || product.cancelImage || product.image || null
+                crImage:
+                  product.crImage ||
+                  product.cancelImage ||
+                  product.image ||
+                  null,
               }}
               isDetailViewOpen={selectedProductForDetail?._id === product._id}
               onCloseDetailView={() => handleCloseDetailView()}
             />
           ))}
-          
+
           {/* Empty State */}
           {allProduct.length === 0 && !marketId && (
             <div className="w-full flex justify-center items-center min-h-[400px]">
               <div className="text-center">
-                <SecxionSpinner size="large" message="Loading trade status..." /> {/* Updated loader */}
+                <SecxionSpinner
+                  size="large"
+                  message="Loading trade status..."
+                />{' '}
+                {/* Updated loader */}
               </div>
             </div>
           )}
-          
+
           {/* Not Found State */}
           {allProduct.length === 0 && marketId && (
             <div className="w-full flex justify-center items-center min-h-[400px]">
               <div className="text-center">
                 <div className="text-6xl text-gray-600 mb-4">🔍</div>
-                <h3 className="text-xl font-semibold text-gray-300 mb-2">Transaction Not Found</h3>
-                <p className="text-gray-400 mb-4">The requested market record could not be found.</p>
+                <h3 className="text-xl font-semibold text-gray-300 mb-2">
+                  Transaction Not Found
+                </h3>
+                <p className="text-gray-400 mb-4">
+                  The requested market record could not be found.
+                </p>
                 <button
                   onClick={() => window.history.back()}
                   className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-gray-900 rounded-lg font-medium transition-colors duration-200"
@@ -170,7 +193,11 @@ const UserMarket = () => {
           <HistoryDetailView
             productDetails={{
               ...selectedProductForDetail,
-              crImage: selectedProductForDetail.crImage || selectedProductForDetail.cancelImage || selectedProductForDetail.image || null
+              crImage:
+                selectedProductForDetail.crImage ||
+                selectedProductForDetail.cancelImage ||
+                selectedProductForDetail.image ||
+                null,
             }}
             onClose={handleCloseDetailView}
           />
@@ -178,7 +205,10 @@ const UserMarket = () => {
       )}
 
       {openUploadProduct && (
-        <UserUploadMarket onClose={() => setOpenUploadProduct(false)} fetchData={fetchAllProduct} />
+        <UserUploadMarket
+          onClose={() => setOpenUploadProduct(false)}
+          fetchData={fetchAllProduct}
+        />
       )}
     </motion.div>
   );

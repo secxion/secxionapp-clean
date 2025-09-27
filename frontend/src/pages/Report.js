@@ -1,6 +1,6 @@
-import React, { useState, useCallback } from "react";
-import ReportForm from "../Components/ReportForm";
-import ReportList from "../Components/ReportList";
+import React, { useState, useCallback } from 'react';
+import ReportForm from '../Components/ReportForm';
+import ReportList from '../Components/ReportList';
 
 const Report = () => {
   const [newReport, setNewReport] = useState(null);
@@ -18,8 +18,8 @@ const Report = () => {
           </h1>
           <p className="text-gray-400 text-sm mb-6">
             If you encounter any issues, bugs, or fraudulent activities, please
-            submit a report below. Our team will review it and get back to you as
-            soon as possible.
+            submit a report below. Our team will review it and get back to you
+            as soon as possible.
           </p>
           <ReportForm onReportSubmit={handleReportSubmit} />
         </div>

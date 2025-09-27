@@ -3,22 +3,22 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
-import { 
-  FaUser, 
-  FaEnvelope, 
-  FaTelegram, 
-  FaTag, 
-  FaSave, 
-  FaTimes, 
-  FaEye, 
+import {
+  FaUser,
+  FaEnvelope,
+  FaTelegram,
+  FaTag,
+  FaSave,
+  FaTimes,
+  FaEye,
   FaEyeSlash,
   FaArrowLeft,
   FaUpload,
   FaTrash,
   FaEdit,
-  FaLock
+  FaLock,
 } from 'react-icons/fa';
-import { PiUserSquare } from "react-icons/pi";
+import { PiUserSquare } from 'react-icons/pi';
 import SummaryApi from '../common';
 import { setUserDetails } from '../store/userSlice';
 import uploadImage from '../helpers/uploadImage';
@@ -39,7 +39,7 @@ const Settings = () => {
     profilePic: '',
     currentPassword: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
 
   // UI state
@@ -48,7 +48,7 @@ const Settings = () => {
   const [showPasswords, setShowPasswords] = useState({
     current: false,
     new: false,
-    confirm: false
+    confirm: false,
   });
   const [activeTab, setActiveTab] = useState('profile');
   const [hasChanges, setHasChanges] = useState(false);
@@ -66,7 +66,7 @@ const Settings = () => {
       profilePic: stateData?.profilePic || user?.profilePic || '',
       currentPassword: '',
       newPassword: '',
-      confirmPassword: ''
+      confirmPassword: '',
     };
 
     setFormData(initialData);
@@ -75,14 +75,16 @@ const Settings = () => {
 
   // Track changes
   useEffect(() => {
-    const profileChanged = 
+    const profileChanged =
       formData.name !== originalData.name ||
       formData.tag !== originalData.tag ||
       formData.telegramNumber !== originalData.telegramNumber ||
       formData.profilePic !== originalData.profilePic;
 
-    const passwordChanged = 
-      formData.currentPassword || formData.newPassword || formData.confirmPassword;
+    const passwordChanged =
+      formData.currentPassword ||
+      formData.newPassword ||
+      formData.confirmPassword;
 
     setHasChanges(profileChanged || passwordChanged);
   }, [formData, originalData]);
@@ -104,14 +106,18 @@ const Settings = () => {
     }
 
     // Telegram validation
-    if (formData.telegramNumber && !/^\+?[1-9]\d{1,14}$/.test(formData.telegramNumber)) {
+    if (
+      formData.telegramNumber &&
+      !/^\+?[1-9]\d{1,14}$/.test(formData.telegramNumber)
+    ) {
       errors.telegramNumber = 'Invalid telegram number format';
     }
 
     // Password validation
     if (formData.newPassword || formData.confirmPassword) {
       if (!formData.currentPassword) {
-        errors.currentPassword = 'Current password is required to change password';
+        errors.currentPassword =
+          'Current password is required to change password';
       }
       if (formData.newPassword.length < 6) {
         errors.newPassword = 'New password must be at least 6 characters';
@@ -126,11 +132,11 @@ const Settings = () => {
   }, [formData]);
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     // Clear validation error when user starts typing
     if (validationErrors[field]) {
-      setValidationErrors(prev => ({ ...prev, [field]: '' }));
+      setValidationErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };
 
@@ -164,7 +170,7 @@ const Settings = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       toast.error('Please fix the errors before submitting');
       return;
@@ -199,17 +205,17 @@ const Settings = () => {
       if (data.success) {
         // Update Redux store
         dispatch(setUserDetails({ ...user, ...updateData }));
-        
+
         // Reset password fields
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           currentPassword: '',
           newPassword: '',
-          confirmPassword: ''
+          confirmPassword: '',
         }));
 
         // Update original data
-        setOriginalData(prev => ({ ...prev, ...updateData }));
+        setOriginalData((prev) => ({ ...prev, ...updateData }));
 
         toast.success(data.message || 'Profile updated successfully');
       } else {
@@ -225,7 +231,11 @@ const Settings = () => {
 
   const handleCancel = () => {
     if (hasChanges) {
-      if (window.confirm('You have unsaved changes. Are you sure you want to leave?')) {
+      if (
+        window.confirm(
+          'You have unsaved changes. Are you sure you want to leave?',
+        )
+      ) {
         navigate('/profile');
       }
     } else {
@@ -234,7 +244,7 @@ const Settings = () => {
   };
 
   const togglePasswordVisibility = (field) => {
-    setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }));
+    setShowPasswords((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
   const tabs = [
@@ -267,8 +277,12 @@ const Settings = () => {
             <FaArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">Edit Profile</h1>
-            <p className="text-gray-400 mt-1">Update your account information and settings</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">
+              Edit Profile
+            </h1>
+            <p className="text-gray-400 mt-1">
+              Update your account information and settings
+            </p>
           </div>
         </div>
         {hasChanges && (
@@ -330,8 +344,12 @@ const Settings = () => {
                   </div>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-white mb-2">Profile Picture</h3>
-                  <p className="text-gray-400 text-sm mb-4">Upload a new profile picture. JPG, PNG or GIF (max 5MB)</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">
+                    Profile Picture
+                  </h3>
+                  <p className="text-gray-400 text-sm mb-4">
+                    Upload a new profile picture. JPG, PNG or GIF (max 5MB)
+                  </p>
                   <div className="flex flex-wrap gap-3">
                     <label className="inline-flex items-center px-4 py-2 bg-yellow-500 text-gray-900 rounded-lg hover:bg-yellow-400 transition-colors duration-200 cursor-pointer font-medium">
                       <FaUpload className="w-4 h-4 mr-2" />
@@ -370,15 +388,21 @@ const Settings = () => {
                     <input
                       type="text"
                       value={formData.name}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange('name', e.target.value)
+                      }
                       className={`w-full pl-10 pr-4 py-3 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors duration-200 text-white placeholder-gray-400 ${
-                        validationErrors.name ? 'border-red-500' : 'border-gray-600'
+                        validationErrors.name
+                          ? 'border-red-500'
+                          : 'border-gray-600'
                       }`}
                       placeholder="Enter your full name"
                     />
                   </div>
                   {validationErrors.name && (
-                    <p className="text-red-400 text-sm mt-1">{validationErrors.name}</p>
+                    <p className="text-red-400 text-sm mt-1">
+                      {validationErrors.name}
+                    </p>
                   )}
                 </div>
 
@@ -397,7 +421,9 @@ const Settings = () => {
                       placeholder="Email cannot be changed"
                     />
                   </div>
-                  <p className="text-gray-500 text-xs mt-1">Contact support to change your email</p>
+                  <p className="text-gray-500 text-xs mt-1">
+                    Contact support to change your email
+                  </p>
                 </div>
 
                 {/* Tag */}
@@ -412,15 +438,21 @@ const Settings = () => {
                       value={formData.tag}
                       onChange={(e) => handleInputChange('tag', e.target.value)}
                       className={`w-full pl-10 pr-4 py-3 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors duration-200 text-white placeholder-gray-400 ${
-                        validationErrors.tag ? 'border-red-500' : 'border-gray-600'
+                        validationErrors.tag
+                          ? 'border-red-500'
+                          : 'border-gray-600'
                       }`}
                       placeholder="@username"
                     />
                   </div>
                   {validationErrors.tag && (
-                    <p className="text-red-400 text-sm mt-1">{validationErrors.tag}</p>
+                    <p className="text-red-400 text-sm mt-1">
+                      {validationErrors.tag}
+                    </p>
                   )}
-                  <p className="text-gray-500 text-xs mt-1">Letters, numbers, and underscores only</p>
+                  <p className="text-gray-500 text-xs mt-1">
+                    Letters, numbers, and underscores only
+                  </p>
                 </div>
 
                 {/* Telegram */}
@@ -433,15 +465,21 @@ const Settings = () => {
                     <input
                       type="tel"
                       value={formData.telegramNumber}
-                      onChange={(e) => handleInputChange('telegramNumber', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange('telegramNumber', e.target.value)
+                      }
                       className={`w-full pl-10 pr-4 py-3 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors duration-200 text-white placeholder-gray-400 ${
-                        validationErrors.telegramNumber ? 'border-red-500' : 'border-gray-600'
+                        validationErrors.telegramNumber
+                          ? 'border-red-500'
+                          : 'border-gray-600'
                       }`}
                       placeholder="+1234567890"
                     />
                   </div>
                   {validationErrors.telegramNumber && (
-                    <p className="text-red-400 text-sm mt-1">{validationErrors.telegramNumber}</p>
+                    <p className="text-red-400 text-sm mt-1">
+                      {validationErrors.telegramNumber}
+                    </p>
                   )}
                 </div>
               </div>
@@ -457,8 +495,13 @@ const Settings = () => {
               className="space-y-6"
             >
               <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4 mb-6">
-                <h3 className="text-yellow-400 font-medium mb-2">Change Password</h3>
-                <p className="text-yellow-300/80 text-sm">Leave password fields empty if you don't want to change your password.</p>
+                <h3 className="text-yellow-400 font-medium mb-2">
+                  Change Password
+                </h3>
+                <p className="text-yellow-300/80 text-sm">
+                  Leave password fields empty if you don't want to change your
+                  password.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 gap-6 max-w-md">
@@ -471,9 +514,13 @@ const Settings = () => {
                     <input
                       type={showPasswords.current ? 'text' : 'password'}
                       value={formData.currentPassword}
-                      onChange={(e) => handleInputChange('currentPassword', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange('currentPassword', e.target.value)
+                      }
                       className={`w-full pl-4 pr-12 py-3 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors duration-200 text-white placeholder-gray-400 ${
-                        validationErrors.currentPassword ? 'border-red-500' : 'border-gray-600'
+                        validationErrors.currentPassword
+                          ? 'border-red-500'
+                          : 'border-gray-600'
                       }`}
                       placeholder="Enter current password"
                     />
@@ -482,11 +529,17 @@ const Settings = () => {
                       onClick={() => togglePasswordVisibility('current')}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
                     >
-                      {showPasswords.current ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
+                      {showPasswords.current ? (
+                        <FaEyeSlash className="w-4 h-4" />
+                      ) : (
+                        <FaEye className="w-4 h-4" />
+                      )}
                     </button>
                   </div>
                   {validationErrors.currentPassword && (
-                    <p className="text-red-400 text-sm mt-1">{validationErrors.currentPassword}</p>
+                    <p className="text-red-400 text-sm mt-1">
+                      {validationErrors.currentPassword}
+                    </p>
                   )}
                 </div>
 
@@ -499,9 +552,13 @@ const Settings = () => {
                     <input
                       type={showPasswords.new ? 'text' : 'password'}
                       value={formData.newPassword}
-                      onChange={(e) => handleInputChange('newPassword', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange('newPassword', e.target.value)
+                      }
                       className={`w-full pl-4 pr-12 py-3 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors duration-200 text-white placeholder-gray-400 ${
-                        validationErrors.newPassword ? 'border-red-500' : 'border-gray-600'
+                        validationErrors.newPassword
+                          ? 'border-red-500'
+                          : 'border-gray-600'
                       }`}
                       placeholder="Enter new password"
                     />
@@ -510,11 +567,17 @@ const Settings = () => {
                       onClick={() => togglePasswordVisibility('new')}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
                     >
-                      {showPasswords.new ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
+                      {showPasswords.new ? (
+                        <FaEyeSlash className="w-4 h-4" />
+                      ) : (
+                        <FaEye className="w-4 h-4" />
+                      )}
                     </button>
                   </div>
                   {validationErrors.newPassword && (
-                    <p className="text-red-400 text-sm mt-1">{validationErrors.newPassword}</p>
+                    <p className="text-red-400 text-sm mt-1">
+                      {validationErrors.newPassword}
+                    </p>
                   )}
                 </div>
 
@@ -527,9 +590,13 @@ const Settings = () => {
                     <input
                       type={showPasswords.confirm ? 'text' : 'password'}
                       value={formData.confirmPassword}
-                      onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange('confirmPassword', e.target.value)
+                      }
                       className={`w-full pl-4 pr-12 py-3 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors duration-200 text-white placeholder-gray-400 ${
-                        validationErrors.confirmPassword ? 'border-red-500' : 'border-gray-600'
+                        validationErrors.confirmPassword
+                          ? 'border-red-500'
+                          : 'border-gray-600'
                       }`}
                       placeholder="Confirm new password"
                     />
@@ -538,11 +605,17 @@ const Settings = () => {
                       onClick={() => togglePasswordVisibility('confirm')}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
                     >
-                      {showPasswords.confirm ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
+                      {showPasswords.confirm ? (
+                        <FaEyeSlash className="w-4 h-4" />
+                      ) : (
+                        <FaEye className="w-4 h-4" />
+                      )}
                     </button>
                   </div>
                   {validationErrors.confirmPassword && (
-                    <p className="text-red-400 text-sm mt-1">{validationErrors.confirmPassword}</p>
+                    <p className="text-red-400 text-sm mt-1">
+                      {validationErrors.confirmPassword}
+                    </p>
                   )}
                 </div>
               </div>

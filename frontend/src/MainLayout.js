@@ -1,10 +1,10 @@
-import React, { Suspense } from "react";
-import { Outlet } from "react-router-dom";
-import Header from "../src/Components/Header"
-import Net from "../src/Components/Net";
-import SidePanel from "../src/Components/SidePanel";
-import { ToastContainer } from "react-toastify";
-import Loader from "./Loader";
+import React, { Suspense } from 'react';
+import { Outlet } from 'react-router-dom';
+import Header from '../src/Components/Header';
+import Net from '../src/Components/Net';
+import SidePanel from '../src/Components/SidePanel';
+import { ToastContainer } from 'react-toastify';
+import Loader from './Loader';
 
 function MainLayout() {
   return (
@@ -20,7 +20,7 @@ function MainLayout() {
           <Outlet />
         </Suspense>
       </main>
-      <SidePanel />  {/* Mobile menu panel */}
+      <SidePanel /> {/* Mobile menu panel */}
       <ToastContainer
         position="top-center"
         autoClose={1000}

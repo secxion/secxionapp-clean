@@ -7,30 +7,30 @@ const QuickActions = () => {
   const navigate = useNavigate();
 
   const actions = [
-    { 
-      icon: <Upload className="w-6 h-6" />, 
-      label: 'Sell Assets', 
+    {
+      icon: <Upload className="w-6 h-6" />,
+      label: 'Sell Assets',
       action: () => navigate('/section'),
-      gradient: 'from-green-500 to-emerald-600'
+      gradient: 'from-green-500 to-emerald-600',
     },
-    { 
-      icon: <Send className="w-6 h-6" />, 
-      label: 'Transfer', 
+    {
+      icon: <Send className="w-6 h-6" />,
+      label: 'Transfer',
       action: () => navigate('/mywallet'),
-      gradient: 'from-blue-500 to-cyan-600'
+      gradient: 'from-blue-500 to-cyan-600',
     },
-    { 
-      icon: <Download className="w-6 h-6" />, 
-      label: 'Withdraw', 
+    {
+      icon: <Download className="w-6 h-6" />,
+      label: 'Withdraw',
       action: () => navigate('/mywallet'),
-      gradient: 'from-purple-500 to-violet-600'
+      gradient: 'from-purple-500 to-violet-600',
     },
-    { 
-      icon: <Plus className="w-6 h-6" />, 
-      label: 'Add Funds', 
+    {
+      icon: <Plus className="w-6 h-6" />,
+      label: 'Add Funds',
       action: () => navigate('/mywallet'),
-      gradient: 'from-orange-500 to-red-600'
-    }
+      gradient: 'from-orange-500 to-red-600',
+    },
   ];
 
   return (

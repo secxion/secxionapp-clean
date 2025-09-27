@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
-import { obscureRoute } from "../utils/obscureRoute";
+import { useNavigate } from 'react-router-dom';
+import { obscureRoute } from '../utils/obscureRoute';
 
 const useSafeNavigate = () => {
   const navigate = useNavigate();

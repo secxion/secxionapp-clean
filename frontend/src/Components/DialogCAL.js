@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom'; // Import useLocation
-import { FiHome, FiTrendingUp, FiSettings, FiUser, FiLogOut, FiMenu, FiX } from 'react-icons/fi'; // Using Feather Icons
+import {
+  FiHome,
+  FiTrendingUp,
+  FiSettings,
+  FiUser,
+  FiLogOut,
+  FiMenu,
+  FiX,
+} from 'react-icons/fi'; // Using Feather Icons
 import './Sidebar.css';
-
 
 const DialogCal = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +27,7 @@ const DialogCal = () => {
   const handleLogout = () => {
     console.log('Logout clicked');
     closeSidebar(); // Close sidebar on logout (optional, depending on your UX)
-    navigate("/login");
+    navigate('/login');
   };
 
   return (
@@ -45,7 +52,9 @@ const DialogCal = () => {
             isOpen ? 'opacity-100' : 'opacity-0 lg:opacity-100'
           } transition-opacity duration-300`}
         >
-          {isOpen && <span className="font-semibold text-lg">My Dashboard</span>}
+          {isOpen && (
+            <span className="font-semibold text-lg">My Dashboard</span>
+          )}
           {!isOpen && <FiMenu size={24} />} {/* Show menu icon when closed */}
         </div>
 
@@ -56,51 +65,70 @@ const DialogCal = () => {
               <Link
                 to="/"
                 className={`flex items-center p-3 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 ${
-                  location.pathname === '/' ? 'bg-gray-200 dark:bg-gray-700 font-semibold' : ''
+                  location.pathname === '/'
+                    ? 'bg-gray-200 dark:bg-gray-700 font-semibold'
+                    : ''
                 }`}
                 onClick={closeSidebar}
               >
                 <FiHome className="mr-3" size={18} />
-                <span className={`${isOpen ? 'opacity-100' : 'opacity-0 lg:opacity-100'} transition-opacity duration-300`}>
+                <span
+                  className={`${isOpen ? 'opacity-100' : 'opacity-0 lg:opacity-100'} transition-opacity duration-300`}
+                >
                   Home
                 </span>
               </Link>
             </li>
             <li>
-              <Link to="/trending"
+              <Link
+                to="/trending"
                 className={`flex items-center p-3 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 ${
-                  location.pathname === '/trending' ? 'bg-gray-200 dark:bg-gray-700 font-semibold' : ''
+                  location.pathname === '/trending'
+                    ? 'bg-gray-200 dark:bg-gray-700 font-semibold'
+                    : ''
                 }`}
                 onClick={closeSidebar}
               >
                 <FiTrendingUp className="mr-3" size={18} />
-                <span className={`${isOpen ? 'opacity-100' : 'opacity-0 lg:opacity-100'} transition-opacity duration-300`}>
+                <span
+                  className={`${isOpen ? 'opacity-100' : 'opacity-0 lg:opacity-100'} transition-opacity duration-300`}
+                >
                   Trending
                 </span>
               </Link>
             </li>
             <li>
-              <Link to="/settings"
+              <Link
+                to="/settings"
                 className={`flex items-center p-3 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 ${
-                  location.pathname === '/settings' ? 'bg-gray-200 dark:bg-gray-700 font-semibold' : ''
+                  location.pathname === '/settings'
+                    ? 'bg-gray-200 dark:bg-gray-700 font-semibold'
+                    : ''
                 }`}
                 onClick={closeSidebar}
               >
                 <FiSettings className="mr-3" size={18} />
-                <span className={`${isOpen ? 'opacity-100' : 'opacity-0 lg:opacity-100'} transition-opacity duration-300`}>
+                <span
+                  className={`${isOpen ? 'opacity-100' : 'opacity-0 lg:opacity-100'} transition-opacity duration-300`}
+                >
                   Settings
                 </span>
               </Link>
             </li>
             <li>
-              <Link to="/profile"
+              <Link
+                to="/profile"
                 className={`flex items-center p-3 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 ${
-                  location.pathname === '/profile' ? 'bg-gray-200 dark:bg-gray-700 font-semibold' : ''
+                  location.pathname === '/profile'
+                    ? 'bg-gray-200 dark:bg-gray-700 font-semibold'
+                    : ''
                 }`}
                 onClick={closeSidebar}
               >
                 <FiUser className="mr-3" size={18} />
-                <span className={`${isOpen ? 'opacity-100' : 'opacity-0 lg:opacity-100'} transition-opacity duration-300`}>
+                <span
+                  className={`${isOpen ? 'opacity-100' : 'opacity-0 lg:opacity-100'} transition-opacity duration-300`}
+                >
                   Profile
                 </span>
               </Link>
@@ -109,7 +137,9 @@ const DialogCal = () => {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className={`absolute bottom-0 left-0 w-full p-4 border-t border-gray-200 dark:border-gray-700 ${isOpen ? 'opacity-100' : 'opacity-0 lg:opacity-100'} transition-opacity duration-300`}>
+        <div
+          className={`absolute bottom-0 left-0 w-full p-4 border-t border-gray-200 dark:border-gray-700 ${isOpen ? 'opacity-100' : 'opacity-0 lg:opacity-100'} transition-opacity duration-300`}
+        >
           <button
             onClick={handleLogout}
             className="flex items-center w-full p-3 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300"

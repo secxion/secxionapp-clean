@@ -1,6 +1,6 @@
 // ETHWallet.js
-import React, { useState } from "react";
-import SummaryApi from "../common";
+import React, { useState } from 'react';
+import SummaryApi from '../common';
 
 export const EthContext = React.createContext();
 
@@ -8,10 +8,10 @@ const SERVICE_FEE_PERCENT = 1.5; // 1.5% service fee
 
 export const EthProvider = ({ children }) => {
   const [ethRate, setEthRate] = useState(0); // ETH to NGN
-  const [gasFee, setGasFee] = useState("0.000000"); // ETH gas fee
+  const [gasFee, setGasFee] = useState('0.000000'); // ETH gas fee
   const [serviceFeePercent] = useState(SERVICE_FEE_PERCENT); // %
   const [nairaBalance, setNairaBalance] = useState(0);
-  const [ethBalance, setEthBalance] = useState("0.000000");
+  const [ethBalance, setEthBalance] = useState('0.000000');
 
   /**
    * ✅ Fetch ETH price (NGN)
@@ -19,13 +19,13 @@ export const EthProvider = ({ children }) => {
   const fetchEthRate = async () => {
     try {
       const response = await fetch(SummaryApi.fetchEthPrice.url);
-      if (!response.ok) throw new Error("Failed to fetch ETH rate");
+      if (!response.ok) throw new Error('Failed to fetch ETH rate');
       const data = await response.json();
       const rate = data?.ethereum?.ngn || 0;
       setEthRate(rate);
       return rate;
     } catch (error) {
-      console.error("fetchEthRate error:", error);
+      console.error('fetchEthRate error:', error);
       setEthRate(0);
       return 0;
     }
@@ -37,9 +37,9 @@ export const EthProvider = ({ children }) => {
   const fetchGasFee = async () => {
     try {
       const response = await fetch(
-        `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${process.env.REACT_APP_ETHERSCAN_API_KEY}`
+        `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${process.env.REACT_APP_ETHERSCAN_API_KEY}`,
       );
-      if (!response.ok) throw new Error("Failed to fetch gas fee");
+      if (!response.ok) throw new Error('Failed to fetch gas fee');
       const data = await response.json();
 
       // Use "ProposeGasPrice" (average gas price in Gwei)
@@ -50,8 +50,8 @@ export const EthProvider = ({ children }) => {
       setGasFee(gasFeeEth.toFixed(6));
       return gasFeeEth;
     } catch (error) {
-      console.error("fetchGasFee error:", error);
-      setGasFee("0.000000");
+      console.error('fetchGasFee error:', error);
+      setGasFee('0.000000');
       return 0;
     }
   };
@@ -62,11 +62,14 @@ export const EthProvider = ({ children }) => {
   const fetchWalletBalance = async (userId) => {
     if (!userId) return;
     try {
-      const balanceRes = await fetch(`${SummaryApi.getWalletBalance.url}/${userId}`, {
-        method: "GET",
-        credentials: "include",
-      });
-      if (!balanceRes.ok) throw new Error("Failed to fetch wallet balance");
+      const balanceRes = await fetch(
+        `${SummaryApi.getWalletBalance.url}/${userId}`,
+        {
+          method: 'GET',
+          credentials: 'include',
+        },
+      );
+      if (!balanceRes.ok) throw new Error('Failed to fetch wallet balance');
       const balanceData = await balanceRes.json();
 
       const naira = balanceData.balance || 0;
@@ -81,12 +84,12 @@ export const EthProvider = ({ children }) => {
         const ethValue = naira / currentEthRate;
         setEthBalance(ethValue.toFixed(6));
       } else {
-        setEthBalance("0.000000");
+        setEthBalance('0.000000');
       }
     } catch (error) {
-      console.error("fetchWalletBalance error:", error);
+      console.error('fetchWalletBalance error:', error);
       setNairaBalance(0);
-      setEthBalance("0.000000");
+      setEthBalance('0.000000');
     }
   };
 

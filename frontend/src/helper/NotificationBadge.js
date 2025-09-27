@@ -17,8 +17,8 @@ const NotificationBadge = () => {
   const playNotificationSound = () => {
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(err => {
-        console.warn("Notification sound failed:", err);
+      audioRef.current.play().catch((err) => {
+        console.warn('Notification sound failed:', err);
       });
     }
   };
@@ -41,7 +41,7 @@ const NotificationBadge = () => {
           setUnreadNotificationCount(data.count);
         }
       } catch (error) {
-        console.error("❌ Error fetching unread count:", error);
+        console.error('❌ Error fetching unread count:', error);
       }
     }
   }, [user?._id]);
@@ -51,7 +51,7 @@ const NotificationBadge = () => {
       try {
         const response = await fetch(SummaryApi.getNewNotifications.url, {
           credentials: 'include',
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
         });
         const data = await response.json();
 
@@ -61,7 +61,7 @@ const NotificationBadge = () => {
 
           if (latest && latest._id !== lastShownId) {
             localStorage.setItem('lastNotifiedId', latest._id);
-            setPopupMessage(latest.message || "New notification received!");
+            setPopupMessage(latest.message || 'New notification received!');
             setShowPopup(true);
             setAnimate(true);
             playNotificationSound();
@@ -72,7 +72,7 @@ const NotificationBadge = () => {
           }
         }
       } catch (error) {
-        console.error("❌ Error fetching new notifications:", error);
+        console.error('❌ Error fetching new notifications:', error);
       }
     }
   }, [user?._id]);
@@ -93,7 +93,10 @@ const NotificationBadge = () => {
   return (
     <>
       <div className="relative flex items-center">
-        <Link to="/notifications" className="relative text-2xl text-gray-800 hover:text-black">
+        <Link
+          to="/notifications"
+          className="relative text-2xl text-gray-800 hover:text-black"
+        >
           <PiBell />
           {unreadNotificationCount > 0 && (
             <span className="absolute -top-0.5 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
@@ -105,10 +108,7 @@ const NotificationBadge = () => {
       </div>
 
       {showPopup && (
-        <PopAlert
-          message={popupMessage}
-          onClose={() => setShowPopup(false)}
-        />
+        <PopAlert message={popupMessage} onClose={() => setShowPopup(false)} />
       )}
     </>
   );

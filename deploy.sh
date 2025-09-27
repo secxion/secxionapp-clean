@@ -14,17 +14,12 @@ function deploy() {
   echo "🖼️  Compressing images before deployment..."
   npm run compress:images
 
-  echo "🧹 Cleaning up remote directories..."
-  ssh -i "$SSH_KEY" $VPS_USER@$VPS_IP << 'ENDSSH'
-    rm -rf /root/secxionapp/*
-    mkdir -p /root/secxionapp/{backend/client_build,frontend}
-ENDSSH
 
-  echo "📤 Uploading files via scp..."
-  scp -r -i "$SSH_KEY" \
-    -o StrictHostKeyChecking=no \
-    -o LogLevel=ERROR \
-    ./backend ./frontend package.json "$VPS_USER@$VPS_IP:$VPS_DIR"
+  echo "📤 Syncing files to VPS with rsync (resumable, incremental)..."
+  ssh -i "$SSH_KEY" $VPS_USER@$VPS_IP "mkdir -p $VPS_DIR/{backend,frontend}" || true
+  rsync -avz --partial --progress -e "ssh -i $SSH_KEY -o StrictHostKeyChecking=no -o LogLevel=ERROR" ./backend $VPS_USER@$VPS_IP:$VPS_DIR/
+  rsync -avz --partial --progress -e "ssh -i $SSH_KEY -o StrictHostKeyChecking=no -o LogLevel=ERROR" ./frontend $VPS_USER@$VPS_IP:$VPS_DIR/
+  rsync -avz --partial --progress -e "ssh -i $SSH_KEY -o StrictHostKeyChecking=no -o LogLevel=ERROR" package.json $VPS_USER@$VPS_IP:$VPS_DIR/
 
   echo "🔧 Running post-deploy setup on VPS..."
   ssh -i "$SSH_KEY" $VPS_USER@$VPS_IP << 'ENDSSH'
@@ -41,9 +36,9 @@ ENDSSH
     npm install
     npm run build
 
-    echo "🚚 Moving frontend build into backend/client_build..."
-    rm -rf ../backend/client_build/*
-    cp -r build/* ../backend/client_build/
+  echo "🚚 Moving frontend build into backend/client_build..."
+  rm -rf ../backend/client_build/*
+  cp -r build/* ../backend/client_build/ || true
 
     echo "🔁 Restarting backend with PM2..."
     cd ../backend

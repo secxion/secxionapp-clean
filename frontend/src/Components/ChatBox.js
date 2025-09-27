@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useCallback } from "react";
-import { FaPaperPlane } from "react-icons/fa";
-import SummaryApi from "../common";
-import { toast } from "react-toastify";
+import React, { useEffect, useRef, useCallback } from 'react';
+import { FaPaperPlane } from 'react-icons/fa';
+import SummaryApi from '../common';
+import { toast } from 'react-toastify';
 
 const ChatBox = ({ userId, recipientId, messages, setMessages }) => {
   const chatEndRef = useRef(null);
@@ -10,12 +10,12 @@ const ChatBox = ({ userId, recipientId, messages, setMessages }) => {
     try {
       const response = await fetch(
         SummaryApi.getUserMessage.url
-          .replace(":userId", userId)
-          .replace(":recipientId", recipientId),
+          .replace(':userId', userId)
+          .replace(':recipientId', recipientId),
         {
           method: SummaryApi.getUserMessage.method,
-          credentials: "include",
-        }
+          credentials: 'include',
+        },
       );
 
       const data = await response.json();
@@ -25,7 +25,7 @@ const ChatBox = ({ userId, recipientId, messages, setMessages }) => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error("Failed to fetch messages");
+      toast.error('Failed to fetch messages');
     }
   }, [userId, recipientId, setMessages]);
 
@@ -37,13 +37,17 @@ const ChatBox = ({ userId, recipientId, messages, setMessages }) => {
     e.preventDefault();
     if (!messages.newMessage.trim()) return;
 
-    const messageData = { senderId: userId, recipientId, message: messages.newMessage };
+    const messageData = {
+      senderId: userId,
+      recipientId,
+      message: messages.newMessage,
+    };
 
     try {
       const response = await fetch(SummaryApi.sendMessage.url, {
         method: SummaryApi.sendMessage.method,
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(messageData),
       });
 
@@ -55,12 +59,12 @@ const ChatBox = ({ userId, recipientId, messages, setMessages }) => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error("Failed to send message");
+      toast.error('Failed to send message');
     }
   };
 
   const scrollToBottom = () => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -73,8 +77,8 @@ const ChatBox = ({ userId, recipientId, messages, setMessages }) => {
               key={index}
               className={`p-3 rounded-lg max-w-xs ${
                 msg.senderId === userId
-                  ? "ml-auto bg-blue-500 text-white"
-                  : "mr-auto bg-gray-300 text-gray-900"
+                  ? 'ml-auto bg-blue-500 text-white'
+                  : 'mr-auto bg-gray-300 text-gray-900'
               }`}
             >
               {msg.message}
@@ -87,11 +91,16 @@ const ChatBox = ({ userId, recipientId, messages, setMessages }) => {
       </div>
 
       {/* Message Input */}
-      <form onSubmit={handleSendMessage} className="p-4 bg-white dark:bg-gray-800 border-t flex items-center">
+      <form
+        onSubmit={handleSendMessage}
+        className="p-4 bg-white dark:bg-gray-800 border-t flex items-center"
+      >
         <textarea
           placeholder="Type a message..."
-          value={messages.newMessage || ""}
-          onChange={(e) => setMessages({ ...messages, newMessage: e.target.value })}
+          value={messages.newMessage || ''}
+          onChange={(e) =>
+            setMessages({ ...messages, newMessage: e.target.value })
+          }
           className="flex-1 p-2 border rounded-lg focus:ring focus:ring-blue-300 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           rows={2}
         />

@@ -1,18 +1,28 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { KeyRound, Mail, MessageSquare, Send, CheckCircle, ArrowLeft, Shield, AlertCircle, Clock } from 'lucide-react';
+import {
+  KeyRound,
+  Mail,
+  MessageSquare,
+  Send,
+  CheckCircle,
+  ArrowLeft,
+  Shield,
+  AlertCircle,
+  Clock,
+} from 'lucide-react';
 import Navigation from './Navigation';
-import SummaryApi from "../common";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import SecxionLogo from "../app/slogo.png";
+import SummaryApi from '../common';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import SecxionLogo from '../app/slogo.png';
 
 const Reset = () => {
-  const [step, setStep] = useState("select");
-  const [type, setType] = useState("");
-  const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
-  const [newValue, setNewValue] = useState("");
+  const [step, setStep] = useState('select');
+  const [type, setType] = useState('');
+  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
+  const [newValue, setNewValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -22,38 +32,38 @@ const Reset = () => {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-      }
-    }
+      },
+    },
   };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+    visible: { opacity: 1, y: 0 },
   };
 
   const handleRequestCode = async () => {
     if (!email || !type) {
-      toast.error("Please fill in all required fields");
+      toast.error('Please fill in all required fields');
       return;
     }
 
     setIsLoading(true);
     try {
       const res = await fetch(SummaryApi.requestReset.url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, type }),
       });
       const result = await res.json();
-      
+
       if (result.success) {
         toast.success(result.message);
-        setStep("verify");
+        setStep('verify');
       } else {
         toast.error(result.message);
       }
     } catch (err) {
-      toast.error("Error requesting code. Please try again.");
+      toast.error('Error requesting code. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -61,19 +71,19 @@ const Reset = () => {
 
   const handleSubmitReset = async () => {
     if (!code || !newValue) {
-      toast.error("Please fill in all required fields");
+      toast.error('Please fill in all required fields');
       return;
     }
 
     setIsLoading(true);
     try {
       const res = await fetch(SummaryApi.confirmReset.url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code, newValue, type }),
       });
       const result = await res.json();
-      
+
       if (result.success) {
         toast.success(result.message);
 
@@ -82,41 +92,44 @@ const Reset = () => {
         sessionStorage.clear();
 
         // Clear cookies
-        document.cookie.split(";").forEach((c) => {
+        document.cookie.split(';').forEach((c) => {
           document.cookie = c
-            .replace(/^ +/, "")
-            .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            .replace(/^ +/, '')
+            .replace(
+              /=.*/,
+              '=;expires=' + new Date().toUTCString() + ';path=/',
+            );
         });
 
-        setStep("done");
-        
+        setStep('done');
+
         // Redirect after delay
         setTimeout(() => {
-          navigate("/login");
+          navigate('/login');
         }, 3000);
       } else {
         toast.error(result.message);
       }
     } catch (err) {
-      toast.error("Reset failed. Please try again.");
+      toast.error('Reset failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleBackToSelect = () => {
-    setStep("select");
-    setCode("");
-    setNewValue("");
+    setStep('select');
+    setCode('');
+    setNewValue('');
   };
 
   const getIcon = () => {
     switch (type) {
-      case "password":
+      case 'password':
         return <KeyRound className="h-8 w-8 text-white" />;
-      case "telegram":
+      case 'telegram':
         return <MessageSquare className="h-8 w-8 text-white" />;
-      case "email":
+      case 'email':
         return <Mail className="h-8 w-8 text-white" />;
       default:
         return <Shield className="h-8 w-8 text-white" />;
@@ -125,23 +138,23 @@ const Reset = () => {
 
   const resetOptions = [
     {
-      value: "password",
-      label: "Password",
-      description: "Reset your account password",
-      icon: <KeyRound className="h-6 w-6 text-blue-600" />
+      value: 'password',
+      label: 'Password',
+      description: 'Reset your account password',
+      icon: <KeyRound className="h-6 w-6 text-blue-600" />,
     },
     {
-      value: "telegram",
-      label: "Telegram Number",
-      description: "Update your Telegram contact",
-      icon: <MessageSquare className="h-6 w-6 text-green-600" />
+      value: 'telegram',
+      label: 'Telegram Number',
+      description: 'Update your Telegram contact',
+      icon: <MessageSquare className="h-6 w-6 text-green-600" />,
     },
     {
-      value: "email",
-      label: "Email Address",
-      description: "Change your email (requires manual verification)",
-      icon: <Mail className="h-6 w-6 text-purple-600" />
-    }
+      value: 'email',
+      label: 'Email Address',
+      description: 'Change your email (requires manual verification)',
+      icon: <Mail className="h-6 w-6 text-purple-600" />,
+    },
   ];
 
   return (
@@ -161,8 +174,8 @@ const Reset = () => {
             alt="Secxion Logo Background"
             className="w-full h-full object-contain opacity-10 select-none pointer-events-none"
             style={{
-              filter: "blur(2px)",
-              mixBlendMode: "screen",
+              filter: 'blur(2px)',
+              mixBlendMode: 'screen',
             }}
           />
         </div>
@@ -177,10 +190,7 @@ const Reset = () => {
       <main className="relative z-10 pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
           {/* Header */}
-          <motion.div
-            className="text-center mb-12"
-            variants={itemVariants}
-          >
+          <motion.div className="text-center mb-12" variants={itemVariants}>
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-700 rounded-2xl mb-6 shadow-lg">
               {getIcon()}
             </div>
@@ -188,7 +198,8 @@ const Reset = () => {
               Reset Account Details
             </h1>
             <p className="text-lg text-gray-300 max-w-xl mx-auto">
-              Securely reset your account information with our step-by-step verification process.
+              Securely reset your account information with our step-by-step
+              verification process.
             </p>
           </motion.div>
 
@@ -203,7 +214,7 @@ const Reset = () => {
 
             <div className="relative z-10">
               {/* Step 1: Select Reset Type */}
-              {step === "select" && (
+              {step === 'select' && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -212,7 +223,7 @@ const Reset = () => {
                   <h2 className="text-2xl font-bold text-yellow-200 mb-6 text-center">
                     What would you like to reset?
                   </h2>
-                  
+
                   <div className="space-y-4 mb-8">
                     {resetOptions.map((option) => (
                       <motion.div
@@ -227,19 +238,23 @@ const Reset = () => {
                         whileTap={{ scale: 0.98 }}
                       >
                         <div className="flex items-center">
-                          <div className="mr-4">
-                            {option.icon}
-                          </div>
+                          <div className="mr-4">{option.icon}</div>
                           <div>
-                            <h3 className="font-semibold text-yellow-200">{option.label}</h3>
-                            <p className="text-sm text-gray-400">{option.description}</p>
+                            <h3 className="font-semibold text-yellow-200">
+                              {option.label}
+                            </h3>
+                            <p className="text-sm text-gray-400">
+                              {option.description}
+                            </p>
                           </div>
                           <div className="ml-auto">
-                            <div className={`w-4 h-4 rounded-full border-2 ${
-                              type === option.value
-                                ? 'border-yellow-500 bg-yellow-500'
-                                : 'border-gray-700'
-                            }`}>
+                            <div
+                              className={`w-4 h-4 rounded-full border-2 ${
+                                type === option.value
+                                  ? 'border-yellow-500 bg-yellow-500'
+                                  : 'border-gray-700'
+                              }`}
+                            >
                               {type === option.value && (
                                 <div className="w-2 h-2 bg-gray-900 rounded-full mx-auto mt-0.5"></div>
                               )}
@@ -250,7 +265,7 @@ const Reset = () => {
                     ))}
                   </div>
 
-                  {(type === "password" || type === "telegram") && (
+                  {(type === 'password' || type === 'telegram') && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
@@ -268,7 +283,7 @@ const Reset = () => {
                           onChange={(e) => setEmail(e.target.value)}
                         />
                       </div>
-                      
+
                       <motion.button
                         className="w-full bg-gradient-to-r from-yellow-600 to-yellow-800 text-gray-900 font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                         onClick={handleRequestCode}
@@ -291,7 +306,7 @@ const Reset = () => {
                     </motion.div>
                   )}
 
-                  {type === "email" && (
+                  {type === 'email' && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
@@ -300,21 +315,33 @@ const Reset = () => {
                     >
                       <div className="flex items-center mb-4">
                         <AlertCircle className="h-6 w-6 text-yellow-600 mr-3" />
-                        <h3 className="font-semibold text-yellow-200">Manual Verification Required</h3>
+                        <h3 className="font-semibold text-yellow-200">
+                          Manual Verification Required
+                        </h3>
                       </div>
                       <p className="text-yellow-300 mb-4">
-                        Email changes require manual verification for security. Please contact our support team:
+                        Email changes require manual verification for security.
+                        Please contact our support team:
                       </p>
                       <div className="space-y-2">
                         <div className="flex items-center">
-                          <span className="text-yellow-600 font-medium">Support Page:</span>
-                          <a href="/report" className="ml-2 text-yellow-400 hover:text-yellow-300 underline font-medium">
+                          <span className="text-yellow-600 font-medium">
+                            Support Page:
+                          </span>
+                          <a
+                            href="/report"
+                            className="ml-2 text-yellow-400 hover:text-yellow-300 underline font-medium"
+                          >
                             Visit Support Center
                           </a>
                         </div>
                         <div className="flex items-center">
-                          <span className="text-yellow-600 font-medium">Email:</span>
-                          <span className="ml-2 text-yellow-200 font-mono">secxionapp@gmail.com</span>
+                          <span className="text-yellow-600 font-medium">
+                            Email:
+                          </span>
+                          <span className="ml-2 text-yellow-200 font-mono">
+                            secxionapp@gmail.com
+                          </span>
                         </div>
                       </div>
                     </motion.div>
@@ -323,7 +350,7 @@ const Reset = () => {
               )}
 
               {/* Step 2: Verify Code */}
-              {step === "verify" && (
+              {step === 'verify' && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -337,7 +364,10 @@ const Reset = () => {
                       Verify Your Identity
                     </h2>
                     <p className="text-gray-300">
-                      We've sent a verification code to: <span className="font-semibold text-yellow-100">{email}</span>
+                      We've sent a verification code to:{' '}
+                      <span className="font-semibold text-yellow-100">
+                        {email}
+                      </span>
                     </p>
                   </div>
 
@@ -358,10 +388,11 @@ const Reset = () => {
 
                     <div>
                       <label className="block text-sm font-semibold text-yellow-200 mb-3">
-                        New {type === "password" ? "Password" : "Telegram Number"}
+                        New{' '}
+                        {type === 'password' ? 'Password' : 'Telegram Number'}
                       </label>
                       <input
-                        type={type === "password" ? "password" : "text"}
+                        type={type === 'password' ? 'password' : 'text'}
                         placeholder={`Enter your new ${type}`}
                         className="w-full px-4 py-4 bg-gray-800 border border-yellow-700 rounded-xl focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-colors duration-200 text-yellow-100 placeholder-yellow-400"
                         value={newValue}
@@ -381,7 +412,7 @@ const Reset = () => {
                           Back
                         </div>
                       </motion.button>
-                      
+
                       <motion.button
                         className="flex-1 bg-gradient-to-r from-yellow-600 to-yellow-800 text-gray-900 font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                         onClick={handleSubmitReset}
@@ -407,7 +438,7 @@ const Reset = () => {
               )}
 
               {/* Step 3: Success */}
-              {step === "done" && (
+              {step === 'done' && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -417,20 +448,21 @@ const Reset = () => {
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-2xl mb-6">
                     <CheckCircle className="h-8 w-8 text-green-600" />
                   </div>
-                  
+
                   <h2 className="text-2xl font-bold text-green-400 mb-4">
                     Reset Successful!
                   </h2>
-                  
+
                   <p className="text-green-300 mb-6">
-                    Your {type === "password" ? "password" : "Telegram number"} has been successfully updated.
+                    Your {type === 'password' ? 'password' : 'Telegram number'}{' '}
+                    has been successfully updated.
                   </p>
-                  
+
                   <div className="flex items-center justify-center text-sm text-gray-400 mb-8">
                     <Clock className="h-4 w-4 mr-2" />
                     Redirecting to login in 3 seconds...
                   </div>
-                  
+
                   <div className="w-full bg-gray-800 rounded-full h-2">
                     <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full animate-pulse"></div>
                   </div>
@@ -442,14 +474,20 @@ const Reset = () => {
       </main>
       <style jsx>{`
         @keyframes animate-scroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
         }
         .animate-scroll {
           animation: animate-scroll 30s linear infinite;
         }
         @keyframes blink {
-          50% { opacity: 0; }
+          50% {
+            opacity: 0;
+          }
         }
         .animate-blink {
           animation: blink 1s step-end infinite;

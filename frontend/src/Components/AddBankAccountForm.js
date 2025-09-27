@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from "react";
-import SummaryApi from "../common";
-import SecxionSpinner from "./SecxionSpinner";
-import { motion } from "framer-motion";
-import { FaTimes } from "react-icons/fa";
+import React, { useEffect, useState } from 'react';
+import SummaryApi from '../common';
+import SecxionSpinner from './SecxionSpinner';
+import { motion } from 'framer-motion';
+import { FaTimes } from 'react-icons/fa';
 
 const AddBankAccountForm = ({ onCancel, onSuccess }) => {
   const [banks, setBanks] = useState([]);
   const [loadingBanks, setLoadingBanks] = useState(false);
-  const [form, setForm] = useState({ accountNumber: "", bankCode: "" });
-  const [verificationCode, setVerificationCode] = useState("");
+  const [form, setForm] = useState({ accountNumber: '', bankCode: '' });
+  const [verificationCode, setVerificationCode] = useState('');
   const [codeSent, setCodeSent] = useState(false);
-  const [resolvedAccountName, setResolvedAccountName] = useState("");
+  const [resolvedAccountName, setResolvedAccountName] = useState('');
   const [loadingResolve, setLoadingResolve] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
+  const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
 
@@ -34,12 +34,13 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
       setLoadingBanks(true);
       try {
         const res = await fetch(SummaryApi.bankList.url, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
         });
         const data = await res.json();
-        if (!res.ok || !data.success) throw new Error(data.message || "Failed to load banks");
+        if (!res.ok || !data.success)
+          throw new Error(data.message || 'Failed to load banks');
         setBanks(data.data);
       } catch (err) {
         setError(err.message);
@@ -54,11 +55,11 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    setResolvedAccountName("");
-    setSuccessMsg("");
-    setError("");
+    setResolvedAccountName('');
+    setSuccessMsg('');
+    setError('');
     setCodeSent(false);
-    setVerificationCode("");
+    setVerificationCode('');
   };
 
   useEffect(() => {
@@ -67,9 +68,9 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
         setLoadingResolve(true);
         try {
           const res = await fetch(SummaryApi.resolveBankAccount.url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({
               account_number: form.accountNumber,
               bank_code: form.bankCode,
@@ -91,12 +92,12 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
   }, [form.accountNumber, form.bankCode]);
 
   const sendVerificationCode = async () => {
-    setError("");
+    setError('');
     try {
       const res = await fetch(SummaryApi.sendBankCode.url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message);
@@ -110,11 +111,11 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccessMsg("");
+    setError('');
+    setSuccessMsg('');
 
     if (!verificationCode) {
-      setError("Please enter the verification code sent to your email.");
+      setError('Please enter the verification code sent to your email.');
       return;
     }
 
@@ -122,13 +123,13 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
     try {
       const selectedBank = banks.find((b) => b.code === form.bankCode);
       const res = await fetch(SummaryApi.verifyAddBank.url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           accountNumber: form.accountNumber,
           bankCode: form.bankCode,
-          bankName: selectedBank?.name || "",
+          bankName: selectedBank?.name || '',
           accountHolderName: resolvedAccountName,
           code: verificationCode,
         }),
@@ -136,10 +137,10 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message);
 
-      setSuccessMsg("Bank account added successfully.");
-      setForm({ accountNumber: "", bankCode: "" });
-      setResolvedAccountName("");
-      setVerificationCode("");
+      setSuccessMsg('Bank account added successfully.');
+      setForm({ accountNumber: '', bankCode: '' });
+      setResolvedAccountName('');
+      setVerificationCode('');
       setShowConfirmModal(false);
       setCodeSent(false);
 
@@ -249,7 +250,7 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
               disabled={submitLoading}
               className="flex-1 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-green-300"
             >
-              {submitLoading ? "Submitting..." : "Add Bank Account"}
+              {submitLoading ? 'Submitting...' : 'Add Bank Account'}
             </button>
           )}
         </div>
@@ -261,7 +262,7 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
             <h3 className="text-lg font-semibold mb-2">Confirm Account Name</h3>
             <p className="text-gray-700 mb-4">
-              Account Name:{" "}
+              Account Name:{' '}
               <span className="font-medium text-green-700">
                 {resolvedAccountName}
               </span>
@@ -285,14 +286,14 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
         animate={{ scale: 1, rotate: 0 }}
         exit={{ scale: 0, rotate: 180 }}
         transition={{
-          type: "spring",
+          type: 'spring',
           stiffness: 300,
           damping: 20,
           delay: 0.1,
         }}
         whileHover={{
           rotate: 90,
-          boxShadow: "0 0 30px rgba(239, 68, 68, 0.5)",
+          boxShadow: '0 0 30px rgba(239, 68, 68, 0.5)',
         }}
         whileTap={{ scale: 0.9 }}
         aria-label="Close add bank account form"

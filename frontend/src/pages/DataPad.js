@@ -1,27 +1,25 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { useSelector } from "react-redux";
-import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "react-toastify";
-import { FaPlus } from "react-icons/fa";
-import { MdRefresh } from "react-icons/md";
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'react-toastify';
+import { FaPlus } from 'react-icons/fa';
+import { MdRefresh } from 'react-icons/md';
 
-import UploadData from "../Components/UploadData";
-import DataPadList from "../Components/DataPadList";
+import UploadData from '../Components/UploadData';
+import DataPadList from '../Components/DataPadList';
 
-import EmptyState from "../Components/EmptyState";
-import SearchAndFilter from "../Components/SearchAndFilter";
-import SecxionLoader from "../Components/SecxionLoader";
-import SummaryApi from "../common";
+import EmptyState from '../Components/EmptyState';
+import SearchAndFilter from '../Components/SearchAndFilter';
+import SecxionLoader from '../Components/SecxionLoader';
+import SummaryApi from '../common';
 
 const SORT_OPTIONS = {
   NEWEST: 'newest',
   OLDEST: 'oldest',
   TITLE_AZ: 'title_az',
   TITLE_ZA: 'title_za',
-  UPDATED: 'updated'
+  UPDATED: 'updated',
 };
-
-
 
 const DataPad = () => {
   const { user } = useSelector((state) => state.user);
@@ -33,64 +31,67 @@ const DataPad = () => {
   // const [error, setError] = useState(null); // Removed unused error state
 
   // const [viewMode, setViewMode] = useState(VIEW_MODES.LIST); // Removed unused viewMode state
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState(SORT_OPTIONS.NEWEST);
   const [selectedTags, setSelectedTags] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
 
-  const fetchDataPads = useCallback(async (showToast = false) => {
-    if (!user) {
-      setIsLoading(false);
-      return;
-    }
-
-  setIsLoading(true);
-
-    try {
-      const response = await fetch(SummaryApi.allData.url, {
-        method: SummaryApi.allData.method,
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+  const fetchDataPads = useCallback(
+    async (showToast = false) => {
+      if (!user) {
+        setIsLoading(false);
+        return;
       }
 
-      const data = await response.json();
+      setIsLoading(true);
 
-      if (data.success) {
-        const userDataPads = data.data.filter(
-          (item) => item.userId === user?.id || item.userId === user?._id
-        );
-        setDataPads(userDataPads);
+      try {
+        const response = await fetch(SummaryApi.allData.url, {
+          method: SummaryApi.allData.method,
+          credentials: 'include',
+        });
 
-        if (showToast && userDataPads.length > 0) {
-          toast.success(`Loaded ${userDataPads.length} Data`, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-      } else {
-        throw new Error(data.message || "Failed to fetch data");
+
+        const data = await response.json();
+
+        if (data.success) {
+          const userDataPads = data.data.filter(
+            (item) => item.userId === user?.id || item.userId === user?._id,
+          );
+          setDataPads(userDataPads);
+
+          if (showToast && userDataPads.length > 0) {
+            toast.success(`Loaded ${userDataPads.length} Data`, {
+              position: 'top-right',
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            });
+          }
+        } else {
+          throw new Error(data.message || 'Failed to fetch data');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        toast.error('Failed to load data. Please try again.', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-  console.error("Error fetching data:", error);
-  toast.error("Failed to load data. Please try again.", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user]);
+    },
+    [user],
+  );
 
   useEffect(() => {
     fetchDataPads();
@@ -104,13 +105,13 @@ const DataPad = () => {
       filtered = filtered.filter(
         (pad) =>
           pad.title?.toLowerCase().includes(query) ||
-          pad.content?.toLowerCase().includes(query)
+          pad.content?.toLowerCase().includes(query),
       );
     }
 
     if (selectedTags.length > 0) {
-      filtered = filtered.filter(
-        (pad) => pad.tags?.some(tag => selectedTags.includes(tag))
+      filtered = filtered.filter((pad) =>
+        pad.tags?.some((tag) => selectedTags.includes(tag)),
       );
     }
 
@@ -121,7 +122,10 @@ const DataPad = () => {
         case SORT_OPTIONS.OLDEST:
           return new Date(a.createdAt) - new Date(b.createdAt);
         case SORT_OPTIONS.UPDATED:
-          return new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt);
+          return (
+            new Date(b.updatedAt || b.createdAt) -
+            new Date(a.updatedAt || a.createdAt)
+          );
         case SORT_OPTIONS.TITLE_AZ:
           return (a.title || '').localeCompare(b.title || '');
         case SORT_OPTIONS.TITLE_ZA:
@@ -136,8 +140,8 @@ const DataPad = () => {
 
   const availableTags = useMemo(() => {
     const tagSet = new Set();
-    dataPads.forEach(pad => {
-      pad.tags?.forEach(tag => tagSet.add(tag));
+    dataPads.forEach((pad) => {
+      pad.tags?.forEach((tag) => tagSet.add(tag));
     });
     return Array.from(tagSet).sort();
   }, [dataPads]);
@@ -157,33 +161,33 @@ const DataPad = () => {
   }, [fetchDataPads]);
 
   const handleDeleteDataPad = useCallback(async (id) => {
-    if (!window.confirm("Are you sure you want to delete this data?")) return;
+    if (!window.confirm('Are you sure you want to delete this data?')) return;
 
     try {
       const response = await fetch(`${SummaryApi.deleteData.url}/${id}`, {
         method: SummaryApi.deleteData.method,
-        credentials: "include",
+        credentials: 'include',
       });
 
       const responseData = await response.json();
 
       if (responseData.success) {
-        toast.success("Data deleted successfully!", {
-          position: "top-right",
+        toast.success('Data deleted successfully!', {
+          position: 'top-right',
           autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
         });
-        setDataPads(prev => prev.filter(item => item._id !== id));
+        setDataPads((prev) => prev.filter((item) => item._id !== id));
       } else {
-        throw new Error(responseData.message || "Failed to delete data");
+        throw new Error(responseData.message || 'Failed to delete data');
       }
     } catch (error) {
-      console.error("Error deleting data:", error);
-      toast.error("Failed to delete data. Please try again.", {
-        position: "top-right",
+      console.error('Error deleting data:', error);
+      toast.error('Failed to delete data. Please try again.', {
+        position: 'top-right',
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -213,7 +217,7 @@ const DataPad = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <motion.h1 
+              <motion.h1
                 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 bg-clip-text text-transparent drop-shadow-lg"
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
@@ -221,7 +225,7 @@ const DataPad = () => {
               >
                 DataPad
               </motion.h1>
-              <motion.span 
+              <motion.span
                 className="bg-yellow-400/20 text-yellow-300 px-3 py-1 rounded-full text-sm font-medium border border-yellow-400/30 backdrop-blur-sm"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -230,7 +234,7 @@ const DataPad = () => {
                 {dataPads.length}
               </motion.span>
             </div>
-            
+
             <div className="flex items-center space-x-3">
               <button
                 onClick={handleRefresh}
@@ -239,7 +243,9 @@ const DataPad = () => {
                 title="Refresh"
                 aria-label="Refresh notes"
               >
-                <MdRefresh className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+                <MdRefresh
+                  className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`}
+                />
               </button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -282,9 +288,16 @@ const DataPad = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <AnimatePresence mode="wait">
             {isLoading && dataPads.length === 0 ? (
-              <SecxionLoader key="loading" size="large" message="Loading your data..." />
+              <SecxionLoader
+                key="loading"
+                size="large"
+                message="Loading your data..."
+              />
             ) : dataPads.length === 0 ? (
-              <EmptyState onCreateFirst={() => handleOpenEditor()} key="empty" />
+              <EmptyState
+                onCreateFirst={() => handleOpenEditor()}
+                key="empty"
+              />
             ) : filteredAndSortedDataPads.length === 0 ? (
               <motion.div
                 key="no-results"
@@ -294,13 +307,16 @@ const DataPad = () => {
                 className="flex flex-col items-center justify-center py-12 bg-gradient-to-br from-gray-900/50 to-gray-800/50 rounded-2xl border border-purple-600/30"
               >
                 <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-xl font-semibold text-white mb-2">No notes found</h3>
+                <h3 className="text-xl font-semibold text-white mb-2">
+                  No notes found
+                </h3>
                 <p className="text-gray-400 text-center max-w-md mb-4">
-                  Try adjusting your search terms or filters to find what you're looking for.
+                  Try adjusting your search terms or filters to find what you're
+                  looking for.
                 </p>
                 <button
                   onClick={() => {
-                    setSearchQuery("");
+                    setSearchQuery('');
                     setSelectedTags([]);
                   }}
                   className="text-yellow-400 hover:text-yellow-300 font-medium transition-colors duration-200"
@@ -313,7 +329,7 @@ const DataPad = () => {
                 key="content"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}  
+                exit={{ opacity: 0 }}
                 className="pb-20"
               >
                 {/* Always use DataPadList (list view) for now, or switch to DataPadGrid if you want grid view. */}

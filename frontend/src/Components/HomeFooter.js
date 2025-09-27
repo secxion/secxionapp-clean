@@ -1,16 +1,16 @@
 import { FaCaretUp } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux'; 
-import NairaButtonImg from "../app/Buttons/nairabutton.png";
-import EthereumButtonImg from "../app/Buttons/ethereumbutton.png";
+import { useSelector } from 'react-redux';
+import NairaButtonImg from '../app/Buttons/nairabutton.png';
+import EthereumButtonImg from '../app/Buttons/ethereumbutton.png';
 
 const HomeFooter = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
- const { user } = useSelector((state) => state.user);
-                            const { profilePic} = user || {};
-                        
+  const { user } = useSelector((state) => state.user);
+  const { profilePic } = user || {};
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -23,7 +23,6 @@ const HomeFooter = () => {
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 py-2 shadow-lg w-full">
       <div className="flex justify-around items-center text-gray-300 dark:text-gray-100 text-xl h-16">
-
         <Link
           to="/profile"
           className="flex flex-col bg-transparent items-center text-blue-400 outline-none ring-2 ring-blue-400 ring-offset-1 transition-colors duration-300 ease-in-out border-4 border-yellow-500 rounded-lg p-2 glossy-text h-12 w-12"
@@ -49,7 +48,7 @@ const HomeFooter = () => {
             src={NairaButtonImg}
             alt="Naira Wallet"
             className="h-20 w-auto object-contain"
-            style={{ display: "block" }}
+            style={{ display: 'block' }}
           />
         </Link>
 
@@ -63,10 +62,9 @@ const HomeFooter = () => {
             src={EthereumButtonImg}
             alt="Ethereum"
             className="h-20 w-auto object-contain"
-            style={{ display: "block" }}
+            style={{ display: 'block' }}
           />
         </Link>
-        
       </div>
     </footer>
   );

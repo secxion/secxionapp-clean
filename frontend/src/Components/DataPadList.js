@@ -1,7 +1,7 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { FaEdit, FaTrash, FaTag, FaClock } from "react-icons/fa";
-import SecxionShimmer from "./SecxionShimmer";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { FaEdit, FaTrash, FaTag, FaClock } from 'react-icons/fa';
+import SecxionShimmer from './SecxionShimmer';
 
 const DataPadList = ({ dataPads, onOpen, onDelete, isLoading }) => {
   if (isLoading) {
@@ -53,14 +53,14 @@ const DataPadList = ({ dataPads, onOpen, onDelete, isLoading }) => {
               <div className="flex items-center text-gray-500 text-sm">
                 <FaClock className="w-3 h-3 mr-2" />
                 {new Date(pad.updatedAt || pad.createdAt).toLocaleDateString(
-                  "en-US",
+                  'en-US',
                   {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  }
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  },
                 )}
               </div>
             </div>

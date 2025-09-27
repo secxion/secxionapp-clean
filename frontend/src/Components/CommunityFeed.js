@@ -23,7 +23,7 @@ const CommunityFeed = () => {
     setError(null);
     try {
       const response = await fetch(SummaryApi.getApprovedPosts.url, {
-        credentials: "include"
+        credentials: 'include',
       });
       if (!response.ok) {
         throw new Error('Failed to fetch community posts');
@@ -42,7 +42,6 @@ const CommunityFeed = () => {
     fetchPosts();
   }, [fetchPosts]);
 
-
   useEffect(() => {
     const handleNewPost = () => {
       setRefreshFeed(true);
@@ -59,12 +58,14 @@ const CommunityFeed = () => {
     try {
       const response = await fetch(SummaryApi.deletePost(postId).url, {
         method: SummaryApi.deletePost(postId).method,
-        credentials: "include"
+        credentials: 'include',
       });
       const data = await response.json();
       if (data.success) {
         toast.success('Post deleted successfully.');
-        setPosts(currentPosts => currentPosts.filter(post => post._id !== postId));
+        setPosts((currentPosts) =>
+          currentPosts.filter((post) => post._id !== postId),
+        );
       } else {
         toast.error(data.message || 'Failed to delete post.');
       }
@@ -74,15 +75,27 @@ const CommunityFeed = () => {
   };
 
   const handleCommentAdded = useCallback((postId, newComment) => {
-    setPosts(currentPosts =>
-      currentPosts.map(post =>
-        post._id === postId ? { ...post, comments: [...(post.comments || []), newComment] } : post
-      )
+    setPosts((currentPosts) =>
+      currentPosts.map((post) =>
+        post._id === postId
+          ? { ...post, comments: [...(post.comments || []), newComment] }
+          : post,
+      ),
     );
   }, []);
 
-  if (loading) return <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">Loading feed...</div>;
-  if (error) return <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center text-red-500">Error loading community feed: {error}</div>;
+  if (loading)
+    return (
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
+        Loading feed...
+      </div>
+    );
+  if (error)
+    return (
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center text-red-500">
+        Error loading community feed: {error}
+      </div>
+    );
 
   return (
     <motion.div
@@ -98,7 +111,7 @@ const CommunityFeed = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
         >
-          {posts.map(post => (
+          {posts.map((post) => (
             <PostCard
               key={post._id}
               post={post}

@@ -2,24 +2,24 @@
 module.exports = {
   darkMode: 'class',
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "./src/**/*.{styles.js,style.js,styled.js}",
-    "./src/**/*.{md,mdx}",
-    "./public/index.html",
-    "./public/**/*.html",
-    "../shared/**/*.{js,jsx,ts,tsx}",
+    './src/**/*.{js,jsx,ts,tsx}',
+    './src/**/*.{styles.js,style.js,styled.js}',
+    './src/**/*.{md,mdx}',
+    './public/index.html',
+    './public/**/*.html',
+    '../shared/**/*.{js,jsx,ts,tsx}',
   ],
   safelist: [
-    "bg-white",
-    "bg-black",
-    "text-white",
-    "text-black",
-    "bg-blue-500",
-    "bg-gradient-to-r",
-    "from-cyan-400",
-    "to-pink-500",
-    "dark:bg-black",
-    "dark:text-white"
+    'bg-white',
+    'bg-black',
+    'text-white',
+    'text-black',
+    'bg-blue-500',
+    'bg-gradient-to-r',
+    'from-cyan-400',
+    'to-pink-500',
+    'dark:bg-black',
+    'dark:text-white',
   ],
   theme: {
     container: {
@@ -35,13 +35,13 @@ module.exports = {
     },
     extend: {
       colors: {
-        'secxion-gold': '#FFD700',       // Deep golden yellow
+        'secxion-gold': '#FFD700', // Deep golden yellow
         'secxion-gold-light': '#FFDA60', // Lighter golden yellow
-        'secxion-gold-dark': '#D4AF37',  // Darker golden yellow
-        'secxion-black': '#000000',       // Black
-        'secxion-white': '#FFFFFF',       // White
-        'secxion-cream': '#F5F5DC',      // Greenish cream
-      primary: 'black',
+        'secxion-gold-dark': '#D4AF37', // Darker golden yellow
+        'secxion-black': '#000000', // Black
+        'secxion-white': '#FFFFFF', // White
+        'secxion-cream': '#F5F5DC', // Greenish cream
+        primary: 'black',
         'primary-dark': '#fff',
         secondary: 'black',
         'secondary-dark': '#000',
@@ -51,10 +51,10 @@ module.exports = {
         neonYellow: '#ff0',
       },
       height: {
-        'screen': 'calc(var(--vh, 1vh) * 100)',
+        screen: 'calc(var(--vh, 1vh) * 100)',
       },
       minHeight: {
-        'screen': 'calc(var(--vh, 1vh) * 100)',
+        screen: 'calc(var(--vh, 1vh) * 100)',
       },
       keyframes: {
         slideFadeIn: {
@@ -124,7 +124,7 @@ module.exports = {
         xxs: '320px',
         xs: '480px',
       },
-      
+
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui'],
         techno: ['Press Start 2P', 'cursive'],

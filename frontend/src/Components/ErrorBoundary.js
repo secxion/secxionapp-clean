@@ -1,22 +1,25 @@
-import { Component } from "react";
-import { Link } from "react-router-dom";
+import { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, errorMessage: "" };
+    this.state = { hasError: false, errorMessage: '' };
   }
 
   static getDerivedStateFromError(error) {
-    return { hasError: true, errorMessage: error.message || "Something went wrong" };
+    return {
+      hasError: true,
+      errorMessage: error.message || 'Something went wrong',
+    };
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error("Error in component:", error, errorInfo);
+    console.error('Error in component:', error, errorInfo);
   }
 
   handleReload = () => {
-    this.setState({ hasError: false, errorMessage: "" });
+    this.setState({ hasError: false, errorMessage: '' });
     window.location.reload();
   };
 
@@ -24,7 +27,9 @@ class ErrorBoundary extends Component {
     if (this.state.hasError) {
       return (
         <div className="container flex flex-col items-center justify-center min-h-screen bg-red-100 p-6 text-center">
-          <h2 className="text-red-600 text-2xl font-semibold">Oops! Something went wrong.</h2>
+          <h2 className="text-red-600 text-2xl font-semibold">
+            Oops! Something went wrong.
+          </h2>
           <p className="text-gray-700 mt-2">{this.state.errorMessage}</p>
 
           <div className="mt-4 flex gap-4">

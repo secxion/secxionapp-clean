@@ -49,9 +49,11 @@ const NotificationItem = ({
   notification,
   onMarkAsRead,
   onDelete,
-  onViewDetails
+  onViewDetails,
 }) => {
-  const timeAgo = formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true });
+  const timeAgo = formatDistanceToNow(new Date(notification.createdAt), {
+    addSuffix: true,
+  });
   const truncateLength = 60;
   const truncatedMessage =
     notification.message.length > truncateLength
@@ -64,7 +66,7 @@ const NotificationItem = ({
     <li
       className={clsx(
         'px-4 py-8 hover:bg-gray-50 transition duration-150 ease-in-out rounded-md shadow-sm border',
-        notification.isRead ? 'bg-gray-100' : 'bg-white'
+        notification.isRead ? 'bg-gray-100' : 'bg-white',
       )}
     >
       <div className="flex justify-between items-start gap-6">
@@ -114,6 +116,5 @@ const NotificationItem = ({
     </li>
   );
 };
-
 
 export default NotificationItem;

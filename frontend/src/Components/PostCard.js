@@ -34,7 +34,7 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
         method: SummaryApi.addComment(post._id).method,
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: commentContent })
+        body: JSON.stringify({ content: commentContent }),
       });
       const data = await response.json();
       if (data.success) {
@@ -76,9 +76,13 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
   const openImageFullscreen = () => setIsImageFullscreen(true);
   const closeImageFullscreen = () => setIsImageFullscreen(false);
 
-  const formattedContent = post.content ? post.content.replace(/\n/g, '<br />') : '';
+  const formattedContent = post.content
+    ? post.content.replace(/\n/g, '<br />')
+    : '';
   const isLongPost = post.content && post.content.length > 150;
-  const truncatedContent = isLongPost ? truncateText(post.content, 150) : formattedContent;
+  const truncatedContent = isLongPost
+    ? truncateText(post.content, 150)
+    : formattedContent;
 
   return (
     <motion.div
@@ -87,14 +91,18 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 10 }}
-      whileHover={{ scale: 1.02, boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)" }}
-      transition={{ duration: 0.4, ease: "easeInOut" }}
+      whileHover={{ scale: 1.02, boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)' }}
+      transition={{ duration: 0.4, ease: 'easeInOut' }}
     >
       <div className="flex flex-col sm:flex-row gap-4 break-words">
         {/* Avatar */}
         <div className="flex-shrink-0">
           {post.userId?.profilePic ? (
-            <img src={post.userId.profilePic} alt={post.userId.name} className="w-12 h-12 sm:w-10 sm:h-10 rounded-full object-cover" />
+            <img
+              src={post.userId.profilePic}
+              alt={post.userId.name}
+              className="w-12 h-12 sm:w-10 sm:h-10 rounded-full object-cover"
+            />
           ) : (
             <div className="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-gray-400 flex items-center justify-center text-white text-lg">
               {post.userId?.name?.charAt(0)?.toUpperCase() || '?'}
@@ -104,16 +112,23 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
 
         {/* Post Content */}
         <div className="flex-grow text-sm">
-          <p className="font-semibold text-gray-100">{post.userId?.name || 'Anonymous'}</p>
+          <p className="font-semibold text-gray-100">
+            {post.userId?.name || 'Anonymous'}
+          </p>
 
           <div
             className="text-gray-300 mt-1 text-sm whitespace-pre-line break-words"
-            dangerouslySetInnerHTML={{ __html: showFullPost ? formattedContent : truncatedContent }}
+            dangerouslySetInnerHTML={{
+              __html: showFullPost ? formattedContent : truncatedContent,
+            }}
           />
 
           {/* View More */}
           {isLongPost && !showFullPost && (
-            <button onClick={openFullPostDialog} className="text-blue-600 hover:underline text-xs mt-1 focus:outline-none">
+            <button
+              onClick={openFullPostDialog}
+              className="text-blue-600 hover:underline text-xs mt-1 focus:outline-none"
+            >
               View More
             </button>
           )}
@@ -123,7 +138,7 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
             <img
               src={post.feedImage}
               alt="Post"
-              onError={() => setImageError(true)} 
+              onError={() => setImageError(true)}
               className="mt-3 rounded-md max-w-full w-full sm:w-60 h-auto cursor-pointer object-cover"
               onClick={openImageFullscreen}
             />
@@ -131,14 +146,20 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
 
           {/* Time & Actions */}
           <div className="mt-3 flex flex-wrap items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-            <p>{formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}</p>
+            <p>
+              {formatDistanceToNow(new Date(post.createdAt), {
+                addSuffix: true,
+              })}
+            </p>
 
             <div className="flex items-center gap-4 mt-2 sm:mt-0">
               <button
-                onClick={() => setShowComments(prev => !prev)}
+                onClick={() => setShowComments((prev) => !prev)}
                 className="hover:text-indigo-600 focus:outline-none"
               >
-                {post.comments?.length > 0 ? `${post.comments.length} Comments` : 'Comment'}
+                {post.comments?.length > 0
+                  ? `${post.comments.length} Comments`
+                  : 'Comment'}
               </button>
 
               {user?.id === post.userId?._id && (
@@ -162,23 +183,45 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <h6 className="text-xs font-semibold text-gray-800 dark:text-gray-300 mb-2">Comments:</h6>
+                <h6 className="text-xs font-semibold text-gray-800 dark:text-gray-300 mb-2">
+                  Comments:
+                </h6>
                 <div className="space-y-3">
-                  {post.comments?.map(comment => (
-                    <div key={comment._id} className="flex items-start gap-2 p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-xs">
+                  {post.comments?.map((comment) => (
+                    <div
+                      key={comment._id}
+                      className="flex items-start gap-2 p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-xs"
+                    >
                       {comment.userId?.profilePic ? (
-                        <img src={comment.userId.profilePic} alt={comment.userId.name} className="w-6 h-6 rounded-full object-cover" />
+                        <img
+                          src={comment.userId.profilePic}
+                          alt={comment.userId.name}
+                          className="w-6 h-6 rounded-full object-cover"
+                        />
                       ) : (
                         <div className="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center text-white text-xs">
-                          {comment.userId?.name?.charAt(0)?.toUpperCase() || '?'}
+                          {comment.userId?.name?.charAt(0)?.toUpperCase() ||
+                            '?'}
                         </div>
                       )}
                       <div>
-                        <p className="font-semibold text-gray-900 dark:text-white">{comment.userId?.name || 'Anonymous'}</p>
-                        <p className="text-gray-700 dark:text-gray-300">{comment.content}</p>
-                        {comment.feedImage && <img src={comment.feedImage} alt="" className="mt-1 rounded-md max-w-full h-auto" />}
+                        <p className="font-semibold text-gray-900 dark:text-white">
+                          {comment.userId?.name || 'Anonymous'}
+                        </p>
+                        <p className="text-gray-700 dark:text-gray-300">
+                          {comment.content}
+                        </p>
+                        {comment.feedImage && (
+                          <img
+                            src={comment.feedImage}
+                            alt=""
+                            className="mt-1 rounded-md max-w-full h-auto"
+                          />
+                        )}
                         <p className="text-gray-500 dark:text-gray-400 text-[10px] mt-1">
-                          {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                          {formatDistanceToNow(new Date(comment.createdAt), {
+                            addSuffix: true,
+                          })}
                         </p>
                       </div>
                     </div>

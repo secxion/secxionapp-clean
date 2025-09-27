@@ -1,11 +1,8 @@
-import React, { useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FaTimes } from "react-icons/fa";
+import React, { useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaTimes } from 'react-icons/fa';
 
-const DisplayImage = ({ 
-    imgUrl, 
-    onClose 
-}) => {
+const DisplayImage = ({ imgUrl, onClose }) => {
   // Add keyboard event handler for ESC key
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -23,15 +20,15 @@ const DisplayImage = ({
     };
   }, [onClose]);
 
-  console.log("DisplayImage component rendered with imgUrl:", imgUrl); // Debug log
+  console.log('DisplayImage component rendered with imgUrl:', imgUrl); // Debug log
   if (!imgUrl) {
-      console.log("DisplayImage not rendered because imgUrl is invalid"); // Debug log
-      return null;
+    console.log('DisplayImage not rendered because imgUrl is invalid'); // Debug log
+    return null;
   }
 
   return (
     <AnimatePresence>
-      <motion.div 
+      <motion.div
         className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -47,15 +44,15 @@ const DisplayImage = ({
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             exit={{ scale: 0, rotate: 180 }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 300, 
+            transition={{
+              type: 'spring',
+              stiffness: 300,
               damping: 20,
-              delay: 0.1 
+              delay: 0.1,
             }}
-            whileHover={{ 
+            whileHover={{
               rotate: 90,
-              boxShadow: "0 0 30px rgba(239, 68, 68, 0.5)"
+              boxShadow: '0 0 30px rgba(239, 68, 68, 0.5)',
             }}
             whileTap={{ scale: 0.9 }}
             aria-label="Close image"
@@ -64,23 +61,23 @@ const DisplayImage = ({
           </motion.button>
 
           {/* Image Container */}
-          <motion.div 
+          <motion.div
             className="relative max-w-[95vw] max-h-[95vh] bg-white/5 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/10 overflow-hidden"
             initial={{ scale: 0.8, opacity: 0, y: 50 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.8, opacity: 0, y: 50 }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 300, 
-              damping: 25 
+            transition={{
+              type: 'spring',
+              stiffness: 300,
+              damping: 25,
             }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Image */}
             <div className="flex items-center justify-center p-4">
-              <motion.img 
-                src={imgUrl} 
-                alt="Full size preview" 
+              <motion.img
+                src={imgUrl}
+                alt="Full size preview"
                 className="w-full h-auto rounded-lg shadow-lg"
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -91,7 +88,7 @@ const DisplayImage = ({
             </div>
 
             {/* Image Info Bar */}
-            <motion.div 
+            <motion.div
               className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4"
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}

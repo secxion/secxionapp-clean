@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import  SummaryApi  from "../common";
-import toast from "react-hot-toast";
+import React, { useEffect, useState } from 'react';
+import SummaryApi from '../common';
+import toast from 'react-hot-toast';
 
 const AdminEthWithdrawals = () => {
   const [requests, setRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const requestsPerPage = 10;
 
@@ -17,16 +17,16 @@ const AdminEthWithdrawals = () => {
     setLoading(true);
     try {
       const res = await fetch(SummaryApi.ethWithdrawals.getAll, {
-        credentials: "include",
+        credentials: 'include',
       });
       const data = await res.json();
       if (data.success) {
         setRequests(data.data);
       } else {
-        toast.error("Failed to fetch requests");
+        toast.error('Failed to fetch requests');
       }
     } catch (err) {
-      toast.error("Server error");
+      toast.error('Server error');
     } finally {
       setLoading(false);
     }
@@ -35,20 +35,20 @@ const AdminEthWithdrawals = () => {
   const updateStatus = async (id, status) => {
     try {
       const res = await fetch(SummaryApi.ethWithdrawals.updateStatus(id), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ status }),
       });
       const data = await res.json();
       if (data.success) {
-        toast.success("Status updated");
+        toast.success('Status updated');
         fetchRequests();
       } else {
-        toast.error("Failed to update status");
+        toast.error('Failed to update status');
       }
     } catch (err) {
-      toast.error("Error updating status");
+      toast.error('Error updating status');
     }
   };
 
@@ -63,10 +63,10 @@ const AdminEthWithdrawals = () => {
   };
 
   const handleClearFilters = () => {
-    setStatusFilter("All");
-    setSearchTerm("");
-    setStartDate("");
-    setEndDate("");
+    setStatusFilter('All');
+    setSearchTerm('');
+    setStartDate('');
+    setEndDate('');
     setCurrentPage(1);
   };
 
@@ -77,16 +77,16 @@ const AdminEthWithdrawals = () => {
   useEffect(() => {
     let filtered = [...requests];
 
-    if (statusFilter !== "All") {
+    if (statusFilter !== 'All') {
       filtered = filtered.filter((req) => req.status === statusFilter);
     }
 
-    if (searchTerm.trim() !== "") {
+    if (searchTerm.trim() !== '') {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(
         (req) =>
           req.userId?.email?.toLowerCase().includes(term) ||
-          req.userId?.name?.toLowerCase().includes(term)
+          req.userId?.name?.toLowerCase().includes(term),
       );
     }
 
@@ -118,7 +118,9 @@ const AdminEthWithdrawals = () => {
       {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Filter by Status:</label>
+          <label className="block text-sm font-medium mb-1">
+            Filter by Status:
+          </label>
           <select
             value={statusFilter}
             onChange={handleStatusFilterChange}
@@ -132,7 +134,9 @@ const AdminEthWithdrawals = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Search (email or name):</label>
+          <label className="block text-sm font-medium mb-1">
+            Search (email or name):
+          </label>
           <input
             type="text"
             placeholder="Search..."
@@ -196,10 +200,18 @@ const AdminEthWithdrawals = () => {
                 <tr key={req._id}>
                   <td className="py-2 px-3 border">{req.userId?.name}</td>
                   <td className="py-2 px-3 border">{req.userId?.email}</td>
-                  <td className="py-2 px-3 border">{req.nairaRequestedAmount}</td>
-                  <td className="py-2 px-3 border">{Number(req.ethCalculatedAmount).toFixed(6)}</td>
-                  <td className="py-2 px-3 border">{Number(req.ethNetAmountToSend).toFixed(6)}</td>
-                  <td className="py-2 px-3 border">{req.ethRecipientAddress}</td>
+                  <td className="py-2 px-3 border">
+                    {req.nairaRequestedAmount}
+                  </td>
+                  <td className="py-2 px-3 border">
+                    {Number(req.ethCalculatedAmount).toFixed(6)}
+                  </td>
+                  <td className="py-2 px-3 border">
+                    {Number(req.ethNetAmountToSend).toFixed(6)}
+                  </td>
+                  <td className="py-2 px-3 border">
+                    {req.ethRecipientAddress}
+                  </td>
                   <td className="py-2 px-3 border">
                     {new Date(req.createdAt).toLocaleDateString()}
                   </td>
@@ -227,7 +239,7 @@ const AdminEthWithdrawals = () => {
                 key={i}
                 onClick={() => handlePageChange(i + 1)}
                 className={`px-3 py-1 rounded border ${
-                  currentPage === i + 1 ? "bg-blue-600 text-white" : "bg-white"
+                  currentPage === i + 1 ? 'bg-blue-600 text-white' : 'bg-white'
                 }`}
               >
                 {i + 1}

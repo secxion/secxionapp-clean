@@ -16,12 +16,15 @@ const MarketList = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${SummaryApi.getMarket.url}?page=${page}&limit=${limit}`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      
+      const response = await fetch(
+        `${SummaryApi.getMarket.url}?page=${page}&limit=${limit}`,
+        {
+          method: 'GET',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+
       const responseData = await response.json();
       if (responseData.success) {
         setProducts(responseData.data);
@@ -44,13 +47,15 @@ const MarketList = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {products.length > 0 ? (
-            products.map((product) => <ProductCard key={product.id} product={product} />)
+            products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))
           ) : (
             <p>No products available.</p>
           )}
         </div>
       )}
-      
+
       <div className="flex justify-between items-center mt-6">
         <button
           className="px-4 py-2 bg-gray-300 rounded-lg disabled:opacity-50"
@@ -59,7 +64,9 @@ const MarketList = () => {
         >
           Previous
         </button>
-        <span>Page {page} of {totalPages}</span>
+        <span>
+          Page {page} of {totalPages}
+        </span>
         <button
           className="px-4 py-2 bg-gray-300 rounded-lg disabled:opacity-50"
           disabled={page === totalPages}

@@ -1,12 +1,24 @@
 import React from 'react';
-import SecxionLogo from "../app/slogo.png";
+import SecxionLogo from '../app/slogo.png';
 
-const SecxionLoader = ({ size = "medium", message = "" }) => {
-  const logoSize = size === "small" ? "w-12 h-12" : size === "medium" ? "w-16 h-16" : "w-20 h-20";
-  const containerHeight = size === "small" ? "min-h-[200px]" : size === "medium" ? "min-h-[300px]" : "min-h-screen";
+const SecxionLoader = ({ size = 'medium', message = '' }) => {
+  const logoSize =
+    size === 'small'
+      ? 'w-12 h-12'
+      : size === 'medium'
+        ? 'w-16 h-16'
+        : 'w-20 h-20';
+  const containerHeight =
+    size === 'small'
+      ? 'min-h-[200px]'
+      : size === 'medium'
+        ? 'min-h-[300px]'
+        : 'min-h-screen';
 
   return (
-    <div className={`${containerHeight} bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 flex flex-col items-center justify-center px-4`}>
+    <div
+      className={`${containerHeight} bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 flex flex-col items-center justify-center px-4`}
+    >
       <div className="relative">
         {/* Logo container with subtle glow */}
         <div className="relative mb-8">

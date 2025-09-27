@@ -1,13 +1,16 @@
-import { FcSearch } from "react-icons/fc";
-import { BiSearch } from "react-icons/bi";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useState, useMemo, useEffect } from "react";
-import { useDebounce } from "../../hooks/useDebounce";
+import { FcSearch } from 'react-icons/fc';
+import { BiSearch } from 'react-icons/bi';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { useDebounce } from '../../hooks/useDebounce';
 
 export default function GlobalSearch() {
   const navigate = useNavigate();
   const { search: urlSearch } = useLocation();
-  const initial = useMemo(() => new URLSearchParams(urlSearch).get("q") || "", [urlSearch]);
+  const initial = useMemo(
+    () => new URLSearchParams(urlSearch).get('q') || '',
+    [urlSearch],
+  );
   const [query, setQuery] = useState(initial);
   const debounced = useDebounce(query, 300);
 

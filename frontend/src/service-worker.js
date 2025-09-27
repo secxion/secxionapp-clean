@@ -12,11 +12,11 @@ registerRoute(
     request.destination === 'script' ||
     request.destination === 'style' ||
     request.destination === 'worker',
-  new StaleWhileRevalidate()
+  new StaleWhileRevalidate(),
 );
 
 // Optionally, cache images
 registerRoute(
   ({ request }) => request.destination === 'image',
-  new StaleWhileRevalidate()
+  new StaleWhileRevalidate(),
 );

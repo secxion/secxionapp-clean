@@ -1,5 +1,5 @@
-import React from "react";
-import currencyFullNames from "../helpers/currencyFullNames";
+import React from 'react';
+import currencyFullNames from '../helpers/currencyFullNames';
 
 const CurrencySelector = ({ pricing, activeCurrency, onCurrencyChange }) => {
   return (
@@ -13,8 +13,8 @@ const CurrencySelector = ({ pricing, activeCurrency, onCurrencyChange }) => {
               key={currency.currency}
               className={`flex-shrink-0 py-2 px-3 rounded-md text-sm font-semibold transition-colors duration-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 activeCurrency?.currency === currency.currency
-                  ? "bg-emerald-500 text-white"
-                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  ? 'bg-emerald-500 text-white'
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
               onClick={() => onCurrencyChange(currency.currency)}
             >

@@ -1,12 +1,12 @@
-import React from 'react'
-import Login from './Login'
+import React from 'react';
+import Login from './Login';
 
 const Homepage = () => {
   return (
     <div>
-        <Login/>
+      <Login />
     </div>
-  )
-}
+  );
+};
 
-export default Homepage
+export default Homepage;

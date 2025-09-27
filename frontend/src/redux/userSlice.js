@@ -1,45 +1,45 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import {
   fetchUserDetailsAPI,
   fetchMarketDataAPI,
   fetchBlogsAPI,
   fetchWalletBalanceAPI,
-} from "../services/apiService";
+} from '../services/apiService';
 
 export const fetchUserDetails = createAsyncThunk(
-  "user/fetchUserDetails",
+  'user/fetchUserDetails',
   async (_, { rejectWithValue }) => {
     try {
       const res = await fetchUserDetailsAPI();
       if (res.success) {
         return res.data;
       } else {
-        return rejectWithValue(res.message || "Failed to fetch user details");
+        return rejectWithValue(res.message || 'Failed to fetch user details');
       }
     } catch (err) {
       return rejectWithValue(err.message);
     }
-  }
+  },
 );
 
 export const fetchMarketData = createAsyncThunk(
-  "user/fetchMarketData",
+  'user/fetchMarketData',
   async (_, { rejectWithValue }) => {
     try {
       const res = await fetchMarketDataAPI();
       if (res.success) {
         return res.data;
       } else {
-        return rejectWithValue(res.message || "Failed to fetch market data");
+        return rejectWithValue(res.message || 'Failed to fetch market data');
       }
     } catch (err) {
       return rejectWithValue(err.message);
     }
-  }
+  },
 );
 
 export const fetchBlogs = createAsyncThunk(
-  "user/fetchBlogs",
+  'user/fetchBlogs',
   async (_, { rejectWithValue }) => {
     try {
       const res = await fetchBlogsAPI();
@@ -48,11 +48,11 @@ export const fetchBlogs = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.message);
     }
-  }
+  },
 );
 
 export const fetchWalletBalance = createAsyncThunk(
-  "user/fetchWalletBalance",
+  'user/fetchWalletBalance',
   async (_, { rejectWithValue }) => {
     try {
       const res = await fetchWalletBalanceAPI();
@@ -64,7 +64,7 @@ export const fetchWalletBalance = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.message);
     }
-  }
+  },
 );
 
 // Initial state
@@ -76,10 +76,10 @@ const initialState = {
   walletBalance: 0,
 
   status: {
-    user: "idle",
-    market: "idle",
-    blogs: "idle",
-    wallet: "idle",
+    user: 'idle',
+    market: 'idle',
+    blogs: 'idle',
+    wallet: 'idle',
   },
 
   error: {
@@ -91,7 +91,7 @@ const initialState = {
 };
 
 const userSlice = createSlice({
-  name: "user",
+  name: 'user',
   initialState,
   reducers: {
     setUserDetails: (state, action) => {
@@ -111,16 +111,16 @@ const userSlice = createSlice({
     // User details
     builder
       .addCase(fetchUserDetails.pending, (state) => {
-        state.status.user = "loading";
+        state.status.user = 'loading';
         state.error.user = null;
       })
       .addCase(fetchUserDetails.fulfilled, (state, { payload }) => {
-        state.status.user = "succeeded";
+        state.status.user = 'succeeded';
         state.user = payload;
         state.isLoggedIn = !!payload;
       })
       .addCase(fetchUserDetails.rejected, (state, { payload }) => {
-        state.status.user = "failed";
+        state.status.user = 'failed';
         state.error.user = payload;
         state.user = null;
         state.isLoggedIn = false;
@@ -128,43 +128,43 @@ const userSlice = createSlice({
 
       // Market data
       .addCase(fetchMarketData.pending, (state) => {
-        state.status.market = "loading";
+        state.status.market = 'loading';
         state.error.market = null;
       })
       .addCase(fetchMarketData.fulfilled, (state, { payload }) => {
-        state.status.market = "succeeded";
+        state.status.market = 'succeeded';
         state.marketData = payload;
       })
       .addCase(fetchMarketData.rejected, (state, { payload }) => {
-        state.status.market = "failed";
+        state.status.market = 'failed';
         state.error.market = payload;
       })
 
       // Blogs
       .addCase(fetchBlogs.pending, (state) => {
-        state.status.blogs = "loading";
+        state.status.blogs = 'loading';
         state.error.blogs = null;
       })
       .addCase(fetchBlogs.fulfilled, (state, { payload }) => {
-        state.status.blogs = "succeeded";
+        state.status.blogs = 'succeeded';
         state.blogs = payload;
       })
       .addCase(fetchBlogs.rejected, (state, { payload }) => {
-        state.status.blogs = "failed";
+        state.status.blogs = 'failed';
         state.error.blogs = payload;
       })
 
       // Wallet balance
       .addCase(fetchWalletBalance.pending, (state) => {
-        state.status.wallet = "loading";
+        state.status.wallet = 'loading';
         state.error.wallet = null;
       })
       .addCase(fetchWalletBalance.fulfilled, (state, { payload }) => {
-        state.status.wallet = "succeeded";
+        state.status.wallet = 'succeeded';
         state.walletBalance = payload;
       })
       .addCase(fetchWalletBalance.rejected, (state, { payload }) => {
-        state.status.wallet = "failed";
+        state.status.wallet = 'failed';
         state.error.wallet = payload;
       });
   },

@@ -11,7 +11,7 @@ const ProductImageCarousel = ({ images }) => {
   }
 
   return (
-    <div  className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
       {images.map((image, index) => (
         <img
           key={index} // Using index as key for now - ideally use a unique ID if available in your image data
@@ -19,7 +19,8 @@ const ProductImageCarousel = ({ images }) => {
           alt={`Product image ${index + 1}`}
           height={4}
           width={4}
-          className='w-24 h-24 object-cover rounded-lg border'        />
+          className="w-24 h-24 object-cover rounded-lg border"
+        />
       ))}
     </div>
   );

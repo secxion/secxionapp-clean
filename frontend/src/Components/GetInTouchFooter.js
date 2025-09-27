@@ -5,7 +5,7 @@ const GetInTouchFooter = () => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate("/report");
+    navigate('/report');
   };
 
   return (

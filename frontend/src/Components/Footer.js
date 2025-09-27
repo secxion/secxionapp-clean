@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { FaBars } from "react-icons/fa";
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { FaBars } from 'react-icons/fa';
 
 const Footer = () => {
   const location = useLocation();
@@ -8,15 +8,15 @@ const Footer = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const menuItems = [
-    { name: "🏠 Home", path: "/home" },
-    { name: "👛 My Wallet", path: "/mywallet" },
-    { name: "🧑 Profile", path: "/profile" },
-    { name: "Ξ ETH Wallet", path: "/eth" },
-    { name: "₦ Naira Wallet", path: "/mywallet" },
-    { name: "🚨 Report", path: "/report" },
+    { name: '🏠 Home', path: '/home' },
+    { name: '👛 My Wallet', path: '/mywallet' },
+    { name: '🧑 Profile', path: '/profile' },
+    { name: 'Ξ ETH Wallet', path: '/eth' },
+    { name: '₦ Naira Wallet', path: '/mywallet' },
+    { name: '🚨 Report', path: '/report' },
   ];
 
-  if (location.pathname === "/home") return null;
+  if (location.pathname === '/home') return null;
 
   const handleNavigate = (path) => {
     setIsMenuOpen(false);

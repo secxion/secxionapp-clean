@@ -16,7 +16,7 @@ export const SoundProvider = ({ children }) => {
   });
 
   const toggleSound = () => {
-    setSoundEnabled(prev => {
+    setSoundEnabled((prev) => {
       const newValue = !prev;
       localStorage.setItem('soundEnabled', newValue);
       return newValue;
@@ -48,9 +48,7 @@ export const SoundProvider = ({ children }) => {
   };
 
   return (
-    <SoundContext.Provider value={value}>
-      {children}
-    </SoundContext.Provider>
+    <SoundContext.Provider value={value}>{children}</SoundContext.Provider>
   );
 };
 

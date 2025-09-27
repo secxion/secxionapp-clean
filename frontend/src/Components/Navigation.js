@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Home, Info, FileText, Mail, User, UserPlus, Shield } from 'lucide-react';
+import {
+  Menu,
+  X,
+  Home,
+  Info,
+  FileText,
+  Mail,
+  User,
+  UserPlus,
+  Shield,
+} from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import LogoShimmer from './LogoShimmer';
 
@@ -16,11 +26,16 @@ const Navigation = ({ currentPage }) => {
     { id: 'terms', name: 'Terms', href: '/terms', icon: FileText },
     { id: 'contact', name: 'Contact', href: '/contact-us', icon: Mail },
     { id: 'signin', name: 'Sign In', href: '/login', icon: User },
-    { id: 'dashboard', name: 'Create Account', href: '/sign-up', icon: UserPlus }
+    {
+      id: 'dashboard',
+      name: 'Create Account',
+      href: '/sign-up',
+      icon: UserPlus,
+    },
   ];
 
   // Filter out the current page from navigation items
-  const navItems = allNavItems.filter(item => item.id !== currentPage);
+  const navItems = allNavItems.filter((item) => item.id !== currentPage);
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
@@ -31,26 +46,30 @@ const Navigation = ({ currentPage }) => {
   }, [location]);
 
   // Brand color palette
-  const activeGradient = "bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-700";
-  const hoverGradient = "hover:bg-yellow-900/20";
-  const textActive = "text-yellow-200";
-  const textInactive = "text-gray-200 hover:text-yellow-400";
+  const activeGradient =
+    'bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-700';
+  const hoverGradient = 'hover:bg-yellow-900/20';
+  const textActive = 'text-yellow-200';
+  const textInactive = 'text-gray-200 hover:text-yellow-400';
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-950/90 backdrop-blur-xl border-b border-yellow-700/20 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 relative">
-
-           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 group relative z-50">
+          {/* Logo */}
+          <Link
+            to="/"
+            className="flex items-center space-x-2 group relative z-50"
+          >
             <div className="flex items-center">
               <span className="relative">
                 <span className="absolute inset-0 bg-gradient-to-r from-yellow-500 to-yellow-700 rounded-2xl blur-sm opacity-60"></span>
-                <span className="relative z-10">
-                </span>
+                <span className="relative z-10"></span>
               </span>
             </div>
-            <span className="ml-2 font-extrabold text-lg text-yellow-200 tracking-wide group-hover:text-yellow-400 transition-colors">Secxion</span>
+            <span className="ml-2 font-extrabold text-lg text-yellow-200 tracking-wide group-hover:text-yellow-400 transition-colors">
+              Secxion
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -66,7 +85,9 @@ const Navigation = ({ currentPage }) => {
                     ${isActive ? `${activeGradient} ${textActive} shadow-md border-yellow-700` : `${hoverGradient} ${textInactive}`}
                   `}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? "text-yellow-300" : "text-yellow-500 group-hover:text-yellow-400"}`} />
+                  <Icon
+                    className={`w-5 h-5 ${isActive ? 'text-yellow-300' : 'text-yellow-500 group-hover:text-yellow-400'}`}
+                  />
                   <span>{item.name}</span>
                 </Link>
               );
@@ -78,9 +99,9 @@ const Navigation = ({ currentPage }) => {
             <button
               onClick={toggleMenu}
               className={` rounded-xl bg-black border border-yellow-700/40
-                ${isOpen ? "bg-black" : "text-yellow-400 hover:bg-yellow-900/20"}
+                ${isOpen ? 'bg-black' : 'text-yellow-400 hover:bg-yellow-900/20'}
               `}
-              aria-label={isOpen ? "Close menu" : "Open menu"}
+              aria-label={isOpen ? 'Close menu' : 'Open menu'}
             >
               {isOpen ? (
                 <X className="w-7 h-7 text-yellow-400" />
@@ -107,8 +128,7 @@ const Navigation = ({ currentPage }) => {
                   onClick={closeMenu}
                   className=""
                   aria-label="Close menu"
-                >
-                </button>
+                ></button>
               </div>
               <div className="flex flex-col left-0 right-0 bg-gray-950/90 backdrop-blur-xl mt-10 border-b border-yellow-700/20 shadow-lg items-center space-y-2">
                 {navItems.map((item) => {
@@ -123,7 +143,9 @@ const Navigation = ({ currentPage }) => {
                         ${isActive ? `${activeGradient} ${textActive} shadow-md border-yellow-700` : `${hoverGradient} ${textInactive}`}
                       `}
                     >
-                      <Icon className={`w-5 h-5 ${isActive ? "text-yellow-300" : "text-yellow-500 group-hover:text-yellow-400"}`} />
+                      <Icon
+                        className={`w-5 h-5 ${isActive ? 'text-yellow-300' : 'text-yellow-500 group-hover:text-yellow-400'}`}
+                      />
                       <span>{item.name}</span>
                     </Link>
                   );

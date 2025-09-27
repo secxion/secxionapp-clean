@@ -1,21 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import productCategory from "../helpers/productCategory";
-import SummaryApi from "../common";
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import productCategory from '../helpers/productCategory';
+import SummaryApi from '../common';
 import {
   FaCreditCard,
   FaGift,
   FaMoneyBillWave,
   FaFilter,
-} from "react-icons/fa";
-import VerticalCard from "../Components/VerticalCard";
-import debounce from "lodash.debounce";
-import SecxionSpinner from "../Components/SecxionSpinner";
+} from 'react-icons/fa';
+import VerticalCard from '../Components/VerticalCard';
+import debounce from 'lodash.debounce';
+import SecxionSpinner from '../Components/SecxionSpinner';
 
 const iconMap = {
-  "gift cards": <FaGift className="text-emerald-400 w-4 h-4 glossy-icon-text" />, // Applied glossy-icon-text
-  "visa / creditcards": <FaCreditCard className="text-yellow-400 w-4 h-4 glossy-icon-text" />, // Applied glossy-icon-text
-  "Online Payments": <FaMoneyBillWave className="text-indigo-400 w-4 h-4 glossy-icon-text" />, // Applied glossy-icon-text
+  'gift cards': (
+    <FaGift className="text-emerald-400 w-4 h-4 glossy-icon-text" />
+  ), // Applied glossy-icon-text
+  'visa / creditcards': (
+    <FaCreditCard className="text-yellow-400 w-4 h-4 glossy-icon-text" />
+  ), // Applied glossy-icon-text
+  'Online Payments': (
+    <FaMoneyBillWave className="text-indigo-400 w-4 h-4 glossy-icon-text" />
+  ), // Applied glossy-icon-text
 };
 
 const CategoryProduct = () => {
@@ -26,19 +32,21 @@ const CategoryProduct = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const urlSearch = new URLSearchParams(location.search);
-  const urlCategoryListinArray = urlSearch.getAll("category");
+  const urlCategoryListinArray = urlSearch.getAll('category');
   const urlCategoryListObject = urlCategoryListinArray.reduce(
     (acc, el) => ({ ...acc, [el]: true }),
-    {}
+    {},
   );
 
   const [selectCategory, setSelectCategory] = useState(urlCategoryListObject);
   const [filterCategoryList, setFilterCategoryList] = useState(
-    Object.keys(urlCategoryListObject)
+    Object.keys(urlCategoryListObject),
   );
 
   useEffect(() => {
-    const selected = Object.keys(selectCategory).filter((key) => selectCategory[key]);
+    const selected = Object.keys(selectCategory).filter(
+      (key) => selectCategory[key],
+    );
     setFilterCategoryList(selected);
   }, [selectCategory]);
 
@@ -46,7 +54,7 @@ const CategoryProduct = () => {
     navigate(
       `/product-category?${filterCategoryList
         .map((cat) => `category=${cat}`)
-        .join("&")}`
+        .join('&')}`,
     );
 
     const fetchData = debounce(async (categories) => {
@@ -59,16 +67,16 @@ const CategoryProduct = () => {
       try {
         const response = await fetch(SummaryApi.filterProduct.url, {
           method: SummaryApi.filterProduct.method,
-          headers: { "Content-Type": "application/json" },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ category: categories }),
         });
 
         const json = await response.json();
-        if (!response.ok) throw new Error(json.message || "Fetch failed");
+        if (!response.ok) throw new Error(json.message || 'Fetch failed');
 
         setData(json.data || []);
       } catch (err) {
-        console.error("Error fetching products:", err);
+        console.error('Error fetching products:', err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -153,13 +161,13 @@ const CategoryProduct = () => {
         <div className="h-full flex flex-col">
           {filterCategoryList.length > 0 && (
             <p className="mb-2 text-xs text-blue-400 ">
-              Showing:{" "}
+              Showing:{' '}
               {filterCategoryList.map((cat, i) => (
                 <span key={cat}>
                   <span className="text-gray-400 font-semibold">
                     {productCategory.find((p) => p.value === cat)?.label || cat}
                   </span>
-                  {i < filterCategoryList.length - 1 ? ", " : ""}
+                  {i < filterCategoryList.length - 1 ? ', ' : ''}
                 </span>
               ))}
             </p>
@@ -186,8 +194,8 @@ const CategoryProduct = () => {
                 tabIndex={0}
               >
                 {filterCategoryList.length === 0
-                  ? "Select a category."
-                  : "No products found."}
+                  ? 'Select a category.'
+                  : 'No products found.'}
               </p>
             ) : (
               <VerticalCard data={data} loading={loading} />

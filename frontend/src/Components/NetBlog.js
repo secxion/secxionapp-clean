@@ -30,7 +30,8 @@ const NetBlog = () => {
       setErrorBlogs(null);
       try {
         const response = await fetch(SummaryApi.getBlogs.url);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok)
+          throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setBlogs(data);
       } catch (e) {
@@ -72,7 +73,7 @@ const NetBlog = () => {
     const delay = 100;
     setTimeout(() => {
       if (isMobile) {
-        navigate("/community-feed");
+        navigate('/community-feed');
       } else {
         window.open('/community-feed', '_blank', 'noopener,noreferrer');
       }
@@ -80,7 +81,8 @@ const NetBlog = () => {
   };
 
   const toggleBlogVisibility = () => setShowBlogs((prev) => !prev);
-  const toggleMoreBlogs = () => setVisibleBlogs((prev) => (prev === 6 ? blogs.length : 6));
+  const toggleMoreBlogs = () =>
+    setVisibleBlogs((prev) => (prev === 6 ? blogs.length : 6));
 
   if (loadingBlogs) {
     return <SecxionLoader size="medium" message="Loading latest updates..." />;
@@ -117,9 +119,7 @@ const NetBlog = () => {
           className="relative group px-5 py-2 text-white font-semibold items-center justify-center rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-xs bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:brightness-110 flex items-center gap-2 border-4 border-yellow-500 glossy-text" // Applied glossy-text
         >
           <span className="hidden sm:inline">Community</span> Feed
-
           <FaExternalLinkAlt className="text-white text-[10px] hidden sm:inline" />
-
           <span className="absolute bottom-full mb-1 hidden sm:group-hover:flex px-2 py-1 text-[10px] bg-black text-white rounded">
             Opens in new tab
           </span>
@@ -151,7 +151,9 @@ const NetBlog = () => {
               >
                 <div className="p-6 minecraft-font text-xs">
                   <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-sm font-semibold line-clamp-2 text-gray-800 glossy-heading"> {/* Applied glossy-heading */}
+                    <h3 className="text-sm font-semibold line-clamp-2 text-gray-800 glossy-heading">
+                      {' '}
+                      {/* Applied glossy-heading */}
                       {blog.title}
                     </h3>
                     {blog.isActive && (
@@ -160,11 +162,16 @@ const NetBlog = () => {
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-600 text-xs line-clamp-3 glossy-text"> 
+                  <p className="text-gray-600 text-xs line-clamp-3 glossy-text">
                     {blog.content || 'No content available.'}
                   </p>
-                  <p className="text-[10px] text-gray-500 mt-3 glossy-text"> {/* Applied glossy-text */}
-                    Published {formatDistanceToNow(new Date(blog.createdAt), { addSuffix: true })}
+                  <p className="text-[10px] text-gray-500 mt-3 glossy-text">
+                    {' '}
+                    {/* Applied glossy-text */}
+                    Published{' '}
+                    {formatDistanceToNow(new Date(blog.createdAt), {
+                      addSuffix: true,
+                    })}
                   </p>
                   <button
                     onClick={() => setSelectedBlog(blog)}
@@ -189,7 +196,9 @@ const NetBlog = () => {
           )}
         </>
       ) : (
-        <p className="text-gray-500 dark:text-gray-400 text-center py-12 text-sm minecraft-font glossy-text border-2 border-black"> {/* Applied glossy-text */}
+        <p className="text-gray-500 dark:text-gray-400 text-center py-12 text-sm minecraft-font glossy-text border-2 border-black">
+          {' '}
+          {/* Applied glossy-text */}
           No blog posts available yet.
         </p>
       )}
@@ -205,14 +214,14 @@ const NetBlog = () => {
               animate={{ scale: 1, rotate: 0 }}
               exit={{ scale: 0, rotate: 180 }}
               transition={{
-                type: "spring",
+                type: 'spring',
                 stiffness: 300,
                 damping: 20,
                 delay: 0.1,
               }}
               whileHover={{
                 rotate: 90,
-                boxShadow: "0 0 30px rgba(239, 68, 68, 0.5)",
+                boxShadow: '0 0 30px rgba(239, 68, 68, 0.5)',
               }}
               whileTap={{ scale: 0.9 }}
               aria-label="Close blog dialog"
@@ -221,7 +230,9 @@ const NetBlog = () => {
             </motion.button>
 
             {/* Blog Content */}
-            <h2 className="text-2xl font-bold text-gray-100 mb-4">{selectedBlog.title}</h2>
+            <h2 className="text-2xl font-bold text-gray-100 mb-4">
+              {selectedBlog.title}
+            </h2>
             <p className="text-gray-300">{selectedBlog.content}</p>
           </div>
         </div>

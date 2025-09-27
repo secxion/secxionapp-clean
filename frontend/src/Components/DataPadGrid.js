@@ -1,24 +1,24 @@
-import React, { useState, useCallback, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  FaTrash, 
-  FaEdit, 
-  FaImage, 
+import React, { useState, useCallback, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  FaTrash,
+  FaEdit,
+  FaImage,
   FaCalendarAlt,
   FaEllipsisV,
   FaTh,
   FaList,
-} from "react-icons/fa";
-import SearchAndFilter from "./SearchAndFilter";
-import EmptyState from "./EmptyState";
-import SecxionShimmer from "./SecxionShimmer";
+} from 'react-icons/fa';
+import SearchAndFilter from './SearchAndFilter';
+import EmptyState from './EmptyState';
+import SecxionShimmer from './SecxionShimmer';
 
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   });
 };
 
@@ -31,23 +31,29 @@ const GridCard = ({ dataPad, onEdit, onDelete, onView }) => {
   const [showActions, setShowActions] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDelete = useCallback(async (e) => {
-    e.stopPropagation();
-    setIsDeleting(true);
-    
-    try {
-      await onDelete(dataPad._id);
-    } catch (error) {
-      console.error('Error deleting note:', error);
-    } finally {
-      setIsDeleting(false);
-    }
-  }, [dataPad._id, onDelete]);
+  const handleDelete = useCallback(
+    async (e) => {
+      e.stopPropagation();
+      setIsDeleting(true);
 
-  const handleEdit = useCallback((e) => {
-    e.stopPropagation();
-    onEdit(dataPad);
-  }, [dataPad, onEdit]);
+      try {
+        await onDelete(dataPad._id);
+      } catch (error) {
+        console.error('Error deleting note:', error);
+      } finally {
+        setIsDeleting(false);
+      }
+    },
+    [dataPad._id, onDelete],
+  );
+
+  const handleEdit = useCallback(
+    (e) => {
+      e.stopPropagation();
+      onEdit(dataPad);
+    },
+    [dataPad, onEdit],
+  );
 
   return (
     <motion.div
@@ -64,7 +70,9 @@ const GridCard = ({ dataPad, onEdit, onDelete, onView }) => {
         <div className="relative h-32 overflow-hidden rounded-t-lg">
           <img
             src={dataPad.media[0]}
-            alt={dataPad.title ? `Preview for ${dataPad.title}` : "Note preview"}
+            alt={
+              dataPad.title ? `Preview for ${dataPad.title}` : 'Note preview'
+            }
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
           />
           {dataPad.media.length > 1 && (
@@ -80,7 +88,7 @@ const GridCard = ({ dataPad, onEdit, onDelete, onView }) => {
         {/* Header */}
         <div className="flex items-start justify-between mb-2">
           <h3 className="text-lg font-semibold text-white dark:text-white truncate group-hover:text-blue-400 dark:group-hover:text-blue-400 transition-colors duration-200">
-            {dataPad.title || "Untitled Note"}
+            {dataPad.title || 'Untitled Note'}
           </h3>
           <div className="relative">
             <button
@@ -185,23 +193,29 @@ const GridCard = ({ dataPad, onEdit, onDelete, onView }) => {
 const ListCard = ({ dataPad, onEdit, onDelete, onView }) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDelete = useCallback(async (e) => {
-    e.stopPropagation();
-    setIsDeleting(true);
-    
-    try {
-      await onDelete(dataPad._id);
-    } catch (error) {
-      console.error('Error deleting note:', error);
-    } finally {
-      setIsDeleting(false);
-    }
-  }, [dataPad._id, onDelete]);
+  const handleDelete = useCallback(
+    async (e) => {
+      e.stopPropagation();
+      setIsDeleting(true);
 
-  const handleEdit = useCallback((e) => {
-    e.stopPropagation();
-    onEdit(dataPad);
-  }, [dataPad, onEdit]);
+      try {
+        await onDelete(dataPad._id);
+      } catch (error) {
+        console.error('Error deleting note:', error);
+      } finally {
+        setIsDeleting(false);
+      }
+    },
+    [dataPad._id, onDelete],
+  );
+
+  const handleEdit = useCallback(
+    (e) => {
+      e.stopPropagation();
+      onEdit(dataPad);
+    },
+    [dataPad, onEdit],
+  );
 
   return (
     <motion.div
@@ -218,7 +232,9 @@ const ListCard = ({ dataPad, onEdit, onDelete, onView }) => {
           <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden">
             <img
               src={dataPad.media[0]}
-              alt={dataPad.title ? `Preview for ${dataPad.title}` : "Note preview"}
+              alt={
+                dataPad.title ? `Preview for ${dataPad.title}` : 'Note preview'
+              }
               className="w-full h-full object-cover"
             />
             {dataPad.media.length > 1 && (
@@ -233,7 +249,7 @@ const ListCard = ({ dataPad, onEdit, onDelete, onView }) => {
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
               <h3 className="text-lg font-semibold text-white dark:text-white truncate group-hover:text-blue-400 dark:group-hover:text-blue-400 transition-colors duration-200">
-                {dataPad.title || "Untitled Note"}
+                {dataPad.title || 'Untitled Note'}
               </h3>
               {dataPad.content && (
                 <p className="text-gray-400 dark:text-gray-400 text-sm mt-1 line-clamp-2">
@@ -289,24 +305,24 @@ const ListCard = ({ dataPad, onEdit, onDelete, onView }) => {
   );
 };
 
-const DataPadGrid = ({ 
-  dataPads = [], 
-  onEdit, 
-  onDelete, 
-  onView, 
+const DataPadGrid = ({
+  dataPads = [],
+  onEdit,
+  onDelete,
+  onView,
   isLoading = false,
-  onCreateNew 
+  onCreateNew,
 }) => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
-  const [viewMode, setViewMode] = useState("grid");
+  const [viewMode, setViewMode] = useState('grid');
 
   // Extract all unique tags from dataPads
   const allTags = useMemo(() => {
     const tags = new Set();
-    dataPads.forEach(dataPad => {
+    dataPads.forEach((dataPad) => {
       if (dataPad.tags) {
-        dataPad.tags.forEach(tag => tags.add(tag));
+        dataPad.tags.forEach((tag) => tags.add(tag));
       }
     });
     return Array.from(tags).sort();
@@ -314,20 +330,25 @@ const DataPadGrid = ({
 
   // Filter dataPads (no sorting)
   const filteredDataPads = useMemo(() => {
-    return dataPads.filter(dataPad => {
-      const matchesSearch = !searchQuery || 
-        (dataPad.title && dataPad.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (dataPad.content && dataPad.content.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      const matchesTags = selectedTags.length === 0 || 
-        (dataPad.tags && selectedTags.every(tag => dataPad.tags.includes(tag)));
-      
+    return dataPads.filter((dataPad) => {
+      const matchesSearch =
+        !searchQuery ||
+        (dataPad.title &&
+          dataPad.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (dataPad.content &&
+          dataPad.content.toLowerCase().includes(searchQuery.toLowerCase()));
+
+      const matchesTags =
+        selectedTags.length === 0 ||
+        (dataPad.tags &&
+          selectedTags.every((tag) => dataPad.tags.includes(tag)));
+
       return matchesSearch && matchesTags;
     });
   }, [dataPads, searchQuery, selectedTags]);
 
   const handleClearFilters = useCallback(() => {
-    setSearchQuery("");
+    setSearchQuery('');
     setSelectedTags([]);
   }, []);
 
@@ -354,21 +375,21 @@ const DataPadGrid = ({
         {/* View Mode Toggle */}
         <div className="flex items-center space-x-2 bg-gray-800 dark:bg-gray-800 rounded-lg p-1 ml-4">
           <button
-            onClick={() => setViewMode("grid")}
+            onClick={() => setViewMode('grid')}
             className={`p-2 rounded-md transition-colors duration-200 ${
-              viewMode === "grid"
-                ? "bg-gray-700 dark:bg-gray-700 text-blue-400 dark:text-blue-400 shadow-sm"
-                : "text-gray-400 dark:text-gray-400 hover:text-gray-200 dark:hover:text-gray-200"
+              viewMode === 'grid'
+                ? 'bg-gray-700 dark:bg-gray-700 text-blue-400 dark:text-blue-400 shadow-sm'
+                : 'text-gray-400 dark:text-gray-400 hover:text-gray-200 dark:hover:text-gray-200'
             }`}
           >
             <FaTh className="w-4 h-4" />
           </button>
           <button
-            onClick={() => setViewMode("list")}
+            onClick={() => setViewMode('list')}
             className={`p-2 rounded-md transition-colors duration-200 ${
-              viewMode === "list"
-                ? "bg-gray-700 dark:bg-gray-700 text-blue-400 dark:text-blue-400 shadow-sm"
-                : "text-gray-400 dark:text-gray-400 hover:text-gray-200 dark:hover:text-gray-200"
+              viewMode === 'list'
+                ? 'bg-gray-700 dark:bg-gray-700 text-blue-400 dark:text-blue-400 shadow-sm'
+                : 'text-gray-400 dark:text-gray-400 hover:text-gray-200 dark:hover:text-gray-200'
             }`}
           >
             <FaList className="w-4 h-4" />
@@ -385,7 +406,7 @@ const DataPadGrid = ({
 
       {/* Grid/List Content */}
       {filteredDataPads.length === 0 ? (
-        <EmptyState 
+        <EmptyState
           hasDataPads={dataPads.length > 0}
           hasActiveFilters={searchQuery || selectedTags.length > 0}
           onCreateNew={onCreateNew}
@@ -393,7 +414,7 @@ const DataPadGrid = ({
         />
       ) : (
         <AnimatePresence mode="wait">
-          {viewMode === "grid" ? (
+          {viewMode === 'grid' ? (
             <motion.div
               key="grid-view"
               initial={{ opacity: 0 }}

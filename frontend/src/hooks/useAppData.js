@@ -1,7 +1,11 @@
-import { useDispatch } from "react-redux";
-import { useQuery } from "@tanstack/react-query";
-import { setUserDetails, setLoading } from "../store/userSlice";
-import { fetchUserDetailsAPI, fetchMarketDataAPI, fetchBlogsAPI } from "../services/apiService";
+import { useDispatch } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
+import { setUserDetails, setLoading } from '../store/userSlice';
+import {
+  fetchUserDetailsAPI,
+  fetchMarketDataAPI,
+  fetchBlogsAPI,
+} from '../services/apiService';
 
 const useAppData = () => {
   const dispatch = useDispatch();
@@ -12,7 +16,7 @@ const useAppData = () => {
     isLoading: isUserLoading,
     error: userError,
   } = useQuery({
-    queryKey: ["user"],
+    queryKey: ['user'],
     queryFn: async () => {
       dispatch(setLoading(true));
       try {
@@ -21,18 +25,18 @@ const useAppData = () => {
           dispatch(setUserDetails(res.data));
           return res.data;
         } else {
-          throw new Error(res.message || "Failed to fetch user data");
+          throw new Error(res.message || 'Failed to fetch user data');
         }
       } catch (error) {
-        console.error("User Fetch Error:", error);
+        console.error('User Fetch Error:', error);
         return null;
       } finally {
         dispatch(setLoading(false));
       }
     },
-    staleTime: 5 * 60 * 1000, 
+    staleTime: 5 * 60 * 1000,
     cacheTime: 30 * 60 * 1000,
-    retry: 2, 
+    retry: 2,
   });
 
   const {
@@ -41,7 +45,7 @@ const useAppData = () => {
     isLoading: isMarketLoading,
     error: marketError,
   } = useQuery({
-    queryKey: ["marketData"],
+    queryKey: ['marketData'],
     queryFn: fetchMarketDataAPI,
     staleTime: 5 * 60 * 1000,
     cacheTime: 30 * 60 * 1000,
@@ -54,7 +58,7 @@ const useAppData = () => {
     isLoading: isBlogsLoading,
     error: blogsError,
   } = useQuery({
-    queryKey: ["blogs"],
+    queryKey: ['blogs'],
     queryFn: fetchBlogsAPI,
     staleTime: 5 * 60 * 1000,
     cacheTime: 30 * 60 * 1000,

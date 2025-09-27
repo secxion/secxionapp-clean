@@ -28,10 +28,10 @@ const MyPosts = () => {
       if (data.success) {
         setPosts(data.data);
       } else {
-        toast.error(data.message || "Failed to load your posts.");
+        toast.error(data.message || 'Failed to load your posts.');
       }
     } catch (error) {
-      toast.error("Something went wrong while loading posts.");
+      toast.error('Something went wrong while loading posts.');
     } finally {
       setLoading(false);
     }
@@ -48,15 +48,23 @@ const MyPosts = () => {
   }, [user]);
 
   if (loading) {
-    return <div className="text-center mt-6 text-gray-600 dark:text-gray-300">Loading your posts...</div>;
+    return (
+      <div className="text-center mt-6 text-gray-600 dark:text-gray-300">
+        Loading your posts...
+      </div>
+    );
   }
 
   return (
     <div className="container max-w-2xl mx-auto p-4">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Your Posts</h2>
+      <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
+        Your Posts
+      </h2>
 
       {posts.length === 0 ? (
-        <p className="text-gray-500 dark:text-gray-300">You haven't posted anything yet.</p>
+        <p className="text-gray-500 dark:text-gray-300">
+          You haven't posted anything yet.
+        </p>
       ) : (
         posts.map((post) => {
           const isLong = post.content && post.content.length > 150;
@@ -85,7 +93,9 @@ const MyPosts = () => {
 
                 {/* Post Body */}
                 <div className="flex-grow text-sm">
-                  <p className="font-semibold text-gray-900 dark:text-gray-100">{user?.name || 'You'}</p>
+                  <p className="font-semibold text-gray-900 dark:text-gray-100">
+                    {user?.name || 'You'}
+                  </p>
 
                   <div className="text-gray-700 dark:text-gray-300 mt-1 text-sm whitespace-pre-line break-words line-clamp-4">
                     {isLong ? truncatedContent : post.content}
@@ -102,14 +112,19 @@ const MyPosts = () => {
                   )}
 
                   <div className="mt-3 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                    <p>Posted {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}</p>
+                    <p>
+                      Posted{' '}
+                      {formatDistanceToNow(new Date(post.createdAt), {
+                        addSuffix: true,
+                      })}
+                    </p>
                     <span
                       className={`text-sm font-semibold mt-2 sm:mt-0 ${
                         post.status === 'approved'
                           ? 'text-green-600'
                           : post.status === 'rejected'
-                          ? 'text-red-600'
-                          : 'text-yellow-600'
+                            ? 'text-red-600'
+                            : 'text-yellow-600'
                       }`}
                     >
                       Status: {post.status || 'Pending'}

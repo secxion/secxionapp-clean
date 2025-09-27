@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
-import SummaryApi from "../common";
-import FireIcon from "../app/Icons/fireicon.png";
-import EthereumIcon from "../app/Icons/ethereumicon.png";
+import React, { useEffect, useState } from 'react';
+import SummaryApi from '../common';
+import FireIcon from '../app/Icons/fireicon.png';
+import EthereumIcon from '../app/Icons/ethereumicon.png';
 import SecxionShimmer from './SecxionShimmer';
 
-const ethApiUrl = "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd";
+const ethApiUrl =
+  'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
 
 const HiRateSlider = () => {
   const [slides, setSlides] = useState([]);
@@ -15,7 +16,7 @@ const HiRateSlider = () => {
       try {
         const [productRes, ethRes] = await Promise.all([
           fetch(SummaryApi.allProduct.url, {
-            method: "GET",
+            method: 'GET',
           }),
           fetch(ethApiUrl),
         ]);
@@ -26,7 +27,7 @@ const HiRateSlider = () => {
         const allProducts = productData?.data || [];
         const ethRate = ethData?.ethereum?.usd || 0;
 
-        const selectedCurrencies = ["USD", "GBP", "CAD", "CNY", "SGD", "AUD"];
+        const selectedCurrencies = ['USD', 'GBP', 'CAD', 'CNY', 'SGD', 'AUD'];
         const topNPerNewCurrency = 2;
 
         let combinedProductRates = [];
@@ -41,12 +42,15 @@ const HiRateSlider = () => {
                 if (fv.sellingPrice) {
                   const slideData = {
                     productName: product.productName,
-                    image: product.productImage?.[0] || "",
+                    image: product.productImage?.[0] || '',
                     sellingPrice: fv.sellingPrice,
                     currency: priceBlock.currency,
                   };
 
-                  if (priceBlock.currency === "USD" || priceBlock.currency === "GBP") {
+                  if (
+                    priceBlock.currency === 'USD' ||
+                    priceBlock.currency === 'GBP'
+                  ) {
                     combinedProductRates.push(slideData);
                   } else {
                     if (!productsByCurrency.has(priceBlock.currency)) {
@@ -61,21 +65,25 @@ const HiRateSlider = () => {
         });
 
         productsByCurrency.forEach((products, currency) => {
-          const sortedCurrencyProducts = products.sort((a, b) => b.sellingPrice - a.sellingPrice);
-          otherCurrencyTopRates.push(...sortedCurrencyProducts.slice(0, topNPerNewCurrency));
+          const sortedCurrencyProducts = products.sort(
+            (a, b) => b.sellingPrice - a.sellingPrice,
+          );
+          otherCurrencyTopRates.push(
+            ...sortedCurrencyProducts.slice(0, topNPerNewCurrency),
+          );
         });
 
         combinedProductRates.push(...otherCurrencyTopRates);
 
         const sortedRates = combinedProductRates.sort(
-          (a, b) => b.sellingPrice - a.sellingPrice
+          (a, b) => b.sellingPrice - a.sellingPrice,
         );
         const ethSlide = {
-          productName: "Ethereum",
+          productName: 'Ethereum',
           image: null,
           isEthereum: true,
           sellingPrice: ethRate,
-          currency: "USD",
+          currency: 'USD',
         };
 
         const topProductsToShow = 20;
@@ -91,7 +99,8 @@ const HiRateSlider = () => {
 
             while (cyclicalProductSlides.length < targetLength) {
               cyclicalProductSlides.push(sortedRates[currentProductIndex]);
-              currentProductIndex = (currentProductIndex + 1) % sortedRates.length;
+              currentProductIndex =
+                (currentProductIndex + 1) % sortedRates.length;
             }
           }
         }
@@ -101,15 +110,21 @@ const HiRateSlider = () => {
 
         for (let i = 0; i < cyclicalProductSlides.length; i++) {
           finalSlides.push(cyclicalProductSlides[i]);
-          if ((i + 1) % insertInterval === 0 && i < cyclicalProductSlides.length - 1) {
+          if (
+            (i + 1) % insertInterval === 0 &&
+            i < cyclicalProductSlides.length - 1
+          ) {
             finalSlides.push(ethSlide);
           }
         }
 
         if (finalSlides.length === 0 && sortedRates.length === 0) {
-            finalSlides.push(ethSlide);
-        } else if (finalSlides.length > 0 && !(finalSlides[finalSlides.length - 1]?.isEthereum)) {
-            finalSlides.push(ethSlide);
+          finalSlides.push(ethSlide);
+        } else if (
+          finalSlides.length > 0 &&
+          !finalSlides[finalSlides.length - 1]?.isEthereum
+        ) {
+          finalSlides.push(ethSlide);
         }
 
         if (finalSlides.length > 0) {
@@ -120,9 +135,8 @@ const HiRateSlider = () => {
         }
 
         setLoading(false);
-
       } catch (error) {
-        console.error("Slider Fetch Error:", error);
+        console.error('Slider Fetch Error:', error);
         setLoading(false);
       }
     };
@@ -134,7 +148,9 @@ const HiRateSlider = () => {
     return (
       <div className="relative overflow-hidden rounded-2xl bg-gray-100 p-6 shadow-inner border border-gray-200">
         <div className="relative z-10">
-          <h2 className="text-gray-800 text-2xl font-semibold mb-4">Loading Rates...</h2>
+          <h2 className="text-gray-800 text-2xl font-semibold mb-4">
+            Loading Rates...
+          </h2>
           <SecxionShimmer type="grid" count={4} />
         </div>
       </div>
@@ -148,14 +164,25 @@ const HiRateSlider = () => {
   const animationDuration = slides.length * 5;
   return (
     <div className="fixed top-20 py-1 mt-1 left-0 right-0 shadow-sm md:mt-3 lg:mt-3 z-30 w-full bg-white border-b border-gray-200 overflow-hidden">
-      <div className="hirate-slider-track" style={{ animationDuration: `${animationDuration}s`}}>
+      <div
+        className="hirate-slider-track"
+        style={{ animationDuration: `${animationDuration}s` }}
+      >
         {slides.map((slide, index) => (
           <div key={index} className="hirate-slide">
             {slide.isEthereum ? (
-              <img src={EthereumIcon} alt="Ethereum" className="slide-ethereum-icon w-5 h-5" />
+              <img
+                src={EthereumIcon}
+                alt="Ethereum"
+                className="slide-ethereum-icon w-5 h-5"
+              />
             ) : (
               slide.image && (
-                <img src={slide.image} alt={slide.productName} className="slide-image" />
+                <img
+                  src={slide.image}
+                  alt={slide.productName}
+                  className="slide-image"
+                />
               )
             )}
             <p className="slide-text text-gray-800">
@@ -164,11 +191,11 @@ const HiRateSlider = () => {
                 {slide.productName}
               </span>
               <span className="slide-price font-semibold text-purple-700">
-                 1 {slide.currency === "GBP" ? "£" : slide.currency} ={" "}
-                    {Number(slide.sellingPrice).toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                1 {slide.currency === 'GBP' ? '£' : slide.currency} ={' '}
+                {Number(slide.sellingPrice).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </span>
             </p>
           </div>

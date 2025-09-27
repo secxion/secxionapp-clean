@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const WithdrawEth = ({ userEthBalance }) => {
-  const [ethAmount, setEthAmount] = useState("");
+  const [ethAmount, setEthAmount] = useState('');
   const [usdValue, setUsdValue] = useState(null);
   const [nairaValue, setNairaValue] = useState(null);
   const [conversionRate, setConversionRate] = useState(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [isMobile, setIsMobile] = useState(false);
 
   const MIN_WITHDRAWAL = 0.01;
@@ -16,8 +16,10 @@ const WithdrawEth = ({ userEthBalance }) => {
     const fetchRates = async () => {
       try {
         const [ethRes, usdToNgnRes] = await Promise.all([
-          axios.get("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"),
-          axios.get("https://open.er-api.com/v6/latest/USD"),
+          axios.get(
+            'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd',
+          ),
+          axios.get('https://open.er-api.com/v6/latest/USD'),
         ]);
 
         const ethUsd = ethRes.data.ethereum.usd;
@@ -25,10 +27,12 @@ const WithdrawEth = ({ userEthBalance }) => {
 
         setConversionRate(ethUsd);
         setUsdValue(ethAmount ? (ethAmount * ethUsd).toFixed(2) : null);
-        setNairaValue(ethAmount ? (ethAmount * ethUsd * usdToNgn).toFixed(2) : null);
+        setNairaValue(
+          ethAmount ? (ethAmount * ethUsd * usdToNgn).toFixed(2) : null,
+        );
       } catch (err) {
-        console.error("Error fetching exchange rates", err);
-        setError("Unable to fetch conversion rates. Please try again later.");
+        console.error('Error fetching exchange rates', err);
+        setError('Unable to fetch conversion rates. Please try again later.');
       }
     };
 
@@ -41,15 +45,15 @@ const WithdrawEth = ({ userEthBalance }) => {
       setIsMobile(window.innerWidth <= 768);
     };
     handleResize(); // initial call
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const handleWithdraw = () => {
     const amount = parseFloat(ethAmount);
 
     if (!amount || isNaN(amount)) {
-      return setError("Enter a valid ETH amount.");
+      return setError('Enter a valid ETH amount.');
     }
 
     if (amount < MIN_WITHDRAWAL) {
@@ -57,11 +61,11 @@ const WithdrawEth = ({ userEthBalance }) => {
     }
 
     if (amount > userEthBalance) {
-      return setError("Insufficient balance.");
+      return setError('Insufficient balance.');
     }
 
     // Proceed with withdrawal
-    setError("");
+    setError('');
     alert(`Withdrawing ${amount} ETH (≈ $${usdValue}, ₦${nairaValue})`);
     // Add your withdrawal API call here
   };

@@ -2,7 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { FaBell, FaEnvelopeOpen, FaCheckDouble, FaSpinner, FaInbox } from 'react-icons/fa';
+import {
+  FaBell,
+  FaEnvelopeOpen,
+  FaCheckDouble,
+  FaSpinner,
+  FaInbox,
+} from 'react-icons/fa';
 import NotificationItem from '../Components/NotificationItems';
 import NotificationDetails from '../Components/NotificationDetails';
 import SummaryApi from '../common';
@@ -55,21 +61,22 @@ const NotificationsPage = () => {
             'transaction:withdrawal',
             'transaction:rejected',
             'transaction:eth_processed',
-          ].includes(n.type)
+          ].includes(n.type),
         );
 
-        const all = [...filteredTxns, ...reportData.data, ...marketData.data].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
+        const all = [
+          ...filteredTxns,
+          ...reportData.data,
+          ...marketData.data,
+        ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         previousCountRef.current = all.length;
         setNotifications(all);
       } else {
-        const errorMessage = [
-          transactionData.message,
-          reportData.message,
-          marketData.message
-        ].filter(Boolean).join(' ') || 'Failed to fetch notifications.';
+        const errorMessage =
+          [transactionData.message, reportData.message, marketData.message]
+            .filter(Boolean)
+            .join(' ') || 'Failed to fetch notifications.';
         setError(errorMessage);
       }
     } catch (err) {
@@ -92,14 +99,19 @@ const NotificationsPage = () => {
 
   const handleMarkAsRead = async (id) => {
     try {
-      const res = await fetch(`${SummaryApi.markNotificationAsRead.url}/${id}`, {
-        method: SummaryApi.markNotificationAsRead.method,
-        credentials: 'include',
-      });
+      const res = await fetch(
+        `${SummaryApi.markNotificationAsRead.url}/${id}`,
+        {
+          method: SummaryApi.markNotificationAsRead.method,
+          credentials: 'include',
+        },
+      );
       const data = await res.json();
       if (data.success) {
         setNotifications((prev) =>
-          prev.map((n) => (n._id === id ? { ...n, isRead: true, read: 'READ' } : n))
+          prev.map((n) =>
+            n._id === id ? { ...n, isRead: true, read: 'READ' } : n,
+          ),
         );
         toast.success(data.message || 'Marked as read');
       } else {
@@ -140,7 +152,7 @@ const NotificationsPage = () => {
       const data = await res.json();
       if (data.success) {
         setNotifications((prev) =>
-          prev.map((n) => ({ ...n, isRead: true, read: 'READ' }))
+          prev.map((n) => ({ ...n, isRead: true, read: 'READ' })),
         );
         toast.success(data.message || 'All notifications marked as read.');
       } else {
@@ -155,10 +167,14 @@ const NotificationsPage = () => {
   };
 
   const handleDeleteAll = async () => {
-    if (!window.confirm('Are you sure you want to delete all notifications? This action cannot be undone.')) {
+    if (
+      !window.confirm(
+        'Are you sure you want to delete all notifications? This action cannot be undone.',
+      )
+    ) {
       return;
     }
-    
+
     setIsDeletingAll(true);
     try {
       const res = await fetch(SummaryApi.deleteAllNotifications.url, {
@@ -191,7 +207,9 @@ const NotificationsPage = () => {
   };
 
   const handleOpenMarketDetails = (marketId) => {
-    const item = notifications.find((n) => n.relatedObjectId === marketId && n.onModel === 'userproduct');
+    const item = notifications.find(
+      (n) => n.relatedObjectId === marketId && n.onModel === 'userproduct',
+    );
     if (item) {
       setSelectedNotification(item);
       setIsDetailsOpen(true);
@@ -229,7 +247,9 @@ const NotificationsPage = () => {
   const ErrorState = () => (
     <div className="flex flex-col items-center justify-center py-16">
       <div className="text-red-500 text-5xl mb-4">⚠️</div>
-      <p className="text-red-600 text-lg font-medium mb-2">Error Loading Notifications</p>
+      <p className="text-red-600 text-lg font-medium mb-2">
+        Error Loading Notifications
+      </p>
       <p className="text-gray-500 text-sm mb-4">{error}</p>
       <button
         onClick={fetchNotifications}
@@ -244,7 +264,9 @@ const NotificationsPage = () => {
   const EmptyState = () => (
     <div className="flex flex-col items-center justify-center py-16">
       <FaInbox className="text-6xl text-gray-300 mb-4" />
-      <p className="text-gray-500 text-lg font-medium mb-2">No notifications yet</p>
+      <p className="text-gray-500 text-lg font-medium mb-2">
+        No notifications yet
+      </p>
       <p className="text-gray-400 text-sm">You're all caught up! 🎉</p>
     </div>
   );
@@ -254,7 +276,9 @@ const NotificationsPage = () => {
       <div className="min-h-screen py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4">
           <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-            <p className="text-gray-500">Please log in to view your notifications.</p>
+            <p className="text-gray-500">
+              Please log in to view your notifications.
+            </p>
           </div>
         </div>
       </div>
@@ -266,42 +290,53 @@ const NotificationsPage = () => {
       <div className="mx-auto">
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           {/* Header */}
-           <div className="fixed bg-white z-10">
-          <div className="flex items-center fixed justify-between p-4 mx-auto w-full bg-white shadow-md z-10">
-            <nav className="flex space-x-3 w-full" aria-label="Tabs">
-              {['all', 'unread', 'read'].map((tab) => (
+          <div className="fixed bg-white z-10">
+            <div className="flex items-center fixed justify-between p-4 mx-auto w-full bg-white shadow-md z-10">
+              <nav className="flex space-x-3 w-full" aria-label="Tabs">
+                {['all', 'unread', 'read'].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setFilter(tab)}
+                    className={`${
+                      filter === tab
+                        ? 'border-indigo-500 text-indigo-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+                  >
+                    {tab === 'all' && (
+                      <>
+                        <FaBell className="mr-1 inline-block" /> All
+                      </>
+                    )}
+                    {tab === 'unread' && (
+                      <>
+                        <FaEnvelopeOpen className="mr-1 inline-block" /> Unread
+                      </>
+                    )}
+                    {tab === 'read' && (
+                      <>
+                        <FaCheckDouble className="mr-1 inline-block" /> Read
+                      </>
+                    )}
+                  </button>
+                ))}
                 <button
-                  key={tab}
-                  onClick={() => setFilter(tab)}
-                  className={`${
-                    filter === tab
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+                  onClick={handleDeleteAll}
+                  className=" px-3 text-red-600 hover:bg-red-600 hover:text-white text-xs"
                 >
-                  
-                  {tab === 'all' && <><FaBell className="mr-1 inline-block" /> All</>}
-                  {tab === 'unread' && <><FaEnvelopeOpen className="mr-1 inline-block" /> Unread</>}
-                  {tab === 'read' && <><FaCheckDouble className="mr-1 inline-block" /> Read</>}
+                  Delete All
                 </button>
-              ))}
-              <button
-                onClick={handleDeleteAll}
-                className=" px-3 text-red-600 hover:bg-red-600 hover:text-white text-xs"
-              >
-                Delete All
-              </button>
-              {hasUnread && (
-                <button
-                  onClick={handleMarkAllAsRead}
-                  className=" px-3 text-blue-600 hover:bg-blue-600 hover:text-white text-xs"
-                >
-                  Mark All Read
-                </button>
-              )}
-            </nav>
+                {hasUnread && (
+                  <button
+                    onClick={handleMarkAllAsRead}
+                    className=" px-3 text-blue-600 hover:bg-blue-600 hover:text-white text-xs"
+                  >
+                    Mark All Read
+                  </button>
+                )}
+              </nav>
+            </div>
           </div>
-        </div>
 
           {/* Content */}
           <div className="min-h-96 mt-20">

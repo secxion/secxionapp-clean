@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FaSearch, FaFilter, FaTimes, FaTag } from "react-icons/fa";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaSearch, FaFilter, FaTimes, FaTag } from 'react-icons/fa';
 
 const SearchAndFilter = ({
   searchQuery,
@@ -9,7 +9,7 @@ const SearchAndFilter = ({
   onTagsChange,
   availableTags,
   resultCount,
-  totalCount
+  totalCount,
 }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [tempTags, setTempTags] = useState(selectedTags || []);
@@ -21,7 +21,7 @@ const SearchAndFilter = ({
 
   const toggleTag = (tag) => {
     const newTags = tempTags.includes(tag)
-      ? tempTags.filter(t => t !== tag)
+      ? tempTags.filter((t) => t !== tag)
       : [...tempTags, tag];
     setTempTags(newTags);
     if (onTagsChange) {
@@ -30,7 +30,7 @@ const SearchAndFilter = ({
   };
 
   const clearFilters = () => {
-    if (onSearchChange) onSearchChange("");
+    if (onSearchChange) onSearchChange('');
     setTempTags([]);
     if (onTagsChange) onTagsChange([]);
   };
@@ -75,7 +75,7 @@ const SearchAndFilter = ({
         {showFilters && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
+            animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             className="bg-gray-800/50 dark:bg-gray-800/50 border border-gray-700 dark:border-gray-700 rounded-lg p-4"
           >
@@ -84,7 +84,9 @@ const SearchAndFilter = ({
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <FaTag className="text-blue-500 w-4 h-4" />
-                  <span className="text-white dark:text-white font-medium">Filter by Tags</span>
+                  <span className="text-white dark:text-white font-medium">
+                    Filter by Tags
+                  </span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {availableTags.map((tag) => (

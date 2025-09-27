@@ -19,7 +19,7 @@ const SidebarWithPosts = () => {
       <aside className="w-1/4 p-4 border-r border-gray-200">
         <h3 className="font-semibold text-gray-700 mb-2">My Posts</h3>
         <ul>
-          {postList.map(post => (
+          {postList.map((post) => (
             <li key={post.id}>
               <button
                 onClick={() => handlePostClick(post.id)}

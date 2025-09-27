@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import SummaryApi from "../common";
-import { Link } from "react-router-dom";
-import SecxionShimmer from './SecxionShimmer'
+import React, { useEffect, useState } from 'react';
+import SummaryApi from '../common';
+import { Link } from 'react-router-dom';
+import SecxionShimmer from './SecxionShimmer';
 
 const HorizontalCardProduct = ({ heading }) => {
   const [categoryProduct, setCategoryProduct] = useState([]);
@@ -15,12 +15,13 @@ const HorizontalCardProduct = ({ heading }) => {
     try {
       const response = await fetch(SummaryApi.categoryProduct.url, {
         headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",      });
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch categories");
+        throw new Error('Failed to fetch categories');
       }
 
       const dataResponse = await response.json();
@@ -38,11 +39,11 @@ const HorizontalCardProduct = ({ heading }) => {
 
   if (loading) {
     return (
-      <div className='container mx-auto px-4 my-6 relative'>
-        <h2 className='text-2xl font-semibold py-4'>{heading}</h2>
+      <div className="container mx-auto px-4 my-6 relative">
+        <h2 className="text-2xl font-semibold py-4">{heading}</h2>
         <SecxionShimmer type="list" count={4} />
       </div>
-    )
+    );
   }
 
   return (

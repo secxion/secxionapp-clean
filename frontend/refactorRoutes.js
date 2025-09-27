@@ -67,16 +67,21 @@ const updateCode = (code) => {
 
   // Replace navigate("/...") with navigate(obscureRoute("/..."))
   if (/navigate\(["']\/[^"']+["']\)/.test(updated)) {
-    updated = updated.replace(/navigate\(["']\/([^"']+)["']\)/g, 'navigate(obscureRoute("/$1"))');
+    updated = updated.replace(
+      /navigate\(["']\/([^"']+)["']\)/g,
+      'navigate(obscureRoute("/$1"))',
+    );
     updated = insertImportIfMissing(updated, OBSCURE_ROUTE_IMPORT);
     modified = true;
   }
 
   // Replace import { Link } from 'react-router-dom' → SafeLink
-  if (/import\s+\{\s*Link\s*\}\s+from\s+['"]react-router-dom['"]/.test(updated)) {
+  if (
+    /import\s+\{\s*Link\s*\}\s+from\s+['"]react-router-dom['"]/.test(updated)
+  ) {
     updated = updated.replace(
       /import\s+\{\s*Link\s*\}\s+from\s+['"]react-router-dom['"]/,
-      SAFE_LINK_IMPORT
+      SAFE_LINK_IMPORT,
     );
     modified = true;
   }

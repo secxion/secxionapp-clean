@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import giftCardImages from "../helper/heroimages";
-import ExploreMarketButtonImg from "../app/Buttons/exploremarketbutton.png";
-import "./Hero.css";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import giftCardImages from '../helper/heroimages';
+import ExploreMarketButtonImg from '../app/Buttons/exploremarketbutton.png';
+import './Hero.css';
 
 const swipeConfidenceThreshold = 10000;
 const swipePower = (offset, velocity) => Math.abs(offset) * velocity;
 
 const variants = {
   enter: (direction) => ({
-    x: direction > 0 ? "100vw" : "-100vw",
+    x: direction > 0 ? '100vw' : '-100vw',
     opacity: 0,
   }),
   center: {
@@ -21,7 +21,7 @@ const variants = {
   },
   exit: (direction) => ({
     zIndex: 0,
-    x: direction < 0 ? "100vw" : "-100vw",
+    x: direction < 0 ? '100vw' : '-100vw',
     opacity: 0,
   }),
 };
@@ -30,13 +30,14 @@ const Hero = () => {
   const [[page, direction], setPage] = useState([0, 0]);
   const [heroImages] = useState(giftCardImages);
 
-  const imageIndex = ((page % heroImages.length) + heroImages.length) % heroImages.length;
+  const imageIndex =
+    ((page % heroImages.length) + heroImages.length) % heroImages.length;
 
   const paginate = React.useCallback(
     (newDirection) => {
       setPage([page + newDirection, newDirection]);
     },
-    [page]
+    [page],
   );
 
   useEffect(() => {
@@ -48,8 +49,8 @@ const Hero = () => {
 
   const currentImage = heroImages[imageIndex];
 
-    return (
-      <header className="relative w-full h-56 sm:h-72 md:h-[75vh] md:h-[80vh] overflow-hidden rounded-2xl shadow-xl border-4 border-yellow-800 mt-6">
+  return (
+    <header className="relative w-full h-56 sm:h-72 md:h-[75vh] md:h-[80vh] overflow-hidden rounded-2xl shadow-xl border-4 border-yellow-800 mt-6">
       {/* Image Slider */}
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
@@ -61,7 +62,7 @@ const Hero = () => {
           animate="center"
           exit="exit"
           transition={{
-            x: { type: "spring", stiffness: 200, damping: 30 },
+            x: { type: 'spring', stiffness: 200, damping: 30 },
             opacity: { duration: 0.3 },
           }}
           drag="x"
@@ -105,18 +106,18 @@ const Hero = () => {
       </button>
 
       {/* Pagination Dots */}
-  <div className="hero-swiper-pagination z-[3] mb-2 sm:mb-0">
+      <div className="hero-swiper-pagination z-[3] mb-2 sm:mb-0">
         {heroImages.map((_, i) => (
           <div
             key={i}
-            className={`hero-swiper-dot ${i === imageIndex ? "active" : ""}`}
+            className={`hero-swiper-dot ${i === imageIndex ? 'active' : ''}`}
             onClick={() => setPage([i, i > imageIndex ? 1 : -1])}
           />
         ))}
       </div>
 
       {/* Hero Content */}
-  <div className="relative z-[3] text-center flex flex-col items-center justify-center h-full px-2 sm:px-4">
+      <div className="relative z-[3] text-center flex flex-col items-center justify-center h-full px-2 sm:px-4">
         <motion.div
           key={page}
           initial={{ opacity: 0, y: 30 }}

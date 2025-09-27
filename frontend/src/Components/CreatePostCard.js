@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import Picker from 'emoji-picker-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SummaryApi from '../common';
-import SecxionLogo from "../app/slogo.png"; // Import Secxion-branded logo
+import SecxionLogo from '../app/slogo.png'; // Import Secxion-branded logo
 
 const CreatePostCard = ({ onPostCreated, loading, error }) => {
   const { user } = useSelector((state) => state.user);
@@ -23,9 +23,9 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
     try {
       const uploadResponse = await uploadImage(file);
       setUploadedImage(uploadResponse.url);
-      toast.success("Image uploaded!");
+      toast.success('Image uploaded!');
     } catch (error) {
-      toast.error("Upload failed.");
+      toast.error('Upload failed.');
     } finally {
       setIsSubmitting(false);
     }
@@ -41,7 +41,6 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
     }
     setShowEmojiPicker(false);
   };
-  
 
   const handlePostSubmit = async (e) => {
     e.preventDefault();
@@ -58,9 +57,12 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
     try {
       const response = await fetch(SummaryApi.submitNewPost.url, {
         method: SummaryApi.submitNewPost.method,
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: newPostContent, feedImage: uploadedImage }),
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: newPostContent,
+          feedImage: uploadedImage,
+        }),
       });
       const data = await response.json();
       if (data.success) {
@@ -109,7 +111,12 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
             <label className="cursor-pointer flex items-center gap-1 text-gray-400 hover:text-indigo-400 mr-3">
               <FaPaperclip className="mr-1" />
               <span>Attach</span>
-              <input type="file" className="hidden" onChange={handleUploadImage} accept="image/*" />
+              <input
+                type="file"
+                className="hidden"
+                onChange={handleUploadImage}
+                accept="image/*"
+              />
             </label>
             <button
               type="button"
@@ -140,7 +147,8 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
             className="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:bg-indigo-300 transition-colors duration-300"
             disabled={isSubmitting || loading}
           >
-            <MdSend className="inline-block mr-1" /> {isSubmitting || loading ? 'Posting...' : 'Post'}
+            <MdSend className="inline-block mr-1" />{' '}
+            {isSubmitting || loading ? 'Posting...' : 'Post'}
           </button>
         </div>
 
@@ -153,9 +161,9 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
               transition={{ duration: 0.2 }}
               className="absolute z-[1050] bg-gray-900 shadow-lg rounded-lg mt-2 p-4 border-2"
               style={{
-                top: "100%", // Position below the input field
-                left: "0", // Align with the left edge of the input field
-                borderImage: "linear-gradient(135deg, #8b5cf6, #3b82f6) 1", // Gradient border
+                top: '100%', // Position below the input field
+                left: '0', // Align with the left edge of the input field
+                borderImage: 'linear-gradient(135deg, #8b5cf6, #3b82f6) 1', // Gradient border
               }}
             >
               {/* Branded Close Button */}
@@ -171,9 +179,9 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
               <Picker
                 onEmojiClick={handleEmojiClick}
                 pickerStyle={{
-                  background: "linear-gradient(135deg, #1f2937, #111827)", // Dark gradient background
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
+                  background: 'linear-gradient(135deg, #1f2937, #111827)', // Dark gradient background
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
                 }}
               />
             </motion.div>

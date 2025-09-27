@@ -6,13 +6,13 @@ import Comment from './Comment'; // And we will create this final component
 
 const CommentSection = ({ postId, comments, onCommentUpdate }) => {
   const { user } = useSelector((state) => state.user);
-  const [newComment, setNewComment] = useState("");
+  const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
-      toast.error("Please log in to comment.");
+      toast.error('Please log in to comment.');
       return;
     }
     if (!newComment.trim()) return;
@@ -28,12 +28,12 @@ const CommentSection = ({ postId, comments, onCommentUpdate }) => {
       const data = await response.json();
       if (data.success) {
         onCommentUpdate(postId, data.comments);
-        setNewComment("");
+        setNewComment('');
       } else {
         toast.error(data.message || 'Failed to add comment.');
       }
     } catch (error) {
-      toast.error("An error occurred.");
+      toast.error('An error occurred.');
     } finally {
       setIsSubmitting(false);
     }
@@ -49,14 +49,24 @@ const CommentSection = ({ postId, comments, onCommentUpdate }) => {
           className="w-full p-2 border rounded-md dark:bg-gray-600 dark:text-white"
           rows="2"
         />
-        <button type="submit" disabled={isSubmitting} className="bg-blue-500 text-white px-4 py-2 rounded-md mt-2 hover:bg-blue-600 disabled:bg-blue-300">
-          {isSubmitting ? "Posting..." : "Post Comment"}
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md mt-2 hover:bg-blue-600 disabled:bg-blue-300"
+        >
+          {isSubmitting ? 'Posting...' : 'Post Comment'}
         </button>
       </form>
       <div className="space-y-4">
-        {comments && comments.map(comment => (
-          <Comment key={comment._id} comment={comment} postId={postId} onCommentUpdate={onCommentUpdate} />
-        ))}
+        {comments &&
+          comments.map((comment) => (
+            <Comment
+              key={comment._id}
+              comment={comment}
+              postId={postId}
+              onCommentUpdate={onCommentUpdate}
+            />
+          ))}
       </div>
     </div>
   );

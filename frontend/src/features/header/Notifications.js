@@ -1,13 +1,15 @@
-import { useEffect, useState, useCallback } from "react";
-import { PiBell } from "react-icons/pi";
-import SummaryApi from "../../common";
+import { useEffect, useState, useCallback } from 'react';
+import { PiBell } from 'react-icons/pi';
+import SummaryApi from '../../common';
 
 export default function Notifications() {
   const [count, setCount] = useState(0);
 
   const fetchCount = useCallback(async () => {
     try {
-      const res = await fetch(SummaryApi.notificationCount.url, { credentials: "include" });
+      const res = await fetch(SummaryApi.notificationCount.url, {
+        credentials: 'include',
+      });
       const data = await res.json();
       if (data.success) setCount(data.count);
     } catch {}

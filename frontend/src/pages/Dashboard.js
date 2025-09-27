@@ -1,5 +1,4 @@
-import React from "react";
-
+import React from 'react';
 
 const Dashboard = () => {
   return (
@@ -9,10 +8,15 @@ const Dashboard = () => {
       aria-label="Dashboard Main Content"
     >
       <div className="w-full max-w-md text-center">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-yellow-300" id="dashboard-heading">
+        <h1
+          className="text-3xl sm:text-4xl font-bold mb-4 text-yellow-300"
+          id="dashboard-heading"
+        >
           Dashboard
         </h1>
-        <p className="mt-2 text-lg sm:text-xl text-gray-200">Welcome to the Dashboard!</p>
+        <p className="mt-2 text-lg sm:text-xl text-gray-200">
+          Welcome to the Dashboard!
+        </p>
       </div>
     </main>
   );

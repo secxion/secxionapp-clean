@@ -1,8 +1,13 @@
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FaPlus, FaEdit, FaRocket, FaSearch } from "react-icons/fa";
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaPlus, FaEdit, FaRocket, FaSearch } from 'react-icons/fa';
 
-const EmptyState = ({ hasDataPads, hasActiveFilters, onCreateNew, onClearFilters }) => {
+const EmptyState = ({
+  hasDataPads,
+  hasActiveFilters,
+  onCreateNew,
+  onClearFilters,
+}) => {
   return (
     <AnimatePresence>
       {hasActiveFilters && !hasDataPads && (
@@ -15,12 +20,15 @@ const EmptyState = ({ hasDataPads, hasActiveFilters, onCreateNew, onClearFilters
           <div className="w-20 h-20 bg-gray-700 rounded-full flex items-center justify-center mb-6">
             <FaSearch className="w-8 h-8 text-gray-400" />
           </div>
-          
-          <h3 className="text-xl font-semibold text-white mb-2">No matching notes found</h3>
+
+          <h3 className="text-xl font-semibold text-white mb-2">
+            No matching notes found
+          </h3>
           <p className="text-gray-400 text-center mb-6 max-w-md">
-            No notes match your current search or filter criteria. Try adjusting your filters or search terms.
+            No notes match your current search or filter criteria. Try adjusting
+            your filters or search terms.
           </p>
-          
+
           <button
             onClick={onClearFilters}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
@@ -40,12 +48,15 @@ const EmptyState = ({ hasDataPads, hasActiveFilters, onCreateNew, onClearFilters
           <div className="w-20 h-20 bg-gray-700 rounded-full flex items-center justify-center mb-6">
             <FaSearch className="w-8 h-8 text-gray-400" />
           </div>
-          
-          <h3 className="text-xl font-semibold text-white mb-2">No results found</h3>
+
+          <h3 className="text-xl font-semibold text-white mb-2">
+            No results found
+          </h3>
           <p className="text-gray-400 text-center mb-6 max-w-md">
-            Your search didn't match any notes. Try different keywords or clear your filters.
+            Your search didn't match any notes. Try different keywords or clear
+            your filters.
           </p>
-          
+
           <div className="flex gap-3">
             <button
               onClick={onClearFilters}
@@ -74,21 +85,26 @@ const EmptyState = ({ hasDataPads, hasActiveFilters, onCreateNew, onClearFilters
           <div className="relative mb-8">
             <motion.div
               animate={{ y: [-10, 10, -10] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
               className="absolute -top-4 -left-4 w-8 h-8 bg-yellow-400/20 rounded-full"
             />
             <motion.div
               animate={{ y: [10, -10, 10] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: 1,
+              }}
               className="absolute -bottom-4 -right-4 w-6 h-6 bg-purple-400/20 rounded-full"
             />
-            
+
             <div className="w-24 h-24 bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl flex items-center justify-center shadow-2xl">
               <FaEdit className="w-12 h-12 text-white" />
             </div>
           </div>
 
-          <motion.h2 
+          <motion.h2
             className="text-3xl font-bold text-white mb-4 text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -96,15 +112,15 @@ const EmptyState = ({ hasDataPads, hasActiveFilters, onCreateNew, onClearFilters
           >
             Welcome to DataPad
           </motion.h2>
-          
-          <motion.p 
+
+          <motion.p
             className="text-gray-400 text-center max-w-md mb-8 leading-relaxed"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            Your personal knowledge vault. Store ideas, notes, and insights in a secure, 
-            organized space. Start building your digital brain today.
+            Your personal knowledge vault. Store ideas, notes, and insights in a
+            secure, organized space. Start building your digital brain today.
           </motion.p>
 
           <motion.div
@@ -122,7 +138,7 @@ const EmptyState = ({ hasDataPads, hasActiveFilters, onCreateNew, onClearFilters
               <FaPlus className="w-5 h-5" />
               Create Your First Note
             </motion.button>
-            
+
             <motion.div
               className="flex items-center gap-2 text-gray-500 text-sm"
               initial={{ opacity: 0 }}

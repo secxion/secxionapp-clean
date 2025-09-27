@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from 'framer-motion';
 import { SiEthereum } from 'react-icons/si';
 import {
   ShieldCheck,
@@ -18,24 +18,29 @@ import {
   Code,
   Star,
   CheckCircle,
-  ArrowUpRight
-} from "lucide-react";
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { FaEthereum } from "react-icons/fa";
-import SecxionLogo from "../app/slogo.png";
-import NFTBadge from "../Components/NFTBadge";
+  ArrowUpRight,
+} from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { FaEthereum } from 'react-icons/fa';
+import SecxionLogo from '../app/slogo.png';
+import NFTBadge from '../Components/NFTBadge';
 
-const Button = ({ children, className = "", variant = "default", ...props }) => {
+const Button = ({
+  children,
+  className = '',
+  variant = 'default',
+  ...props
+}) => {
   const baseClasses =
-    "inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-lg";
+    'inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-lg';
   const variantClasses = {
     default:
-      "bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600 hover:from-yellow-600 hover:to-yellow-800 text-gray-900 focus:ring-yellow-500 backdrop-blur-xl",
+      'bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600 hover:from-yellow-600 hover:to-yellow-800 text-gray-900 focus:ring-yellow-500 backdrop-blur-xl',
     ghost:
-      "bg-white/10 hover:bg-yellow-700/10 text-yellow-400 border border-yellow-500 focus:ring-yellow-500 backdrop-blur-xl",
+      'bg-white/10 hover:bg-yellow-700/10 text-yellow-400 border border-yellow-500 focus:ring-yellow-500 backdrop-blur-xl',
     secondary:
-      "bg-gray-800 hover:bg-gray-700 text-gray-100 focus:ring-yellow-500 backdrop-blur-xl"
+      'bg-gray-800 hover:bg-gray-700 text-gray-100 focus:ring-yellow-500 backdrop-blur-xl',
   };
 
   return (
@@ -70,7 +75,7 @@ const ServiceCard = ({ icon, title, description, highlight }) => (
   <motion.div
     className="relative group"
     whileHover={{ scale: 1.04, y: -8 }}
-    transition={{ type: "spring", stiffness: 300 }}
+    transition={{ type: 'spring', stiffness: 300 }}
   >
     <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/80 p-8 rounded-3xl shadow-2xl border border-yellow-700/20 relative overflow-hidden h-full backdrop-blur-xl">
       {highlight && (
@@ -83,7 +88,9 @@ const ServiceCard = ({ icon, title, description, highlight }) => (
         <div className="mb-6 inline-block p-4 bg-gradient-to-br from-yellow-900/30 to-yellow-700/20 rounded-2xl group-hover:from-yellow-800/40 group-hover:to-yellow-700/30 transition-all duration-300 shadow-lg">
           {icon}
         </div>
-        <h3 className="text-2xl font-bold text-yellow-200 mb-4 drop-shadow">{title}</h3>
+        <h3 className="text-2xl font-bold text-yellow-200 mb-4 drop-shadow">
+          {title}
+        </h3>
         <p className="text-gray-200 leading-relaxed text-lg">{description}</p>
       </div>
     </div>
@@ -94,7 +101,7 @@ const FeatureCard = ({ icon, title, description }) => (
   <motion.div
     className="relative group"
     whileHover={{ y: -5, scale: 1.03 }}
-    transition={{ type: "spring", stiffness: 300 }}
+    transition={{ type: 'spring', stiffness: 300 }}
   >
     <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/80 p-6 rounded-2xl shadow-xl border border-yellow-700/10 h-full backdrop-blur-xl">
       <div className="flex items-start mb-4">
@@ -102,7 +109,9 @@ const FeatureCard = ({ icon, title, description }) => (
           {icon}
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-yellow-200 mb-2">{title}</h3>
+          <h3 className="text-lg font-semibold text-yellow-200 mb-2">
+            {title}
+          </h3>
           <p className="text-gray-200 text-sm leading-relaxed">{description}</p>
         </div>
       </div>
@@ -120,7 +129,7 @@ const NFTShowcase = () => {
         className="relative max-w-md mx-auto bg-gradient-to-br from-gray-900/80 via-gray-800/70 to-gray-950/90 rounded-3xl shadow-2xl border border-yellow-700/30 p-8 mb-12 backdrop-blur-2xl"
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.7, type: "spring" }}
+        transition={{ delay: 0.3, duration: 0.7, type: 'spring' }}
       >
         {/* <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-tr from-yellow-500/30 to-yellow-700/30 rounded-full blur-2xl animate-pulse"></div> */}
         <div className="flex flex-col items-center z-10 relative">
@@ -138,7 +147,8 @@ const NFTShowcase = () => {
             Secxion Genesis NFT
           </h3>
           <p className="text-gray-300 text-center mb-4 text-lg">
-            Unlock exclusive rewards and access by trading or holding our Genesis NFT. Powered by Ethereum.
+            Unlock exclusive rewards and access by trading or holding our
+            Genesis NFT. Powered by Ethereum.
           </p>
           <Button
             className="bg-gradient-to-r from-yellow-500 to-yellow-700 text-gray-900 shadow-xl"
@@ -159,9 +169,10 @@ const NFTShowcase = () => {
             className="nft-glass max-w-sm w-full p-8 rounded-2xl shadow-2xl border border-yellow-700/30 flex flex-col items-center relative"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", duration: 0.4 }}
+            transition={{ type: 'spring', duration: 0.4 }}
           >
-            <div className="absolute top-4 right-4 cursor-pointer text-yellow-400 hover:text-yellow-600 text-xl"
+            <div
+              className="absolute top-4 right-4 cursor-pointer text-yellow-400 hover:text-yellow-600 text-xl"
               onClick={() => setShowModal(false)}
               title="Close"
             >
@@ -180,7 +191,8 @@ const NFTShowcase = () => {
               <div className="w-20 h-20 rounded-xl bg-gradient-to-tr from-yellow-500/30 to-yellow-700/30 blur-sm animate-pulse"></div>
             </div>
             <p className="mt-6 text-sm text-gray-400 text-center">
-              Stay tuned for exclusive digital assets, membership NFTs, and more. Follow us for updates!
+              Stay tuned for exclusive digital assets, membership NFTs, and
+              more. Follow us for updates!
             </p>
           </motion.div>
         </motion.div>
@@ -191,40 +203,62 @@ const NFTShowcase = () => {
 
 // Testimonial Carousel
 const transactionTypes = [
-  "Gift Card Sale",
-  "Ethereum Trade",
-  "Bank Payment",
-  "Custom Tool Delivered",
-  "Open Source Integration"
+  'Gift Card Sale',
+  'Ethereum Trade',
+  'Bank Payment',
+  'Custom Tool Delivered',
+  'Open Source Integration',
 ];
 const testimonials = Array.from({ length: 1200 }).map((_, i) => ({
-  name: ["Alex M.", "Jade L.", "Samir K.", "Chris O.", "Linda S.", "Mohammed T.", "Priya R.", "John D.", "Sophia W.", "Carlos F."][Math.floor(Math.random() * 10)],
-  avatar: `https://randomuser.me/api/portraits/${Math.random() > 0.5 ? "men" : "women"}/${Math.floor(Math.random() * 80)}.jpg`,
+  name: [
+    'Alex M.',
+    'Jade L.',
+    'Samir K.',
+    'Chris O.',
+    'Linda S.',
+    'Mohammed T.',
+    'Priya R.',
+    'John D.',
+    'Sophia W.',
+    'Carlos F.',
+  ][Math.floor(Math.random() * 10)],
+  avatar: `https://randomuser.me/api/portraits/${Math.random() > 0.5 ? 'men' : 'women'}/${Math.floor(Math.random() * 80)}.jpg`,
   text: [
-    "Secxion made selling my gift cards effortless. The custom tools are a game changer!",
-    "The NFT showcase is stunning and the platform feels ultra-secure. Highly recommended.",
-    "Lightning-fast payouts and amazing support. Secxion is my go-to for digital assets.",
-    "Received my bank payment instantly. Trustworthy and reliable!",
-    "Traded Ethereum with the best rates. Secxion rocks!",
-    "Custom scripts delivered live, solved my workflow issues.",
-    "Support team helped me integrate open source tools in minutes.",
-    "Gift card sale completed in seconds, super fast!",
-    "Bank transfer successful, funds received immediately.",
-    "Secxion's NFT collection looks amazing, can't wait!"
+    'Secxion made selling my gift cards effortless. The custom tools are a game changer!',
+    'The NFT showcase is stunning and the platform feels ultra-secure. Highly recommended.',
+    'Lightning-fast payouts and amazing support. Secxion is my go-to for digital assets.',
+    'Received my bank payment instantly. Trustworthy and reliable!',
+    'Traded Ethereum with the best rates. Secxion rocks!',
+    'Custom scripts delivered live, solved my workflow issues.',
+    'Support team helped me integrate open source tools in minutes.',
+    'Gift card sale completed in seconds, super fast!',
+    'Bank transfer successful, funds received immediately.',
+    "Secxion's NFT collection looks amazing, can't wait!",
   ][Math.floor(Math.random() * 10)],
   type: transactionTypes[Math.floor(Math.random() * transactionTypes.length)],
   date: (() => {
     const now = new Date();
     const offset = Math.floor(Math.random() * 48 * 60 * 60 * 1000);
     const d = new Date(now.getTime() - offset);
-    return d.toLocaleString("en-US", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "short", year: "numeric" });
-  })()
+    return d.toLocaleString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+  })(),
 }));
 
 const TestimonialCarousel = () => {
-  const [index, setIndex] = useState(Math.floor(Math.random() * testimonials.length));
+  const [index, setIndex] = useState(
+    Math.floor(Math.random() * testimonials.length),
+  );
   useEffect(() => {
-    const timer = setTimeout(() => setIndex((i) => (i + 1) % testimonials.length), 3500);
+    const timer = setTimeout(
+      () => setIndex((i) => (i + 1) % testimonials.length),
+      3500,
+    );
     return () => clearTimeout(timer);
   }, [index]);
   const t = testimonials[index];
@@ -233,24 +267,32 @@ const TestimonialCarousel = () => {
       className="max-w-xl mx-auto bg-gradient-to-br from-gray-900/80 to-gray-800/80 rounded-2xl shadow-xl border border-yellow-700/20 p-8 mt-16 mb-8 backdrop-blur-xl"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, type: "spring" }}
+      transition={{ duration: 0.6, type: 'spring' }}
     >
       <div className="flex items-center mb- 2">
-        <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-full border-2 border-yellow-500 mr-3 shadow" />
+        <img
+          src={t.avatar}
+          alt={t.name}
+          className="w-12 h-12 rounded-full border-2 border-yellow-500 mr-3 shadow"
+        />
         <span className="font-bold text-yellow-200">{t.name}</span>
         <span className="ml-auto text-xs text-gray-400">{t.date}</span>
       </div>
       <div className="flex items-center mb-2">
-        <span className="px-2 py-1 bg-yellow-700/20 text-yellow-400 rounded font-mono text-xs mr-2">{t.type}</span>
-        <span className="text-xs text-gray-400">#{index + 1} of {testimonials.length} live</span>
+        <span className="px-2 py-1 bg-yellow-700/20 text-yellow-400 rounded font-mono text-xs mr-2">
+          {t.type}
+        </span>
+        <span className="text-xs text-gray-400">
+          #{index + 1} of {testimonials.length} live
+        </span>
       </div>
       <p className="text-gray-200 text-lg italic mb-2">"{t.text}"</p>
       <div className="flex justify-center mt-2 space-x-2">
         {[...Array(5)].map((_, i) => (
           <span
             key={i}
-            className={`w-3 h-3 rounded-full ${i === index % 5 ? "bg-yellow-500" : "bg-gray-700"}`}
-            style={{ transition: "background 0.3s" }}
+            className={`w-3 h-3 rounded-full ${i === index % 5 ? 'bg-yellow-500' : 'bg-gray-700'}`}
+            style={{ transition: 'background 0.3s' }}
           />
         ))}
       </div>
@@ -264,9 +306,7 @@ export default function Landing() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const updateCurrencies = () => {
-     
-    };
+    const updateCurrencies = () => {};
     const interval = setInterval(updateCurrencies, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -283,8 +323,8 @@ export default function Landing() {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
+      transition: { staggerChildren: 0.1 },
+    },
   };
 
   return (
@@ -297,8 +337,15 @@ export default function Landing() {
       {/* Animated geometric background */}
       <div className="fixed inset-0 pointer-events-none z-0">
         {/* Add animated SVG waves for NFT feel */}
-        <svg className="absolute top-0 left-0 w-full h-40" viewBox="0 0 1440 320">
-          <path fill="#facc15" fillOpacity="0.08" d="M0,160L60,165.3C120,171,240,181,360,165.3C480,149,600,107,720,117.3C840,128,960,192,1080,218.7C1200,245,1320,235,1380,229.3L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path>
+        <svg
+          className="absolute top-0 left-0 w-full h-40"
+          viewBox="0 0 1440 320"
+        >
+          <path
+            fill="#facc15"
+            fillOpacity="0.08"
+            d="M0,160L60,165.3C120,171,240,181,360,165.3C480,149,600,107,720,117.3C840,128,960,192,1080,218.7C1200,245,1320,235,1380,229.3L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
+          ></path>
         </svg>
         <div className="absolute top-10 left-10 w-32 h-32 border-4 border-yellow-700/20 rotate-45 animate-spin [animation-duration:20s]"></div>
         <div className="absolute top-1/4 right-20 w-20 h-20 bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 rounded-full animate-pulse"></div>
@@ -313,20 +360,19 @@ export default function Landing() {
           <div className="flex justify-between items-center h-24">
             <div className="flex items-center space-x-4">
               <div className="relative">
-                    <div >
-                      <img
-                        src={SecxionLogo}
-                        alt="Secxion Official Logo"
-                        className="w-14 h-14 object-contain rounded-2xl"
-                        style={{ display: "block" }}
-                      />
-                    </div>
-
+                <div>
+                  <img
+                    src={SecxionLogo}
+                    alt="Secxion Official Logo"
+                    className="w-14 h-14 object-contain rounded-2xl"
+                    style={{ display: 'block' }}
+                  />
+                </div>
               </div>
               <div className="md:hidden flex items-center space-x-2">
-               
                 <p className="text-yellow-400 text-sm font-mono tracking-wider">
-                  System Design in Progress<span className="animate-blink">_</span>
+                  System Design in Progress
+                  <span className="animate-blink">_</span>
                 </p>
               </div>
             </div>
@@ -339,7 +385,10 @@ export default function Landing() {
             <div className="hidden md:flex items-center space-x-4">
               {isLoggedIn ? (
                 <>
-                  <Button variant="ghost" className="text-gray-300 hover:text-yellow-400 flex items-center">
+                  <Button
+                    variant="ghost"
+                    className="text-gray-300 hover:text-yellow-400 flex items-center"
+                  >
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     Dashboard
                   </Button>
@@ -352,7 +401,10 @@ export default function Landing() {
                 </>
               ) : (
                 <>
-                  <Button variant="ghost" className="text-gray-300 hover:text-yellow-400">
+                  <Button
+                    variant="ghost"
+                    className="text-gray-300 hover:text-yellow-400"
+                  >
                     <a href="/login">Sign In</a>
                   </Button>
                   <Button className="bg-gradient-to-r from-yellow-600 to-yellow-800 hover:from-yellow-700 hover:to-yellow-900 text-gray-900 shadow-lg">
@@ -365,7 +417,11 @@ export default function Landing() {
               className="md:hidden p-2 rounded-lg hover:bg-gray-800 transition-colors text-yellow-400"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </button>
           </div>
         </div>
@@ -375,8 +431,16 @@ export default function Landing() {
               key="mobile-menu"
               className="absolute top-full left-0 right-0 bg-gray-900 border-t border-yellow-700/20 shadow-md rounded-b-xl overflow-hidden"
               initial={{ opacity: 0, y: 0 }}
-              animate={{ opacity: 1, y: 0, transition: { duration: 0.1, ease: 'easeOut' } }}
-              exit={{ opacity: 0, y: 0, transition: { duration: 0.1, ease: 'easeIn' } }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.1, ease: 'easeOut' },
+              }}
+              exit={{
+                opacity: 0,
+                y: 0,
+                transition: { duration: 0.1, ease: 'easeIn' },
+              }}
             >
               <div className="px-4 py-6 space-y-4">
                 <MobileNavLink href="/about-us">About</MobileNavLink>
@@ -394,7 +458,10 @@ export default function Landing() {
                   ) : (
                     <>
                       <a href="/login" className="block">
-                        <Button variant="ghost" className="w-full text-gray-100 hover:text-yellow-400">
+                        <Button
+                          variant="ghost"
+                          className="w-full text-gray-100 hover:text-yellow-400"
+                        >
                           Sign In
                         </Button>
                       </a>
@@ -416,8 +483,7 @@ export default function Landing() {
             </p>
           </div>
         </AnimatePresence>
-        <div className="mt-8">
-                </div>
+        <div className="mt-8"></div>
       </motion.header>
 
       <main className="relative z-10 mt-24">
@@ -433,20 +499,23 @@ export default function Landing() {
           <NFTShowcase />
           {/* Main Card */}
           <motion.div
-           
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.7, type: "spring" }}
+            transition={{ delay: 0.2, duration: 0.7, type: 'spring' }}
           >
             <div className="flex items-center space-x-3 mb-4">
               {/* <div className="w-4 h-4 bg-yellow-500 rounded-full shadow-lg animate-pulse"></div> */}
-              <span className="text-yellow-400 font-mono text-xs tracking-widest uppercase">System Design in Progress</span>
+              <span className="text-yellow-400 font-mono text-xs tracking-widest uppercase">
+                System Design in Progress
+              </span>
             </div>
             <h1 className="text-6xl md:text-8xl font-extrabold bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-600 bg-clip-text text-transparent text-center mb-8 tracking-tight">
               Welcome to Secxion
             </h1>
             <p className="text-xl md:text-2xl text-gray-200 mb-8 text-center font-medium drop-shadow">
-              Instantly Sell your unused gift cards and digital assets for Ethereum or cash.<br />
+              Instantly Sell your unused gift cards and digital assets for
+              Ethereum or cash.
+              <br />
               Need custom digital tools? We build them live for you.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
@@ -478,7 +547,10 @@ export default function Landing() {
         </motion.section>
 
         {/* Services Section */}
-        <motion.section id="services" className="py-24 bg-gradient-to-br from-gray-900 to-gray-800 relative overflow-hidden">
+        <motion.section
+          id="services"
+          className="py-24 bg-gradient-to-br from-gray-900 to-gray-800 relative overflow-hidden"
+        >
           <div className="absolute top-0 left-0 w-full h-full">
             <div className="absolute top-10 right-10 w-24 h-24 border-2 border-yellow-700 transform rotate-45"></div>
             <div className="absolute bottom-20 left-10 w-32 h-32 bg-gradient-to-br from-yellow-800 to-yellow-700 rounded-full opacity-50"></div>
@@ -489,7 +561,8 @@ export default function Landing() {
                 Our Core Services
               </h2>
               <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                We provide secure, fast, and reliable services to help you maximize the value of your digital assets
+                We provide secure, fast, and reliable services to help you
+                maximize the value of your digital assets
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -583,7 +656,8 @@ export default function Landing() {
               Ready to Start Trading?
             </h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Join thousands of users who trust Secxion for their gift card exchanges and custom development needs.
+              Join thousands of users who trust Secxion for their gift card
+              exchanges and custom development needs.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button>
@@ -624,7 +698,9 @@ export default function Landing() {
             {/* Branding Section */}
             <div className="md:col-span-1">
               <div className="flex items-center space-x-3 mb-6">
-                <div className="italic underline text-green-600 text-sm animate-fade-in">signature:</div>
+                <div className="italic underline text-green-600 text-sm animate-fade-in">
+                  signature:
+                </div>
                 <div className="relative">
                   <h1 className="text-3xl font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600">
                     SXN
@@ -632,34 +708,118 @@ export default function Landing() {
                   <div className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-full"></div>
                 </div>
               </div>
-              <Link to="/contact-us" className="text-sm text-gray-300 hover:text-yellow-400 transition duration-300">
+              <Link
+                to="/contact-us"
+                className="text-sm text-gray-300 hover:text-yellow-400 transition duration-300"
+              >
                 Send us a direct message
               </Link>
             </div>
             {/* Navigation Sections */}
             <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-8">
               <div>
-                <h3 className="font-semibold text-yellow-200 mb-4 uppercase tracking-wide">Company</h3>
+                <h3 className="font-semibold text-yellow-200 mb-4 uppercase tracking-wide">
+                  Company
+                </h3>
                 <ul className="space-y-2 text-sm">
-                  <li><a href="/about-us" className="hover:text-yellow-400 transition duration-300">About Us</a></li>
-                  <li><a href="/terms" className="hover:text-yellow-400 transition duration-300">Terms of Service</a></li>
-                  <li><a href="/privacy" className="hover:text-yellow-400 transition duration-300">Privacy Policy</a></li>
+                  <li>
+                    <a
+                      href="/about-us"
+                      className="hover:text-yellow-400 transition duration-300"
+                    >
+                      About Us
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/terms"
+                      className="hover:text-yellow-400 transition duration-300"
+                    >
+                      Terms of Service
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/privacy"
+                      className="hover:text-yellow-400 transition duration-300"
+                    >
+                      Privacy Policy
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div>
-                <h3 className="font-semibold text-yellow-200 mb-4 uppercase tracking-wide">Social</h3>
+                <h3 className="font-semibold text-yellow-200 mb-4 uppercase tracking-wide">
+                  Social
+                </h3>
                 <ul className="space-y-2 text-sm">
-                  <li><a href="https://t.me/secxion" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-400 transition duration-300">Telegram: @secxion</a></li>
-                  <li><a href="https://facebook.com/secxion" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-400 transition duration-300">Facebook: @secxion</a></li>
-                  <li><a href="https://dev.to/secxion" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-400 transition duration-300">Dev: @secxion</a></li>
+                  <li>
+                    <a
+                      href="https://t.me/secxion"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-yellow-400 transition duration-300"
+                    >
+                      Telegram: @secxion
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://facebook.com/secxion"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-yellow-400 transition duration-300"
+                    >
+                      Facebook: @secxion
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://dev.to/secxion"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-yellow-400 transition duration-300"
+                    >
+                      Dev: @secxion
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div>
-                <h3 className="font-semibold text-yellow-200 mb-4 uppercase tracking-wide">More</h3>
+                <h3 className="font-semibold text-yellow-200 mb-4 uppercase tracking-wide">
+                  More
+                </h3>
                 <ul className="space-y-2 text-sm">
-                  <li><a href="https://twitch.tv/secxion" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-400 transition duration-300">Twitch: @secxion</a></li>
-                  <li><a href="https://x.com/secxion" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-400 transition duration-300">X / Twitter: @secxion</a></li>
-                  <li><a href="https://instagram.com/secxionapp" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-400 transition duration-300">Instagram: @secxionapp</a></li>
+                  <li>
+                    <a
+                      href="https://twitch.tv/secxion"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-yellow-400 transition duration-300"
+                    >
+                      Twitch: @secxion
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://x.com/secxion"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-yellow-400 transition duration-300"
+                    >
+                      X / Twitter: @secxion
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://instagram.com/secxionapp"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-yellow-400 transition duration-300"
+                    >
+                      Instagram: @secxionapp
+                    </a>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -671,7 +831,9 @@ export default function Landing() {
               <NFTBadge />
             </div>
             <p className="text-gray-500">
-              © {new Date().getFullYear()} <span className="text-yellow-500 font-semibold">Secxion</span>. All Rights Reserved. Built with ❤️ by{" "}
+              © {new Date().getFullYear()}{' '}
+              <span className="text-yellow-500 font-semibold">Secxion</span>.
+              All Rights Reserved. Built with ❤️ by{' '}
               <a
                 href="https://bmxii.org"
                 target="_blank"
@@ -679,7 +841,8 @@ export default function Landing() {
                 className="font-semibold text-yellow-400 hover:underline"
               >
                 bmxii.org
-              </a>.
+              </a>
+              .
             </p>
           </div>
         </div>

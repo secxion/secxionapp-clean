@@ -55,7 +55,10 @@ const ProfilePanel = ({ open, setOpen, user }) => {
                     )}
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900 dark:text-white">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-lg leading-6 font-medium text-gray-900 dark:text-white"
+                    >
                       {user?.name || 'User'}
                     </Dialog.Title>
                     <div className="mt-2">

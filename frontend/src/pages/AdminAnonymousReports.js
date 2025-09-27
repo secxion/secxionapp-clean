@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { MdExpandMore } from "react-icons/md";
-import SummaryApi from "../common";
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { MdExpandMore } from 'react-icons/md';
+import SummaryApi from '../common';
 
 const AdminAnonymousReports = () => {
   const [anonymousReports, setAnonymousReports] = useState([]);
@@ -15,14 +15,17 @@ const AdminAnonymousReports = () => {
   const fetchAnonymousReports = async () => {
     try {
       setLoading(true);
-      console.log("Fetching contact us messages from:", SummaryApi.getContactUsMessages.url);
+      console.log(
+        'Fetching contact us messages from:',
+        SummaryApi.getContactUsMessages.url,
+      );
 
       const response = await fetch(SummaryApi.getContactUsMessages.url, {
         method: SummaryApi.getContactUsMessages.method || 'GET',
-        credentials: "include",
+        credentials: 'include',
       });
 
-      console.log("Contact us messages response:", response);
+      console.log('Contact us messages response:', response);
 
       if (!response.ok) {
         const errorMessage = `Failed to fetch contact us messages. Status: ${response.status}`;
@@ -31,21 +34,23 @@ const AdminAnonymousReports = () => {
       }
 
       const data = await response.json();
-      console.log("Contact us messages data:", data);
+      console.log('Contact us messages data:', data);
 
       if (data.success && Array.isArray(data.data)) {
-        console.log("Successfully fetched contact us messages:", data.data);
+        console.log('Successfully fetched contact us messages:', data.data);
         setAnonymousReports(data.data);
       } else {
-        console.log("No contact us messages found in the data or data format is incorrect.");
+        console.log(
+          'No contact us messages found in the data or data format is incorrect.',
+        );
         setAnonymousReports([]);
       }
     } catch (error) {
-      console.error("Error fetching contact us messages:", error);
-      toast.error("Could not fetch contact us messages.");
+      console.error('Error fetching contact us messages:', error);
+      toast.error('Could not fetch contact us messages.');
     } finally {
       setLoading(false);
-      console.log("Fetching contact us messages completed. Loading:", loading);
+      console.log('Fetching contact us messages completed. Loading:', loading);
     }
   };
 
@@ -68,12 +73,14 @@ const AdminAnonymousReports = () => {
                 <div>
                   <p className="text-gray-700 font-medium">Contact Us</p>
                   <p className="text-xs text-gray-500">
-                    By: Anonymous | {report.email || "N/A"}
+                    By: Anonymous | {report.email || 'N/A'}
                   </p>
                 </div>
                 <button
                   onClick={() =>
-                    setExpandedReport(expandedReport === report._id ? null : report._id)
+                    setExpandedReport(
+                      expandedReport === report._id ? null : report._id,
+                    )
                   }
                 >
                   <MdExpandMore className="text-gray-600 text-2xl" />
@@ -87,7 +94,9 @@ const AdminAnonymousReports = () => {
               )}
 
               <div className="flex justify-end mt-2">
-                <span className={`text-xs px-2 py-1 rounded-full bg-blue-500 text-white`}>
+                <span
+                  className={`text-xs px-2 py-1 rounded-full bg-blue-500 text-white`}
+                >
                   New
                 </span>
               </div>

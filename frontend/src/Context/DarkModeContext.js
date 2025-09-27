@@ -19,7 +19,7 @@ export const DarkModeProvider = ({ children }) => {
     }
   }, [darkMode]);
 
-  const toggleDarkMode = () => setDarkMode(prev => !prev);
+  const toggleDarkMode = () => setDarkMode((prev) => !prev);
 
   return (
     <DarkModeContext.Provider value={{ darkMode, toggleDarkMode }}>

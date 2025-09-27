@@ -65,10 +65,11 @@ const styles = {
     height: '18px',
     width: '40%',
     borderRadius: '4px',
-    overflow: 'hidden', 
+    overflow: 'hidden',
   },
   shimmer: {
-    background: 'linear-gradient(to right, #f0f0f0 8%, #dbdbdb 18%, #f0f0f0 33%)',
+    background:
+      'linear-gradient(to right, #f0f0f0 8%, #dbdbdb 18%, #f0f0f0 33%)',
     backgroundSize: '800px 100%',
     height: '100%',
     width: '100%',
@@ -88,8 +89,8 @@ const keyframes = `
   }
 `;
 
-const styleSheet = document.createElement("style");
-styleSheet.type = "text/css";
+const styleSheet = document.createElement('style');
+styleSheet.type = 'text/css';
 styleSheet.innerText = keyframes;
 document.head.appendChild(styleSheet);
 

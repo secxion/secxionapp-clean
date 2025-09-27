@@ -39,11 +39,13 @@ const AdminGetAllData = () => {
   }
 
   return (
-    <div className='container pt-16'>
-      <h2 className="text-xl font-semibold mb-4">Users and Their Datapad Information</h2>
+    <div className="container pt-16">
+      <h2 className="text-xl font-semibold mb-4">
+        Users and Their Datapad Information
+      </h2>
       {usersWithData.length > 0 ? (
         usersWithData.map((user) => (
-          <UserDatapadCard key={user._id} user={user} /> 
+          <UserDatapadCard key={user._id} user={user} />
         ))
       ) : (
         <p>No users have stored information in their Datapad yet.</p>
