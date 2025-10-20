@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import UserUploadMarket from './UserUploadMarket';
 import GetInTouchFooter from './GetInTouchFooter';
-// ...existing code...
 import SummaryApi from '../common';
 import { setUserDetails } from '../store/userSlice';
 import currencyFullNames from '../helpers/currencyFullNames';
@@ -77,7 +76,7 @@ const ProductDetails = () => {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       const response = await fetch(SummaryApi.productDetails.url, {
         method: SummaryApi.productDetails.method,
@@ -189,9 +188,37 @@ const ProductDetails = () => {
 
   // API calls
 
-// ...existing code...
+  const handleLogout = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(SummaryApi.logout_user.url, {
+        method: SummaryApi.logout_user.method,
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-// ...existing code...
+      const logoutData = await response.json();
+
+      if (logoutData.success) {
+        toast.success(logoutData.message);
+        dispatch(setUserDetails(null));
+        navigate('/login');
+      } else {
+        toast.error(logoutData.message);
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error('Logout failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate, dispatch]);
+
+  const toggleMobileMenu = useCallback(() => {
+    setIsPDSidePanelOpen((prev) => !prev);
+  }, []);
 
   const closePDSidePanel = useCallback(() => {
     setIsPDSidePanelOpen(false);

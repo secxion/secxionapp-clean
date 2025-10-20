@@ -119,15 +119,31 @@ function App() {
           </Suspense>
           <ToastContainer
             position="top-center"
-            autoClose={1000}
-            hideProgressBar={false}
-            newestOnTop={false}
+            autoClose={2000}
+            hideProgressBar={true}
+            newestOnTop={true}
             closeOnClick
             rtl={false}
             pauseOnFocusLoss
             draggable
             pauseOnHover
-            theme="colored"
+            theme="light"
+            toastClassName={() =>
+              'glass-toast px-7 py-5 text-gray-900 shadow-2xl border border-white/40'
+            }
+            bodyClassName={() =>
+              'text-base font-semibold tracking-wide flex items-center relative z-10'
+            }
+            icon={false}
+            closeButton={true}
+            style={{ zIndex: 9999 }}
+            // Animated glass background
+            toastContent={({ children }) => (
+              <div className="relative">
+                <span className="glass-toast-bg-anim" />
+                <span className="relative z-10">{children}</span>
+              </div>
+            )}
           />
         </div>
       </Context.Provider>

@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import SummaryApi from '../common';
 import Context from '../Context';
 import loginBackground from './loginbk.png';
@@ -115,12 +115,7 @@ const Login = () => {
 
       if (response.ok && result.success) {
         setVerificationVisible(false);
-        toast.success(
-          <div className="flex items-center gap-2">
-            <img src={thumbsUpGif} alt="success" className="w-6 h-6" />
-            <span>{result.message || 'Login Successful!'}</span>
-          </div>,
-        );
+        toast.success(result.message || 'Login Successful!');
         await fetchUserDetails();
         navigate('/home');
       } else {
@@ -424,6 +419,34 @@ const Login = () => {
           </div>
         </div>
       )}
+      {/* Page-specific ToastContainer for Login */}
+      <ToastContainer
+        position="bottom-center"
+        autoClose={2000}
+        hideProgressBar={true}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        toastClassName={() =>
+          'glass-toast px-7 py-5 text-gray-900 shadow-2xl border border-white/40'
+        }
+        bodyClassName={() =>
+          'text-base font-semibold tracking-wide flex items-center relative z-10'
+        }
+        icon={false}
+        closeButton={true}
+        style={{ zIndex: 9999 }}
+        toastContent={({ children }) => (
+          <div className="relative">
+            <span className="glass-toast-bg-anim" />
+            <span className="relative z-10">{children}</span>
+          </div>
+        )}
+      />
     </section>
   );
 };

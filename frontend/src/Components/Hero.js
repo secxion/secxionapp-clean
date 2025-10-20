@@ -50,7 +50,7 @@ const Hero = () => {
   const currentImage = heroImages[imageIndex];
 
   return (
-    <header className="relative w-full h-56 sm:h-72 md:h-[75vh] md:h-[80vh] overflow-hidden rounded-2xl shadow-xl border-4 border-yellow-800 mt-6">
+    <header className="relative w-full h-44 sm:h-56 md:h-[62vh] md:h-[75vh] overflow-hidden rounded-2xl shadow-xl border-4 border-yellow-800 mt-6">
       {/* Image Slider */}
       <AnimatePresence initial={false} custom={direction}>
         <motion.div

@@ -22,16 +22,32 @@ function MainLayout() {
       </main>
       <SidePanel /> {/* Mobile menu panel */}
       <ToastContainer
-        position="top-center"
-        autoClose={1000}
+        position="top-right"
+        autoClose={2200}
         hideProgressBar={false}
-        newestOnTop={false}
+        newestOnTop={true}
         closeOnClick
         rtl={false}
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="colored"
+        theme="dark"
+        toastClassName={() =>
+          'neon-toast px-7 py-5 text-white flex items-center border border-cyan-400/60 shadow-2xl'
+        }
+        bodyClassName={() =>
+          'text-base font-semibold tracking-wide flex items-center relative z-10'
+        }
+        progressClassName={() => 'bg-cyan-400/80 h-1 rounded-b-xl'}
+        icon={false}
+        closeButton={true}
+        style={{ zIndex: 9999 }}
+        toastContent={({ children }) => (
+          <div className="relative">
+            <span className="neon-toast-bg-anim" />
+            <span className="relative z-10">{children}</span>
+          </div>
+        )}
       />
     </div>
   );

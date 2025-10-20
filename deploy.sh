@@ -14,12 +14,27 @@ function deploy() {
   echo "🖼️  Compressing images before deployment..."
   npm run compress:images
 
+  echo "🧹 Cleaning up remote directories..."
+  ssh -i "$SSH_KEY" $VPS_USER@$VPS_IP << 'ENDSSH'
+    rm -rf /root/secxionapp/*
+    mkdir -p /root/secxionapp/{backend/client_build,frontend}
+ENDSSH
 
-  echo "📤 Syncing files to VPS with rsync (resumable, incremental)..."
-  ssh -i "$SSH_KEY" $VPS_USER@$VPS_IP "mkdir -p $VPS_DIR/{backend,frontend}" || true
-  rsync -avz --partial --progress -e "ssh -i $SSH_KEY -o StrictHostKeyChecking=no -o LogLevel=ERROR" ./backend $VPS_USER@$VPS_IP:$VPS_DIR/
-  rsync -avz --partial --progress -e "ssh -i $SSH_KEY -o StrictHostKeyChecking=no -o LogLevel=ERROR" ./frontend $VPS_USER@$VPS_IP:$VPS_DIR/
-  rsync -avz --partial --progress -e "ssh -i $SSH_KEY -o StrictHostKeyChecking=no -o LogLevel=ERROR" package.json $VPS_USER@$VPS_IP:$VPS_DIR/
+  echo "📤 Uploading files via scp..."
+  scp -r -i "$SSH_KEY" \
+    -o StrictHostKeyChecking=no \
+    -o LogLevel=ERROR \
+    ./backend ./frontend package.json "$VPS_USER@$VPS_IP:$VPS_DIR"
+
+  # Explicitly copy backend and frontend package.json and package-lock.json
+  scp -i "$SSH_KEY" \
+    -o StrictHostKeyChecking=no \
+    -o LogLevel=ERROR \
+    ./backend/package.json ./backend/package-lock.json "$VPS_USER@$VPS_IP:$VPS_DIR/backend/"
+  scp -i "$SSH_KEY" \
+    -o StrictHostKeyChecking=no \
+    -o LogLevel=ERROR \
+    ./frontend/package.json ./frontend/package-lock.json "$VPS_USER@$VPS_IP:$VPS_DIR/frontend/"
 
   echo "🔧 Running post-deploy setup on VPS..."
   ssh -i "$SSH_KEY" $VPS_USER@$VPS_IP << 'ENDSSH'
@@ -36,16 +51,16 @@ function deploy() {
     npm install
     npm run build
 
-  echo "🚚 Moving frontend build into backend/client_build..."
-  rm -rf ../backend/client_build/*
-  cp -r build/* ../backend/client_build/ || true
+    echo "🚚 Moving frontend build into backend/client_build..."
+    rm -rf ../backend/client_build/*
+    cp -r build/* ../backend/client_build/
 
     echo "🔁 Restarting backend with PM2..."
     cd ../backend
     if pm2 list | grep -q "secxion-backend"; then
       pm2 delete secxion-backend
     fi
-    pm2 start index.mjs --name secxion-backend
+  pm2 start index.js --name secxion-backend
     pm2 save
 
     echo "✅ Server deploy complete."
