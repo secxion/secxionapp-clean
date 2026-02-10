@@ -628,9 +628,7 @@ const Settings = () => {
           <motion.button
             type="submit"
             disabled={isLoading || !hasChanges}
-            whileHover={{ scale: hasChanges ? 1.02 : 1 }}
-            whileTap={{ scale: hasChanges ? 0.98 : 1 }}
-            className={`flex-1 sm:flex-none inline-flex items-center justify-center px-8 py-3 rounded-xl font-semibold transition-all duration-200 ${
+            className={`flex-1 sm:flex-none inline-flex items-center justify-center px-8 py-3 rounded-xl font-semibold transition-colors duration-200 ${
               hasChanges && !isLoading
                 ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 shadow-lg hover:shadow-xl'
                 : 'bg-gray-600 text-gray-400 cursor-not-allowed'

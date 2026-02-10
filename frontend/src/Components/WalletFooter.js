@@ -1,8 +1,12 @@
 import { FaWallet, FaHistory, FaUniversity } from 'react-icons/fa';
+import '../styles/walletUtilities.css';
 
 const WalletFooter = ({ activeTab, setActiveTab }) => {
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-700 shadow-lg z-40">
+    <footer
+      className="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-700 shadow-lg z-40"
+      style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+    >
       <div className="flex justify-around py-3 items-center px-4">
         <button
           onClick={() => setActiveTab('wallet')}

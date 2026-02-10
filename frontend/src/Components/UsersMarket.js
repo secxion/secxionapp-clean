@@ -6,15 +6,28 @@ import MarketCard from './MarketCard';
 import HistoryDetailView from './HistoryDetailView';
 import uploadImage from '../helpers/uploadImage';
 import HistoryCard from './HistoryCard';
+import LoadingCard from './Marketplace/LoadingCard';
+import ErrorState from './Marketplace/ErrorState';
+import EmptyState from './Marketplace/EmptyState';
+import '../styles/marketplaceUtilities.css';
+import '../pages/UsersMarketPage.css';
 
+/**
+ * UsersMarket - Main marketplace list and status management
+ * Displays all user markets with ability to update status and upload images
+ */
 const UsersMarket = () => {
   const [userMarkets, setUserMarkets] = useState([]);
   const [cancelData, setCancelData] = useState({});
   const { user } = useContext(UserContext);
   const [selectedMarket, setSelectedMarket] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchUserMarkets = useCallback(async () => {
     try {
+      setLoading(true);
+      setError(null);
       const response = await fetch(SummaryApi.allUserMarkets.url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -28,11 +41,15 @@ const UsersMarket = () => {
           JSON.parse(localStorage.getItem('marketStatus')) || {};
         setCancelData(savedStatus);
       } else {
+        setError(dataResponse.message || 'Failed to fetch user markets.');
         toast.error(dataResponse.message || 'Failed to fetch user markets.');
       }
     } catch (error) {
       console.error('Error fetching user markets:', error);
+      setError('An error occurred while fetching user markets.');
       toast.error('An error occurred while fetching user markets.');
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -84,11 +101,16 @@ const UsersMarket = () => {
   const handleImageUpload = async (marketId, event) => {
     const file = event.target.files[0];
     if (file) {
-      const uploadedImage = await uploadImage(file);
-      setCancelData((prev) => ({
-        ...prev,
-        [marketId]: { ...prev[marketId], image: uploadedImage.url },
-      }));
+      try {
+        const uploadedImage = await uploadImage(file);
+        setCancelData((prev) => ({
+          ...prev,
+          [marketId]: { ...prev[marketId], image: uploadedImage.url },
+        }));
+        toast.success('Image uploaded successfully');
+      } catch (error) {
+        toast.error('Failed to upload image');
+      }
     }
   };
 
@@ -97,6 +119,7 @@ const UsersMarket = () => {
       ...prev,
       [marketId]: { ...prev[marketId], image: null },
     }));
+    toast.success('Image removed');
   };
 
   const handleMarketSelect = (market) => {
@@ -104,138 +127,203 @@ const UsersMarket = () => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen overflow-hidden">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-h-[80vh] overflow-y-auto pb-32">
-          {userMarkets.length > 0 ? (
-            userMarkets.map((market) => (
-              <div
-                key={market._id}
-                className="border-2 border-blue-500 p-4 rounded-lg bg-white shadow-lg mb-6"
-              >
-                <div className="border-b-2 border-blue-300 pb-3 mb-3">
-                  <p>
-                    <strong>User ID:</strong> {market.userId}
-                  </p>
-                  <p>
-                    <strong>Name:</strong> {market.userDetails?.name || 'N/A'}
-                  </p>
-                  <p>
-                    <strong>Email:</strong> {market.userDetails?.email || 'N/A'}
-                  </p>
-                </div>
+    <div className="users-market-page">
+      <div className="users-market-page__container">
+        {/* Page Header */}
+        <div className="users-market-page__header">
+          <h1 className="users-market-page__title">📊 Market Management</h1>
+          <p className="users-market-page__subtitle">
+            Manage your marketplace listings and transaction status
+          </p>
+        </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
-                  <button
-                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition w-full"
-                    onClick={() => updateMarketStatus(market._id, 'DONE')}
-                  >
-                    Done
-                  </button>
-                  <button
-                    className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition w-full"
-                    onClick={() => updateMarketStatus(market._id, 'PROCESSING')}
-                  >
-                    Processing
-                  </button>
+        {/* Content Area */}
+        <div className="users-market-page__content">
+          {/* Error State */}
+          {error && (
+            <ErrorState
+              title="Failed to load markets"
+              message={error}
+              onRetry={() => fetchUserMarkets()}
+              emoji="⚠️"
+            />
+          )}
 
-                  <input
-                    type="text"
-                    placeholder="Cancel reason"
-                    value={cancelData[market._id]?.reason || ''}
-                    onChange={(e) =>
-                      setCancelData((prev) => ({
-                        ...prev,
-                        [market._id]: {
-                          ...prev[market._id],
-                          reason: e.target.value,
-                        },
-                      }))
-                    }
-                    className="border rounded px-2 py-1 w-full"
-                  />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleImageUpload(market._id, e)}
-                    className="border rounded px-2 py-1 w-full"
-                  />
-
-                  {cancelData[market._id]?.image && (
-                    <div className="relative">
-                      <img
-                        src={cancelData[market._id].image}
-                        alt=""
-                        className="mt-2 w-full h-auto border rounded"
-                      />
-                      <button
-                        onClick={() => handleImageDelete(market._id)}
-                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
-                      >
-                        X
-                      </button>
-                    </div>
-                  )}
-
-                  <button
-                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 w-full"
-                    onClick={() => updateMarketStatus(market._id, 'CANCEL')}
-                  >
-                    Cancel
-                  </button>
-                </div>
-
-                {market.Image && market.Image.length > 0 && (
-                  <MarketCard market={market} />
-                )}
-
-                {cancelData[market._id] && (
-                  <div className="mt-4">
-                    <p>
-                      <strong>Last Status:</strong>{' '}
-                      {cancelData[market._id].status}
-                    </p>
-                    {cancelData[market._id].status === 'CANCEL' && (
-                      <>
-                        <p>
-                          <strong>Cancel Reason:</strong>{' '}
-                          {cancelData[market._id].reason || 'N/A'}
+          {/* Loading State */}
+          {loading ? (
+            <div className="marketplace-grid">
+              <LoadingCard count={6} variant="card" />
+            </div>
+          ) : userMarkets.length > 0 ? (
+            <div className="users-market-page__scroll-container">
+              <div className="users-market-list">
+                {userMarkets.map((market) => (
+                  <div key={market._id} className="market-item">
+                    {/* User Info Header */}
+                    <div className="market-item__header">
+                      <div className="market-item__header--info">
+                        <p className="market-item__user-id">
+                          ID: {market.userId}
                         </p>
-                        {cancelData[market._id].image && (
-                          <img
-                            src={cancelData[market._id].image}
-                            alt=""
-                            className="mt-2 w-full h-auto border rounded"
-                          />
-                        )}
-                      </>
+                        <p className="market-item__user-name">
+                          {market.userDetails?.name || 'Unknown User'}
+                        </p>
+                        <p className="market-item__user-email">
+                          {market.userDetails?.email || 'N/A'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Status Controls */}
+                    <div className="market-item__controls">
+                      <div className="market-item__button-group">
+                        <button
+                          className="market-item__button market-item__button--done"
+                          onClick={() => updateMarketStatus(market._id, 'DONE')}
+                        >
+                          ✓ Mark Done
+                        </button>
+                        <button
+                          className="market-item__button market-item__button--processing"
+                          onClick={() =>
+                            updateMarketStatus(market._id, 'PROCESSING')
+                          }
+                        >
+                          ⏱ Processing
+                        </button>
+                      </div>
+                      <div className="market-item__button-group">
+                        <input
+                          type="text"
+                          placeholder="Cancel reason (if applicable)"
+                          value={cancelData[market._id]?.reason || ''}
+                          onChange={(e) =>
+                            setCancelData((prev) => ({
+                              ...prev,
+                              [market._id]: {
+                                ...prev[market._id],
+                                reason: e.target.value,
+                              },
+                            }))
+                          }
+                          className="market-item__input"
+                        />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload(market._id, e)}
+                          className="market-item__file-input"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Image Preview */}
+                    {cancelData[market._id]?.image && (
+                      <div className="market-item__image-preview">
+                        <img
+                          src={cancelData[market._id].image}
+                          alt="Cancel reason"
+                          className="market-item__image"
+                          loading="lazy"
+                        />
+                        <button
+                          onClick={() => handleImageDelete(market._id)}
+                          className="market-item__image-delete"
+                          title="Remove image"
+                        >
+                          ✕
+                        </button>
+                      </div>
                     )}
+
+                    {/* Cancel Button */}
+                    <button
+                      className="market-item__button market-item__button--cancel"
+                      onClick={() => updateMarketStatus(market._id, 'CANCEL')}
+                      style={{ width: '100%', marginTop: '1rem' }}
+                    >
+                      ✕ Cancel Market
+                    </button>
+
+                    {/* Product Details */}
+                    {market.Image && market.Image.length > 0 && (
+                      <div style={{ marginTop: '1.5rem' }}>
+                        <MarketCard market={market} />
+                      </div>
+                    )}
+
+                    {/* Status Display */}
+                    {cancelData[market._id] && (
+                      <div className="market-item__status">
+                        <p className="market-item__status-title">
+                          Current Status
+                        </p>
+                        <p className="market-item__status-value">
+                          {cancelData[market._id].status}
+                        </p>
+                        {cancelData[market._id].status === 'CANCEL' && (
+                          <>
+                            <div className="market-item__status-reason">
+                              <p
+                                className="marketplace-text-secondary"
+                                style={{ marginBottom: '0.5rem' }}
+                              >
+                                Cancellation Reason:
+                              </p>
+                              <p className="marketplace-text-primary">
+                                {cancelData[market._id].reason ||
+                                  'No reason provided'}
+                              </p>
+                            </div>
+                            {cancelData[market._id].image && (
+                              <img
+                                src={cancelData[market._id].image}
+                                alt="Cancel reason"
+                                style={{
+                                  marginTop: '0.75rem',
+                                  maxWidth: '100%',
+                                  borderRadius: '0.5rem',
+                                }}
+                              />
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )}
+
+                    {/* History Card */}
+                    <HistoryCard
+                      data={{
+                        ...market,
+                        status: cancelData[market._id]?.status,
+                        cancelReason: cancelData[market._id]?.reason,
+                        crImage: cancelData[market._id]?.image,
+                      }}
+                    />
+
+                    {/* View Details Button */}
+                    <button
+                      onClick={() => handleMarketSelect(market)}
+                      className="market-item__view-details"
+                    >
+                      👁️ View Full Details
+                    </button>
                   </div>
-                )}
-
-                <HistoryCard
-                  data={{
-                    ...market,
-                    status: cancelData[market._id]?.status,
-                    cancelReason: cancelData[market._id]?.reason,
-                    crImage: cancelData[market._id]?.image,
-                  }}
-                />
-
-                <button
-                  onClick={() => handleMarketSelect(market)}
-                  className="mt-4 bg-blue-500 text-white px-4 py-2 rounded w-full"
-                >
-                  View Details
-                </button>
+                ))}
               </div>
-            ))
+            </div>
           ) : (
-            <p className="text-gray-500 text-center">Loading...</p>
+            /* Empty State */
+            <EmptyState
+              title="No markets found"
+              message="No marketplace listings available yet. Start by creating a new market listing."
+              emoji="🏪"
+            />
           )}
         </div>
       </div>
 
+      {/* Detail Modal */}
       {selectedMarket && (
         <HistoryDetailView
           onClose={() => setSelectedMarket(null)}

@@ -3,7 +3,7 @@ import { FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import uploadImage from '../helpers/uploadImage';
 import SummaryApi from '../common';
-import { toast } from 'react-toastify';
+import { notifyUser } from '../utils/toastConfig';
 import { motion, AnimatePresence } from 'framer-motion';
 import signupBackground from './signupbk.png';
 import LogoShimmer from '../Components/LogoShimmer';
@@ -20,6 +20,7 @@ const SignUp = () => {
   const [uploading, setUploading] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [clock, setClock] = useState(new Date());
+  const [csrfToken, setCsrfToken] = useState('');
 
   const [data, setData] = useState(() => {
     const saved = localStorage.getItem('signupData');
@@ -43,9 +44,25 @@ const SignUp = () => {
   }, [data]);
 
   useEffect(() => {
+    fetchCsrfToken();
     const interval = setInterval(() => setClock(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
+
+  const fetchCsrfToken = async () => {
+    try {
+      const response = await fetch(`${SummaryApi.baseURL}/api/csrf-token`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const result = await response.json();
+      if (result.success && result.csrfToken) {
+        setCsrfToken(result.csrfToken);
+      }
+    } catch (error) {
+      console.error('Error fetching CSRF token:', error);
+    }
+  };
 
   useEffect(() => {
     console.log('Current form step state:', step);
@@ -114,7 +131,7 @@ const SignUp = () => {
   const handleUploadPic = async (e) => {
     const file = e.target.files[0];
     if (!file) {
-      toast.error('No file selected.');
+      notifyUser.error('No file selected.', 'Upload Error');
       return;
     }
     setUploading(true);
@@ -128,18 +145,25 @@ const SignUp = () => {
         });
       }
       if (imageToUpload.size > 2 * 1024 * 1024) {
-        toast.error(
+        notifyUser.error(
           'Even after processing, the image is too large. Please choose a different image.',
+          'Upload Error',
         );
         setUploading(false);
         return;
       }
       const uploadedImage = await uploadImage(imageToUpload);
       setData((prev) => ({ ...prev, profilePic: uploadedImage.url }));
-      toast.success('Your avatar successfully uploaded! 📸');
+      notifyUser.success(
+        'Your avatar successfully uploaded! 📸',
+        'Upload Success',
+      );
     } catch (error) {
       console.error('Upload or resize error:', error);
-      toast.error('Failed to process or upload image. Please try again.');
+      notifyUser.error(
+        'Failed to process or upload image. Please try again.',
+        'Upload Error',
+      );
     } finally {
       setUploading(false);
     }
@@ -150,73 +174,101 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!data.name) {
-      toast.error('Please enter your name.');
+      notifyUser.error('Please enter your name.', 'Validation Error');
       return setStep(1);
     }
     if (!data.email || !isValidEmail(data.email)) {
-      toast.error('Please enter a valid email address.');
+      notifyUser.error(
+        'Please enter a valid email address.',
+        'Validation Error',
+      );
       return setStep(2);
     }
     if (data.telegramNumber && !isValidTelegram(data.telegramNumber)) {
-      toast.error(
+      notifyUser.error(
         'Please enter a valid Telegram number (7-15 digits, optional leading +).',
+        'Validation Error',
       );
       return setStep(3);
     }
     if (!isValidPassword(data.password)) {
-      toast.error('Password must be at least 6 characters long.');
+      notifyUser.error(
+        'Password must be at least 6 characters long.',
+        'Validation Error',
+      );
       return setStep(4);
     }
     if (data.password !== data.confirmPassword) {
-      toast.error('Passwords do not match.');
+      notifyUser.error('Passwords do not match.', 'Validation Error');
       return setStep(4);
     }
     if (!data.profilePic) {
-      toast.error('Please upload a profile picture.');
+      notifyUser.error('Please upload a profile picture.', 'Validation Error');
       return setStep(5);
     }
     if (!agreedToTerms) {
-      toast.error('You must agree to the terms and conditions to sign up.');
+      notifyUser.error(
+        'You must agree to the terms and conditions to sign up.',
+        'Validation Error',
+      );
       return setStep(5);
     }
     setLoading(true);
     try {
       const response = await fetch(SummaryApi.signUP.url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
+        },
         credentials: 'include',
         body: JSON.stringify(data),
       });
       const responseData = await response.json();
       if (response.ok) {
         localStorage.removeItem('signupData');
-        toast.success(
+        notifyUser.success(
           '🎉 Signup successful! Check your email inbox or spam for verification.',
+          'Success',
         );
         setTimeout(() => navigate('/login'), 2500);
       } else {
         const backendMessage = responseData.message
           ? String(responseData.message).toLowerCase()
           : '';
-        if (
-          backendMessage.includes('email already exists') ||
-          (backendMessage.includes('user with email') &&
-            backendMessage.includes('already exists'))
-        ) {
-          toast.error(
+
+        // Check if email already exists
+        if (response.status === 409 && backendMessage.includes('email')) {
+          notifyUser.error(
             'This email is already registered. Please use a different email or log in.',
+            'Registration Error',
           );
           setStep(2);
+        } else if (
+          response.status === 409 &&
+          (backendMessage.includes('display name') ||
+            backendMessage.includes('name'))
+        ) {
+          // Check if display name already exists
+          notifyUser.error(
+            responseData?.message ||
+              'This display name is already taken. Please choose a different one.',
+            'Registration Error',
+          );
+          setStep(1);
         } else {
-          toast.error(
+          // Generic error handling
+          notifyUser.error(
             responseData?.message || 'Signup failed. Please try again.',
+            'Registration Error',
           );
         }
       }
     } catch (error) {
       console.error('Network or API error:', error);
-      toast.error(
+      notifyUser.error(
         '🚫 Signup failed due to a network error. Please check your connection and try again.',
+        'Network Error',
       );
     } finally {
       setLoading(false);

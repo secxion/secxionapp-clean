@@ -72,10 +72,9 @@ const NoteCard = ({ dataPad, onEdit, onDelete, onView }) => {
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      whileHover={{ y: -2 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       className="bg-white rounded-2xl shadow-lg hover:shadow-xl border border-yellow-700/30 transition-all duration-200 cursor-pointer group"
       onClick={handleView}
       style={{
@@ -206,8 +205,6 @@ const NoteCard = ({ dataPad, onEdit, onDelete, onView }) => {
           </div>
           <div className="flex items-center space-x-2">
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
               onClick={handleEdit}
               className="p-2 text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-300 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/40 transition-colors duration-200"
               title="Edit note"
@@ -215,8 +212,6 @@ const NoteCard = ({ dataPad, onEdit, onDelete, onView }) => {
               <FaEdit className="w-4 h-4" />
             </motion.button>
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
               onClick={handleDelete}
               disabled={isDeleting}
               className="p-2 text-red-600 hover:text-red-700 dark:hover:text-red-400 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200 disabled:opacity-50"

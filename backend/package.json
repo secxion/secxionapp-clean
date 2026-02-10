@@ -7,7 +7,11 @@
   "scripts": {
     "build": "cd ../frontend && npm install && npm run build && cp -r build ../backend/client_build",
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --collectCoverageFrom=\"**/*.js\" --coverageDirectory=\"coverage\"",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand"
   },
   "author": "",
   "license": "ISC",
@@ -22,6 +26,7 @@
     "express": "^4.19.2",
     "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^7.5.0",
+    "express-session": "^1.19.0",
     "express-validator": "^7.2.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
@@ -40,5 +45,11 @@
     "uuid": "^11.1.0",
     "winston": "^3.17.0",
     "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-mock-extended": "^3.0.5",
+    "mongodb-memory-server": "^9.3.0",
+    "supertest": "^6.3.3"
   }
 }

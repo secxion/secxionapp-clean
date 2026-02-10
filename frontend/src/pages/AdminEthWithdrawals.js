@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import SummaryApi from '../common';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 const AdminEthWithdrawals = () => {
   const [requests, setRequests] = useState([]);

@@ -4,6 +4,7 @@ const backendDomain =
     : process.env.REACT_APP_BACKEND_URL || 'https://secxion.com';
 
 const SummaryApi = {
+  baseURL: backendDomain,
   signUP: {
     url: `${backendDomain}/api/signup`,
     method: 'post',
@@ -222,7 +223,7 @@ const SummaryApi = {
     method: 'GET',
   },
   getWalletBalance: {
-    url: `${backendDomain}/api/wallet/balane`,
+    url: `${backendDomain}/api/wallet/balance`,
     method: 'GET',
   },
   createPayment: {

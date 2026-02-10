@@ -1,5 +1,9 @@
 import React from 'react';
 
+/**
+ * ProductCard - Display product information in a card format
+ * Memoized for performance optimization - prevents unnecessary re-renders
+ */
 const ProductCard = ({ product }) => {
   return (
     <div className="container border rounded-lg p-4 shadow-md bg-white">
@@ -10,4 +14,4 @@ const ProductCard = ({ product }) => {
   );
 };
 
-export default ProductCard;
+export default React.memo(ProductCard);

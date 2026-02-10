@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SummaryApi from '../common';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { notifyUser } from '../utils/toastConfig';
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
@@ -16,13 +16,19 @@ const VerifyEmail = () => {
         const data = await res.json();
 
         if (data.success) {
-          toast.success(data.message || 'Email verified successfully!');
+          notifyUser.success(
+            data.message || 'Email verified successfully!',
+            'Success',
+          );
           setTimeout(() => navigate('/login'), 2500);
         } else {
-          toast.error(data.message || 'Invalid or expired token.');
+          notifyUser.error(
+            data.message || 'Invalid or expired token.',
+            'Verification Error',
+          );
         }
       } catch (err) {
-        toast.error('Something went wrong. Please try again.');
+        notifyUser.error('Something went wrong. Please try again.', 'Error');
       } finally {
         setLoading(false);
       }
@@ -30,7 +36,7 @@ const VerifyEmail = () => {
 
     if (token) verify();
     else {
-      toast.error('No token provided');
+      notifyUser.error('No token provided', 'Error');
       setLoading(false);
     }
   }, [token, navigate]);

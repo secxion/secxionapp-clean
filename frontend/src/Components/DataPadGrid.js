@@ -61,7 +61,6 @@ const GridCard = ({ dataPad, onEdit, onDelete, onView }) => {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      whileHover={{ y: -4 }}
       className="bg-gray-800 dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-lg border border-gray-700 dark:border-gray-700 transition-all duration-200 cursor-pointer group h-full flex flex-col"
       onClick={() => onView(dataPad)}
     >

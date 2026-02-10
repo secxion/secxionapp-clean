@@ -1,7 +1,5 @@
 import React, { lazy, Suspense, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserDetails, setLoading } from './store/userSlice';
 import Context, { ContextProvider } from './Context';
@@ -14,6 +12,8 @@ import {
   signinUserAPI,
 } from './services/apiService';
 import SecxionLoader from './Components/SecxionLoader';
+import GlobalToastContainer from './Components/GlobalToastContainer';
+import './Components/ToastContainer.css';
 
 function setViewportHeight() {
   const vh = window.innerHeight * 0.01;
@@ -117,34 +117,8 @@ function App() {
               </div>
             </main>
           </Suspense>
-          <ToastContainer
-            position="top-center"
-            autoClose={2000}
-            hideProgressBar={true}
-            newestOnTop={true}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-            toastClassName={() =>
-              'glass-toast px-7 py-5 text-gray-900 shadow-2xl border border-white/40'
-            }
-            bodyClassName={() =>
-              'text-base font-semibold tracking-wide flex items-center relative z-10'
-            }
-            icon={false}
-            closeButton={true}
-            style={{ zIndex: 9999 }}
-            // Animated glass background
-            toastContent={({ children }) => (
-              <div className="relative">
-                <span className="glass-toast-bg-anim" />
-                <span className="relative z-10">{children}</span>
-              </div>
-            )}
-          />
+          {/* Global Toast Container - Single instance for entire app */}
+          <GlobalToastContainer />
         </div>
       </Context.Provider>
     </ContextProvider>

@@ -13,9 +13,9 @@ const DataPadList = ({ dataPads, onOpen, onDelete, isLoading }) => {
       {dataPads.map((pad, index) => (
         <motion.div
           key={pad._id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: index * 0.1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
           className="group bg-gradient-to-r from-gray-900/60 to-gray-800/60 backdrop-blur-sm rounded-xl p-6 border border-purple-600/30 hover:border-yellow-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10"
         >
           <div className="flex items-start justify-between">

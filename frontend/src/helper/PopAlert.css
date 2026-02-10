@@ -1,0 +1,287 @@
+/**
+ * Enhanced PopAlert Notification Styles
+ * Includes accessibility, animations, and responsive design
+ */
+
+.pop-alert-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  pointer-events: none;
+}
+
+.pop-alert-wrapper.has-notification {
+  pointer-events: auto;
+}
+
+.pop-alert-container {
+  position: relative;
+  max-width: 28rem;
+  width: 100%;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow:
+    0 20px 25px rgba(0, 0, 0, 0.15),
+    0 10px 10px rgba(0, 0, 0, 0.1);
+  animation: popAlertSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  pointer-events: auto;
+  transition: all 0.2s ease;
+}
+
+.pop-alert-container:hover {
+  box-shadow:
+    0 25px 35px rgba(0, 0, 0, 0.2),
+    0 15px 15px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Type-specific background gradients */
+.pop-alert-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 1px solid #047857;
+  color: #fff;
+}
+
+.pop-alert-warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border: 1px solid #b45309;
+  color: #fff;
+}
+
+.pop-alert-error {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border: 1px solid #b91c1c;
+  color: #fff;
+}
+
+.pop-alert-info {
+  background: linear-gradient(135deg, #0066ff 0%, #005ce6 100%);
+  border: 1px solid #0052cc;
+  color: #fff;
+}
+
+/* Header section */
+.pop-alert-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.pop-alert-icon-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.pop-alert-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.pop-alert-title {
+  font-size: 0.875rem;
+  font-weight: bold;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.pop-alert-close-btn {
+  flex-shrink: 0;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+}
+
+.pop-alert-close-btn:hover {
+  opacity: 1;
+}
+
+.pop-alert-close-btn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+/* Message section */
+.pop-alert-message {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.pop-alert-message a,
+.pop-alert-message button {
+  font-weight: 600;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+  transition: opacity 0.2s ease;
+}
+
+.pop-alert-message a:hover,
+.pop-alert-message button:hover {
+  opacity: 0.8;
+}
+
+.pop-alert-message a:focus-visible,
+.pop-alert-message button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  border-radius: 2px;
+  opacity: 1;
+}
+
+/* Footer with actions */
+.pop-alert-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pop-alert-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pop-alert-action-btn {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+}
+
+.pop-alert-action-btn:hover {
+  opacity: 0.7;
+}
+
+.pop-alert-action-btn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Priority badge */
+.pop-alert-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Animations */
+@keyframes popAlertSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popAlertPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+.pop-alert-animate {
+  animation: popAlertPulse 0.8s cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+/* Responsive design */
+@media (min-width: 640px) {
+  .pop-alert-wrapper {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .pop-alert-container {
+    width: 24rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .pop-alert-wrapper {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .pop-alert-container {
+    width: 28rem;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .pop-alert-container {
+    animation: none;
+  }
+
+  .pop-alert-animate {
+    animation: none;
+  }
+
+  .pop-alert-close-btn,
+  .pop-alert-action-btn,
+  .pop-alert-message a,
+  .pop-alert-message button {
+    transition: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .pop-alert-container {
+    box-shadow:
+      0 20px 25px rgba(0, 0, 0, 0.5),
+      0 10px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .pop-alert-container:hover {
+    box-shadow:
+      0 25px 35px rgba(0, 0, 0, 0.6),
+      0 15px 15px rgba(0, 0, 0, 0.4);
+  }
+}

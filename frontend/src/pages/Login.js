@@ -1,12 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import SummaryApi from '../common';
 import Context from '../Context';
 import loginBackground from './loginbk.png';
 import thumbsUpGif from './thumbsup.gif';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Navigation from '../Components/Navigation';
+import GlobalToastContainer from '../Components/GlobalToastContainer';
 
 import SecxionLogo from '../app/slogo.png';
 import NFTBadge from '../Components/NFTBadge';
@@ -49,6 +50,7 @@ const Login = () => {
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [resending, setResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [csrfToken, setCsrfToken] = useState('');
   const { fetchUserDetails } = useContext(Context);
   const navigate = useNavigate();
   const [verificationVisible, setVerificationVisible] = useState(false);
@@ -59,9 +61,27 @@ const Login = () => {
   const [verifying, setVerifying] = useState(false);
 
   const [bubbleIn, setBubbleIn] = useState(false);
+
+  // Fetch CSRF token on component mount
   useEffect(() => {
+    fetchCsrfToken();
     setBubbleIn(true);
   }, []);
+
+  const fetchCsrfToken = async () => {
+    try {
+      const response = await fetch(`${SummaryApi.baseURL}/api/csrf-token`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const result = await response.json();
+      if (result.success && result.csrfToken) {
+        setCsrfToken(result.csrfToken);
+      }
+    } catch (error) {
+      console.error('Error fetching CSRF token:', error);
+    }
+  };
 
   useEffect(() => {
     if (verificationVisible) fetchSliderTarget();
@@ -103,7 +123,10 @@ const Login = () => {
       const response = await fetch(SummaryApi.signIn.url, {
         method: SummaryApi.signIn.method,
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
+        },
         body: JSON.stringify({
           ...data,
           sliderValue,
@@ -419,34 +442,8 @@ const Login = () => {
           </div>
         </div>
       )}
-      {/* Page-specific ToastContainer for Login */}
-      <ToastContainer
-        position="bottom-center"
-        autoClose={2000}
-        hideProgressBar={true}
-        newestOnTop={true}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-        toastClassName={() =>
-          'glass-toast px-7 py-5 text-gray-900 shadow-2xl border border-white/40'
-        }
-        bodyClassName={() =>
-          'text-base font-semibold tracking-wide flex items-center relative z-10'
-        }
-        icon={false}
-        closeButton={true}
-        style={{ zIndex: 9999 }}
-        toastContent={({ children }) => (
-          <div className="relative">
-            <span className="glass-toast-bg-anim" />
-            <span className="relative z-10">{children}</span>
-          </div>
-        )}
-      />
+      {/* Global Toast Container - Single instance for entire app */}
+      <GlobalToastContainer />
     </section>
   );
 };

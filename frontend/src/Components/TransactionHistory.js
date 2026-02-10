@@ -10,9 +10,11 @@ import {
   FaSearch,
   FaTimes,
   FaChevronUp,
+  FaDownload,
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import SecxionSpinner from './SecxionSpinner';
+import { exportTransactionsToCSV } from '../utils/csvExport';
 
 const TransactionHistory = () => {
   const { user } = useSelector((state) => state.user);
@@ -96,7 +98,7 @@ const TransactionHistory = () => {
         setLoadingTransactions(false);
       }
     },
-    [user, SummaryApi.transactions.url],
+    [user],
   );
 
   useEffect(() => {
@@ -182,8 +184,35 @@ const TransactionHistory = () => {
   return (
     <div className="h-full flex flex-col">
       {/* Fixed Header Section */}
-      <div className="flex-shrink-0 bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-2xl p-4 md:p-6 border border-slate-700/50 shadow-xl mb-6">
+      <div className="flex-shrink-0 relative z-10 bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-2xl p-4 md:p-6 border border-slate-700/50 shadow-xl mb-6">
         {/* Mobile-First Search Bar */}
+        <div className="mb-4">
+          <div className="relative">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+              <FaSearch className="w-4 h-4" />
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by ID, amount, status, account..."
+              className="w-full bg-slate-700/60 border border-slate-600 rounded-xl pl-10 pr-10 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-400/30 transition-all text-sm"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
+                title="Clear search"
+              >
+                <FaTimes className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+          <p className="text-xs text-slate-500 mt-2">
+            Searches: ID • Amount • Status • Account Number • Bank Name •
+            Description
+          </p>
+        </div>
 
         {/* Mobile Filter Toggle */}
         <div className="md:hidden mb-4">
@@ -206,9 +235,10 @@ const TransactionHistory = () => {
         <AnimatePresence>
           {(isFilterOpen || window.innerWidth >= 768) && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
               className="overflow-hidden"
             >
               {/* Enhanced Horizontal Scrollable Filter Container */}
@@ -232,24 +262,16 @@ const TransactionHistory = () => {
                         <motion.button
                           key={item.value}
                           onClick={() => handleFilterChange(item.label)}
-                          className={`flex-shrink-0 px-4 py-2 md:px-4 md:py-2 rounded-xl font-medium text-xs md:text-sm transition-all duration-200 whitespace-nowrap border-2 ${
+                          className={`flex-shrink-0 px-4 py-2 md:px-4 md:py-2 rounded-xl font-medium text-xs md:text-sm transition-colors duration-200 whitespace-nowrap border-2 ${
                             isActive
                               ? 'bg-yellow-600 text-gray-900 shadow-lg border-yellow-500'
                               : 'bg-slate-700/50 text-gray-300 hover:bg-slate-600/50 hover:text-white border-slate-600 hover:border-yellow-500/50'
                           }`}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
                           style={{
                             minWidth: '80px',
                           }}
                         >
                           <span>{item.label}</span>
-                          {isActive && (
-                            <motion.div
-                              className="absolute bottom-0 left-0 right-0 h-0.5 bg-yellow-400 rounded-full"
-                              layoutId="activeTab"
-                            />
-                          )}
                         </motion.button>
                       );
                     })}
@@ -267,12 +289,22 @@ const TransactionHistory = () => {
             {filteredTransactions.length} transactions
             {searchQuery && ` (filtered from ${transactions.length} total)`}
           </span>
-          <button
-            onClick={() => fetchTransactions(statusFilter)}
-            className="text-yellow-400 hover:text-yellow-300 transition-colors text-left md:text-right"
-          >
-            Refresh
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => exportTransactionsToCSV(filteredTransactions)}
+              className="flex items-center gap-2 text-yellow-400 hover:text-yellow-300 transition-colors text-sm"
+              title="Download transactions as CSV"
+            >
+              <FaDownload className="w-4 h-4" />
+              <span className="hidden sm:inline">Export</span>
+            </button>
+            <button
+              onClick={() => fetchTransactions(statusFilter)}
+              className="text-yellow-400 hover:text-yellow-300 transition-colors"
+            >
+              Refresh
+            </button>
+          </div>
         </div>
       </div>
 
@@ -292,12 +324,12 @@ const TransactionHistory = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                {displayedTransactions.map((transaction, index) => (
+                {displayedTransactions.map((transaction) => (
                   <motion.div
                     key={transaction._id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
                     className="w-full"
                   >
                     <TransactionCard transaction={transaction} />
@@ -312,12 +344,10 @@ const TransactionHistory = () => {
                         <motion.button
                           key="view-more"
                           onClick={handleViewMore}
-                          className="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 rounded-xl font-semibold shadow-lg transition-all duration-200 transform hover:scale-105"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -20 }}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
+                          className="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 rounded-xl font-semibold shadow-lg transition-colors duration-200"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
                         >
                           <FaEye className="mr-2" />
                           <span className="hidden md:inline">
@@ -331,12 +361,10 @@ const TransactionHistory = () => {
                         <motion.button
                           key="show-less"
                           onClick={handleCloseViewMore}
-                          className="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 bg-slate-700 hover:bg-slate-600 text-gray-300 rounded-xl font-semibold shadow-lg transition-all duration-200 transform hover:scale-105"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -20 }}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
+                          className="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 bg-slate-700 hover:bg-slate-600 text-gray-300 rounded-xl font-semibold shadow-lg transition-colors duration-200"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
                         >
                           <FaEyeSlash className="mr-2" />
                           Show Less
@@ -385,12 +413,10 @@ const TransactionHistory = () => {
           <motion.button
             onClick={scrollToTop}
             className="fixed bottom-6 right-6 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 p-3 md:p-4 rounded-full shadow-2xl z-50 border-2 border-yellow-400/30"
-            initial={{ opacity: 0, scale: 0.5, y: 100 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.5, y: 100 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
           >
             <FaChevronUp className="w-5 h-5 md:w-6 md:h-6" />
           </motion.button>

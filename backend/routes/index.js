@@ -1,5 +1,6 @@
 import express from 'express';
 import axios from 'axios';
+import crypto from 'crypto';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
 
@@ -55,6 +56,17 @@ import { createEthWithdrawalRequest, getAllEthWithdrawalRequests, getEthWithdraw
 import { generateSliderVerification } from "../utils/sliderVerification.js";
 import getLastUserMarketStatusController from '../controller/product/getLastUserMarketStatusController.js';
 import noCache from '../middleware/noCache.js';
+import {
+  csrfProtection,
+  apiLimiter,
+  authLimiter,
+  signupLimiter,
+  passwordResetLimiter,
+  generateAccessToken,
+  generateRefreshToken,
+  refreshAccessToken,
+  revokeRefreshToken
+} from '../middleware/securityMiddleware.js';
 
 const router = express.Router();
 
@@ -208,19 +220,30 @@ router.get('/ping', (req, res) => {
   res.json({ status: 'ok', message: 'pong' });
 });
 
+// Get CSRF token (required for POST requests) - No middleware, pure JSON response
+router.get('/csrf-token', (req, res) => {
+  const csrfToken = crypto.randomBytes(32).toString('hex');
+  res.json({ 
+    success: true, 
+    csrfToken,
+    message: 'CSRF token retrieved successfully'
+  });
+});
+
 router.get("/slider-verification", (req, res) => {
   const { target, signature } = generateSliderVerification();
   res.json({ target, signature });
 });
 
-router.post("/signup", userSignUpController);
+// Authentication routes with rate limiting and CSRF
+router.post("/signup", signupLimiter, csrfProtection, userSignUpController);
 router.get('/verify-email', verifyEmailController);
-router.post("/signin", userSignInController);
+router.post("/signin", authLimiter, csrfProtection, userSignInController);
 router.get("/user-details", authToken, noCache, userDetailsController);
 router.get("/userLogout", authToken, noCache, userLogout);
-router.post("/request-reset", sendResetCode); 
-router.post("/confirm-reset", verifyReset); 
-router.post("/resend-verification", resendVerificationEmailController);
+router.post("/request-reset", passwordResetLimiter, csrfProtection, sendResetCode);
+router.post("/confirm-reset", csrfProtection, verifyReset);
+router.post("/resend-verification", csrfProtection, resendVerificationEmailController);
 router.post("/send-bank-code", authToken, sendBankAddCode);
 router.post("/verify-add-bank", authToken, verifyAndAddBankAccount);
 

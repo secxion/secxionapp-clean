@@ -231,9 +231,9 @@ const ContactUs = () => {
               {submissionSuccess && (
                 <motion.div
                   className="mb-8 p-6 bg-green-900 border border-green-700 rounded-2xl flex items-center"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.2 }}
                   aria-live="polite"
                   role="status"
                   tabIndex={-1}
@@ -252,9 +252,9 @@ const ContactUs = () => {
               {submissionError && (
                 <motion.div
                   className="mb-8 p-6 bg-red-900 border border-red-700 rounded-2xl flex items-center"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.2 }}
                   aria-live="polite"
                   role="alert"
                   tabIndex={-1}
@@ -358,9 +358,7 @@ const ContactUs = () => {
                   <motion.button
                     type="submit"
                     disabled={isSubmitting}
-                    className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-yellow-600 to-yellow-800 text-gray-900 font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-yellow-600 to-yellow-800 text-gray-900 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
                     aria-label="Send Message"
                   >
                     {isSubmitting ? (

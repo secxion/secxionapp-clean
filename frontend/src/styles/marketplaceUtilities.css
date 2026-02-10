@@ -1,0 +1,647 @@
+/**
+ * Marketplace Utilities CSS
+ * Consistent styling utilities for all marketplace components
+ * Follows mobile-first responsive design approach
+ */
+
+/* ============================================
+   CARD STYLES
+   ============================================ */
+
+.marketplace-card {
+  background-color: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.marketplace-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.marketplace-card--interactive {
+  cursor: pointer;
+}
+
+.marketplace-card--loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* ============================================
+   STATUS BADGES
+   ============================================ */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-badge--success {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge--warning {
+  background-color: #ffedd5;
+  color: #92400e;
+}
+
+.status-badge--danger {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.status-badge--info {
+  background-color: #dbeafe;
+  color: #0c2d6b;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.marketplace-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.marketplace-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.marketplace-btn--primary {
+  background-color: #6366f1;
+  color: white;
+}
+
+.marketplace-btn--primary:hover:not(:disabled) {
+  background-color: #4f46e5;
+}
+
+.marketplace-btn--secondary {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.marketplace-btn--secondary:hover:not(:disabled) {
+  background-color: #cbd5e1;
+}
+
+.marketplace-btn--success {
+  background-color: #10b981;
+  color: white;
+}
+
+.marketplace-btn--success:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.marketplace-btn--warning {
+  background-color: #f97316;
+  color: white;
+}
+
+.marketplace-btn--warning:hover:not(:disabled) {
+  background-color: #ea580c;
+}
+
+.marketplace-btn--danger {
+  background-color: #ef4444;
+  color: white;
+}
+
+.marketplace-btn--danger:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.marketplace-btn--sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.marketplace-btn--lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+}
+
+.marketplace-btn--block {
+  width: 100%;
+}
+
+/* ============================================
+   LOADING STATES
+   ============================================ */
+
+.skeleton {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-card {
+  height: 200px;
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.skeleton-text {
+  height: 1rem;
+  border-radius: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.skeleton-text--heading {
+  height: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.skeleton-avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+}
+
+/* ============================================
+   ERROR STATES
+   ============================================ */
+
+.error-state {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.error-state__icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.error-state__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #991b1b;
+  margin-bottom: 0.5rem;
+}
+
+.error-state__message {
+  color: #7f1d1d;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.error-state__action {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ============================================
+   EMPTY STATES
+   ============================================ */
+
+.empty-state {
+  background-color: #f8fafc;
+  border: 2px dashed rgba(100, 116, 139, 0.2);
+  border-radius: 1rem;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.empty-state__icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state__message {
+  color: #94a3b8;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+/* ============================================
+   LAYOUT UTILITIES
+   ============================================ */
+
+.marketplace-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.marketplace-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .marketplace-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .marketplace-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .marketplace-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.marketplace-flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.marketplace-flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ============================================
+   TYPOGRAPHY UTILITIES
+   ============================================ */
+
+.marketplace-heading-1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #0f172a;
+}
+
+@media (max-width: 640px) {
+  .marketplace-heading-1 {
+    font-size: 1.875rem;
+  }
+}
+
+.marketplace-heading-2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #0f172a;
+}
+
+@media (max-width: 640px) {
+  .marketplace-heading-2 {
+    font-size: 1.5rem;
+  }
+}
+
+.marketplace-heading-3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #0f172a;
+}
+
+.marketplace-text-primary {
+  font-size: 1rem;
+  color: #0f172a;
+  line-height: 1.5;
+}
+
+.marketplace-text-secondary {
+  font-size: 0.875rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.marketplace-text-tertiary {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.marketplace-text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.marketplace-text-truncate--2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.marketplace-text-truncate--3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ============================================
+   FORM UTILITIES
+   ============================================ */
+
+.marketplace-input {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(100, 116, 139, 0.2);
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #0f172a;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: #ffffff;
+}
+
+.marketplace-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.marketplace-input:disabled {
+  background-color: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.marketplace-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(100, 116, 139, 0.2);
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #0f172a;
+  min-height: 100px;
+  resize: vertical;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.marketplace-textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.marketplace-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.marketplace-form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.marketplace-form-label--required::after {
+  content: ' *';
+  color: #ef4444;
+}
+
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+
+/* Hide on mobile, show on tablet+ */
+.marketplace-hide-mobile {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .marketplace-hide-mobile {
+    display: block;
+  }
+}
+
+/* Show on mobile, hide on tablet+ */
+.marketplace-show-mobile {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .marketplace-show-mobile {
+    display: none;
+  }
+}
+
+/* Stack on mobile, row on tablet+ */
+.marketplace-flex-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .marketplace-flex-stack {
+    flex-direction: row;
+  }
+}
+
+/* ============================================
+   ANIMATION UTILITIES
+   ============================================ */
+
+.marketplace-fade-in {
+  animation: fadeIn 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.marketplace-slide-in-up {
+  animation: slideInUp 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.marketplace-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY UTILITIES
+   ============================================ */
+
+.marketplace-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.marketplace-focus-visible:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+/* ============================================
+   SPACING UTILITIES
+   ============================================ */
+
+.marketplace-gap-sm {
+  gap: 0.5rem;
+}
+
+.marketplace-gap-md {
+  gap: 1rem;
+}
+
+.marketplace-gap-lg {
+  gap: 1.5rem;
+}
+
+.marketplace-gap-xl {
+  gap: 2rem;
+}
+
+.marketplace-p-sm {
+  padding: 0.75rem;
+}
+
+.marketplace-p-md {
+  padding: 1rem;
+}
+
+.marketplace-p-lg {
+  padding: 1.5rem;
+}
+
+.marketplace-p-xl {
+  padding: 2rem;
+}
+
+.marketplace-m-sm {
+  margin: 0.75rem;
+}
+
+.marketplace-m-md {
+  margin: 1rem;
+}
+
+.marketplace-m-lg {
+  margin: 1.5rem;
+}
+
+.marketplace-m-xl {
+  margin: 2rem;
+}
+
+/* ============================================
+   COLOR UTILITIES
+   ============================================ */
+
+.marketplace-text-primary {
+  color: #0f172a;
+}
+
+.marketplace-text-secondary {
+  color: #475569;
+}
+
+.marketplace-text-success {
+  color: #10b981;
+}
+
+.marketplace-text-warning {
+  color: #f97316;
+}
+
+.marketplace-text-danger {
+  color: #ef4444;
+}
+
+.marketplace-bg-light {
+  background-color: #f8fafc;
+}
+
+.marketplace-bg-lighter {
+  background-color: #f1f5f9;
+}
+
+.marketplace-border-light {
+  border-color: rgba(148, 163, 184, 0.1);
+}
+
+.marketplace-border-default {
+  border-color: rgba(100, 116, 139, 0.2);
+}

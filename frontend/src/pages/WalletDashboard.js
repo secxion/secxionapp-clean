@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PaymentRequestForm from '../Components/PaymentRequestForm';
 import BankAccountList from '../Components/BankAccountList';
 import { useSelector } from 'react-redux';
 import TransactionHistory from '../Components/TransactionHistory';
-import WalletFooter from '../Components/WalletFooter';
 import {
   FaWallet,
   FaHistory,
@@ -15,14 +15,11 @@ import {
   FaShieldAlt,
   FaArrowUp,
   FaArrowDown,
-  FaChartLine,
   FaPlus,
   FaTimes,
-  FaHome,
 } from 'react-icons/fa';
 import SidePanel from '../Components/SidePanel';
 import SummaryApi from '../common';
-import AddBankAccountForm from '../Components/AddBankAccountForm';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import SecxionLogo from '../app/slogo.png';
@@ -30,13 +27,15 @@ import SecxionSpinner from '../Components/SecxionSpinner';
 
 const WalletDashboard = () => {
   const { user } = useSelector((state) => state.user);
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('wallet');
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [walletBalance, setWalletBalance] = useState(null);
-  const [isLoadingBalance, setIsLoadingBalance] = useState(false);
+  const [isLoadingBalance, setIsLoadingBalance] = useState(true);
   const [errorBalance, setErrorBalance] = useState('');
   const [showBalance, setShowBalance] = useState(false);
   const [openAddBankAccount, setOpenAddBankAccount] = useState(false);
+  const [userLoadTimeout, setUserLoadTimeout] = useState(false);
   const [showStatValues, setShowStatValues] = useState({
     deposits: false,
     withdrawals: false,
@@ -50,28 +49,70 @@ const WalletDashboard = () => {
   };
 
   const fetchWalletBalance = useCallback(async () => {
-    if (!user?.id && !user?._id) return;
+    if (!user?.id && !user?._id) {
+      console.warn('User not loaded, skipping wallet balance fetch');
+      setIsLoadingBalance(false);
+      return;
+    }
 
     setIsLoadingBalance(true);
     setErrorBalance('');
+
+    const controller = new AbortController();
+    const startTime = Date.now();
+    const timeoutId = setTimeout(() => {
+      const elapsed = Date.now() - startTime;
+      console.error(`Request timeout after ${elapsed}ms`);
+      controller.abort();
+    }, 15000); // 15 second timeout
+
     try {
-      const response = await fetch(
-        `${SummaryApi.getWalletBalance.url}/${user._id || user.id}`,
-        {
-          method: 'GET',
-          credentials: 'include',
+      const url = SummaryApi.getWalletBalance.url;
+      console.log('Fetching wallet balance from:', url);
+      console.log('User authenticated:', !!user);
+
+      const fetchStartTime = Date.now();
+      const response = await fetch(url, {
+        method: 'GET',
+        credentials: 'include',
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
         },
+      });
+
+      const fetchTime = Date.now() - fetchStartTime;
+      console.log(
+        `Response received in ${fetchTime}ms - Status: ${response.status}`,
       );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`API error response:`, errorText);
+        throw new Error(`API error: ${response.status} ${response.statusText}`);
+      }
+
       const data = await response.json();
-      data.success
-        ? setWalletBalance(data.balance)
-        : setErrorBalance(data.message || 'Failed to fetch wallet balance.');
+      console.log('Balance data:', data);
+
+      if (data.success) {
+        setWalletBalance(data.balance);
+      } else {
+        setErrorBalance(data.message || 'Failed to fetch wallet balance.');
+      }
     } catch (err) {
-      setErrorBalance(
-        'An unexpected error occurred while fetching wallet balance.',
-      );
-      console.error('Error fetching wallet balance:', err);
+      const totalTime = Date.now() - startTime;
+      if (err.name === 'AbortError') {
+        setErrorBalance('Request timeout. Please try again later.');
+        console.error(`Wallet balance request timed out after ${totalTime}ms`);
+      } else {
+        setErrorBalance(
+          'An unexpected error occurred while fetching wallet balance.',
+        );
+        console.error('Error fetching wallet balance:', err);
+      }
     } finally {
+      clearTimeout(timeoutId);
       setIsLoadingBalance(false);
     }
   }, [user]);
@@ -81,6 +122,27 @@ const WalletDashboard = () => {
       fetchWalletBalance();
     }
   }, [user, fetchWalletBalance]);
+
+  // Timeout if user doesn't load within 5 seconds
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!user) {
+        setUserLoadTimeout(true);
+        setIsLoadingBalance(false);
+      }
+    }, 5000);
+    return () => clearTimeout(timeout);
+  }, [user]);
+
+  // Redirect to login if user doesn't exist after timeout
+  useEffect(() => {
+    if (userLoadTimeout && !user) {
+      const timeout = setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+      return () => clearTimeout(timeout);
+    }
+  }, [userLoadTimeout, user, navigate]);
 
   const getTabIcon = (tab) => {
     switch (tab) {
@@ -119,7 +181,10 @@ const WalletDashboard = () => {
     switch (activeTab) {
       case 'wallet':
         return (
-          <div className="min-h-screen p-4 md:p-6">
+          <div
+            className="min-h-screen p-4 md:p-6"
+            style={{ paddingBottom: '3rem' }}
+          >
             <div className="max-w-4xl mx-auto space-y-6">
               {/* Enhanced Balance Card */}
               <div className="relative overflow-hidden bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-2xl border border-slate-700/50">
@@ -188,14 +253,14 @@ const WalletDashboard = () => {
                     ) : (
                       <div className="space-y-4">
                         <div className="relative">
-                          <p className="text-4xl md:text-5xl font-bold text-transparent bg-gradient-to-r from-green-400 via-green-300 to-green-500 bg-clip-text drop-shadow-sm break-words">
+                          <p className="text-3xl md:text-4xl lg:text-5xl font-bold text-transparent bg-gradient-to-r from-green-400 via-green-300 to-green-500 bg-clip-text drop-shadow-sm break-words overflow-hidden text-ellipsis">
                             {showBalance
                               ? `₦${(walletBalance || 0).toLocaleString()}`
                               : '••••••••'}
                           </p>
                           <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-green-500/20 blur-3xl -z-10"></div>
                         </div>
-                        <p className="text-slate-400 text-base">
+                        <p className="text-slate-400 text-sm md:text-base">
                           Nigerian Naira (NGN)
                         </p>
                       </div>
@@ -380,11 +445,11 @@ const WalletDashboard = () => {
 
       case 'history':
         return (
-          <div className="fixed inset-0 top-34 bottom-20 p-2 md:p-2 mt-16 md:mt-32">
-            <div className="max-w-6xl mx-auto h-full">
+          <div className="relative inset-0 p-2 md:p-2 mt-4 md:mt-6">
+            <div className="max-w-6xl mx-auto min-h-screen">
               <div className="bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-700/50 h-full flex flex-col overflow-hidden">
                 {/* Scrollable Content */}
-                <div className="flex-1 p-6 overflow-hidden">
+                <div className="flex-1 overflow-hidden">
                   <TransactionHistory />
                 </div>
               </div>
@@ -396,6 +461,29 @@ const WalletDashboard = () => {
         return null;
     }
   };
+
+  // Guard: wait for user to load
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800">
+        <div className="text-center">
+          {userLoadTimeout ? (
+            <div className="p-6 bg-red-900/20 border border-red-500/30 rounded-lg">
+              <p className="text-red-400 mb-4">Failed to load user data</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          ) : (
+            <SecxionSpinner size="large" message="Loading wallet..." />
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 relative overflow-hidden">
@@ -520,7 +608,12 @@ const WalletDashboard = () => {
       <SidePanel open={isSidePanelOpen} setOpen={setIsSidePanelOpen} />
 
       {/* Main Content */}
-      <main className="pt-32 pb-20 relative z-10">
+      <main
+        className="pt-32 pb-32 md:pb-20 relative z-10"
+        style={{
+          paddingBottom: 'max(8rem, calc(5rem + env(safe-area-inset-bottom)))',
+        }}
+      >
         <AnimatePresence mode="wait">{renderContent()}</AnimatePresence>
       </main>
 
@@ -535,10 +628,10 @@ const WalletDashboard = () => {
             onClick={() => setShowPaymentDialog(false)}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: 'spring', duration: 0.5 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               className="bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-700/50 max-w-2xl w-full max-h-[90vh] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
@@ -582,7 +675,10 @@ const WalletDashboard = () => {
       </AnimatePresence>
 
       {/* Clean Footer Navigation - Removed yellow border */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-xl border-t border-slate-700/50 shadow-lg z-40">
+      <footer
+        className="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-xl border-t border-slate-700/50 shadow-lg z-40"
+        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+      >
         <div className="flex justify-around py-3 items-center px-4">
           <button
             onClick={() => setActiveTab('wallet')}
@@ -626,7 +722,7 @@ const WalletDashboard = () => {
           background-size: 16px 16px;
         }
 
-        .bg-grid-slate-100\/\[0\.02\] {
+        .bg-grid-slate-100/[0.02] {
           background-image: radial-gradient(
             circle,
             rgba(148, 163, 184, 0.02) 1px,
@@ -642,8 +738,16 @@ const WalletDashboard = () => {
           hyphens: auto;
         }
 
-        /* Smooth transitions */
-        * {
+        /* Selective transitions only on interactive elements */
+        button {
+          transition-property:
+            background-color, border-color, color, fill, stroke, opacity,
+            box-shadow, transform;
+          transition-duration: 200ms;
+          transition-timing-function: ease-in-out;
+        }
+
+        a {
           transition-property:
             background-color, border-color, color, fill, stroke, opacity,
             box-shadow, transform;

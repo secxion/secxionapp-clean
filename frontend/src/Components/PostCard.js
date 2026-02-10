@@ -87,11 +87,10 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
   return (
     <motion.div
       key={post._id}
-      className="postcard-container mb-6 px-4 py-5 bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 shadow-lg rounded-lg border border-gray-700 transition-all duration-300 text-white"
+      className="postcard-container mb-6 px-4 py-5 bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 shadow-lg rounded-lg border border-gray-700 transition-shadow duration-300 text-white hover:shadow-xl"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 10 }}
-      whileHover={{ scale: 1.02, boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)' }}
       transition={{ duration: 0.4, ease: 'easeInOut' }}
     >
       <div className="flex flex-col sm:flex-row gap-4 break-words">

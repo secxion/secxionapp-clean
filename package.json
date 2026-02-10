@@ -5,7 +5,11 @@
   "description": "Root for Secxion app, containing frontend and backend.",
   "scripts": {
     "compress:images": "node scripts/compress-images.mjs",
-    "deploy": "./deploy.sh"
+    "deploy": "./deploy.sh",
+    "dev": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend start\"",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend start",
+    "start": "npm --prefix backend start"
   },
   "author": "",
   "license": "ISC",
@@ -14,5 +18,8 @@
     "react-image-file-resizer": "^0.4.8",
     "sharp": "^0.34.3",
     "tailwindcss": "^3.4.3"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }

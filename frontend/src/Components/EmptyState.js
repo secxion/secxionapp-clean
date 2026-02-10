@@ -131,9 +131,7 @@ const EmptyState = ({
           >
             <motion.button
               onClick={onCreateNew}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 px-8 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 flex items-center gap-3"
+              className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 px-8 py-3 rounded-xl font-semibold shadow-lg transition-colors duration-200 flex items-center gap-3"
             >
               <FaPlus className="w-5 h-5" />
               Create Your First Note

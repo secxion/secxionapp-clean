@@ -13,15 +13,22 @@ export const ensureWalletExists = async (userId) => {
 
 // Get balance for logged-in user
 export const getWalletBalance = async (req, res) => {
+  const startTime = Date.now();
   try {
     const userId = req.userId;
+    console.log('[WALLET] Getting balance for user:', userId);
+
+    const walletStartTime = Date.now();
     const wallet = await ensureWalletExists(userId);
+    const walletTime = Date.now() - walletStartTime;
+    console.log('[WALLET] ensureWalletExists took', walletTime, 'ms');
 
     res.status(200).json({
       success: true,
       balance: wallet.balance,
       transactions: wallet.transactions || [],
     });
+    console.log('[WALLET] Response sent in', Date.now() - startTime, 'ms');
   } catch (error) {
     console.error('Error fetching wallet balance:', error);
     res.status(500).json({

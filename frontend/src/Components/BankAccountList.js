@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import AddBankAccountForm from './AddBankAccountForm';
 import SummaryApi from '../common';
 import { useSelector } from 'react-redux';
@@ -19,7 +19,7 @@ const BankAccountList = ({ onBankAccountsUpdated, onBankAccountsUpdating }) => {
   const [deleteLoading, setDeleteLoading] = useState(null);
   const [deleteError, setDeleteError] = useState('');
 
-  const fetchBankAccounts = async () => {
+  const fetchBankAccounts = useCallback(async () => {
     if (!user?.id && !user?._id) {
       console.warn('User not found. Cannot fetch bank accounts.');
       setLoading(false);
@@ -48,13 +48,13 @@ const BankAccountList = ({ onBankAccountsUpdated, onBankAccountsUpdating }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, onBankAccountsUpdated]);
 
   useEffect(() => {
     if (!showAddAccountForm && user) {
       fetchBankAccounts();
     }
-  }, [showAddAccountForm, user]);
+  }, [showAddAccountForm, user, fetchBankAccounts]);
 
   const handleAddAccountClick = () => {
     setShowAddAccountForm(true);
@@ -153,15 +153,15 @@ const BankAccountList = ({ onBankAccountsUpdated, onBankAccountsUpdating }) => {
                   </div>
                   <button
                     onClick={() => handleDeleteAccount(account._id)}
-                    className="text-red-400 hover:text-red-300 hover:bg-red-900/20 focus:outline-none text-sm ml-4 flex items-center px-3 py-2 rounded-lg transition-all duration-200"
+                    className="text-red-400 hover:text-red-300 hover:bg-red-900/20 focus:outline-none ml-4 flex items-center px-3 py-2 rounded-lg transition-all duration-200"
                     disabled={deleteLoading === account._id}
+                    title="Delete account"
                   >
                     {deleteLoading === account._id ? (
-                      <FaSpinner className="animate-spin mr-2" />
+                      <FaSpinner className="animate-spin" />
                     ) : (
-                      <FaTrashAlt className="mr-2" />
+                      <FaTrashAlt />
                     )}
-                    Delete
                   </button>
                 </div>
               ))}

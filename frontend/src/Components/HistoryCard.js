@@ -68,9 +68,8 @@ const HistoryCard = ({ data, isDetailViewOpen, onCloseDetailView }) => {
   return (
     <>
       <motion.div
-        className="container mt-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 p-6 rounded-xl shadow-lg transition-transform transform hover:scale-105 duration-300 cursor-pointer border border-yellow-700/30"
+        className="container mt-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 p-6 rounded-xl shadow-lg transition-shadow transform duration-300 cursor-pointer border border-yellow-700/30 hover:shadow-xl"
         onClick={onCloseDetailView}
-        whileHover={{ backgroundColor: '#232323' }}
       >
         <div className="w-full">
           <p className="text-yellow-400 font-semibold">

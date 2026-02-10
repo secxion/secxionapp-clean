@@ -69,21 +69,11 @@ const HistoryDetailView = ({
           </h2>
           <motion.button
             onClick={onClose}
-            className="fixed top-14 right-6 z-[10000] bg-red-600 hover:bg-red-700 text-white p-3 rounded-full shadow-2xl transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-500/50 border-2 border-white/20"
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            exit={{ scale: 0, rotate: 180 }}
-            transition={{
-              type: 'spring',
-              stiffness: 300,
-              damping: 20,
-              delay: 0.1,
-            }}
-            whileHover={{
-              rotate: 90,
-              boxShadow: '0 0 30px rgba(239, 68, 68, 0.5)',
-            }}
-            whileTap={{ scale: 0.9 }}
+            className="fixed top-14 right-6 z-[10000] bg-red-600 hover:bg-red-700 text-white p-3 rounded-full shadow-2xl transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-red-500/50 border-2 border-white/20"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             aria-label="Close detail view"
           >
             <FaTimes className="w-6 h-6" />

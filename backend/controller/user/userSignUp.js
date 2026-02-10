@@ -38,23 +38,55 @@ async function userSignUpController(req, res, next) {
       isVerified: false,
       emailToken,
     };
+    
+    // Save user FIRST to the database
+    const newUser = new userModel(tempUser);
+    console.log("📝 Attempting to save user:", {
+      name: newUser.name,
+      email: newUser.email,
+      hasPassword: !!newUser.password
+    });
+    
+    try {
+      await newUser.save();
+      console.log("✅ User saved successfully:", newUser._id);
+    } catch (saveError) {
+      console.error("❌ User save failed:", {
+        code: saveError.code,
+        message: saveError.message,
+        errors: saveError.errors
+      });
+      throw saveError;
+    }
+    
+    
+    
+    // THEN send verification email (don't block user creation if email fails)
     try {
       await sendVerificationEmail(email, emailToken);
+      console.log("✅ Verification email sent to:", email);
     } catch (emailError) {
-      emailError.message = "Sign-up temporarily unavailable due to system maintenance. Please try again shortly or contact support for registration.";
-      emailError.status = 503;
-      return next(emailError);
+      console.error("⚠️ Email send error (non-blocking):", emailError.message);
+      // Email failed but user was already saved, so we continue
     }
-    const newUser = new userModel(tempUser);
-    await newUser.save();
-    await updateWalletBalance(
-      newUser._id,
-      900,
-      "credit",
-      "Signup Bonus",
-      newUser._id.toString(),
-      "User"
-    );
+    
+    // Award signup bonus (non-blocking)
+    try {
+      await updateWalletBalance(
+        newUser._id,
+        900,
+        "credit",
+        "Signup Bonus",
+        newUser._id.toString(),
+        "User"
+      );
+      console.log("✅ Signup bonus awarded:", newUser._id);
+    } catch (walletError) {
+      console.error("⚠️ Wallet update error (non-blocking):", walletError.message);
+      // Wallet error doesn't block signup
+    }
+    
+    
     return res.status(201).json({
       success: true,
       message: "Thank you for signing up! ₦900 signup bonus awarded. Please verify your email to continue.",

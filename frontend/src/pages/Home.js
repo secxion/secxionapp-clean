@@ -78,13 +78,10 @@ const Home = () => {
   const fetchWalletBalance = useCallback(async () => {
     if (!user?.id && !user?._id) return;
     try {
-      const response = await fetch(
-        `${SummaryApi.getWalletBalance.url}/${user._id || user.id}`,
-        {
-          method: 'GET',
-          credentials: 'include',
-        },
-      );
+      const response = await fetch(SummaryApi.getWalletBalance.url, {
+        method: 'GET',
+        credentials: 'include',
+      });
       const data = await response.json();
       if (data.success) setWalletBalance(data.balance || 0);
     } catch (err) {
@@ -269,8 +266,6 @@ const Home = () => {
               key={i}
               onClick={() => handleNavigation(item.path)}
               className="bg-gray-900 border border-gray-700 rounded-xl p-5 sm:p-6 hover:border-yellow-400 active:bg-gray-800 transition cursor-pointer text-left min-h-[72px] focus:outline-none focus:ring-2 focus:ring-yellow-400"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
               aria-label={item.label + ' - ' + item.description}
               tabIndex={0}
             >

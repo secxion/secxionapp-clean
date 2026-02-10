@@ -72,12 +72,8 @@ const MobileNavLink = ({ href, children }) => (
 );
 
 const ServiceCard = ({ icon, title, description, highlight }) => (
-  <motion.div
-    className="relative group"
-    whileHover={{ scale: 1.04, y: -8 }}
-    transition={{ type: 'spring', stiffness: 300 }}
-  >
-    <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/80 p-8 rounded-3xl shadow-2xl border border-yellow-700/20 relative overflow-hidden h-full backdrop-blur-xl">
+  <motion.div className="relative group">
+    <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/80 p-8 rounded-3xl shadow-2xl border border-yellow-700/20 relative overflow-hidden h-full backdrop-blur-xl hover:shadow-xl transition-shadow duration-300">
       {highlight && (
         <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-600 to-yellow-800 text-gray-900 text-xs font-bold px-3 py-1 rounded-full shadow">
           POPULAR
@@ -98,12 +94,8 @@ const ServiceCard = ({ icon, title, description, highlight }) => (
 );
 
 const FeatureCard = ({ icon, title, description }) => (
-  <motion.div
-    className="relative group"
-    whileHover={{ y: -5, scale: 1.03 }}
-    transition={{ type: 'spring', stiffness: 300 }}
-  >
-    <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/80 p-6 rounded-2xl shadow-xl border border-yellow-700/10 h-full backdrop-blur-xl">
+  <motion.div className="relative group">
+    <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/80 p-6 rounded-2xl shadow-xl border border-yellow-700/10 h-full backdrop-blur-xl hover:shadow-lg transition-shadow duration-300">
       <div className="flex items-start mb-4">
         <div className="p-3 bg-gradient-to-br from-yellow-900/30 to-yellow-700/20 rounded-xl mr-4 flex-shrink-0 shadow">
           {icon}
@@ -677,13 +669,12 @@ export default function Landing() {
       {/* Scroll to Top Button */}
       {showScrollTop && (
         <motion.button
-          className="fixed bottom-6 right-6 bg-gradient-to-r from-yellow-600 to-yellow-800 hover:from-yellow-700 hover:to-yellow-900 text-gray-900 p-3 rounded-full shadow-lg z-50"
+          className="fixed bottom-6 right-6 bg-gradient-to-r from-yellow-600 to-yellow-800 hover:from-yellow-700 hover:to-yellow-900 text-gray-900 p-3 rounded-full shadow-lg hover:shadow-xl z-50 transition-shadow duration-200"
           onClick={scrollToTop}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
         >
           <ChevronUp className="h-6 w-6" />
         </motion.button>

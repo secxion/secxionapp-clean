@@ -1,33 +1,373 @@
-body {
-  background-color: #f5f5dc;
-  font-family: 'Arial', sans-serif;
-  margin: 0;
-  padding: 0;
-}
+/**
+ * Users Market Page Styles
+ * Styles for the admin/user market management page
+ */
 
-.container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  background-color: white;
-}
+@import '../styles/marketplaceUtilities.css';
 
-.title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #333;
-  text-align: center;
-  margin-bottom: 20px;
+/* ============================================
+   PAGE LAYOUT
+   ============================================ */
+
+.users-market-page {
+  background-color: #f8fafc;
+  min-height: 100vh;
+  padding: 1.5rem;
 }
 
 @media (max-width: 768px) {
-  .title {
-    font-size: 2rem;
+  .users-market-page {
+    padding: 1rem;
   }
+}
 
-  .container {
-    padding: 15px;
+.users-market-page__container {
+  max-width: 1280px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+/* ============================================
+   PAGE HEADER
+   ============================================ */
+
+.users-market-page__header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(100, 116, 139, 0.1);
+}
+
+.users-market-page__title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .users-market-page__title {
+    font-size: 1.875rem;
+  }
+}
+
+.users-market-page__subtitle {
+  font-size: 1rem;
+  color: #475569;
+  margin-top: 0.5rem;
+}
+
+/* ============================================
+   CONTENT AREA
+   ============================================ */
+
+.users-market-page__content {
+  padding-bottom: 4rem;
+}
+
+.users-market-page__scroll-container {
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .users-market-page__scroll-container {
+    max-height: 70vh;
+  }
+}
+
+/* Custom scrollbar styling */
+.users-market-page__scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.users-market-page__scroll-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.users-market-page__scroll-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.users-market-page__scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ============================================
+   MARKET LIST
+   ============================================ */
+
+.users-market-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .users-market-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .users-market-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================
+   MARKET ITEM
+   ============================================ */
+
+.market-item {
+  background-color: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.market-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+@media (max-width: 640px) {
+  .market-item {
+    padding: 1rem;
+  }
+}
+
+.market-item__header {
+  border-bottom: 2px solid rgba(99, 102, 241, 0.1);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.market-item__header--info {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.market-item__user-id {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  font-family: 'Fira Code', monospace;
+}
+
+.market-item__user-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.market-item__user-email {
+  font-size: 0.875rem;
+  color: #475569;
+  word-break: break-all;
+}
+
+/* ============================================
+   STATUS CONTROLS
+   ============================================ */
+
+.market-item__controls {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+@media (min-width: 768px) {
+  .market-item__controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+.market-item__button-group {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.market-item__button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.875rem;
+}
+
+@media (min-width: 768px) {
+  .market-item__button {
+    padding: 0.75rem;
+  }
+}
+
+.market-item__button--done {
+  background-color: #10b981;
+  color: white;
+}
+
+.market-item__button--done:hover {
+  background-color: #059669;
+}
+
+.market-item__button--processing {
+  background-color: #f97316;
+  color: white;
+}
+
+.market-item__button--processing:hover {
+  background-color: #ea580c;
+}
+
+.market-item__button--cancel {
+  background-color: #ef4444;
+  color: white;
+}
+
+.market-item__button--cancel:hover {
+  background-color: #dc2626;
+}
+
+/* ============================================
+   FORM INPUTS
+   ============================================ */
+
+.market-item__input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid rgba(100, 116, 139, 0.2);
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: #0f172a;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.market-item__input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.market-item__file-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid rgba(100, 116, 139, 0.2);
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+/* ============================================
+   IMAGE PREVIEW
+   ============================================ */
+
+.market-item__image-preview {
+  position: relative;
+  margin: 1rem 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: #f8fafc;
+}
+
+.market-item__image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
+.market-item__image-delete {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.market-item__image-delete:hover {
+  background-color: #dc2626;
+  transform: scale(1.1);
+}
+
+/* ============================================
+   STATUS DISPLAY
+   ============================================ */
+
+.market-item__status {
+  background-color: #f8fafc;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  margin: 1rem 0;
+  border-left: 4px solid #6366f1;
+}
+
+.market-item__status-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 0.5rem;
+}
+
+.market-item__status-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.market-item__status-reason {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(100, 116, 139, 0.1);
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+/* ============================================
+   ACTIONS
+   ============================================ */
+
+.market-item__view-details {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.market-item__view-details:hover {
+  background-color: #4f46e5;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .market-item__view-details {
+    font-size: 0.875rem;
+    padding: 0.65rem;
   }
 }

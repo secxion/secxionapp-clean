@@ -1,67 +1,243 @@
 import React from 'react';
+import '../styles/marketplaceUtilities.css';
 
+/**
+ * MarketCard - Displays market/product details with pricing information
+ * Modern, responsive design with improved UX
+ * Memoized for performance optimization
+ */
 const MarketCard = ({ market }) => {
-  return (
-    <div className="container border p-4 rounded-lg shadow-md mt-4 bg-gray-100">
-      <h3 className="font-bold text-lg text-gray-800">{market.productName}</h3>
-      <p className="text-gray-600">
-        <strong>Description:</strong> {market.description}
-      </p>
-      <p className="text-gray-700">
-        <strong>Total Amount:</strong> {market.totalAmount}
-      </p>
+  const formatCurrency = (value) => {
+    if (!value) return 'N/A';
+    return typeof value === 'number'
+      ? value.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : value;
+  };
 
-      <div className="mt-2">
-        <strong className="text-gray-800">Pricing Details:</strong>
-        {market.pricing && market.pricing.length > 0 ? (
-          market.pricing.map((price, index) => (
-            <div
-              key={price._id || index}
-              className="text-gray-600 border-b pb-2 mb-2"
-            >
-              <p>
-                <strong>Currency:</strong> {price.currency}
-              </p>
-              {price.faceValues && price.faceValues.length > 0 ? (
-                <div className="mt-1">
-                  <strong>Face Values:</strong>
-                  {price.faceValues.map((face, i) => (
-                    <div key={i} className="ml-2 text-gray-700">
-                      <p>
-                        🔹 <strong>Face Value:</strong> {face.faceValue}
-                      </p>
-                      <p>
-                        💰 <strong>Rate:</strong> {face.sellingPrice}
-                      </p>
-                      {face.description && (
-                        <p>
-                          📝 <strong>Description:</strong> {face.description}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500">No face values available</p>
-              )}
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-500">No pricing details available</p>
+  if (!market) {
+    return (
+      <div className="marketplace-card">
+        <p className="marketplace-text-secondary">No market data available</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="marketplace-card marketplace-card--interactive">
+      {/* Product Header */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <h3
+          className="marketplace-heading-3"
+          style={{ marginBottom: '0.5rem' }}
+        >
+          {market.productName || 'Unnamed Product'}
+        </h3>
+        {market.description && (
+          <p
+            className="marketplace-text-secondary"
+            style={{ marginTop: '0.5rem' }}
+          >
+            {market.description}
+          </p>
         )}
       </div>
 
+      {/* Total Amount */}
+      {market.totalAmount && (
+        <div
+          style={{
+            backgroundColor: '#f8fafc',
+            padding: '1rem',
+            borderRadius: '0.75rem',
+            marginBottom: '1.5rem',
+            borderLeft: '4px solid #6366f1',
+          }}
+        >
+          <p
+            className="marketplace-text-secondary"
+            style={{ marginBottom: '0.25rem' }}
+          >
+            Total Amount
+          </p>
+          <p
+            style={{
+              fontSize: '1.5rem',
+              fontWeight: '700',
+              color: '#6366f1',
+            }}
+          >
+            {formatCurrency(market.totalAmount)}
+          </p>
+        </div>
+      )}
+
+      {/* Pricing Details */}
+      {market.pricing && market.pricing.length > 0 && (
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h4
+            className="marketplace-heading-3"
+            style={{
+              fontSize: '1.125rem',
+              marginBottom: '1rem',
+              color: '#1e293b',
+            }}
+          >
+            Pricing Details
+          </h4>
+          <div style={{ display: 'grid', gap: '1rem' }}>
+            {market.pricing.map((price, index) => (
+              <div
+                key={price._id || index}
+                style={{
+                  border: '1px solid rgba(100, 116, 139, 0.1)',
+                  borderRadius: '0.75rem',
+                  padding: '1rem',
+                  backgroundColor: '#ffffff',
+                }}
+              >
+                <div style={{ marginBottom: '0.75rem' }}>
+                  <p
+                    className="marketplace-text-secondary"
+                    style={{ marginBottom: '0.25rem' }}
+                  >
+                    Currency
+                  </p>
+                  <p
+                    style={{
+                      fontSize: '0.95rem',
+                      fontWeight: '600',
+                      color: '#1e293b',
+                    }}
+                  >
+                    {price.currency || 'N/A'}
+                  </p>
+                </div>
+
+                {/* Face Values */}
+                {price.faceValues && price.faceValues.length > 0 ? (
+                  <div>
+                    <p
+                      className="marketplace-text-secondary"
+                      style={{
+                        fontSize: '0.875rem',
+                        marginBottom: '0.75rem',
+                        fontWeight: '600',
+                      }}
+                    >
+                      Available Rates
+                    </p>
+                    <div style={{ display: 'grid', gap: '0.75rem' }}>
+                      {price.faceValues.map((face, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: '1fr 1fr',
+                            gap: '0.5rem',
+                            padding: '0.75rem',
+                            backgroundColor: '#f8fafc',
+                            borderRadius: '0.5rem',
+                            fontSize: '0.875rem',
+                          }}
+                        >
+                          <div>
+                            <p
+                              className="marketplace-text-secondary"
+                              style={{ marginBottom: '0.25rem' }}
+                            >
+                              Face Value
+                            </p>
+                            <p style={{ fontWeight: '600', color: '#1e293b' }}>
+                              {face.faceValue || 'N/A'}
+                            </p>
+                          </div>
+                          <div>
+                            <p
+                              className="marketplace-text-secondary"
+                              style={{ marginBottom: '0.25rem' }}
+                            >
+                              Rate
+                            </p>
+                            <p
+                              style={{
+                                fontWeight: '700',
+                                color: '#10b981',
+                              }}
+                            >
+                              {formatCurrency(face.sellingPrice)}
+                            </p>
+                          </div>
+                          {face.description && (
+                            <p
+                              className="marketplace-text-secondary"
+                              style={{
+                                gridColumn: '1 / -1',
+                                fontSize: '0.8rem',
+                                marginTop: '0.25rem',
+                              }}
+                            >
+                              📝 {face.description}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <p
+                    className="marketplace-text-secondary"
+                    style={{ fontSize: '0.875rem' }}
+                  >
+                    No pricing tiers available
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Product Image */}
       {market.Image && market.Image.length > 0 ? (
-        <img
-          src={market.Image[0]}
-          alt={market.productName}
-          className="mt-2 w-full h-auto rounded-lg shadow-sm"
-        />
+        <div
+          style={{
+            marginTop: '1.5rem',
+            borderRadius: '0.75rem',
+            overflow: 'hidden',
+          }}
+        >
+          <img
+            src={market.Image[0]}
+            alt={market.productName}
+            style={{
+              width: '100%',
+              height: 'auto',
+              display: 'block',
+              maxHeight: '300px',
+              objectFit: 'cover',
+            }}
+            loading="lazy"
+          />
+        </div>
       ) : (
-        <p className="text-gray-500 mt-2">No image available</p>
+        <div
+          style={{
+            marginTop: '1.5rem',
+            padding: '2rem',
+            backgroundColor: '#f8fafc',
+            borderRadius: '0.75rem',
+            textAlign: 'center',
+            border: '1px dashed rgba(100, 116, 139, 0.2)',
+          }}
+        >
+          <p className="marketplace-text-secondary">📷 No image available</p>
+        </div>
       )}
     </div>
   );
 };
 
-export default MarketCard;
+export default React.memo(MarketCard);

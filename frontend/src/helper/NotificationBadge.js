@@ -4,30 +4,36 @@ import SummaryApi from '../common';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import notificationSound from '../Assets/notification.mp3';
-import PopAlert from './PopAlert';
+import NotificationStack from './NotificationStack';
+import {
+  getNotificationTypeMetadata,
+  getVibrationPattern,
+  getSoundVolume,
+} from '../utils/notificationTypeHelper';
 
 const NotificationBadge = () => {
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupMessage, setPopupMessage] = useState('');
-  const [animate, setAnimate] = useState(false);
+  const [popupNotifications, setPopupNotifications] = useState([]);
   const { user } = useSelector((state) => state.user);
   const audioRef = useRef(null);
+  const lastShownIdsRef = useRef(new Set());
 
-  const playNotificationSound = () => {
+  const playNotificationSound = useCallback((priority = 'medium') => {
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
+      audioRef.current.volume = getSoundVolume(priority);
       audioRef.current.play().catch((err) => {
         console.warn('Notification sound failed:', err);
       });
     }
-  };
+  }, []);
 
-  const triggerVibration = () => {
+  const triggerVibration = useCallback((priority = 'medium') => {
     if (navigator.vibrate) {
-      navigator.vibrate([100, 50, 100]);
+      const pattern = getVibrationPattern(priority);
+      navigator.vibrate(pattern);
     }
-  };
+  }, []);
 
   const fetchUnreadCount = useCallback(async () => {
     if (user?._id) {
@@ -56,26 +62,43 @@ const NotificationBadge = () => {
         const data = await response.json();
 
         if (data.success && Array.isArray(data.newNotifications)) {
-          const latest = data.newNotifications[0];
-          const lastShownId = localStorage.getItem('lastNotifiedId');
+          // Process all new notifications, not just the latest
+          const newNotifications = data.newNotifications.filter(
+            (notif) => !lastShownIdsRef.current.has(notif._id),
+          );
 
-          if (latest && latest._id !== lastShownId) {
-            localStorage.setItem('lastNotifiedId', latest._id);
-            setPopupMessage(latest.message || 'New notification received!');
-            setShowPopup(true);
-            setAnimate(true);
-            playNotificationSound();
-            triggerVibration();
+          if (newNotifications.length > 0) {
+            // Add new notifications to the stack
+            newNotifications.forEach((notification) => {
+              lastShownIdsRef.current.add(notification._id);
 
-            setTimeout(() => setAnimate(false), 1500);
-            setTimeout(() => setShowPopup(false), 2500);
+              // Get metadata for this notification type
+              const metadata = getNotificationTypeMetadata(
+                notification.type || 'default',
+              );
+
+              // Add to popup queue
+              setPopupNotifications((prev) => [
+                ...prev,
+                {
+                  id: notification._id,
+                  message: notification.message || 'New notification received!',
+                  type: notification.type || 'default',
+                  autoClose: true,
+                },
+              ]);
+
+              // Use priority-aware sound and vibration
+              playNotificationSound(metadata.priority);
+              triggerVibration(metadata.priority);
+            });
           }
         }
       } catch (error) {
         console.error('❌ Error fetching new notifications:', error);
       }
     }
-  }, [user?._id]);
+  }, [user?._id, playNotificationSound, triggerVibration]);
 
   useEffect(() => {
     fetchUnreadCount();
@@ -90,16 +113,21 @@ const NotificationBadge = () => {
     };
   }, [fetchUnreadCount, fetchNewNotifications]);
 
+  const handleRemoveNotification = useCallback((id) => {
+    setPopupNotifications((prev) => prev.filter((notif) => notif.id !== id));
+  }, []);
+
   return (
     <>
       <div className="relative flex items-center">
         <Link
           to="/notifications"
-          className="relative text-2xl text-gray-800 hover:text-black"
+          className="relative text-2xl text-gray-800 hover:text-black transition-colors"
+          title="View all notifications"
         >
           <PiBell />
           {unreadNotificationCount > 0 && (
-            <span className="absolute -top-0.5 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
+            <span className="absolute -top-0.5 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full font-semibold">
               {unreadNotificationCount}
             </span>
           )}
@@ -107,8 +135,11 @@ const NotificationBadge = () => {
         <audio ref={audioRef} src={notificationSound} preload="auto" />
       </div>
 
-      {showPopup && (
-        <PopAlert message={popupMessage} onClose={() => setShowPopup(false)} />
+      {popupNotifications.length > 0 && (
+        <NotificationStack
+          notifications={popupNotifications}
+          onRemove={handleRemoveNotification}
+        />
       )}
     </>
   );
