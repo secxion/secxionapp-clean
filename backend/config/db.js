@@ -9,6 +9,10 @@ async function connectDB(){
     try{
         const mongoUri = process.env.MONGODB_URI;
         
+        if (!mongoUri) {
+            throw new Error('MONGODB_URI environment variable is not set');
+        }
+        
         const mongoOptions = {
             retryWrites: true,
             w: 'majority',

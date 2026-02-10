@@ -15,6 +15,11 @@ import fs from 'fs';
 
 dotenv.config();
 
+console.log('🚀 Starting server...');
+console.log(`   NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
+console.log(`   PORT: ${process.env.PORT || 5000}`);
+console.log(`   MONGODB_URI: ${process.env.MONGODB_URI ? '✓ Set' : '✗ NOT SET'}`);
+
 const app = express();
 app.set('trust proxy', 1);
 
