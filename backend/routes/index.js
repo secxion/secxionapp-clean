@@ -235,15 +235,15 @@ router.get("/slider-verification", (req, res) => {
   res.json({ target, signature });
 });
 
-// Authentication routes with rate limiting and CSRF
-router.post("/signup", signupLimiter, csrfProtection, userSignUpController);
+// Authentication routes with rate limiting (no CSRF - unauthenticated endpoints)
+router.post("/signup", signupLimiter, userSignUpController);
 router.get('/verify-email', verifyEmailController);
-router.post("/signin", authLimiter, csrfProtection, userSignInController);
+router.post("/signin", authLimiter, userSignInController);
 router.get("/user-details", authToken, noCache, userDetailsController);
 router.get("/userLogout", authToken, noCache, userLogout);
-router.post("/request-reset", passwordResetLimiter, csrfProtection, sendResetCode);
-router.post("/confirm-reset", csrfProtection, verifyReset);
-router.post("/resend-verification", csrfProtection, resendVerificationEmailController);
+router.post("/request-reset", passwordResetLimiter, sendResetCode);
+router.post("/confirm-reset", verifyReset);
+router.post("/resend-verification", resendVerificationEmailController);
 router.post("/send-bank-code", authToken, sendBankAddCode);
 router.post("/verify-add-bank", authToken, verifyAndAddBankAccount);
 
