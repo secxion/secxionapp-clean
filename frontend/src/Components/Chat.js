@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import SummaryApi from '../common';
 
-const socket = io(process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000');
+// Use same origin in production, localhost in development
+const socketUrl = process.env.NODE_ENV === 'development' 
+  ? 'http://localhost:5000' 
+  : window.location.origin;
+const socket = io(socketUrl);
 
 const Chat = ({ receiver }) => {
   const [messages, setMessages] = useState([]);

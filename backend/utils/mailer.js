@@ -2,11 +2,12 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import nodemailer from 'nodemailer';
+import axios from 'axios';
 
 const { MAIL_USER, MAIL_PASS, FRONTEND_URL } = process.env;
 
 // New environment variables for secondary mailer (Brevo/Sendinblue)
-const { BREVO_SMTP_HOST, BREVO_SMTP_PORT, BREVO_SMTP_USER, BREVO_SMTP_PASS, BREVO_SENDER_FROM_EMAIL } = process.env;
+const { BREVO_SMTP_HOST, BREVO_SMTP_PORT, BREVO_SMTP_USER, BREVO_SMTP_PASS, BREVO_SENDER_FROM_EMAIL, BREVO_API_KEY } = process.env;
 
 if (!MAIL_USER || !MAIL_PASS) {
   throw new Error("Missing MAIL_USER or MAIL_PASS environment variables for primary (Gmail).");
@@ -100,61 +101,98 @@ const testSecondaryConnection = async () => {
 testPrimaryConnection();
 testSecondaryConnection();
 
-
 /**
- * Sends an email using the primary transporter, with a fallback to the secondary.
- * @param {object} options - Nodemailer mail options.
- * @param {string} context - A description of the email's purpose (e.g., "Verification Email").
- * @returns {Promise<object>} - Nodemailer info object on success.
- * @throws {Error} - If email sending fails through all configured transporters.
+ * Send email using Brevo HTTP API (works on Render free tier)
+ * This is the primary method since SMTP is blocked on many cloud platforms
  */
-const sendEmail = async (options, context) => {
-  let transporterToUse;
-  let fromEmailForService = options.from; // Default to original from
-  let serviceName = "Primary (Gmail)";
+const sendViaBrevoAPI = async (options, context) => {
+  if (!BREVO_API_KEY) {
+    throw new Error('BREVO_API_KEY is not set. Cannot use Brevo HTTP API.');
+  }
+
+  const senderEmail = BREVO_SENDER_FROM_EMAIL || MAIL_USER;
+  const senderName = options.from?.match(/"([^"]+)"/)?.[1] || 'Secxion';
+
+  const payload = {
+    sender: {
+      name: senderName,
+      email: senderEmail
+    },
+    to: [{ email: options.to }],
+    subject: options.subject,
+    htmlContent: options.html
+  };
 
   try {
-    transporterToUse = primaryTransporter;
-    console.log(`✉️ Attempting to send email via ${serviceName} for [${context}]...`);
-    const info = await transporterToUse.sendMail(options);
-    console.log(`✅ Email sent successfully via ${serviceName} [${context}]:`, info.messageId);
-    return info;
+    console.log(`📧 Attempting Brevo HTTP API for [${context}]...`);
+    const response = await axios.post('https://api.brevo.com/v3/smtp/email', payload, {
+      headers: {
+        'accept': 'application/json',
+        'api-key': BREVO_API_KEY,
+        'content-type': 'application/json'
+      },
+      timeout: 30000
+    });
+    console.log(`✅ Email sent via Brevo HTTP API [${context}]:`, response.data.messageId || 'success');
+    return { messageId: response.data.messageId || 'brevo-api-success' };
+  } catch (error) {
+    const errorMsg = error.response?.data?.message || error.message;
+    console.error(`❌ Brevo HTTP API failed for [${context}]:`, errorMsg);
+    throw new Error(`Brevo HTTP API failed: ${errorMsg}`);
+  }
+};
 
-  } catch (primaryError) {
-    console.error(`❌ ${serviceName} mailer failed for [${context}]:`, primaryError.message);
-    console.log(`🔄 Falling back to Secondary (Brevo) mailer for [${context}]...`);
 
-    if (secondaryTransporter) {
-      transporterToUse = secondaryTransporter;
-      serviceName = "Secondary (Brevo)";
+/**
+ * Sends an email using available methods with fallbacks.
+ * Priority: 1. Brevo HTTP API (works on Render), 2. Gmail SMTP, 3. Brevo SMTP
+ * @param {object} options - Nodemailer mail options.
+ * @param {string} context - A description of the email's purpose (e.g., "Verification Email").
+ * @returns {Promise<object>} - Info object on success.
+ * @throws {Error} - If email sending fails through all configured methods.
+ */
+const sendEmail = async (options, context) => {
+  const errors = [];
 
-      // IMPORTANT: Adjust 'from' address for Brevo if BREVO_SENDER_FROM_EMAIL is set
-      // Brevo requires the 'from' address to be a sender verified in their platform.
-      // If MAIL_USER (secxionxii@gmail.com) is not verified in Brevo, this will fail.
-      if (BREVO_SENDER_FROM_EMAIL) {
-          options.from = options.from.replace(MAIL_USER, BREVO_SENDER_FROM_EMAIL);
-          console.log(`   (Using verified Brevo sender: ${BREVO_SENDER_FROM_EMAIL})`);
-      } else {
-          console.warn(`   ⚠️ Warning: BREVO_SENDER_FROM_EMAIL is not set. Using original 'from' address (${MAIL_USER}). Ensure it's verified in Brevo for best deliverability.`);
-      }
-
-      try {
-        const info = await transporterToUse.sendMail(options);
-        console.log(`✅ Email sent successfully via ${serviceName} [${context}]:`, info.messageId);
-        return info;
-      } catch (secondaryError) {
-        console.error(`❌ ${serviceName} mailer also failed for [${context}]:`, secondaryError.message);
-        if (secondaryError.response && (secondaryError.response.includes('Sender address not verified') || secondaryError.response.includes('Invalid sender'))) {
-            console.error('📧 CRITICAL: The "from" email address used with Brevo is NOT VERIFIED in your Brevo account. Please verify it in Brevo "Senders & IPs".');
-        }
-        // Consolidate and re-throw the error
-        throw new Error(`Email sending failed through both primary (Gmail) and secondary (Brevo) services. Primary error: ${primaryError.message}. Secondary error: ${secondaryError.message}`);
-      }
-    } else {
-      // No secondary transporter configured
-      throw new Error(`Email sending failed via Primary (Gmail): ${primaryError.message}. No secondary mailer configured.`);
+  // Method 1: Try Brevo HTTP API first (works on Render free tier)
+  if (BREVO_API_KEY) {
+    try {
+      return await sendViaBrevoAPI(options, context);
+    } catch (apiError) {
+      errors.push(`Brevo API: ${apiError.message}`);
     }
   }
+
+  // Method 2: Try Gmail SMTP
+  try {
+    console.log(`✉️ Attempting Gmail SMTP for [${context}]...`);
+    const info = await primaryTransporter.sendMail(options);
+    console.log(`✅ Email sent via Gmail SMTP [${context}]:`, info.messageId);
+    return info;
+  } catch (gmailError) {
+    errors.push(`Gmail SMTP: ${gmailError.message}`);
+    console.error(`❌ Gmail SMTP failed for [${context}]:`, gmailError.message);
+  }
+
+  // Method 3: Try Brevo SMTP
+  if (secondaryTransporter) {
+    try {
+      console.log(`🔄 Trying Brevo SMTP for [${context}]...`);
+      const modifiedOptions = { ...options };
+      if (BREVO_SENDER_FROM_EMAIL) {
+        modifiedOptions.from = options.from.replace(MAIL_USER, BREVO_SENDER_FROM_EMAIL);
+      }
+      const info = await secondaryTransporter.sendMail(modifiedOptions);
+      console.log(`✅ Email sent via Brevo SMTP [${context}]:`, info.messageId);
+      return info;
+    } catch (brevoError) {
+      errors.push(`Brevo SMTP: ${brevoError.message}`);
+      console.error(`❌ Brevo SMTP failed for [${context}]:`, brevoError.message);
+    }
+  }
+
+  // All methods failed
+  throw new Error(`All email methods failed: ${errors.join('; ')}`);
 };
 
 export const sendVerificationEmail = async (email, token) => {

@@ -1,9 +1,10 @@
 import React from 'react';
+
 export default function NFTBadge() {
   return (
     <div className="flex items-center gap-2">
       <img
-        src="/app/slogo.png"
+        src="/icons/sexion%20pixx.png"
         alt="Secxion NFT"
         className="w-8 h-8 rounded-full border-2 border-yellow-400 animate-pulse"
       />

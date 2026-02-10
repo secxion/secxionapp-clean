@@ -1,7 +1,9 @@
+// In production, use relative URLs so API calls go to same origin
+// In development, use localhost:5000 for the backend
 const backendDomain =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:5000'
-    : process.env.REACT_APP_BACKEND_URL || 'https://secxion.com';
+    : ''; // Empty string = same origin (relative URLs)
 
 const SummaryApi = {
   baseURL: backendDomain,
