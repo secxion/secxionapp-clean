@@ -4,78 +4,91 @@ dotenv.config();
 import nodemailer from 'nodemailer';
 import axios from 'axios';
 
-const { MAIL_USER, MAIL_PASS, FRONTEND_URL } = process.env;
+const { FRONTEND_URL } = process.env;
 
-// New environment variables for secondary mailer (Brevo/Sendinblue)
+// Hostinger SMTP (Primary - for secxion.com)
+const { HOSTINGER_SMTP_HOST, HOSTINGER_SMTP_PORT, HOSTINGER_SMTP_USER, HOSTINGER_SMTP_PASS } = process.env;
+
+// Brevo as fallback
 const { BREVO_SMTP_HOST, BREVO_SMTP_PORT, BREVO_SMTP_USER, BREVO_SMTP_PASS, BREVO_SENDER_FROM_EMAIL, BREVO_API_KEY } = process.env;
 
-if (!MAIL_USER || !MAIL_PASS) {
-  throw new Error("Missing MAIL_USER or MAIL_PASS environment variables for primary (Gmail).");
-}
+// Gmail as last resort fallback
+const { MAIL_USER, MAIL_PASS } = process.env;
 
-console.log("MAIL_USER (Primary/Gmail):", MAIL_USER);
-console.log("MAIL_PASS (Primary/Gmail):", MAIL_PASS ? "✓ set" : "❌ not set");
-console.log("FRONTEND_URL:", FRONTEND_URL);
+console.log("📧 Email Configuration:");
+console.log("   FRONTEND_URL:", FRONTEND_URL);
 
-// Log secondary mailer credentials if available
-if (BREVO_SMTP_HOST && BREVO_SMTP_PORT && BREVO_SMTP_USER && BREVO_SMTP_PASS) {
-  console.log("BREVO_SMTP_HOST:", BREVO_SMTP_HOST);
-  console.log("BREVO_SMTP_PORT:", BREVO_SMTP_PORT);
-  console.log("BREVO_SMTP_USER:", BREVO_SMTP_USER);
-  console.log("BREVO_SMTP_PASS:", BREVO_SMTP_PASS ? "✓ set" : "❌ not set");
-  console.log("BREVO_SENDER_FROM_EMAIL:", BREVO_SENDER_FROM_EMAIL || "Not set - will default to Gmail 'from' address.");
+// Primary Transporter: Hostinger (verify@secxion.com)
+let primaryTransporter = null;
+if (HOSTINGER_SMTP_HOST && HOSTINGER_SMTP_USER && HOSTINGER_SMTP_PASS) {
+  console.log("   HOSTINGER_SMTP_HOST:", HOSTINGER_SMTP_HOST);
+  console.log("   HOSTINGER_SMTP_PORT:", HOSTINGER_SMTP_PORT || 465);
+  console.log("   HOSTINGER_SMTP_USER:", HOSTINGER_SMTP_USER);
+  console.log("   HOSTINGER_SMTP_PASS:", HOSTINGER_SMTP_PASS ? "✓ set" : "❌ not set");
+  
+  primaryTransporter = nodemailer.createTransport({
+    host: HOSTINGER_SMTP_HOST,
+    port: parseInt(HOSTINGER_SMTP_PORT || '465', 10),
+    secure: parseInt(HOSTINGER_SMTP_PORT || '465', 10) === 465,
+    auth: {
+      user: HOSTINGER_SMTP_USER,
+      pass: HOSTINGER_SMTP_PASS,
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
 } else {
-  console.warn("Brevo credentials (BREVO_SMTP_HOST, BREVO_SMTP_PORT, BREVO_SMTP_USER, BREVO_SMTP_PASS) are not fully set. Secondary mailer (Brevo) will not be available.");
+  console.warn("⚠️ Hostinger SMTP not configured. Will use fallback mailers.");
 }
-
-
-// Primary Transporter: Gmail
-const primaryTransporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: MAIL_USER,
-    pass: MAIL_PASS,
-  },
-  secure: true, // Use SSL/TLS for port 465 (default for 'gmail' service)
-  requireTLS: true, // Enforce TLS even if not using secure: true
-  tls: {
-    rejectUnauthorized: false // Set to true in production if you have proper certificates
-  }
-});
 
 // Secondary Transporter: Brevo (formerly Sendinblue)
 let secondaryTransporter = null;
-if (BREVO_SMTP_HOST && BREVO_SMTP_PORT && BREVO_SMTP_USER && BREVO_SMTP_PASS) {
+if (BREVO_SMTP_HOST && BREVO_SMTP_USER && BREVO_SMTP_PASS) {
+  console.log("   BREVO configured as fallback");
   secondaryTransporter = nodemailer.createTransport({
     host: BREVO_SMTP_HOST,
-    port: parseInt(BREVO_SMTP_PORT, 10), // Ensure port is an integer
-    secure: parseInt(BREVO_SMTP_PORT, 10) === 465, // Use 'true' for 465, 'false' for 587 with STARTTLS
+    port: parseInt(BREVO_SMTP_PORT || '587', 10),
+    secure: parseInt(BREVO_SMTP_PORT || '587', 10) === 465,
     auth: {
       user: BREVO_SMTP_USER,
       pass: BREVO_SMTP_PASS,
     },
     tls: {
-      rejectUnauthorized: false // Set to true in production
+      rejectUnauthorized: false
     }
   });
 }
 
-// Test connection on startup for primary mailer
+// Tertiary Transporter: Gmail
+let gmailTransporter = null;
+if (MAIL_USER && MAIL_PASS) {
+  console.log("   Gmail configured as fallback");
+  gmailTransporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: MAIL_USER,
+      pass: MAIL_PASS,
+    },
+    secure: true,
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+}
+
+// Test connection on startup for primary mailer (Hostinger)
 const testPrimaryConnection = async () => {
+  if (!primaryTransporter) {
+    console.warn('⏩ Hostinger SMTP not configured. Skipping connection test.');
+    return false;
+  }
   try {
     await primaryTransporter.verify();
-    console.log('✅ Primary (Gmail) SMTP connection verified successfully');
+    console.log('✅ Hostinger SMTP connection verified successfully');
     return true;
   } catch (error) {
-    console.error('❌ Primary (Gmail) SMTP connection failed:', error.message);
-    if (error.code === 'EAUTH') {
-      console.error('🔑 Authentication failed for Gmail. Please check:');
-      console.error('   1. Use App Password (not regular Gmail password)');
-      console.error('   2. Enable 2-Factor Authentication');
-      console.error('   3. Generate App Password: https://myaccount.google.com/apppasswords');
-    } else if (error.code === 'ETIMEDOUT' || error.code === 'ESOCKET') {
-      console.error('🌐 Network or firewall issue preventing connection to Gmail SMTP.');
-    }
+    console.error('❌ Hostinger SMTP connection failed:', error.message);
     return false;
   }
 };
@@ -83,16 +96,15 @@ const testPrimaryConnection = async () => {
 // Test connection on startup for secondary mailer if configured
 const testSecondaryConnection = async () => {
   if (!secondaryTransporter) {
-    console.warn('⏩ Secondary (Brevo) transporter not configured. Skipping connection test.');
+    console.warn('⏩ Brevo SMTP not configured. Skipping connection test.');
     return false;
   }
   try {
     await secondaryTransporter.verify();
-    console.log('✅ Secondary (Brevo) SMTP connection verified successfully');
+    console.log('✅ Brevo SMTP connection verified successfully');
     return true;
   } catch (error) {
-    console.error('❌ Secondary (Brevo) SMTP connection failed:', error.message);
-    // Specific error handling for Brevo if needed
+    console.error('❌ Brevo SMTP connection failed:', error.message);
     return false;
   }
 };
@@ -101,16 +113,19 @@ const testSecondaryConnection = async () => {
 testPrimaryConnection();
 testSecondaryConnection();
 
+// Default sender info
+const DEFAULT_FROM_EMAIL = HOSTINGER_SMTP_USER || 'verify@secxion.com';
+const DEFAULT_FROM_NAME = 'SECXION';
+
 /**
  * Send email using Brevo HTTP API (works on Render free tier)
- * This is the primary method since SMTP is blocked on many cloud platforms
  */
 const sendViaBrevoAPI = async (options, context) => {
   if (!BREVO_API_KEY) {
     throw new Error('BREVO_API_KEY is not set. Cannot use Brevo HTTP API.');
   }
 
-  const senderEmail = BREVO_SENDER_FROM_EMAIL || MAIL_USER;
+  const senderEmail = BREVO_SENDER_FROM_EMAIL || DEFAULT_FROM_EMAIL;
   const senderName = options.from?.match(/"([^"]+)"/)?.[1] || 'Secxion';
 
   const payload = {
@@ -145,7 +160,7 @@ const sendViaBrevoAPI = async (options, context) => {
 
 /**
  * Sends an email using available methods with fallbacks.
- * Priority: 1. Brevo HTTP API (works on Render), 2. Gmail SMTP, 3. Brevo SMTP
+ * Priority: 1. Hostinger SMTP, 2. Brevo HTTP API, 3. Brevo SMTP, 4. Gmail SMTP
  * @param {object} options - Nodemailer mail options.
  * @param {string} context - A description of the email's purpose (e.g., "Verification Email").
  * @returns {Promise<object>} - Info object on success.
@@ -154,7 +169,20 @@ const sendViaBrevoAPI = async (options, context) => {
 const sendEmail = async (options, context) => {
   const errors = [];
 
-  // Method 1: Try Brevo HTTP API first (works on Render free tier)
+  // Method 1: Try Hostinger SMTP first (primary)
+  if (primaryTransporter) {
+    try {
+      console.log(`✉️ Attempting Hostinger SMTP for [${context}]...`);
+      const info = await primaryTransporter.sendMail(options);
+      console.log(`✅ Email sent via Hostinger SMTP [${context}]:`, info.messageId);
+      return info;
+    } catch (hostingerError) {
+      errors.push(`Hostinger SMTP: ${hostingerError.message}`);
+      console.error(`❌ Hostinger SMTP failed for [${context}]:`, hostingerError.message);
+    }
+  }
+
+  // Method 2: Try Brevo HTTP API (works on Render free tier)
   if (BREVO_API_KEY) {
     try {
       return await sendViaBrevoAPI(options, context);
@@ -163,24 +191,13 @@ const sendEmail = async (options, context) => {
     }
   }
 
-  // Method 2: Try Gmail SMTP
-  try {
-    console.log(`✉️ Attempting Gmail SMTP for [${context}]...`);
-    const info = await primaryTransporter.sendMail(options);
-    console.log(`✅ Email sent via Gmail SMTP [${context}]:`, info.messageId);
-    return info;
-  } catch (gmailError) {
-    errors.push(`Gmail SMTP: ${gmailError.message}`);
-    console.error(`❌ Gmail SMTP failed for [${context}]:`, gmailError.message);
-  }
-
   // Method 3: Try Brevo SMTP
   if (secondaryTransporter) {
     try {
       console.log(`🔄 Trying Brevo SMTP for [${context}]...`);
       const modifiedOptions = { ...options };
       if (BREVO_SENDER_FROM_EMAIL) {
-        modifiedOptions.from = options.from.replace(MAIL_USER, BREVO_SENDER_FROM_EMAIL);
+        modifiedOptions.from = `"${DEFAULT_FROM_NAME}" <${BREVO_SENDER_FROM_EMAIL}>`;
       }
       const info = await secondaryTransporter.sendMail(modifiedOptions);
       console.log(`✅ Email sent via Brevo SMTP [${context}]:`, info.messageId);
@@ -191,6 +208,21 @@ const sendEmail = async (options, context) => {
     }
   }
 
+  // Method 4: Try Gmail SMTP as last resort
+  if (gmailTransporter) {
+    try {
+      console.log(`🔄 Trying Gmail SMTP for [${context}]...`);
+      const modifiedOptions = { ...options };
+      modifiedOptions.from = `"${DEFAULT_FROM_NAME}" <${MAIL_USER}>`;
+      const info = await gmailTransporter.sendMail(modifiedOptions);
+      console.log(`✅ Email sent via Gmail SMTP [${context}]:`, info.messageId);
+      return info;
+    } catch (gmailError) {
+      errors.push(`Gmail SMTP: ${gmailError.message}`);
+      console.error(`❌ Gmail SMTP failed for [${context}]:`, gmailError.message);
+    }
+  }
+
   // All methods failed
   throw new Error(`All email methods failed: ${errors.join('; ')}`);
 };
@@ -198,9 +230,8 @@ const sendEmail = async (options, context) => {
 export const sendVerificationEmail = async (email, token) => {
   const verificationLink = `${FRONTEND_URL}/verify-email?token=${token}`;
 
-  // Keep the `from` format consistent for initial call, it will be modified if fallback occurs
   const mailOptions = {
-    from: `"Secxion 👁️‍🗨️" <${MAIL_USER}>`,
+    from: `"${DEFAULT_FROM_NAME}" <${DEFAULT_FROM_EMAIL}>`,
     to: email,
     subject: "🛡️ Verify Your Email - Secxion",
     html: `
@@ -229,7 +260,7 @@ export const sendResetCodeEmail = async (email, code, type) => {
   const label = type === "password" ? "Reset Your Password" : "Reset Telegram Number";
 
   const mailOptions = {
-    from: `"Secxion 🛡️" <${MAIL_USER}>`,
+    from: `"${DEFAULT_FROM_NAME}" <${DEFAULT_FROM_EMAIL}>`,
     to: email,
     subject: `🔐 ${label} Code - Secxion`,
     html: `
@@ -259,7 +290,7 @@ export const sendResetCodeEmail = async (email, code, type) => {
 
 export const sendBankVerificationCode = async (email, code) => {
   const mailOptions = {
-    from: `"Secxion 🏦" <${MAIL_USER}>`,
+    from: `"${DEFAULT_FROM_NAME}" <${DEFAULT_FROM_EMAIL}>`,
     to: email,
     subject: `🔐 Confirm Bank Account Addition - Secxion`,
     html: `
