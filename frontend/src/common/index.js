@@ -1,9 +1,6 @@
 // In production, use relative URLs so API calls go to same origin
 // In development, use localhost:5000 for the backend
-const backendDomain =
-  process.env.NODE_ENV === 'development'
-    ? 'http://localhost:5000'
-    : ''; // Empty string = same origin (relative URLs)
+const backendDomain = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '';
 
 const SummaryApi = {
   baseURL: backendDomain,
