@@ -36,7 +36,10 @@ if (HOSTINGER_SMTP_HOST && HOSTINGER_SMTP_USER && HOSTINGER_SMTP_PASS) {
     },
     tls: {
       rejectUnauthorized: false
-    }
+    },
+    connectionTimeout: 10000, // 10 seconds
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
   });
 } else {
   console.warn("⚠️ Hostinger SMTP not configured. Will use fallback mailers.");
@@ -56,7 +59,10 @@ if (BREVO_SMTP_HOST && BREVO_SMTP_USER && BREVO_SMTP_PASS) {
     },
     tls: {
       rejectUnauthorized: false
-    }
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
   });
 }
 
@@ -73,7 +79,10 @@ if (MAIL_USER && MAIL_PASS) {
     secure: true,
     tls: {
       rejectUnauthorized: false
-    }
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
   });
 }
 
@@ -109,13 +118,22 @@ const testSecondaryConnection = async () => {
   }
 };
 
-// Run connection tests on module load
-testPrimaryConnection();
-testSecondaryConnection();
+// Run connection tests on module load (non-blocking)
+testPrimaryConnection().catch(() => {});
+testSecondaryConnection().catch(() => {});
 
-// Default sender info
+// Promise timeout wrapper
+const withTimeout = (promise, ms, errorMsg = 'Operation timed out') => {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(errorMsg)), ms))
+  ]);
+};
+
+// Default sender info - always use "Secxion" branding
 const DEFAULT_FROM_EMAIL = HOSTINGER_SMTP_USER || 'verify@secxion.com';
-const DEFAULT_FROM_NAME = 'SECXION';
+const DEFAULT_FROM_NAME = 'Secxion';
+const REPLY_TO_EMAIL = 'verify@secxion.com';
 
 /**
  * Send email using Brevo HTTP API (works on Render free tier)
@@ -126,12 +144,16 @@ const sendViaBrevoAPI = async (options, context) => {
   }
 
   const senderEmail = BREVO_SENDER_FROM_EMAIL || DEFAULT_FROM_EMAIL;
-  const senderName = options.from?.match(/"([^"]+)"/)?.[1] || 'Secxion';
+  const senderName = options.from?.match(/"([^"]+)"/)?.[1] || DEFAULT_FROM_NAME;
 
   const payload = {
     sender: {
       name: senderName,
       email: senderEmail
+    },
+    replyTo: {
+      name: DEFAULT_FROM_NAME,
+      email: REPLY_TO_EMAIL
     },
     to: [{ email: options.to }],
     subject: options.subject,
@@ -168,12 +190,17 @@ const sendViaBrevoAPI = async (options, context) => {
  */
 const sendEmail = async (options, context) => {
   const errors = [];
+  const SMTP_TIMEOUT = 20000; // 20 second hard timeout per method
 
   // Method 1: Try Hostinger SMTP first (primary)
   if (primaryTransporter) {
     try {
       console.log(`✉️ Attempting Hostinger SMTP for [${context}]...`);
-      const info = await primaryTransporter.sendMail(options);
+      const info = await withTimeout(
+        primaryTransporter.sendMail(options),
+        SMTP_TIMEOUT,
+        'Hostinger SMTP timeout'
+      );
       console.log(`✅ Email sent via Hostinger SMTP [${context}]:`, info.messageId);
       return info;
     } catch (hostingerError) {
@@ -199,7 +226,12 @@ const sendEmail = async (options, context) => {
       if (BREVO_SENDER_FROM_EMAIL) {
         modifiedOptions.from = `"${DEFAULT_FROM_NAME}" <${BREVO_SENDER_FROM_EMAIL}>`;
       }
-      const info = await secondaryTransporter.sendMail(modifiedOptions);
+      modifiedOptions.replyTo = REPLY_TO_EMAIL;
+      const info = await withTimeout(
+        secondaryTransporter.sendMail(modifiedOptions),
+        SMTP_TIMEOUT,
+        'Brevo SMTP timeout'
+      );
       console.log(`✅ Email sent via Brevo SMTP [${context}]:`, info.messageId);
       return info;
     } catch (brevoError) {
@@ -214,7 +246,12 @@ const sendEmail = async (options, context) => {
       console.log(`🔄 Trying Gmail SMTP for [${context}]...`);
       const modifiedOptions = { ...options };
       modifiedOptions.from = `"${DEFAULT_FROM_NAME}" <${MAIL_USER}>`;
-      const info = await gmailTransporter.sendMail(modifiedOptions);
+      modifiedOptions.replyTo = REPLY_TO_EMAIL;
+      const info = await withTimeout(
+        gmailTransporter.sendMail(modifiedOptions),
+        SMTP_TIMEOUT,
+        'Gmail SMTP timeout'
+      );
       console.log(`✅ Email sent via Gmail SMTP [${context}]:`, info.messageId);
       return info;
     } catch (gmailError) {
@@ -232,6 +269,7 @@ export const sendVerificationEmail = async (email, token) => {
 
   const mailOptions = {
     from: `"${DEFAULT_FROM_NAME}" <${DEFAULT_FROM_EMAIL}>`,
+    replyTo: REPLY_TO_EMAIL,
     to: email,
     subject: "🛡️ Verify Your Email - Secxion",
     html: `
@@ -261,6 +299,7 @@ export const sendResetCodeEmail = async (email, code, type) => {
 
   const mailOptions = {
     from: `"${DEFAULT_FROM_NAME}" <${DEFAULT_FROM_EMAIL}>`,
+    replyTo: REPLY_TO_EMAIL,
     to: email,
     subject: `🔐 ${label} Code - Secxion`,
     html: `
@@ -291,6 +330,7 @@ export const sendResetCodeEmail = async (email, code, type) => {
 export const sendBankVerificationCode = async (email, code) => {
   const mailOptions = {
     from: `"${DEFAULT_FROM_NAME}" <${DEFAULT_FROM_EMAIL}>`,
+    replyTo: REPLY_TO_EMAIL,
     to: email,
     subject: `🔐 Confirm Bank Account Addition - Secxion`,
     html: `

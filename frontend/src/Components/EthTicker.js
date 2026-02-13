@@ -2,7 +2,8 @@ Ethereum Wallet
 
 ETH Rate (NGN)
 
-₦2,612,972.00
+₦2,612,972
+\.00
 
 Est. Gas Fee (ETH)
 

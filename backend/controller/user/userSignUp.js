@@ -59,33 +59,22 @@ async function userSignUpController(req, res, next) {
       throw saveError;
     }
     
+    // Send verification email in background (fire-and-forget, don't block signup)
+    sendVerificationEmail(email, emailToken)
+      .then(() => console.log("✅ Verification email sent to:", email))
+      .catch((emailError) => console.error("⚠️ Email send error (non-blocking):", emailError.message));
     
-    
-    // THEN send verification email (don't block user creation if email fails)
-    try {
-      await sendVerificationEmail(email, emailToken);
-      console.log("✅ Verification email sent to:", email);
-    } catch (emailError) {
-      console.error("⚠️ Email send error (non-blocking):", emailError.message);
-      // Email failed but user was already saved, so we continue
-    }
-    
-    // Award signup bonus (non-blocking)
-    try {
-      await updateWalletBalance(
-        newUser._id,
-        900,
-        "credit",
-        "Signup Bonus",
-        newUser._id.toString(),
-        "User"
-      );
-      console.log("✅ Signup bonus awarded:", newUser._id);
-    } catch (walletError) {
-      console.error("⚠️ Wallet update error (non-blocking):", walletError.message);
-      // Wallet error doesn't block signup
-    }
-    
+    // Award signup bonus (non-blocking, also fire-and-forget)
+    updateWalletBalance(
+      newUser._id,
+      900,
+      "credit",
+      "Signup Bonus",
+      newUser._id.toString(),
+      "User"
+    )
+      .then(() => console.log("✅ Signup bonus awarded:", newUser._id))
+      .catch((walletError) => console.error("⚠️ Wallet update error (non-blocking):", walletError.message));
     
     return res.status(201).json({
       success: true,
