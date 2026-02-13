@@ -1,9 +1,9 @@
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   port: 587,
   secure: false,
   auth: {
@@ -11,8 +11,8 @@ const transporter = nodemailer.createTransport({
     pass: process.env.MAIL_PASS,
   },
   tls: {
-    ciphers: 'SSLv3', // Add for strict TLS support
-    rejectUnauthorized: false
+    ciphers: "SSLv3", // Add for strict TLS support
+    rejectUnauthorized: false,
   },
 });
 

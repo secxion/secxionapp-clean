@@ -337,13 +337,21 @@ export const media = {
 // Utility functions for consistent styling
 export const getStatusColor = (status) => {
   const statusLower = (status || '').toLowerCase();
-  if (statusLower === 'completed' || statusLower === 'approved' || statusLower === 'done') {
+  if (
+    statusLower === 'completed' ||
+    statusLower === 'approved' ||
+    statusLower === 'done'
+  ) {
     return colors.status.success;
   }
   if (statusLower === 'pending') {
     return colors.status.warning;
   }
-  if (statusLower === 'failed' || statusLower === 'rejected' || statusLower === 'cancelled') {
+  if (
+    statusLower === 'failed' ||
+    statusLower === 'rejected' ||
+    statusLower === 'cancelled'
+  ) {
     return colors.status.danger;
   }
   if (statusLower === 'processing') {
@@ -354,13 +362,21 @@ export const getStatusColor = (status) => {
 
 export const getStatusBgColor = (status) => {
   const statusLower = (status || '').toLowerCase();
-  if (statusLower === 'completed' || statusLower === 'approved' || statusLower === 'done') {
+  if (
+    statusLower === 'completed' ||
+    statusLower === 'approved' ||
+    statusLower === 'done'
+  ) {
     return colors.status.successLight;
   }
   if (statusLower === 'pending') {
     return colors.status.warningLight;
   }
-  if (statusLower === 'failed' || statusLower === 'rejected' || statusLower === 'cancelled') {
+  if (
+    statusLower === 'failed' ||
+    statusLower === 'rejected' ||
+    statusLower === 'cancelled'
+  ) {
     return colors.status.dangerLight;
   }
   if (statusLower === 'processing') {

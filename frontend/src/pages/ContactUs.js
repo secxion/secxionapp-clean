@@ -8,14 +8,13 @@ import {
   AlertCircle,
   ArrowLeft,
 } from 'lucide-react';
+import Navigation from '../Components/Navigation';
 import SummaryApi from '../common';
-// ...existing code...
-import { useNotification } from '../common/NotificationProvider';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import SecxionLogo from '../app/slogo.png';
 
 const ContactUs = () => {
-  const { showNotification } = useNotification();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -65,17 +64,22 @@ const ContactUs = () => {
       if (response.ok) {
         setSubmissionSuccess(true);
         setFormData({ name: '', email: '', phoneNumber: '', reason: '' });
-        showNotification(responseData.message || 'Thanks for contacting us! We will get back to you ASAP.', 'success');
+        toast.success(
+          responseData.message ||
+            'Thanks for contacting us! We will get back to you ASAP.',
+        );
       } else {
         setSubmissionError(
           responseData.message ||
             'An error occurred while submitting your message. Please try again later.',
         );
-        showNotification(responseData.message || 'Submission failed. Please try again.', 'error');
+        toast.error(
+          responseData.message || 'Submission failed. Please try again.',
+        );
       }
     } catch (error) {
       setSubmissionError('An unexpected error occurred. Please try again.');
-      showNotification('Submission failed. Please try again.', 'error');
+      toast.error('Submission failed. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

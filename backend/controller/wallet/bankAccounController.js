@@ -13,41 +13,54 @@ const handleServerError = (res, error, contextMessage) => {
 export const addBankAccount = async (req, res) => {
   try {
     const userId = req.userId;
-    const {
-      accountNumber,
-      bankName,
-      bankCode,
-      accountHolderName,
-    } = req.body;
+    const { accountNumber, bankName, bankCode, accountHolderName } = req.body;
 
     if (!accountNumber || !bankName || !bankCode || !accountHolderName) {
       return res.status(400).json({
         success: false,
-        message: "All required fields must be provided: account number, bank name, bank code, and resolved account name.",
+        message:
+          "All required fields must be provided: account number, bank name, bank code, and resolved account name.",
       });
     }
 
     const wallet = await Wallet.findOne({ userId });
     if (!wallet) {
-      return res.status(404).json({ success: false, message: "Wallet not found for this user." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Wallet not found for this user." });
     }
 
     if (wallet.bankAccounts.length >= 2) {
-      return res.status(400).json({ success: false, message: "You cannot add more than 2 bank accounts." });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "You cannot add more than 2 bank accounts.",
+        });
     }
 
     const alreadyExists = wallet.bankAccounts.some(
       (acc) =>
         acc.accountNumber === accountNumber &&
         acc.bankName === bankName &&
-        acc.bankCode === bankCode
+        acc.bankCode === bankCode,
     );
 
     if (alreadyExists) {
-      return res.status(409).json({ success: false, message: "This bank account is already added." });
+      return res
+        .status(409)
+        .json({
+          success: false,
+          message: "This bank account is already added.",
+        });
     }
 
-    wallet.bankAccounts.push({ accountNumber, bankName, bankCode, accountHolderName });
+    wallet.bankAccounts.push({
+      accountNumber,
+      bankName,
+      bankCode,
+      accountHolderName,
+    });
     await wallet.save();
 
     return res.status(201).json({
@@ -64,7 +77,9 @@ export const getBankAccounts = async (req, res) => {
   try {
     const wallet = await Wallet.findOne({ userId: req.userId });
     if (!wallet) {
-      return res.status(404).json({ success: false, message: "Wallet not found for this user." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Wallet not found for this user." });
     }
 
     res.status(200).json({
@@ -83,16 +98,20 @@ export const deleteBankAccount = async (req, res) => {
 
     const wallet = await Wallet.findOne({ userId });
     if (!wallet) {
-      return res.status(404).json({ success: false, message: "Wallet not found for this user." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Wallet not found for this user." });
     }
 
     const initialLength = wallet.bankAccounts.length;
     wallet.bankAccounts = wallet.bankAccounts.filter(
-      (account) => account._id.toString() !== accountId
+      (account) => account._id.toString() !== accountId,
     );
 
     if (wallet.bankAccounts.length === initialLength) {
-      return res.status(404).json({ success: false, message: "Bank account not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Bank account not found." });
     }
 
     await wallet.save();
@@ -112,7 +131,9 @@ export const sendBankAddCode = async (req, res) => {
   try {
     const email = req.user?.email;
     if (!email) {
-      return res.status(401).json({ success: false, message: "Unauthorized. Email not found." });
+      return res
+        .status(401)
+        .json({ success: false, message: "Unauthorized. Email not found." });
     }
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
@@ -122,44 +143,82 @@ export const sendBankAddCode = async (req, res) => {
     });
 
     await sendBankVerificationCode(email, code);
-    res.status(200).json({ success: true, message: "Verification code sent to your email." });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Verification code sent to your email.",
+      });
   } catch (error) {
-    return handleServerError(res, error, "Error sending bank verification code");
+    return handleServerError(
+      res,
+      error,
+      "Error sending bank verification code",
+    );
   }
 };
 
 export const verifyAndAddBankAccount = async (req, res) => {
   try {
-    const { code, accountNumber, bankName, bankCode, accountHolderName } = req.body;
+    const { code, accountNumber, bankName, bankCode, accountHolderName } =
+      req.body;
     const userId = req.userId;
     const email = req.user?.email;
 
-    if (!code || !email || !accountNumber || !bankName || !bankCode || !accountHolderName) {
-      return res.status(400).json({ success: false, message: "All fields and verification code are required." });
+    if (
+      !code ||
+      !email ||
+      !accountNumber ||
+      !bankName ||
+      !bankCode ||
+      !accountHolderName
+    ) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "All fields and verification code are required.",
+        });
     }
 
     const stored = verificationCodes.get(email);
     if (!stored || stored.code !== code || stored.expires < Date.now()) {
-      return res.status(400).json({ success: false, message: "Invalid or expired verification code." });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Invalid or expired verification code.",
+        });
     }
 
     const wallet = await Wallet.findOne({ userId });
     if (!wallet) {
-      return res.status(404).json({ success: false, message: "Wallet not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Wallet not found." });
     }
 
     if (wallet.bankAccounts.length >= 2) {
-      return res.status(400).json({ success: false, message: "Limit of 2 bank accounts reached." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Limit of 2 bank accounts reached." });
     }
 
     const exists = wallet.bankAccounts.some(
-      (acc) => acc.accountNumber === accountNumber && acc.bankCode === bankCode
+      (acc) => acc.accountNumber === accountNumber && acc.bankCode === bankCode,
     );
     if (exists) {
-      return res.status(409).json({ success: false, message: "Bank account already exists." });
+      return res
+        .status(409)
+        .json({ success: false, message: "Bank account already exists." });
     }
 
-    wallet.bankAccounts.push({ accountNumber, bankName, bankCode, accountHolderName });
+    wallet.bankAccounts.push({
+      accountNumber,
+      bankName,
+      bankCode,
+      accountHolderName,
+    });
     await wallet.save();
     verificationCodes.delete(email);
 
@@ -169,6 +228,10 @@ export const verifyAndAddBankAccount = async (req, res) => {
       data: wallet.bankAccounts,
     });
   } catch (error) {
-    return handleServerError(res, error, "Error verifying and adding bank account");
+    return handleServerError(
+      res,
+      error,
+      "Error verifying and adding bank account",
+    );
   }
 };

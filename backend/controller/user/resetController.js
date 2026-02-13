@@ -40,7 +40,9 @@ export async function sendResetCode(req, res) {
 
     const user = await userModel.findOne({ email });
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     const code = generateNumericCode();
@@ -60,7 +62,9 @@ export async function sendResetCode(req, res) {
     res.json({ success: true, message: `Reset code sent to ${email}` });
   } catch (err) {
     console.error("sendResetCode error:", err);
-    res.status(500).json({ success: false, message: "Server error", error: err.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
   }
 }
 
@@ -70,7 +74,9 @@ export async function verifyReset(req, res) {
 
     const user = await userModel.findOne({ email });
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     const submittedCode = code?.toString();
@@ -79,15 +85,24 @@ export async function verifyReset(req, res) {
     // Debug logs
     console.log("Submitted code:", submittedCode);
     console.log("Stored code:", storedCode);
-    console.log("Token expiry:", user.resetTokenExpiry, "Current time:", Date.now());
+    console.log(
+      "Token expiry:",
+      user.resetTokenExpiry,
+      "Current time:",
+      Date.now(),
+    );
 
     if (
       !storedCode ||
       submittedCode !== storedCode ||
       Date.now() > user.resetTokenExpiry
     ) {
-      console.warn(`Failed reset attempt: email=${email}, code=${submittedCode}`);
-      return res.status(400).json({ success: false, message: "Invalid or expired code" });
+      console.warn(
+        `Failed reset attempt: email=${email}, code=${submittedCode}`,
+      );
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid or expired code" });
     }
 
     if (type === "password") {
@@ -109,6 +124,8 @@ export async function verifyReset(req, res) {
     });
   } catch (err) {
     console.error("verifyReset error:", err);
-    res.status(500).json({ success: false, message: "Server error", error: err.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
   }
 }

@@ -12,12 +12,12 @@ import {
   generateRefreshToken,
   refreshAccessToken,
   revokeRefreshToken,
-} from '../middleware/securityMiddleware';
-import { createMockRequest, createMockResponse } from './testUtils';
+} from "../middleware/securityMiddleware";
+import { createMockRequest, createMockResponse } from "./testUtils";
 
-describe('Security Middleware', () => {
-  describe('CSRF Protection', () => {
-    it('should generate and set CSRF token', () => {
+describe("Security Middleware", () => {
+  describe("CSRF Protection", () => {
+    it("should generate and set CSRF token", () => {
       const req = createMockRequest();
       req.session = {};
       const res = createMockResponse();
@@ -27,14 +27,14 @@ describe('Security Middleware', () => {
 
       expect(req.session.csrfToken).toBeDefined();
       expect(res.setHeader).toHaveBeenCalledWith(
-        'X-CSRF-Token',
-        expect.any(String)
+        "X-CSRF-Token",
+        expect.any(String),
       );
       expect(next).toHaveBeenCalled();
     });
 
-    it('should return existing CSRF token if present', () => {
-      const existingToken = 'existing-token-12345';
+    it("should return existing CSRF token if present", () => {
+      const existingToken = "existing-token-12345";
       const req = createMockRequest();
       req.session = { csrfToken: existingToken };
       const res = createMockResponse();
@@ -43,43 +43,47 @@ describe('Security Middleware', () => {
       csrfProtection(req, res, next);
 
       expect(req.session.csrfToken).toBe(existingToken);
-      expect(res.setHeader).toHaveBeenCalledWith('X-CSRF-Token', existingToken);
+      expect(res.setHeader).toHaveBeenCalledWith("X-CSRF-Token", existingToken);
     });
   });
 
-  describe('Token Generation', () => {
-    it('should generate valid access token', () => {
-      const token = generateAccessToken('user123', 'test@example.com', 'GENERAL');
-
-      expect(token).toBeDefined();
-      expect(typeof token).toBe('string');
-      expect(token.split('.').length).toBe(3); // JWT format
-    });
-
-    it('should generate valid refresh token', () => {
-      const token = generateRefreshToken('user123');
-
-      expect(token).toBeDefined();
-      expect(typeof token).toBe('string');
-      expect(token.split('.').length).toBe(3); // JWT format
-    });
-
-    it('should include user data in access token', () => {
-      const jwt = require('jsonwebtoken');
-      const token = generateAccessToken('user123', 'test@example.com', 'ADMIN');
-      const decoded = jwt.verify(
-        token,
-        process.env.TOKEN_SECRET_KEY || 'test-secret'
+  describe("Token Generation", () => {
+    it("should generate valid access token", () => {
+      const token = generateAccessToken(
+        "user123",
+        "test@example.com",
+        "GENERAL",
       );
 
-      expect(decoded._id).toBe('user123');
-      expect(decoded.email).toBe('test@example.com');
-      expect(decoded.role).toBe('ADMIN');
+      expect(token).toBeDefined();
+      expect(typeof token).toBe("string");
+      expect(token.split(".").length).toBe(3); // JWT format
+    });
+
+    it("should generate valid refresh token", () => {
+      const token = generateRefreshToken("user123");
+
+      expect(token).toBeDefined();
+      expect(typeof token).toBe("string");
+      expect(token.split(".").length).toBe(3); // JWT format
+    });
+
+    it("should include user data in access token", () => {
+      const jwt = require("jsonwebtoken");
+      const token = generateAccessToken("user123", "test@example.com", "ADMIN");
+      const decoded = jwt.verify(
+        token,
+        process.env.TOKEN_SECRET_KEY || "test-secret",
+      );
+
+      expect(decoded._id).toBe("user123");
+      expect(decoded.email).toBe("test@example.com");
+      expect(decoded.role).toBe("ADMIN");
     });
   });
 
-  describe('Rate Limiting', () => {
-    it('should allow requests within limit', async () => {
+  describe("Rate Limiting", () => {
+    it("should allow requests within limit", async () => {
       const req = createMockRequest();
       const res = createMockResponse();
       const next = jest.fn();
@@ -92,9 +96,9 @@ describe('Security Middleware', () => {
     });
   });
 
-  describe('Token Refresh', () => {
-    it('should refresh access token with valid refresh token', async () => {
-      const userId = 'user123';
+  describe("Token Refresh", () => {
+    it("should refresh access token with valid refresh token", async () => {
+      const userId = "user123";
       const refreshToken = generateRefreshToken(userId);
 
       // Mock the token storage
@@ -109,11 +113,11 @@ describe('Security Middleware', () => {
       const newAccessToken = refreshAccessToken(refreshToken);
 
       expect(newAccessToken).toBeDefined();
-      expect(typeof newAccessToken).toBe('string');
+      expect(typeof newAccessToken).toBe("string");
     });
 
-    it('should not refresh revoked tokens', () => {
-      const userId = 'user123';
+    it("should not refresh revoked tokens", () => {
+      const userId = "user123";
       const refreshToken = generateRefreshToken(userId);
 
       // Mock revoked token
@@ -129,9 +133,9 @@ describe('Security Middleware', () => {
     });
   });
 
-  describe('Token Revocation', () => {
-    it('should revoke refresh token on logout', async () => {
-      const userId = 'user123';
+  describe("Token Revocation", () => {
+    it("should revoke refresh token on logout", async () => {
+      const userId = "user123";
       const refreshToken = generateRefreshToken(userId);
 
       // Mock token storage

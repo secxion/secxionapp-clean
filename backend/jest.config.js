@@ -1,13 +1,13 @@
 module.exports = {
-  testEnvironment: 'node',
-  roots: ['<rootDir>'],
-  testMatch: ['**/__tests__/**/*.js', '**/?(*.)+(spec|test).js'],
+  testEnvironment: "node",
+  roots: ["<rootDir>"],
+  testMatch: ["**/__tests__/**/*.js", "**/?(*.)+(spec|test).js"],
   collectCoverageFrom: [
-    '**/*.js',
-    '!**/node_modules/**',
-    '!**/build/**',
-    '!**/dist/**',
-    '!**/jest.config.js',
+    "**/*.js",
+    "!**/node_modules/**",
+    "!**/build/**",
+    "!**/dist/**",
+    "!**/jest.config.js",
   ],
   coverageThresholds: {
     global: {
@@ -17,7 +17,7 @@ module.exports = {
       statements: 40,
     },
   },
-  testPathIgnorePatterns: ['/node_modules/', '/.git/'],
+  testPathIgnorePatterns: ["/node_modules/", "/.git/"],
   verbose: true,
-  setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
+  setupFilesAfterEnv: ["<rootDir>/src/setupTests.js"],
 };

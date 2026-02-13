@@ -191,13 +191,7 @@ const UserMarket = () => {
           />
         ) : (
           /* Empty State */
-          <EmptyState
-            title="No transactions yet"
-            message="Start creating marketplace listings to manage your transactions here."
-            emoji="🚀"
-            onAction={() => setOpenUploadProduct(true)}
-            actionLabel="+ Create New Listing"
-          />
+          <EmptyState title="No transactions yet" />
         )}
       </div>
 

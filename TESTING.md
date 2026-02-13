@@ -38,15 +38,15 @@ npm run test:debug
 Example test file: `frontend/src/__tests__/formValidation.test.js`
 
 ```javascript
-import { validateEmail } from '../utils/formValidation';
+import { validateEmail } from "../utils/formValidation";
 
-describe('validateEmail', () => {
-  it('should validate correct emails', () => {
-    expect(validateEmail('test@example.com')).toBe(true);
+describe("validateEmail", () => {
+  it("should validate correct emails", () => {
+    expect(validateEmail("test@example.com")).toBe(true);
   });
 
-  it('should reject invalid emails', () => {
-    expect(validateEmail('invalid')).toBe(false);
+  it("should reject invalid emails", () => {
+    expect(validateEmail("invalid")).toBe(false);
   });
 });
 ```
@@ -56,22 +56,22 @@ describe('validateEmail', () => {
 For React components, use the custom `render` function from testUtils:
 
 ```javascript
-import { render, screen, fireEvent } from '../__tests__/testUtils';
-import MyComponent from '../Components/MyComponent';
+import { render, screen, fireEvent } from "../__tests__/testUtils";
+import MyComponent from "../Components/MyComponent";
 
-describe('MyComponent', () => {
-  it('should render with props', () => {
+describe("MyComponent", () => {
+  it("should render with props", () => {
     render(<MyComponent title="Test" />);
-    expect(screen.getByText('Test')).toBeInTheDocument();
+    expect(screen.getByText("Test")).toBeInTheDocument();
   });
 
-  it('should handle clicks', async () => {
+  it("should handle clicks", async () => {
     const handleClick = jest.fn();
     render(<MyComponent onClick={handleClick} />);
-    
-    const button = screen.getByRole('button');
+
+    const button = screen.getByRole("button");
     fireEvent.click(button);
-    
+
     expect(handleClick).toHaveBeenCalled();
   });
 });
@@ -112,14 +112,14 @@ Example test file: `backend/src/__tests__/securityMiddleware.test.js`
 import {
   generateAccessToken,
   generateRefreshToken,
-} from '../middleware/securityMiddleware';
-import { createMockRequest, createMockResponse } from './testUtils';
+} from "../middleware/securityMiddleware";
+import { createMockRequest, createMockResponse } from "./testUtils";
 
-describe('Token Generation', () => {
-  it('should generate valid access token', () => {
-    const token = generateAccessToken('user123', 'test@example.com', 'GENERAL');
+describe("Token Generation", () => {
+  it("should generate valid access token", () => {
+    const token = generateAccessToken("user123", "test@example.com", "GENERAL");
     expect(token).toBeDefined();
-    expect(token.split('.').length).toBe(3); // JWT format
+    expect(token.split(".").length).toBe(3); // JWT format
   });
 });
 ```
@@ -129,20 +129,20 @@ describe('Token Generation', () => {
 For testing Express routes and controllers:
 
 ```javascript
-import request from 'supertest';
-import app from '../index';
-import { generateMockToken } from './testUtils';
+import request from "supertest";
+import app from "../index";
+import { generateMockToken } from "./testUtils";
 
-describe('GET /api/user-details', () => {
-  it('should return user details with valid token', async () => {
-    const token = generateMockToken('507f1f77bcf86cd799439011');
-    
+describe("GET /api/user-details", () => {
+  it("should return user details with valid token", async () => {
+    const token = generateMockToken("507f1f77bcf86cd799439011");
+
     const response = await request(app)
-      .get('/api/user-details')
-      .set('Authorization', `Bearer ${token}`);
-    
+      .get("/api/user-details")
+      .set("Authorization", `Bearer ${token}`);
+
     expect(response.statusCode).toBe(200);
-    expect(response.body).toHaveProperty('user');
+    expect(response.body).toHaveProperty("user");
   });
 });
 ```
@@ -206,8 +206,8 @@ Tests will fail if coverage drops below these thresholds.
 
 ```javascript
 // In tests, automatically mocked in setupTests.js
-localStorage.setItem('key', 'value');
-expect(localStorage.setItem).toHaveBeenCalledWith('key', 'value');
+localStorage.setItem("key", "value");
+expect(localStorage.setItem).toHaveBeenCalledWith("key", "value");
 ```
 
 ### Mock API Calls
@@ -215,13 +215,13 @@ expect(localStorage.setItem).toHaveBeenCalledWith('key', 'value');
 ```javascript
 global.fetch = jest.fn(() =>
   Promise.resolve({
-    json: () => Promise.resolve({ user: { id: 1, name: 'Test' } }),
-  })
+    json: () => Promise.resolve({ user: { id: 1, name: "Test" } }),
+  }),
 );
 
 // In test
-const response = await fetch('/api/user-details');
-expect(global.fetch).toHaveBeenCalledWith('/api/user-details');
+const response = await fetch("/api/user-details");
+expect(global.fetch).toHaveBeenCalledWith("/api/user-details");
 ```
 
 ### Mock Redux Store
@@ -233,7 +233,7 @@ const { store } = render(<MyComponent />, {
   },
 });
 
-expect(store.getState().user.user.name).toBe('Test User');
+expect(store.getState().user.user.name).toBe("Test User");
 ```
 
 ## Best Practices
@@ -249,6 +249,7 @@ expect(store.getState().user.user.name).toBe('Test User');
 ## Coverage Goals
 
 **Phase 2 Coverage Targets:**
+
 - Form validation: 100%
 - Security middleware: 80%
 - Email verification: 70%
@@ -263,6 +264,7 @@ npm test:coverage
 ## Troubleshooting
 
 **Issue:** `Failed to find a valid ace installer`
+
 ```bash
 # Solution: Clear node_modules and reinstall
 rm -rf node_modules package-lock.json
@@ -270,17 +272,19 @@ npm install
 ```
 
 **Issue:** Tests timeout
+
 ```javascript
 // Increase timeout for slow tests
 jest.setTimeout(10000); // 10 seconds
 
 // Or specify per test
-it('slow test', async () => {
+it("slow test", async () => {
   // test code
 }, 10000);
 ```
 
 **Issue:** Import paths not resolving
+
 - Ensure `moduleNameMapper` in jest.config.js matches your alias setup
 - Frontend: `^@/(.*)$` → `<rootDir>/src/$1`
 

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const BlogNoteSchema = new mongoose.Schema({
   title: {
@@ -23,6 +23,6 @@ const BlogNoteSchema = new mongoose.Schema({
   },
 });
 
-const BlogNote = mongoose.model('BlogNote', BlogNoteSchema);
+const BlogNote = mongoose.model("BlogNote", BlogNoteSchema);
 
 export default BlogNote;

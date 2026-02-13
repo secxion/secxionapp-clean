@@ -1,6 +1,5 @@
 import userProduct from "../../models/userProduct.js";
 
-
 async function UserUploadMarketController(req, res, next) {
   try {
     if (!req.userId) {
@@ -20,7 +19,7 @@ async function UserUploadMarketController(req, res, next) {
       data: saveProduct,
     });
   } catch (err) {
-    err.message = err.message || 'Could not upload market. Please try again.';
+    err.message = err.message || "Could not upload market. Please try again.";
     next(err);
   }
 }

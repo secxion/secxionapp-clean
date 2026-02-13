@@ -13,7 +13,12 @@
   max-width: 100%;
   margin: 0 auto;
   padding: 0 1rem;
-  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Inter',
+    'Segoe UI',
+    system-ui,
+    -apple-system,
+    sans-serif;
   color: #0f172a;
   background-color: #f8fafc;
   min-height: 100vh;
@@ -88,18 +93,26 @@
    ========================================================================== */
 
 .wallet-balance-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(248, 250, 252, 0.95) 100%
+  );
   border: 1px solid rgba(148, 163, 184, 0.1);
   border-radius: 1rem;
   padding: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
   backdrop-filter: blur(10px);
   margin-bottom: 2rem;
   transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .wallet-balance-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
   border-color: rgba(100, 116, 139, 0.2);
 }
 
@@ -379,7 +392,12 @@
   border: 1px solid #cbd5e1;
   border-radius: 0.75rem;
   font-size: 1rem;
-  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Inter',
+    'Segoe UI',
+    system-ui,
+    -apple-system,
+    sans-serif;
   color: #0f172a;
   background-color: white;
   transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -465,7 +483,9 @@
 }
 
 .wallet-card:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
   border-color: rgba(100, 116, 139, 0.2);
 }
 
@@ -561,12 +581,7 @@
    ========================================================================== */
 
 .wallet-skeleton {
-  background: linear-gradient(
-    90deg,
-    #f1f5f9 25%,
-    #e2e8f0 50%,
-    #f1f5f9 75%
-  );
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s infinite;
   border-radius: 0.5rem;

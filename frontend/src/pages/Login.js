@@ -101,7 +101,10 @@ const Login = () => {
       setIsVerified(false);
     } catch (error) {
       console.error('Error fetching slider target:', error);
-      showNotification('Failed to load verification challenge. Please try again.', 'error');
+      showNotification(
+        'Failed to load verification challenge. Please try again.',
+        'error',
+      );
     }
   };
 
@@ -143,7 +146,10 @@ const Login = () => {
         navigate('/home');
       } else {
         setErrorMessage(result.message || 'Login failed. Please try again.');
-        showNotification(result.message || 'Verification failed. Please try again.', 'error');
+        showNotification(
+          result.message || 'Verification failed. Please try again.',
+          'error',
+        );
         setVerificationVisible(true);
         fetchSliderTarget();
       }
@@ -152,7 +158,10 @@ const Login = () => {
       setErrorMessage(
         'An unexpected error occurred during login. Please try again.',
       );
-      showNotification('An unexpected error occurred. Please try again.', 'error');
+      showNotification(
+        'An unexpected error occurred. Please try again.',
+        'error',
+      );
     } finally {
       setFormSubmitting(false);
       setVerifying(false);
@@ -169,11 +178,20 @@ const Login = () => {
       });
       const result = await res.json();
       result.success
-        ? showNotification('Verification email sent successfully! Please check your inbox.', 'success')
-        : showNotification(result.message || 'Failed to resend verification email.', 'error');
+        ? showNotification(
+            'Verification email sent successfully! Please check your inbox.',
+            'success',
+          )
+        : showNotification(
+            result.message || 'Failed to resend verification email.',
+            'error',
+          );
     } catch (error) {
       console.error('Resend email error:', error);
-      showNotification('Error resending verification email. Please try again.', 'error');
+      showNotification(
+        'Error resending verification email. Please try again.',
+        'error',
+      );
     } finally {
       setResending(false);
     }
@@ -201,7 +219,6 @@ const Login = () => {
       style={{ backgroundImage: `url(${loginBackground})` }}
     >
       <Navigation currentPage="signin" />
-
       {/* Logo background overlay */}
       <div className="fixed inset-0 pointer-events-none z-0">
         {/* Fix: Use absolute positioning and z-index for logo */}
@@ -223,9 +240,7 @@ const Login = () => {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 border border-yellow-700/20 rounded-full"></div>
         <div className="absolute bottom-20 right-10 w-24 h-24 bg-gradient-to-br from-yellow-800/30 to-yellow-700/30 transform rotate-12 animate-pulse"></div>
       </div>
-
       <div className="absolute inset-0 bg-black/70 z-0"></div>
-
       <div className="shape-lines relative bg-gradient-to-br from-gray-900/80 to-gray-800/70 bg-opacity-95 p-6 sm:p-8 mt-10 w-full max-w-md rounded-2xl shadow-2xl z-10 backdrop-blur-xl border border-yellow-700/20">
         <div className="flex items-center justify-center mb-4">
           <a href="/" className="relative">
@@ -381,14 +396,12 @@ const Login = () => {
           </a>
         </div>
       </div>
-
       {/* Move NFTBadge to a fixed footer */}
       <footer className="w-full flex justify-center items-center py-4 absolute bottom-0 left-0 z-20 bg-transparent pointer-events-none">
         <div className="pointer-events-auto">
           <NFTBadge />
         </div>
       </footer>
-
       {/* Verification Modal */}
       {verificationVisible && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">

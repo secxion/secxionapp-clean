@@ -6,16 +6,21 @@ import Wallet from "../models/walletModel.js";
 
 export const createEthWithdrawalRequest = async (req, res) => {
   try {
-    const { ethRecipientAddress, nairaRequestedAmount, ethNetAmountToSend } = req.body;
+    const { ethRecipientAddress, nairaRequestedAmount, ethNetAmountToSend } =
+      req.body;
     const userId = req.userId;
 
     if (!ethRecipientAddress || !nairaRequestedAmount || !ethNetAmountToSend) {
-      return res.status(400).json({ success: false, message: "All fields are required." });
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required." });
     }
 
     const wallet = await Wallet.findOne({ userId });
     if (!wallet) {
-      return res.status(404).json({ success: false, message: "Wallet not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Wallet not found." });
     }
 
     if (nairaRequestedAmount > wallet.balance) {
@@ -25,12 +30,17 @@ export const createEthWithdrawalRequest = async (req, res) => {
       });
     }
 
-    const ethRateRes = await axios.get("https://api.coingecko.com/api/v3/simple/price", {
-      params: { ids: "ethereum", vs_currencies: "ngn" },
-    });
+    const ethRateRes = await axios.get(
+      "https://api.coingecko.com/api/v3/simple/price",
+      {
+        params: { ids: "ethereum", vs_currencies: "ngn" },
+      },
+    );
     const ethRate = ethRateRes.data?.ethereum?.ngn;
     if (!ethRate) {
-      return res.status(500).json({ success: false, message: "Unable to fetch ETH rate." });
+      return res
+        .status(500)
+        .json({ success: false, message: "Unable to fetch ETH rate." });
     }
 
     const ethCalculatedAmount = parseFloat(nairaRequestedAmount) / ethRate;
@@ -52,7 +62,7 @@ export const createEthWithdrawalRequest = async (req, res) => {
       "debit",
       "ETH withdrawal initiated",
       newRequest._id,
-      "EthWithdrawalRequest"
+      "EthWithdrawalRequest",
     );
 
     if (!walletUpdate.success) {
@@ -64,7 +74,7 @@ export const createEthWithdrawalRequest = async (req, res) => {
         "debit",
         `${ethNetAmountToSend} ETH to ${ethRecipientAddress} initiated.`,
         `/eth-withdrawals`,
-        newRequest._id
+        newRequest._id,
       );
     }
 
@@ -92,10 +102,15 @@ export const getAllEthWithdrawalRequests = async (req, res) => {
     return res.status(200).json({ success: true, data: requests });
   } catch (error) {
     console.error("Error fetching withdrawal requests:", error);
-    return res.status(500).json({ success: false, message: "Error fetching requests", error: error.message });
+    return res
+      .status(500)
+      .json({
+        success: false,
+        message: "Error fetching requests",
+        error: error.message,
+      });
   }
 };
-
 
 export const updateEthWithdrawalStatus = async (req, res) => {
   try {
@@ -104,12 +119,16 @@ export const updateEthWithdrawalStatus = async (req, res) => {
 
     const validStatuses = ["Pending", "Processed", "Rejected"];
     if (!validStatuses.includes(status)) {
-      return res.status(400).json({ success: false, message: "Invalid status." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid status." });
     }
 
     const request = await EthWithdrawalRequest.findById(requestId);
     if (!request) {
-      return res.status(404).json({ success: false, message: "Request not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Request not found." });
     }
 
     const userId = request.userId;
@@ -125,7 +144,7 @@ export const updateEthWithdrawalStatus = async (req, res) => {
         "credit",
         "ETH withdrawal rejected - refund",
         request._id,
-        "EthWithdrawalRequest"
+        "EthWithdrawalRequest",
       );
 
       if (!refundResult.success) {
@@ -137,18 +156,19 @@ export const updateEthWithdrawalStatus = async (req, res) => {
           "credit",
           `ETH withdrawal of ₦${nairaAmount} was rejected. Refund issued.`,
           `/eth-withdrawals`,
-          request._id
+          request._id,
         );
       }
     } else if (status === "Processed") {
       request.status = "Processed";
       request.processedAt = new Date();
 
-      const detailsMessage = `ETH withdrawal processed:\n` +
-  `• Recipient: ${request.ethRecipientAddress}\n` +
-  `• Amount (₦): ₦${nairaAmount}\n` +
-  `• ETH Sent: ${request.ethNetAmountToSend} ETH\n` +
-  `• Time: ${new Date().toLocaleString()}`;
+      const detailsMessage =
+        `ETH withdrawal processed:\n` +
+        `• Recipient: ${request.ethRecipientAddress}\n` +
+        `• Amount (₦): ₦${nairaAmount}\n` +
+        `• ETH Sent: ${request.ethNetAmountToSend} ETH\n` +
+        `• Time: ${new Date().toLocaleString()}`;
 
       await createTransactionNotification(
         userId,
@@ -156,7 +176,7 @@ export const updateEthWithdrawalStatus = async (req, res) => {
         "eth_processed",
         detailsMessage,
         `/eth-withdrawals`,
-        request._id
+        request._id,
       );
     } else {
       request.status = status;
@@ -180,18 +200,29 @@ export const updateEthWithdrawalStatus = async (req, res) => {
   }
 };
 
-
 export const getSingleEthWithdrawalRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
-    const request = await EthWithdrawalRequest.findById(requestId).populate("userId", "name email");
+    const request = await EthWithdrawalRequest.findById(requestId).populate(
+      "userId",
+      "name email",
+    );
 
-    if (!request) return res.status(404).json({ success: false, message: "Request not found." });
+    if (!request)
+      return res
+        .status(404)
+        .json({ success: false, message: "Request not found." });
 
     return res.status(200).json({ success: true, data: request });
   } catch (error) {
     console.error("Error fetching request:", error);
-    return res.status(500).json({ success: false, message: "Error fetching request", error: error.message });
+    return res
+      .status(500)
+      .json({
+        success: false,
+        message: "Error fetching request",
+        error: error.message,
+      });
   }
 };
 
@@ -202,8 +233,9 @@ export const getEthWithdrawalStatus = async (req, res) => {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
-    const latestRequest = await EthWithdrawalRequest.findOne({ userId })
-      .sort({ createdAt: -1 });
+    const latestRequest = await EthWithdrawalRequest.findOne({ userId }).sort({
+      createdAt: -1,
+    });
 
     if (!latestRequest) {
       return res.status(200).json({ success: true, status: "" });

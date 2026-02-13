@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const contactUsSchema = new mongoose.Schema({
   name: {
@@ -12,7 +12,7 @@ const contactUsSchema = new mongoose.Schema({
   },
   phoneNumber: {
     type: String,
-    default: null, 
+    default: null,
   },
   reason: {
     type: String,
@@ -22,9 +22,8 @@ const contactUsSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-
 });
 
-const ContactUs = mongoose.model('ContactUs', contactUsSchema);
+const ContactUs = mongoose.model("ContactUs", contactUsSchema);
 
 export default ContactUs;

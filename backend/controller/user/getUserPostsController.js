@@ -12,8 +12,8 @@ const getUserPostsController = async (req, res) => {
 
   try {
     const posts = await CommunityPost.find({ userId })
-      .populate('userId', 'name profilePic')
-      .populate('content.userId', 'name profilePic')
+      .populate("userId", "name profilePic")
+      .populate("content.userId", "name profilePic")
       .sort({ createdAt: -1 });
 
     res.status(200).json({

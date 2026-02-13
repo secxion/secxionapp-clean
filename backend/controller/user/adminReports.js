@@ -65,10 +65,12 @@ export const replyToReportController = async (req, res) => {
         updatedReport.userId,
         updatedReport._id,
         notificationMessage,
-        notificationLink
+        notificationLink,
       );
     } else {
-      console.error("User ID not found for the report, cannot create notification.");
+      console.error(
+        "User ID not found for the report, cannot create notification.",
+      );
     }
 
     res.json({

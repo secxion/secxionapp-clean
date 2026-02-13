@@ -1,12 +1,13 @@
 # 🗂️ PROJECT DOCUMENTATION INDEX
 
-*All analysis and guides created during review*
+_All analysis and guides created during review_
 
 ---
 
 ## 📄 **DOCUMENTS CREATED** (Read These In Order)
 
 ### 1. **[REVIEW_SUMMARY.md](REVIEW_SUMMARY.md)** ⭐ **START HERE**
+
 ```
 What: Executive summary of the entire project
 Why: Quick overview, key metrics, next steps
@@ -17,6 +18,7 @@ Best for: Understanding the big picture
 ---
 
 ### 2. **[PROJECT_AUDIT.md](PROJECT_AUDIT.md)** 📋 **DETAILED ANALYSIS**
+
 ```
 What: Comprehensive issue breakdown with severity levels
 Why: Understand exactly what needs fixing and why
@@ -33,6 +35,7 @@ Includes:
 ---
 
 ### 3. **[UPGRADE_PLAN.md](UPGRADE_PLAN.md)** 🚀 **ACTION ITEMS**
+
 ```
 What: Step-by-step instructions to fix everything
 Why: Exact commands to run, code to change
@@ -49,6 +52,7 @@ Includes:
 ---
 
 ### 4. **[ARCHITECTURE.md](ARCHITECTURE.md)** 🏗️ **SYSTEM DESIGN**
+
 ```
 What: Visual diagrams and architecture explanations
 Why: Understand how everything fits together
@@ -66,6 +70,7 @@ Includes:
 ---
 
 ### 5. **[MONGODB_SETUP.md](MONGODB_SETUP.md)** 🗄️ **DATABASE GUIDE**
+
 ```
 What: Three options for running MongoDB
 Why: Get database working (blocking issue)
@@ -81,6 +86,7 @@ Includes:
 ---
 
 ### 6. **[docker-compose.yml](docker-compose.yml)** 🐳 **DOCKER CONFIG**
+
 ```
 What: Docker Compose file for MongoDB + Mongo Express
 Why: Optional easy setup using containers
@@ -97,15 +103,15 @@ Features:
 
 ## 🎯 **QUICK REFERENCE: USE THIS MATRIX**
 
-| I need to... | Read this | Time |
-|---|---|---|
-| Understand what Secxion does | REVIEW_SUMMARY | 5 min |
-| See all issues found | PROJECT_AUDIT | 15 min |
-| Know what to fix first | UPGRADE_PLAN | 10 min |
-| Set up MongoDB locally | MONGODB_SETUP | 10 min |
-| Understand system design | ARCHITECTURE | 15 min |
-| Get exact fix commands | UPGRADE_PLAN | 10 min |
-| Verify setup working | UPGRADE_PLAN (Testing section) | 5 min |
+| I need to...                 | Read this                      | Time   |
+| ---------------------------- | ------------------------------ | ------ |
+| Understand what Secxion does | REVIEW_SUMMARY                 | 5 min  |
+| See all issues found         | PROJECT_AUDIT                  | 15 min |
+| Know what to fix first       | UPGRADE_PLAN                   | 10 min |
+| Set up MongoDB locally       | MONGODB_SETUP                  | 10 min |
+| Understand system design     | ARCHITECTURE                   | 15 min |
+| Get exact fix commands       | UPGRADE_PLAN                   | 10 min |
+| Verify setup working         | UPGRADE_PLAN (Testing section) | 5 min  |
 
 ---
 
@@ -141,6 +147,7 @@ Features:
 ## 🚦 **NEXT STEPS (IN ORDER)**
 
 ### ✅ Step 1: MongoDB Setup (NOW)
+
 ```
 Status: In progress
 Blocked by: Windows MongoDB installer
@@ -150,10 +157,11 @@ Verify: Get-Service MongoDB | Select Status → should show "Running"
 ```
 
 ### ⏳ Step 2: Restart Backend Server (NEXT)
+
 ```
 Status: Ready when MongoDB done
 Command: cd backend && npm run dev
-Expect: 
+Expect:
   ✅ MongoDB Connected at localhost:27017/BM12-Section
   ✅ 🚀 Server running at http://localhost:5000
   ✅ 🌐 Allowed origins shown
@@ -161,6 +169,7 @@ Time: 2 minutes
 ```
 
 ### ⏳ Step 3: Fix Security Vulnerabilities (AFTER)
+
 ```
 Status: Ready when backend runs
 Command: cd backend && npm audit fix
@@ -170,6 +179,7 @@ Time: 10 minutes
 ```
 
 ### ⏳ Step 4: Clean ESLint Warnings (AFTER)
+
 ```
 Status: Ready any time
 Command: cd frontend && npm run lint -- --fix
@@ -178,6 +188,7 @@ Time: 5 minutes
 ```
 
 ### ⏳ Step 5: Test Login Flow (AFTER)
+
 ```
 Status: Ready when security fixes done
 Steps:
@@ -196,14 +207,14 @@ Steps:
 
 **If you see errors about:**
 
-| Error | See | Solution |
-|-------|-----|----------|
-| MongoDB timeout | MONGODB_SETUP | Install locally |
-| 500 HTML response | PROJECT_AUDIT (API section) | Error handler fix |
-| Unknown env variable | UPGRADE_PLAN (Phase 1) | Add validation |
-| ESLint warnings | UPGRADE_PLAN (Task 4) | Run lint --fix |
-| Port already in use | UPGRADE_PLAN (Issues section) | Kill process |
-| Module not found | UPGRADE_PLAN (Common issues) | npm install |
+| Error                | See                           | Solution          |
+| -------------------- | ----------------------------- | ----------------- |
+| MongoDB timeout      | MONGODB_SETUP                 | Install locally   |
+| 500 HTML response    | PROJECT_AUDIT (API section)   | Error handler fix |
+| Unknown env variable | UPGRADE_PLAN (Phase 1)        | Add validation    |
+| ESLint warnings      | UPGRADE_PLAN (Task 4)         | Run lint --fix    |
+| Port already in use  | UPGRADE_PLAN (Issues section) | Kill process      |
+| Module not found     | UPGRADE_PLAN (Common issues)  | npm install       |
 
 ---
 
@@ -383,9 +394,10 @@ A: Add tests (Phase 3), use git branches
 ## 🎯 **GOALS SUMMARY**
 
 ### Short-term (This Week)
+
 ```
 ✓ Fix MongoDB connection
-✓ Apply security patches  
+✓ Apply security patches
 ✓ Fix error responses
 ✓ Clean lint warnings
 ✓ Verify core flows work
@@ -393,6 +405,7 @@ A: Add tests (Phase 3), use git branches
 ```
 
 ### Medium-term (Next 2 Weeks)
+
 ```
 ✓ Complete missing features
 ✓ Add unit tests
@@ -402,6 +415,7 @@ A: Add tests (Phase 3), use git branches
 ```
 
 ### Long-term (Next Month)
+
 ```
 ✓ CI/CD pipeline
 ✓ Advanced features (2FA, etc)
@@ -415,4 +429,3 @@ A: Add tests (Phase 3), use git branches
 **You've got everything you need! Now let's build this. 🚀**
 
 Start with **REVIEW_SUMMARY.md**, then ask me which phase you want to tackle first!
-

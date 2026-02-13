@@ -1,11 +1,21 @@
-import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+  useCallback,
+} from 'react';
 import { motion } from 'framer-motion';
 import SummaryApi from '../common';
 import ProductCard from './ProductCard';
 import LoadingCard from './Marketplace/LoadingCard';
 import ErrorState from './Marketplace/ErrorState';
 import EmptyState from './Marketplace/EmptyState';
-import { getCachedData, setCachedData, invalidateCachePatterns } from '../utils/cache';
+import {
+  getCachedData,
+  setCachedData,
+  invalidateCachePatterns,
+} from '../utils/cache';
 import '../styles/marketplaceUtilities.css';
 
 /**
@@ -58,7 +68,7 @@ const MarketList = () => {
     setError(null);
     try {
       const url = `${SummaryApi.getMarket.url}?page=${page}&limit=${limit}`;
-      
+
       // Check cache first
       const cached = getCachedData(url);
       if (cached && cached.success) {
@@ -102,7 +112,7 @@ const MarketList = () => {
         (product) =>
           (product.productName || '').toLowerCase().includes(query) ||
           (product.category || '').toLowerCase().includes(query) ||
-          (product.userDetails?.name || '').toLowerCase().includes(query)
+          (product.userDetails?.name || '').toLowerCase().includes(query),
       );
     }
 
@@ -163,7 +173,10 @@ const MarketList = () => {
     setSortBy('recent');
   };
 
-  const hasActiveFilters = debouncedSearchQuery.trim() !== '' || statusFilter !== 'all' || sortBy !== 'recent';
+  const hasActiveFilters =
+    debouncedSearchQuery.trim() !== '' ||
+    statusFilter !== 'all' ||
+    sortBy !== 'recent';
 
   return (
     <div className="marketplace-container">
@@ -195,22 +208,57 @@ const MarketList = () => {
       >
         {/* Status Guide */}
         <div>
-          <h3 style={{ fontSize: '0.95rem', fontWeight: '700', marginBottom: '0.75rem', color: '#1e40af' }}>
+          <h3
+            style={{
+              fontSize: '0.95rem',
+              fontWeight: '700',
+              marginBottom: '0.75rem',
+              color: '#1e40af',
+            }}
+          >
             📊 Understanding Status
           </h3>
-          <ul style={{ fontSize: '0.85rem', lineHeight: '1.6', color: '#1e3a8a', paddingLeft: '1.25rem' }}>
-            <li><strong>🔄 Processing:</strong> Transaction is currently in progress</li>
-            <li><strong>✅ Done:</strong> Transaction completed successfully</li>
-            <li><strong>❌ Cancelled:</strong> Transaction was cancelled or failed</li>
+          <ul
+            style={{
+              fontSize: '0.85rem',
+              lineHeight: '1.6',
+              color: '#1e3a8a',
+              paddingLeft: '1.25rem',
+            }}
+          >
+            <li>
+              <strong>🔄 Processing:</strong> Transaction is currently in
+              progress
+            </li>
+            <li>
+              <strong>✅ Done:</strong> Transaction completed successfully
+            </li>
+            <li>
+              <strong>❌ Cancelled:</strong> Transaction was cancelled or failed
+            </li>
           </ul>
         </div>
 
         {/* Search Tips */}
         <div>
-          <h3 style={{ fontSize: '0.95rem', fontWeight: '700', marginBottom: '0.75rem', color: '#1e40af' }}>
+          <h3
+            style={{
+              fontSize: '0.95rem',
+              fontWeight: '700',
+              marginBottom: '0.75rem',
+              color: '#1e40af',
+            }}
+          >
             🔍 Search Tips
           </h3>
-          <ul style={{ fontSize: '0.85rem', lineHeight: '1.6', color: '#1e3a8a', paddingLeft: '1.25rem' }}>
+          <ul
+            style={{
+              fontSize: '0.85rem',
+              lineHeight: '1.6',
+              color: '#1e3a8a',
+              paddingLeft: '1.25rem',
+            }}
+          >
             <li>Search by product name, category, or seller</li>
             <li>Use filters to narrow down results</li>
             <li>Sort by price, date, or name for easy browsing</li>
@@ -219,10 +267,24 @@ const MarketList = () => {
 
         {/* Quick Actions */}
         <div>
-          <h3 style={{ fontSize: '0.95rem', fontWeight: '700', marginBottom: '0.75rem', color: '#1e40af' }}>
+          <h3
+            style={{
+              fontSize: '0.95rem',
+              fontWeight: '700',
+              marginBottom: '0.75rem',
+              color: '#1e40af',
+            }}
+          >
             ⚡ Quick Start
           </h3>
-          <ul style={{ fontSize: '0.85rem', lineHeight: '1.6', color: '#1e3a8a', paddingLeft: '1.25rem' }}>
+          <ul
+            style={{
+              fontSize: '0.85rem',
+              lineHeight: '1.6',
+              color: '#1e3a8a',
+              paddingLeft: '1.25rem',
+            }}
+          >
             <li>View product details by clicking a card</li>
             <li>Check seller information on each listing</li>
             <li>Use the filter for specific status types</li>
@@ -448,7 +510,8 @@ const MarketList = () => {
               color: '#0369a1',
             }}
           >
-            Found <strong>{filteredProducts.length}</strong> product(s) matching your filters
+            Found <strong>{filteredProducts.length}</strong> product(s) matching
+            your filters
           </div>
 
           {/* Products Grid */}
@@ -503,7 +566,11 @@ const MarketList = () => {
       ) : (
         /* Empty State */
         <EmptyState
-          title={hasActiveFilters ? 'No products match your filters' : 'No products available'}
+          title={
+            hasActiveFilters
+              ? 'No products match your filters'
+              : 'No products available'
+          }
           message={
             hasActiveFilters
               ? 'Try adjusting your search or filter criteria.'

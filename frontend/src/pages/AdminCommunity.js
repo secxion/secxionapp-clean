@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { formatDistanceToNow } from 'date-fns';
-// ...existing code...
+import { toast } from 'react-toastify';
 import SummaryApi from '../common';
-import { useNotification } from '../common/NotificationProvider';
 
 const AdminCommunity = () => {
   const { user } = useSelector((state) => state.user);
@@ -37,38 +36,37 @@ const AdminCommunity = () => {
     if (user) {
       fetchPendingPosts();
     } else {
-      notifyUser.error('Please log in to access this page.');
+      toast.error('Please log in to access this page.');
     }
   }, [user, fetchPendingPosts]);
 
   const handleApprove = async (postId) => {
     setIsApprovingOrRejecting(true);
-      const { showNotification } = useNotification();
     try {
       const response = await fetch(SummaryApi.approvePost(postId).url, {
         method: SummaryApi.approvePost(postId).method,
         credentials: 'include',
       });
-          showNotification('Please log in to access this page.', 'error');
+      const data = await response.json();
       if (data.success) {
-        notifyUser.success('Post approved.');
+        toast.success('Post approved.');
         fetchPendingPosts();
       } else {
-        notifyUser.error(data.message || 'Failed to approve post.');
+        toast.error(data.message || 'Failed to approve post.');
       }
     } catch (err) {
-      notifyUser.error('Error approving post.');
+      toast.error('Error approving post.');
     } finally {
       setIsApprovingOrRejecting(false);
     }
   };
-            showNotification('Post approved.', 'success');
+
   const handleReject = async (postId) => {
     if (!rejectionReason.trim()) {
-            showNotification(data.message || 'Failed to approve post.', 'error');
+      toast.error('Rejection reason is required.');
       return;
     }
-          showNotification('Error approving post.', 'error');
+    setIsApprovingOrRejecting(true);
     try {
       const response = await fetch(SummaryApi.rejectPost(postId).url, {
         method: SummaryApi.rejectPost(postId).method,
@@ -76,28 +74,28 @@ const AdminCommunity = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason: rejectionReason }),
       });
-          showNotification('Rejection reason is required.', 'error');
+      const data = await response.json();
       if (data.success) {
-        notifyUser.success('Post rejected.');
+        toast.success('Post rejected.');
         fetchPendingPosts();
         setRejectionReason('');
         setSelectedPostId(null);
       } else {
-        notifyUser.error(data.message || 'Failed to reject post.');
+        toast.error(data.message || 'Failed to reject post.');
       }
     } catch (err) {
-      notifyUser.error('Error rejecting post.');
+      toast.error('Error rejecting post.');
     } finally {
       setIsApprovingOrRejecting(false);
-            showNotification('Post rejected.', 'success');
+    }
   };
 
   const handleOpenRejectModal = (postId) => {
     setSelectedPostId(postId);
-            showNotification(data.message || 'Failed to reject post.', 'error');
+    setRejectionReason('');
   };
 
-          showNotification('Error rejecting post.', 'error');
+  const handleCloseRejectModal = () => {
     setSelectedPostId(null);
     setRejectionReason('');
   };

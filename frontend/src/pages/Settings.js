@@ -211,7 +211,6 @@ const Settings = () => {
 
         // Update original data
         setOriginalData((prev) => ({ ...prev, ...updateData }));
-
       } else {
       }
     } catch (error) {

@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from "uuid";
 import { sendVerificationEmail } from "../../utils/mailer.js";
 import { updateWalletBalance } from "../wallet/walletController.js";
 
-
 async function userSignUpController(req, res, next) {
   try {
     const { name, email, password, tag, profilePic, telegramNumber } = req.body;
@@ -21,7 +20,9 @@ async function userSignUpController(req, res, next) {
     }
     const userExistsByName = await userModel.findOne({ name });
     if (userExistsByName) {
-      const err = new Error("A user with this display name already exists. Please choose a different display name.");
+      const err = new Error(
+        "A user with this display name already exists. Please choose a different display name.",
+      );
       err.status = 409;
       throw err;
     }
@@ -38,15 +39,15 @@ async function userSignUpController(req, res, next) {
       isVerified: false,
       emailToken,
     };
-    
+
     // Save user FIRST to the database
     const newUser = new userModel(tempUser);
     console.log("📝 Attempting to save user:", {
       name: newUser.name,
       email: newUser.email,
-      hasPassword: !!newUser.password
+      hasPassword: !!newUser.password,
     });
-    
+
     try {
       await newUser.save();
       console.log("✅ User saved successfully:", newUser._id);
@@ -54,16 +55,21 @@ async function userSignUpController(req, res, next) {
       console.error("❌ User save failed:", {
         code: saveError.code,
         message: saveError.message,
-        errors: saveError.errors
+        errors: saveError.errors,
       });
       throw saveError;
     }
-    
+
     // Send verification email in background (fire-and-forget, don't block signup)
     sendVerificationEmail(email, emailToken)
       .then(() => console.log("✅ Verification email sent to:", email))
-      .catch((emailError) => console.error("⚠️ Email send error (non-blocking):", emailError.message));
-    
+      .catch((emailError) =>
+        console.error(
+          "⚠️ Email send error (non-blocking):",
+          emailError.message,
+        ),
+      );
+
     // Award signup bonus (non-blocking, also fire-and-forget)
     updateWalletBalance(
       newUser._id,
@@ -71,14 +77,20 @@ async function userSignUpController(req, res, next) {
       "credit",
       "Signup Bonus",
       newUser._id.toString(),
-      "User"
+      "User",
     )
       .then(() => console.log("✅ Signup bonus awarded:", newUser._id))
-      .catch((walletError) => console.error("⚠️ Wallet update error (non-blocking):", walletError.message));
-    
+      .catch((walletError) =>
+        console.error(
+          "⚠️ Wallet update error (non-blocking):",
+          walletError.message,
+        ),
+      );
+
     return res.status(201).json({
       success: true,
-      message: "Thank you for signing up! ₦900 signup bonus awarded. Please verify your email to continue.",
+      message:
+        "Thank you for signing up! ₦900 signup bonus awarded. Please verify your email to continue.",
     });
   } catch (err) {
     console.error("Signup error:", err);
@@ -94,7 +106,9 @@ async function userSignUpController(req, res, next) {
         return next(err);
       }
     }
-    err.message = err.message || "Sign-up temporarily unavailable due to system maintenance. Please try again shortly or contact support for registration.";
+    err.message =
+      err.message ||
+      "Sign-up temporarily unavailable due to system maintenance. Please try again shortly or contact support for registration.";
     err.status = err.status || 500;
     next(err);
   }

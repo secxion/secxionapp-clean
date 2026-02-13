@@ -16,7 +16,7 @@ const TransactionItem = ({
   date,
   type = 'debit', // credit, debit, pending
   onClick,
-  variant = 'ngn'
+  variant = 'ngn',
 }) => {
   // Determine icon and color based on type
   const getIcon = () => {
@@ -75,7 +75,10 @@ const TransactionItem = ({
     } else if (date.toDateString() === yesterday.toDateString()) {
       return 'Yesterday';
     } else {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+      });
     }
   };
 
@@ -103,8 +106,11 @@ const TransactionItem = ({
 
       {/* Amount */}
       <div className="wallet-transaction-amount">
-        <div className={`wallet-transaction-amount-value ${getAmountClassName()}`}>
-          {amountPrefix}{formattedAmount}
+        <div
+          className={`wallet-transaction-amount-value ${getAmountClassName()}`}
+        >
+          {amountPrefix}
+          {formattedAmount}
         </div>
       </div>
     </div>

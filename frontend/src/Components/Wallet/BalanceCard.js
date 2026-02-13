@@ -14,12 +14,12 @@ const BalanceCard = ({
   currency = 'NGN',
   isLoading = false,
   onRefresh,
-  variant = 'ngn' // 'ngn' or 'eth'
+  variant = 'ngn', // 'ngn' or 'eth'
 }) => {
   const [isVisible, setIsVisible] = useState(true);
 
   const handleToggleVisibility = useCallback(() => {
-    setIsVisible(prev => !prev);
+    setIsVisible((prev) => !prev);
   }, []);
 
   const handleRefresh = useCallback(() => {
@@ -48,7 +48,9 @@ const BalanceCard = ({
             <FiRefreshCw
               size={16}
               style={{
-                animation: isLoading ? 'wallet-spin 1s linear infinite' : 'none'
+                animation: isLoading
+                  ? 'wallet-spin 1s linear infinite'
+                  : 'none',
               }}
             />
           </button>
@@ -69,7 +71,10 @@ const BalanceCard = ({
           <>
             <div className="wallet-balance-amount">
               {isLoading ? (
-                <span className="wallet-skeleton wallet-skeleton--text" style={{ width: '150px' }} />
+                <span
+                  className="wallet-skeleton wallet-skeleton--text"
+                  style={{ width: '150px' }}
+                />
               ) : (
                 formattedAmount
               )}
@@ -82,7 +87,9 @@ const BalanceCard = ({
       </div>
 
       {/* Status indicator */}
-      <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.5rem' }}>
+      <div
+        style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.5rem' }}
+      >
         {isLoading ? 'Updating...' : 'Balance is up to date'}
       </div>
     </div>

@@ -1,16 +1,28 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
-import nodemailer from 'nodemailer';
-import axios from 'axios';
+import nodemailer from "nodemailer";
+import axios from "axios";
 
 const { FRONTEND_URL } = process.env;
 
 // Hostinger SMTP (Primary - for secxion.com)
-const { HOSTINGER_SMTP_HOST, HOSTINGER_SMTP_PORT, HOSTINGER_SMTP_USER, HOSTINGER_SMTP_PASS } = process.env;
+const {
+  HOSTINGER_SMTP_HOST,
+  HOSTINGER_SMTP_PORT,
+  HOSTINGER_SMTP_USER,
+  HOSTINGER_SMTP_PASS,
+} = process.env;
 
 // Brevo as fallback
-const { BREVO_SMTP_HOST, BREVO_SMTP_PORT, BREVO_SMTP_USER, BREVO_SMTP_PASS, BREVO_SENDER_FROM_EMAIL, BREVO_API_KEY } = process.env;
+const {
+  BREVO_SMTP_HOST,
+  BREVO_SMTP_PORT,
+  BREVO_SMTP_USER,
+  BREVO_SMTP_PASS,
+  BREVO_SENDER_FROM_EMAIL,
+  BREVO_API_KEY,
+} = process.env;
 
 // Gmail as last resort fallback
 const { MAIL_USER, MAIL_PASS } = process.env;
@@ -24,18 +36,21 @@ if (HOSTINGER_SMTP_HOST && HOSTINGER_SMTP_USER && HOSTINGER_SMTP_PASS) {
   console.log("   HOSTINGER_SMTP_HOST:", HOSTINGER_SMTP_HOST);
   console.log("   HOSTINGER_SMTP_PORT:", HOSTINGER_SMTP_PORT || 465);
   console.log("   HOSTINGER_SMTP_USER:", HOSTINGER_SMTP_USER);
-  console.log("   HOSTINGER_SMTP_PASS:", HOSTINGER_SMTP_PASS ? "✓ set" : "❌ not set");
-  
+  console.log(
+    "   HOSTINGER_SMTP_PASS:",
+    HOSTINGER_SMTP_PASS ? "✓ set" : "❌ not set",
+  );
+
   primaryTransporter = nodemailer.createTransport({
     host: HOSTINGER_SMTP_HOST,
-    port: parseInt(HOSTINGER_SMTP_PORT || '465', 10),
-    secure: parseInt(HOSTINGER_SMTP_PORT || '465', 10) === 465,
+    port: parseInt(HOSTINGER_SMTP_PORT || "465", 10),
+    secure: parseInt(HOSTINGER_SMTP_PORT || "465", 10) === 465,
     auth: {
       user: HOSTINGER_SMTP_USER,
       pass: HOSTINGER_SMTP_PASS,
     },
     tls: {
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
     },
     connectionTimeout: 10000, // 10 seconds
     greetingTimeout: 10000,
@@ -51,14 +66,14 @@ if (BREVO_SMTP_HOST && BREVO_SMTP_USER && BREVO_SMTP_PASS) {
   console.log("   BREVO configured as fallback");
   secondaryTransporter = nodemailer.createTransport({
     host: BREVO_SMTP_HOST,
-    port: parseInt(BREVO_SMTP_PORT || '587', 10),
-    secure: parseInt(BREVO_SMTP_PORT || '587', 10) === 465,
+    port: parseInt(BREVO_SMTP_PORT || "587", 10),
+    secure: parseInt(BREVO_SMTP_PORT || "587", 10) === 465,
     auth: {
       user: BREVO_SMTP_USER,
       pass: BREVO_SMTP_PASS,
     },
     tls: {
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
     },
     connectionTimeout: 10000,
     greetingTimeout: 10000,
@@ -71,14 +86,14 @@ let gmailTransporter = null;
 if (MAIL_USER && MAIL_PASS) {
   console.log("   Gmail configured as fallback");
   gmailTransporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: "gmail",
     auth: {
       user: MAIL_USER,
       pass: MAIL_PASS,
     },
     secure: true,
     tls: {
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
     },
     connectionTimeout: 10000,
     greetingTimeout: 10000,
@@ -89,15 +104,15 @@ if (MAIL_USER && MAIL_PASS) {
 // Test connection on startup for primary mailer (Hostinger)
 const testPrimaryConnection = async () => {
   if (!primaryTransporter) {
-    console.warn('⏩ Hostinger SMTP not configured. Skipping connection test.');
+    console.warn("⏩ Hostinger SMTP not configured. Skipping connection test.");
     return false;
   }
   try {
     await primaryTransporter.verify();
-    console.log('✅ Hostinger SMTP connection verified successfully');
+    console.log("✅ Hostinger SMTP connection verified successfully");
     return true;
   } catch (error) {
-    console.error('❌ Hostinger SMTP connection failed:', error.message);
+    console.error("❌ Hostinger SMTP connection failed:", error.message);
     return false;
   }
 };
@@ -105,15 +120,15 @@ const testPrimaryConnection = async () => {
 // Test connection on startup for secondary mailer if configured
 const testSecondaryConnection = async () => {
   if (!secondaryTransporter) {
-    console.warn('⏩ Brevo SMTP not configured. Skipping connection test.');
+    console.warn("⏩ Brevo SMTP not configured. Skipping connection test.");
     return false;
   }
   try {
     await secondaryTransporter.verify();
-    console.log('✅ Brevo SMTP connection verified successfully');
+    console.log("✅ Brevo SMTP connection verified successfully");
     return true;
   } catch (error) {
-    console.error('❌ Brevo SMTP connection failed:', error.message);
+    console.error("❌ Brevo SMTP connection failed:", error.message);
     return false;
   }
 };
@@ -123,24 +138,26 @@ testPrimaryConnection().catch(() => {});
 testSecondaryConnection().catch(() => {});
 
 // Promise timeout wrapper
-const withTimeout = (promise, ms, errorMsg = 'Operation timed out') => {
+const withTimeout = (promise, ms, errorMsg = "Operation timed out") => {
   return Promise.race([
     promise,
-    new Promise((_, reject) => setTimeout(() => reject(new Error(errorMsg)), ms))
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(errorMsg)), ms),
+    ),
   ]);
 };
 
 // Default sender info - always use "Secxion" branding
-const DEFAULT_FROM_EMAIL = HOSTINGER_SMTP_USER || 'verify@secxion.com';
-const DEFAULT_FROM_NAME = 'Secxion';
-const REPLY_TO_EMAIL = 'verify@secxion.com';
+const DEFAULT_FROM_EMAIL = HOSTINGER_SMTP_USER || "verify@secxion.com";
+const DEFAULT_FROM_NAME = "Secxion";
+const REPLY_TO_EMAIL = "verify@secxion.com";
 
 /**
  * Send email using Brevo HTTP API (works on Render free tier)
  */
 const sendViaBrevoAPI = async (options, context) => {
   if (!BREVO_API_KEY) {
-    throw new Error('BREVO_API_KEY is not set. Cannot use Brevo HTTP API.');
+    throw new Error("BREVO_API_KEY is not set. Cannot use Brevo HTTP API.");
   }
 
   const senderEmail = BREVO_SENDER_FROM_EMAIL || DEFAULT_FROM_EMAIL;
@@ -149,36 +166,42 @@ const sendViaBrevoAPI = async (options, context) => {
   const payload = {
     sender: {
       name: senderName,
-      email: senderEmail
+      email: senderEmail,
     },
     replyTo: {
       name: DEFAULT_FROM_NAME,
-      email: REPLY_TO_EMAIL
+      email: REPLY_TO_EMAIL,
     },
     to: [{ email: options.to }],
     subject: options.subject,
-    htmlContent: options.html
+    htmlContent: options.html,
   };
 
   try {
     console.log(`📧 Attempting Brevo HTTP API for [${context}]...`);
-    const response = await axios.post('https://api.brevo.com/v3/smtp/email', payload, {
-      headers: {
-        'accept': 'application/json',
-        'api-key': BREVO_API_KEY,
-        'content-type': 'application/json'
+    const response = await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      payload,
+      {
+        headers: {
+          accept: "application/json",
+          "api-key": BREVO_API_KEY,
+          "content-type": "application/json",
+        },
+        timeout: 30000,
       },
-      timeout: 30000
-    });
-    console.log(`✅ Email sent via Brevo HTTP API [${context}]:`, response.data.messageId || 'success');
-    return { messageId: response.data.messageId || 'brevo-api-success' };
+    );
+    console.log(
+      `✅ Email sent via Brevo HTTP API [${context}]:`,
+      response.data.messageId || "success",
+    );
+    return { messageId: response.data.messageId || "brevo-api-success" };
   } catch (error) {
     const errorMsg = error.response?.data?.message || error.message;
     console.error(`❌ Brevo HTTP API failed for [${context}]:`, errorMsg);
     throw new Error(`Brevo HTTP API failed: ${errorMsg}`);
   }
 };
-
 
 /**
  * Sends an email using available methods with fallbacks.
@@ -199,13 +222,19 @@ const sendEmail = async (options, context) => {
       const info = await withTimeout(
         primaryTransporter.sendMail(options),
         SMTP_TIMEOUT,
-        'Hostinger SMTP timeout'
+        "Hostinger SMTP timeout",
       );
-      console.log(`✅ Email sent via Hostinger SMTP [${context}]:`, info.messageId);
+      console.log(
+        `✅ Email sent via Hostinger SMTP [${context}]:`,
+        info.messageId,
+      );
       return info;
     } catch (hostingerError) {
       errors.push(`Hostinger SMTP: ${hostingerError.message}`);
-      console.error(`❌ Hostinger SMTP failed for [${context}]:`, hostingerError.message);
+      console.error(
+        `❌ Hostinger SMTP failed for [${context}]:`,
+        hostingerError.message,
+      );
     }
   }
 
@@ -230,13 +259,16 @@ const sendEmail = async (options, context) => {
       const info = await withTimeout(
         secondaryTransporter.sendMail(modifiedOptions),
         SMTP_TIMEOUT,
-        'Brevo SMTP timeout'
+        "Brevo SMTP timeout",
       );
       console.log(`✅ Email sent via Brevo SMTP [${context}]:`, info.messageId);
       return info;
     } catch (brevoError) {
       errors.push(`Brevo SMTP: ${brevoError.message}`);
-      console.error(`❌ Brevo SMTP failed for [${context}]:`, brevoError.message);
+      console.error(
+        `❌ Brevo SMTP failed for [${context}]:`,
+        brevoError.message,
+      );
     }
   }
 
@@ -250,18 +282,21 @@ const sendEmail = async (options, context) => {
       const info = await withTimeout(
         gmailTransporter.sendMail(modifiedOptions),
         SMTP_TIMEOUT,
-        'Gmail SMTP timeout'
+        "Gmail SMTP timeout",
       );
       console.log(`✅ Email sent via Gmail SMTP [${context}]:`, info.messageId);
       return info;
     } catch (gmailError) {
       errors.push(`Gmail SMTP: ${gmailError.message}`);
-      console.error(`❌ Gmail SMTP failed for [${context}]:`, gmailError.message);
+      console.error(
+        `❌ Gmail SMTP failed for [${context}]:`,
+        gmailError.message,
+      );
     }
   }
 
   // All methods failed
-  throw new Error(`All email methods failed: ${errors.join('; ')}`);
+  throw new Error(`All email methods failed: ${errors.join("; ")}`);
 };
 
 export const sendVerificationEmail = async (email, token) => {
@@ -295,7 +330,8 @@ export const sendVerificationEmail = async (email, token) => {
 };
 
 export const sendResetCodeEmail = async (email, code, type) => {
-  const label = type === "password" ? "Reset Your Password" : "Reset Telegram Number";
+  const label =
+    type === "password" ? "Reset Your Password" : "Reset Telegram Number";
 
   const mailOptions = {
     from: `"${DEFAULT_FROM_NAME}" <${DEFAULT_FROM_EMAIL}>`,

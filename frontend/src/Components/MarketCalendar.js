@@ -45,8 +45,16 @@ const MarketCalendar = () => {
   const getEventColor = (type) => {
     const colors = {
       event: { bg: 'rgba(16, 185, 129, 0.1)', border: '#10b981', icon: '📅' },
-      maintenance: { bg: 'rgba(239, 68, 68, 0.1)', border: '#ef4444', icon: '🔧' },
-      settlement: { bg: 'rgba(59, 130, 246, 0.1)', border: '#3b82f6', icon: '💰' },
+      maintenance: {
+        bg: 'rgba(239, 68, 68, 0.1)',
+        border: '#ef4444',
+        icon: '🔧',
+      },
+      settlement: {
+        bg: 'rgba(59, 130, 246, 0.1)',
+        border: '#3b82f6',
+        icon: '💰',
+      },
       release: { bg: 'rgba(168, 85, 247, 0.1)', border: '#a855f7', icon: '🚀' },
     };
     return colors[type] || colors.event;
@@ -95,7 +103,10 @@ const MarketCalendar = () => {
       }}
     >
       {/* Header */}
-      <h2 className="marketplace-heading-2" style={{ color: 'white', marginBottom: '1.5rem' }}>
+      <h2
+        className="marketplace-heading-2"
+        style={{ color: 'white', marginBottom: '1.5rem' }}
+      >
         📅 Market Calendar
       </h2>
 
@@ -151,7 +162,13 @@ const MarketCalendar = () => {
                   </div>
                 )}
 
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '1rem',
+                    alignItems: 'flex-start',
+                  }}
+                >
                   {/* Icon */}
                   <div
                     style={{

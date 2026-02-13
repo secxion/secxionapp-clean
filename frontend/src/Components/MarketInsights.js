@@ -45,14 +45,11 @@ const MarketInsights = () => {
         const stats = {
           totalListings: products.length,
           activeListings: products.filter(
-            (p) => !p.status || p.status === 'PROCESSING'
+            (p) => !p.status || p.status === 'PROCESSING',
           ).length,
-          cancelledListings: products.filter(
-            (p) => p.status === 'CANCEL'
-          ).length,
-          completedListings: products.filter(
-            (p) => p.status === 'DONE'
-          ).length,
+          cancelledListings: products.filter((p) => p.status === 'CANCEL')
+            .length,
+          completedListings: products.filter((p) => p.status === 'DONE').length,
         };
 
         setInsights({
@@ -95,7 +92,10 @@ const MarketInsights = () => {
           padding: '2rem',
         }}
       >
-        <div className="skeleton skeleton-text--heading" style={{ marginBottom: '1rem' }} />
+        <div
+          className="skeleton skeleton-text--heading"
+          style={{ marginBottom: '1rem' }}
+        />
         <div className="skeleton skeleton-text" />
         <div className="skeleton skeleton-text" style={{ width: '70%' }} />
       </motion.div>
@@ -114,7 +114,10 @@ const MarketInsights = () => {
       }}
     >
       {/* Header */}
-      <h2 className="marketplace-heading-2" style={{ color: 'white', marginBottom: '1.5rem' }}>
+      <h2
+        className="marketplace-heading-2"
+        style={{ color: 'white', marginBottom: '1.5rem' }}
+      >
         📊 Market Insights
       </h2>
 
@@ -131,35 +134,81 @@ const MarketInsights = () => {
           backdropFilter: 'blur(10px)',
         }}
       >
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
-          <p style={{ fontSize: '0.875rem', opacity: 0.8, marginBottom: '0.25rem' }}>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+        >
+          <p
+            style={{
+              fontSize: '0.875rem',
+              opacity: 0.8,
+              marginBottom: '0.25rem',
+            }}
+          >
             Total
           </p>
           <p style={{ fontSize: '1.5rem', fontWeight: '700' }}>
             {insights.marketStats.totalListings}
           </p>
         </motion.div>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-          <p style={{ fontSize: '0.875rem', opacity: 0.8, marginBottom: '0.25rem' }}>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <p
+            style={{
+              fontSize: '0.875rem',
+              opacity: 0.8,
+              marginBottom: '0.25rem',
+            }}
+          >
             Active
           </p>
-          <p style={{ fontSize: '1.5rem', fontWeight: '700', color: '#10b981' }}>
+          <p
+            style={{ fontSize: '1.5rem', fontWeight: '700', color: '#10b981' }}
+          >
             {insights.marketStats.activeListings}
           </p>
         </motion.div>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
-          <p style={{ fontSize: '0.875rem', opacity: 0.8, marginBottom: '0.25rem' }}>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          <p
+            style={{
+              fontSize: '0.875rem',
+              opacity: 0.8,
+              marginBottom: '0.25rem',
+            }}
+          >
             Done
           </p>
-          <p style={{ fontSize: '1.5rem', fontWeight: '700', color: '#fbbf24' }}>
+          <p
+            style={{ fontSize: '1.5rem', fontWeight: '700', color: '#fbbf24' }}
+          >
             {insights.marketStats.completedListings}
           </p>
         </motion.div>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
-          <p style={{ fontSize: '0.875rem', opacity: 0.8, marginBottom: '0.25rem' }}>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+        >
+          <p
+            style={{
+              fontSize: '0.875rem',
+              opacity: 0.8,
+              marginBottom: '0.25rem',
+            }}
+          >
             Cancelled
           </p>
-          <p style={{ fontSize: '1.5rem', fontWeight: '700', color: '#ef4444' }}>
+          <p
+            style={{ fontSize: '1.5rem', fontWeight: '700', color: '#ef4444' }}
+          >
             {insights.marketStats.cancelledListings}
           </p>
         </motion.div>
@@ -168,7 +217,13 @@ const MarketInsights = () => {
       {/* Top Products */}
       {insights.topProducts.length > 0 && (
         <div style={{ marginBottom: '2rem' }}>
-          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>
+          <h3
+            style={{
+              fontSize: '1.125rem',
+              fontWeight: '600',
+              marginBottom: '1rem',
+            }}
+          >
             🔥 Top Products
           </h3>
           <div style={{ display: 'grid', gap: '0.75rem' }}>
@@ -213,7 +268,13 @@ const MarketInsights = () => {
                   </p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: '0.9rem', fontWeight: '700', color: '#fbbf24' }}>
+                  <p
+                    style={{
+                      fontSize: '0.9rem',
+                      fontWeight: '700',
+                      color: '#fbbf24',
+                    }}
+                  >
                     ${formatAmount(product.totalAmount)}
                   </p>
                 </div>
@@ -226,7 +287,13 @@ const MarketInsights = () => {
       {/* Recent Listings */}
       {insights.recentListings.length > 0 && (
         <div>
-          <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>
+          <h3
+            style={{
+              fontSize: '1.125rem',
+              fontWeight: '600',
+              marginBottom: '1rem',
+            }}
+          >
             ✨ Recent
           </h3>
           <div style={{ display: 'grid', gap: '0.75rem' }}>
@@ -246,7 +313,9 @@ const MarketInsights = () => {
                 <p style={{ fontWeight: '600', marginBottom: '0.25rem' }}>
                   {product.productName || 'Unnamed'}
                 </p>
-                <p style={{ opacity: 0.7 }}>Amount: ${formatAmount(product.totalAmount)}</p>
+                <p style={{ opacity: 0.7 }}>
+                  Amount: ${formatAmount(product.totalAmount)}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -254,7 +323,15 @@ const MarketInsights = () => {
       )}
 
       {error && (
-        <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: 'rgba(255, 0, 0, 0.2)', borderRadius: '0.5rem', fontSize: '0.875rem' }}>
+        <div
+          style={{
+            marginTop: '1rem',
+            padding: '1rem',
+            backgroundColor: 'rgba(255, 0, 0, 0.2)',
+            borderRadius: '0.5rem',
+            fontSize: '0.875rem',
+          }}
+        >
           {error}
         </div>
       )}

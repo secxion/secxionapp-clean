@@ -27,7 +27,5 @@ module.exports = {
     '^.+\\.(js|jsx)$': 'babel-jest',
   },
   testPathIgnorePatterns: ['/node_modules/', '/build/'],
-  transformIgnorePatterns: [
-    'node_modules/(?!(framer-motion|react-toastify)/)',
-  ],
+  transformIgnorePatterns: ['node_modules/(?!(framer-motion|react-toastify)/)'],
 };

@@ -1,6 +1,7 @@
 # Wallet Dashboard Section - Comprehensive Audit Report
 
 ## Executive Summary
+
 The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) balance management, transactions, bank accounts, and payment requests. Current implementation has functional features but significant gaps in UI/UX consistency, responsiveness, performance optimization, and user experience flow.
 
 ---
@@ -8,6 +9,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 ## 1. COMPONENTS INVENTORY
 
 ### Main Components:
+
 1. **WalletDashboard.js** (484 lines) - Primary wallet interface with multi-tab system
 2. **EthWallet.js** (831 lines) - Ethereum withdrawal and balance management
 3. **WalletFooter.js** (50 lines) - Fixed bottom navigation for wallet tabs
@@ -16,6 +18,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 6. **BankAccountList.js** - Bank account management
 
 ### Supporting Files:
+
 - **EthContext.js** - ETH price, balance, gas fee management
 - **walletModel.js** - MongoDB schema for transactions, bank accounts
 - **ethWalletModel.js** - MongoDB schema for ETH wallet
@@ -27,6 +30,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 ## 2. VISUAL/UI & DESIGN ISSUES
 
 ### Current State:
+
 - **WalletDashboard.js**: Mixed dark theme (slate-900) with inconsistent accent colors
 - **EthWallet.js**: Inconsistent gray theme (gray-800, gray-700) with no cohesive design system
 - **WalletFooter.js**: Basic fixed navigation with yellow-400 active state
@@ -34,15 +38,16 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 - **Forms**: Plain input fields, basic button styling
 
 ### Issues Identified:
+
 1. **No Unified Design System**: Each page has different color schemes
    - Wallet: slate-900, yellow-400, slate-800
    - ETH: gray-800, gray-700, blue/green accents
    - No primary/secondary/accent color consistency
-2. **Outdated Styling Patterns**: 
+2. **Outdated Styling Patterns**:
    - Inline Tailwind classes create very long JSX lines
    - Magic spacing values (p-10, mt-16, pt-20) unclear
    - No component-level CSS variables
-3. **Poor Visual Hierarchy**: 
+3. **Poor Visual Hierarchy**:
    - Balance section lacks emphasis despite being most important
    - Transaction history blends into background
    - Status indicators (pending/approved) not visually distinct
@@ -57,6 +62,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
    - Sidebar doesn't collapse on mobile
 
 ### Recommended Improvements:
+
 - Implement wallet-specific design system (colors, typography, components)
 - Create reusable styled components (BalanceCard, TransactionItem, FormInput)
 - Add modern visual effects (glassmorphism for cards, smooth animations)
@@ -69,6 +75,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 ## 3. RESPONSIVENESS ISSUES
 
 ### Current State:
+
 - **WalletDashboard.js**: Some responsive classes (md:text-2xl, md:gap-4) but incomplete
 - **EthWallet.js**: Responsive text sizes (sm:text-3xl, md:p-8) but fixed padding issues
 - **WalletFooter.js**: Fixed bottom navigation - no safe area consideration
@@ -76,6 +83,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 - **Forms**: Full-width inputs that look cramped on phones
 
 ### Issues Identified:
+
 1. **Fixed Positioning Problems**:
    - Header `mt-16 md:mt-10` - inconsistent top spacing
    - Footer `fixed bottom-0` - overlaps content on mobile
@@ -95,6 +103,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
    - QR scanner modal unreadable on small screens
 
 ### Recommended Improvements:
+
 - Implement safe area support for mobile
 - Add tablet-specific breakpoints (md: 768px, lg: 1024px)
 - Truncate long strings with tooltips
@@ -107,12 +116,14 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 ## 4. CODE QUALITY & ORGANIZATION ISSUES
 
 ### File Structure Issues:
+
 1. **Long Component Files**: EthWallet.js is 831 lines - should be split
 2. **Mixed Concerns**: WalletDashboard combines display, state management, tab logic
 3. **Duplicate Code**: Similar balance fetching logic in multiple files
 4. **Unused Imports**: Some components have unused react-icons imported
 
 ### Code Quality Issues:
+
 1. **Hardcoded Values**:
    - SERVICE_FEE_PERCENT = 1.5% (defined in multiple places)
    - COUNTDOWN_DURATION = 600 (only in EthWallet)
@@ -134,6 +145,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
    - No structured logging
 
 ### Refactoring Opportunities:
+
 1. **Extract Hooks**:
    - `useWalletBalance()` - fetch and manage wallet balance
    - `useTransactionHistory()` - fetch and filter transactions
@@ -155,6 +167,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 ## 5. PERFORMANCE ISSUES
 
 ### Current Problems:
+
 1. **No Request Caching**:
    - Every component refresh fetches fresh data
    - Balance fetched multiple times on app load
@@ -177,6 +190,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
    - Each tab has its own data fetching
 
 ### Recommended Improvements:
+
 - Add request caching with 5-minute TTL
 - Memoize expensive components (TransactionItem, BankAccount)
 - Debounce form input handlers
@@ -190,6 +204,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 ## 6. USER EXPERIENCE & WORKFLOW ISSUES
 
 ### Current State:
+
 - **Balance Display**: Simple text, no context about amounts
 - **Transaction History**: Chronological list with minimal information
 - **Withdrawal Flow**: Multiple steps (amount → address → confirm)
@@ -197,6 +212,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 - **Payment Requests**: Form-based creation
 
 ### Issues Identified:
+
 1. **Unclear Workflows**:
    - Users don't understand "Available Balance" vs "Pending"
    - Withdrawal process not clearly explained
@@ -223,6 +239,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
    - Confirmation dialogs might not fit screen
 
 ### Recommended Improvements:
+
 - Add detailed empty states with illustrations
 - Create step-by-step withdrawal wizard
 - Add floating help bubbles explaining features
@@ -237,6 +254,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 ## 7. SPECIFIC PROBLEMS & MISSING FEATURES
 
 ### Current Functionality:
+
 - ✅ View NGN balance
 - ✅ View ETH balance and conversion
 - ✅ View transaction history
@@ -246,6 +264,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 - ✅ Hide/show balance toggle
 
 ### Missing Features:
+
 1. **Transaction Filters**: Can't filter by status, type, date range
 2. **Export Data**: No way to export transaction history
 3. **Recurring Payments**: No scheduled/recurring payment support
@@ -258,6 +277,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 10. **Address Book**: No saved recipient addresses
 
 ### Known Bugs/Issues:
+
 1. **API Endpoint Typo**: `getWalletBalance.url` uses `/api/wallet/balane` (missing 'c')
 2. **localStorage Sync**: marketStatus stored but never cleared/validated
 3. **ETH Rate Caching**: Might be stale if rates change
@@ -270,8 +290,10 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 ## 8. COMPONENT BREAKDOWN DETAILS
 
 ### WalletDashboard.js (484 lines)
+
 **Purpose**: Main wallet interface with tabbed navigation  
-**Current Functionality**: 
+**Current Functionality**:
+
 - Display balance (NGN)
 - Tabbed interface (wallet, accounts, history)
 - Payment request form
@@ -279,6 +301,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 - Transaction history display
 
 **Issues**:
+
 - Very long component with mixed state management
 - All tabs mounted simultaneously (performance hit)
 - No clear separation between display and logic
@@ -287,8 +310,10 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 **Improvement**: Split into separate route-based pages or lazy-loaded tabs
 
 ### EthWallet.js (831 lines)
+
 **Purpose**: Ethereum withdrawal and balance management  
 **Current Functionality**:
+
 - Display ETH and NGN balances
 - ETH rate and gas fee display
 - Withdrawal amount calculator
@@ -297,6 +322,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 - Track withdrawal status with countdown
 
 **Issues**:
+
 - Too many state variables (16+)
 - Complex calculation logic mixed with UI
 - localStorage used alongside state
@@ -306,6 +332,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 **Improvement**: Extract calculation logic to hooks, split into smaller components
 
 ### Key Functions to Extract:
+
 1. **useWalletBalance()**: Fetch and manage balance
 2. **useEthCalculations()**: Amount, fee, total calculations
 3. **useWithdrawalStatus()**: Track pending withdrawals
@@ -316,6 +343,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 ## 9. IMPROVEMENT PRIORITY MATRIX
 
 ### High Priority (Breaking/Critical):
+
 1. **Design System**: Inconsistent styling across wallet pages
 2. **Mobile Responsiveness**: Poor mobile experience (fixed headers, overlapping content)
 3. **Component Extraction**: Files too long and complex
@@ -323,6 +351,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 5. **Bug Fixes**: API typo, cleanup timers, error handling
 
 ### Medium Priority (Significant):
+
 1. **User Experience**: Unclear workflows, missing confirmations
 2. **Feature Completeness**: Missing filters, search, export
 3. **Code Quality**: Duplicate code, unused imports, hardcoded values
@@ -330,6 +359,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 5. **Form Validation**: No client-side validation feedback
 
 ### Low Priority (Nice-to-Have):
+
 1. **Advanced Features**: Analytics, recurring payments, multi-currency
 2. **Animations**: Smooth transitions, micro-interactions
 3. **Accessibility**: ARIA labels, keyboard navigation
@@ -340,6 +370,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 ## 10. PHASED IMPROVEMENT PLAN
 
 ### Phase 1: Foundation (Priority)
+
 - [ ] Create wallet design system (colors, components, utilities)
 - [ ] Fix mobile responsiveness issues
 - [ ] Extract reusable components (BalanceCard, TransactionItem, etc.)
@@ -347,6 +378,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 - [ ] Fix unused imports and console statements
 
 ### Phase 2: Enhancement (Medium Priority)
+
 - [ ] Extract custom hooks (useWalletBalance, useEthCalculations)
 - [ ] Implement loading/error states with skeletons
 - [ ] Add form validation and better error messages
@@ -354,6 +386,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 - [ ] Improve withdrawal flow with wizard
 
 ### Phase 3: Optimization (Low Priority)
+
 - [ ] Implement request caching
 - [ ] Add virtual scrolling for history
 - [ ] Memoize expensive components
@@ -363,6 +396,7 @@ The Wallet section spans multiple components for NGN (Naira) and ETH (Ethereum) 
 ---
 
 ## Summary Statistics
+
 - **Total Files**: 2 main pages + 4 components + 2 contexts + backend
 - **Total Lines of Code**: ~2000+ lines (WalletDashboard + EthWallet)
 - **Unused Imports**: ~10 locations

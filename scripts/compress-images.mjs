@@ -1,10 +1,10 @@
-import sharp from 'sharp';
-import { glob } from 'glob';
-import fs from 'fs';
-import path from 'path';
+import sharp from "sharp";
+import { glob } from "glob";
+import fs from "fs";
+import path from "path";
 
-const inputDir = 'frontend/src/assetsx';
-const outputDir = 'frontend/src/assetsx/optimized';
+const inputDir = "frontend/src/assetsx";
+const outputDir = "frontend/src/assetsx/optimized";
 const maxWidth = 800; // Max width for images, adjust as needed
 
 // Ensure the output directory exists
@@ -13,13 +13,13 @@ if (!fs.existsSync(outputDir)) {
 }
 
 async function compressImages() {
-  console.log('🌀 Starting image compression...');
-  
+  console.log("🌀 Starting image compression...");
+
   // Find all png, jpg, and jpeg files in the input directory
   const files = await glob(`${inputDir}/*.{png,jpg,jpeg}`);
 
   if (files.length === 0) {
-    console.log('No images found to compress.');
+    console.log("No images found to compress.");
     return;
   }
 
@@ -32,12 +32,12 @@ async function compressImages() {
       await sharp(file)
         .resize({
           width: maxWidth,
-          fit: 'inside',
+          fit: "inside",
           withoutEnlargement: true,
         })
         .webp({ quality: 80 })
         .toFile(outputPath);
-      
+
       compressedCount++;
       console.log(`✅ Compressed: ${fileName}.webp`);
     } catch (err) {
@@ -46,7 +46,9 @@ async function compressImages() {
   });
 
   await Promise.all(promises);
-  console.log(`\n🎉 Finished! Compressed ${compressedCount} of ${files.length} images.`);
+  console.log(
+    `\n🎉 Finished! Compressed ${compressedCount} of ${files.length} images.`,
+  );
 }
 
 compressImages();

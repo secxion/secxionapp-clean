@@ -9,7 +9,7 @@ async function userDetailsController(req, res) {
         success: false,
       });
     }
-    
+
     const user = await userModel.findById(req.userId).select("-password");
 
     if (!user) {
@@ -26,7 +26,6 @@ async function userDetailsController(req, res) {
       success: true,
       message: "User details",
     });
-
   } catch (err) {
     console.error("Error fetching user details:", err);
     res.status(400).json({

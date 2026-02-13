@@ -3,7 +3,9 @@ import userModel from "../models/userModel.js";
 
 const fetchUserDetails = async (userId) => {
   try {
-    const user = await userModel.findById(userId).select("name email profilePic");
+    const user = await userModel
+      .findById(userId)
+      .select("name email profilePic");
     return user;
   } catch (err) {
     console.error("Error fetching user details:", err);
@@ -22,7 +24,7 @@ export const getAllDataPads = async (req, res) => {
           ...entry.toObject(),
           userDetails,
         };
-      })
+      }),
     );
 
     res.json({
@@ -114,7 +116,7 @@ export const updateDataPad = async (req, res) => {
     const updatedEntry = await DataPad.findByIdAndUpdate(
       id,
       { title, content, media },
-      { new: true }
+      { new: true },
     );
 
     res.json({

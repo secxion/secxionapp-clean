@@ -16,24 +16,24 @@ export const getWalletBalance = async (req, res) => {
   const startTime = Date.now();
   try {
     const userId = req.userId;
-    console.log('[WALLET] Getting balance for user:', userId);
+    console.log("[WALLET] Getting balance for user:", userId);
 
     const walletStartTime = Date.now();
     const wallet = await ensureWalletExists(userId);
     const walletTime = Date.now() - walletStartTime;
-    console.log('[WALLET] ensureWalletExists took', walletTime, 'ms');
+    console.log("[WALLET] ensureWalletExists took", walletTime, "ms");
 
     res.status(200).json({
       success: true,
       balance: wallet.balance,
       transactions: wallet.transactions || [],
     });
-    console.log('[WALLET] Response sent in', Date.now() - startTime, 'ms');
+    console.log("[WALLET] Response sent in", Date.now() - startTime, "ms");
   } catch (error) {
-    console.error('Error fetching wallet balance:', error);
+    console.error("Error fetching wallet balance:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch wallet balance',
+      message: "Failed to fetch wallet balance",
       error: error.message,
     });
   }
@@ -46,15 +46,17 @@ export const getOtherUserWalletBalance = async (req, res) => {
     const wallet = await Wallet.findOne({ userId });
 
     if (!wallet) {
-      return res.status(404).json({ success: false, message: 'Wallet not found for this user.' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Wallet not found for this user." });
     }
 
     res.status(200).json({ success: true, balance: wallet.balance });
   } catch (error) {
-    console.error('Error fetching user wallet balance:', error);
+    console.error("Error fetching user wallet balance:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch user wallet balance',
+      message: "Failed to fetch user wallet balance",
       error: error.message,
     });
   }
@@ -68,10 +70,16 @@ export const updateWalletBalance = async (
   description,
   referenceId,
   referenceType,
-  status = 'completed'
+  status = "completed",
 ) => {
   try {
-    const validModels = ["PaymentRequest", "EthWithdrawalRequest", "OtherType", "User", "userproduct"];
+    const validModels = [
+      "PaymentRequest",
+      "EthWithdrawalRequest",
+      "OtherType",
+      "User",
+      "userproduct",
+    ];
     if (!validModels.includes(referenceType)) {
       throw new Error(`Invalid referenceType: ${referenceType}`);
     }
@@ -94,7 +102,7 @@ export const updateWalletBalance = async (
     }
 
     // Only immediately apply balance if transaction is approved/completed
-    if (status === 'completed' || status === 'approved') {
+    if (status === "completed" || status === "approved") {
       wallet.balance += amount;
     }
 
@@ -115,19 +123,19 @@ export const updateWalletBalance = async (
     // Notification
     const formattedAmount = `₦${Math.abs(amount).toLocaleString()}`;
     const message =
-      type === 'credit'
+      type === "credit"
         ? `Your wallet has been credited with ${formattedAmount} (${status})`
-        : type === 'debit'
-        ? `Your wallet has been debited by ${formattedAmount} (${status})`
-        : `A wallet transaction of ${formattedAmount} (${status}) occurred`;
+        : type === "debit"
+          ? `Your wallet has been debited by ${formattedAmount} (${status})`
+          : `A wallet transaction of ${formattedAmount} (${status}) occurred`;
 
     await createTransactionNotification(
       userId,
       Math.abs(amount),
       type,
       message,
-      '/wallet',
-      referenceId
+      "/wallet",
+      referenceId,
     );
 
     return {
@@ -137,7 +145,7 @@ export const updateWalletBalance = async (
       newBalance: wallet.balance,
     };
   } catch (error) {
-    console.error('Error updating wallet balance:', error);
+    console.error("Error updating wallet balance:", error);
     return {
       success: false,
       message: "Failed to update wallet balance.",
@@ -147,18 +155,26 @@ export const updateWalletBalance = async (
 };
 
 // Optional: Update transaction status (useful for ETH confirmations)
-export const updateTransactionStatus = async (userId, transactionId, newStatus) => {
+export const updateTransactionStatus = async (
+  userId,
+  transactionId,
+  newStatus,
+) => {
   try {
     const wallet = await Wallet.findOne({ userId });
     if (!wallet) return { success: false, message: "Wallet not found" };
 
     const transaction = wallet.transactions.id(transactionId);
-    if (!transaction) return { success: false, message: "Transaction not found" };
+    if (!transaction)
+      return { success: false, message: "Transaction not found" };
 
     transaction.status = newStatus;
 
     // Apply balance update if it's now completed or approved
-    if ((newStatus === 'completed' || newStatus === 'approved') && !transaction.appliedToBalance) {
+    if (
+      (newStatus === "completed" || newStatus === "approved") &&
+      !transaction.appliedToBalance
+    ) {
       wallet.balance += transaction.amount;
       transaction.appliedToBalance = true;
     }

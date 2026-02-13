@@ -1,7 +1,6 @@
 import productModel from "../../models/productModel.js";
 import uploadProductPermission from "../../helpers/permission.js";
 
-
 async function updateProductController(req, res, next) {
   try {
     if (!uploadProductPermission(req.userId)) {
@@ -15,11 +14,10 @@ async function updateProductController(req, res, next) {
       err.status = 400;
       throw err;
     }
-    const updatedProduct = await productModel.findByIdAndUpdate(
-      _id,
-      resBody,
-      { new: true, runValidators: true }
-    );
+    const updatedProduct = await productModel.findByIdAndUpdate(_id, resBody, {
+      new: true,
+      runValidators: true,
+    });
     if (!updatedProduct) {
       const err = new Error("Product not found.");
       err.status = 404;
@@ -32,7 +30,7 @@ async function updateProductController(req, res, next) {
       error: false,
     });
   } catch (err) {
-    err.message = err.message || 'Could not update product. Please try again.';
+    err.message = err.message || "Could not update product. Please try again.";
     next(err);
   }
 }

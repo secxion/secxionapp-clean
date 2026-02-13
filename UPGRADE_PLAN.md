@@ -1,6 +1,7 @@
 # 🚀 SECXION APP - UPGRADE & COMPLETION PLAN
 
 ## Current Project Status
+
 - **Frontend:** ✅ Running on `http://localhost:3000`
 - **Backend:** ⏳ Waiting for MongoDB connection
 - **MongoDB:** 📦 Installing locally (Option 2: Community Edition)
@@ -10,12 +11,14 @@
 ## 📋 QUICK START CHECKLIST
 
 ### ✅ Prerequisites
+
 - [x] Node.js + npm installed
 - [x] Frontend + Backend dependencies installed
 - [ ] MongoDB 7.x Community Edition (installing)
 - [ ] Visual Studio Code with extensions
 
 ### 🔧 Initial Setup (Next 30 mins)
+
 1. [ ] MongoDB installed and running
 2. [ ] Restart backend server: `npm run dev`
 3. [ ] Verify API responses (check 401 errors resolved)
@@ -27,6 +30,7 @@
 ## 🎯 IMMEDIATE PRIORITY TASKS (To Be Done In Next 1-2 Days)
 
 ### Task 1: Fix Security Vulnerabilities
+
 **Status:** Not Started  
 **Time:** 30 minutes  
 **Files:** `backend/package.json`
@@ -39,6 +43,7 @@ npm run dev
 ```
 
 **Changes:**
+
 - Updates form-data, axios, cloudinary, jws
 - Removes DoS vulnerabilities
 - Maintains compatibility
@@ -46,23 +51,25 @@ npm run dev
 ---
 
 ### Task 2: Add Environment Variable Validation
+
 **Status:** Not Started  
 **Time:** 45 minutes  
 **Files:** `backend/index.js`
 
 **What to add:**
+
 ```javascript
 // Start of backend/index.js - add validation
 const requiredEnvVars = [
-  'MONGODB_URI',
-  'TOKEN_SECRET_KEY',
-  'FRONTEND_URLS',
-  'BREVO_SMTP_HOST'
+  "MONGODB_URI",
+  "TOKEN_SECRET_KEY",
+  "FRONTEND_URLS",
+  "BREVO_SMTP_HOST",
 ];
 
-const missingVars = requiredEnvVars.filter(v => !process.env[v]);
+const missingVars = requiredEnvVars.filter((v) => !process.env[v]);
 if (missingVars.length > 0) {
-  console.error('❌ Missing environment variables:', missingVars);
+  console.error("❌ Missing environment variables:", missingVars);
   process.exit(1);
 }
 ```
@@ -70,6 +77,7 @@ if (missingVars.length > 0) {
 ---
 
 ### Task 3: Fix API Error Response Format
+
 **Status:** Not Started  
 **Time:** 1 hour  
 **Files:** `backend/middleware/errorHandler.js`
@@ -83,8 +91,8 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(err.status || 500).json({
     success: false,
-    message: err.message || 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err : {}
+    message: err.message || "Internal Server Error",
+    error: process.env.NODE_ENV === "development" ? err : {},
   });
 });
 ```
@@ -92,6 +100,7 @@ app.use((err, req, res, next) => {
 ---
 
 ### Task 4: Clean ESLint Warnings
+
 **Status:** Not Started  
 **Time:** 2 hours  
 **Files:** `frontend/src/**/*.js` (40 files)
@@ -103,6 +112,7 @@ npm run format
 ```
 
 **This will:**
+
 - Remove unused variables
 - Fix import statements
 - Format code consistently
@@ -111,9 +121,11 @@ npm run format
 ---
 
 ### Task 5: Test Critical User Flows
+
 **Status:** Not Started  
 **Time:** 1 hour  
 **Flows to Test:**
+
 - [ ] Sign Up → Email Verification
 - [ ] Login → Dashboard
 - [ ] Create Market Listing
@@ -160,6 +172,7 @@ npm audit fix --legacy-peer-deps
 ```
 
 This will update:
+
 - form-data → Safe version
 - axios → 1.7+
 - cloudinary → 2.7+
@@ -175,20 +188,20 @@ This will update:
 import mongoose from "mongoose";
 import logger from "../utils/logger.js";
 
-async function connectDB(){
-    try{
-        const conn = await mongoose.connect(process.env.MONGODB_URI, {
-            serverSelectionTimeoutMS: 5000,
-            socketTimeoutMS: 45000,
-        });
-        
-        logger.info(`MongoDB Connected: ${conn.connection.host}`);
-        return conn;
-    }catch(err){
-        logger.error(`MongoDB Connection Error: ${err.message}`);
-        // Retry after 5 seconds
-        setTimeout(connectDB, 5000);
-    }
+async function connectDB() {
+  try {
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+
+    logger.info(`MongoDB Connected: ${conn.connection.host}`);
+    return conn;
+  } catch (err) {
+    logger.error(`MongoDB Connection Error: ${err.message}`);
+    // Retry after 5 seconds
+    setTimeout(connectDB, 5000);
+  }
 }
 
 export default connectDB;
@@ -202,10 +215,10 @@ export default connectDB;
 
 ```javascript
 const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'https://secxion.com',
-  'https://www.secxion.com'
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "https://secxion.com",
+  "https://www.secxion.com",
 ];
 ```
 
@@ -216,17 +229,17 @@ const allowedOrigins = [
 **File:** `backend/routes/index.js` - Add at top:
 
 ```javascript
-import rateLimit from 'express-rate-limit';
+import rateLimit from "express-rate-limit";
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // 5 requests per windowMs
-  message: 'Too many login attempts, please try again later'
+  message: "Too many login attempts, please try again later",
 });
 
 // Apply to login route
-router.post('/signin', loginLimiter, userSignInController);
-router.post('/signup', loginLimiter, userSignUpController);
+router.post("/signin", loginLimiter, userSignInController);
+router.post("/signup", loginLimiter, userSignUpController);
 ```
 
 ---
@@ -234,12 +247,14 @@ router.post('/signup', loginLimiter, userSignUpController);
 ### 5. Clean Frontend Unused Imports
 
 **Command to run:**
+
 ```bash
 cd frontend
 npm run lint -- --fix
 ```
 
 This auto-fixes:
+
 - Unused variables
 - Invalid imports
 - Missing hook dependencies
@@ -250,6 +265,7 @@ This auto-fixes:
 ## 🧪 TESTING CHECKLIST
 
 ### Backend Verification
+
 ```bash
 # Test in PowerShell
 cd backend
@@ -262,6 +278,7 @@ npm run dev
 ```
 
 ### Frontend Verification
+
 ```bash
 # In another terminal
 cd frontend
@@ -273,11 +290,12 @@ npm start
 ```
 
 ### API Testing
+
 ```javascript
 // Test in browser console at http://localhost:3000
-fetch('http://localhost:5000/api/get-blogs')
-  .then(r => r.json())
-  .then(d => console.log(d))
+fetch("http://localhost:5000/api/get-blogs")
+  .then((r) => r.json())
+  .then((d) => console.log(d));
 
 // Should either:
 // ✅ Return blog data if called as GET
@@ -327,6 +345,7 @@ npm run lint 2>&1 > lint-report.txt
 ```
 
 ### Files to Review First
+
 1. `PROJECT_AUDIT.md` - This analysis
 2. `MONGODB_SETUP.md` - MongoDB setup guide
 3. `backend/.env` - Configuration
@@ -367,6 +386,7 @@ TOTAL WEEK 1: ~13 hours focused work
 ## ⚠️ COMMON ISSUES & FIXES
 
 ### Issue: "Cannot connect to MongoDB"
+
 ```bash
 # Check if MongoDB is running
 Get-Service MongoDB -ErrorAction SilentlyContinue
@@ -379,6 +399,7 @@ docker-compose up -d
 ```
 
 ### Issue: "Port 3000 already in use"
+
 ```bash
 # Find process using port 3000
 Get-NetTCPConnection -LocalPort 3000
@@ -390,6 +411,7 @@ Stop-Process -Id [PID] -Force
 ```
 
 ### Issue: "Module not found" errors
+
 ```bash
 # Clean install
 rm -r node_modules package-lock.json
@@ -411,4 +433,3 @@ npm start
 ---
 
 **Ready to begin Phase 1? Let me know when MongoDB is installed!** ✅
-
