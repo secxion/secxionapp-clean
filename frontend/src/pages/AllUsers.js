@@ -3,9 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import SummaryApi from '../common';
 import moment from 'moment';
 import { MdModeEdit } from 'react-icons/md';
-import { FaTrashAlt } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import ChangeUserRole from '../Components/ChangeUserRole';
+
+import { useNotification } from '../common/NotificationProvider';
 
 const fetchAllUsers = async () => {
   const response = await fetch(SummaryApi.allUser.url, {
@@ -22,7 +21,7 @@ const fetchAllUsers = async () => {
 
 const deleteUsers = async (userIds, refetch, setSelectedUsers) => {
   if (userIds.length === 0) {
-    toast.warn('No users selected.');
+    showNotification('No users selected.', 'warning');
     return;
   }
 
@@ -40,14 +39,14 @@ const deleteUsers = async (userIds, refetch, setSelectedUsers) => {
     const responseData = await response.json();
 
     if (responseData.success) {
-      toast.success('Selected users deleted successfully.');
+      showNotification('Selected users deleted successfully.', 'success');
       refetch();
       setSelectedUsers([]);
     } else {
-      toast.error(responseData.message || 'Failed to delete users.');
+      showNotification(responseData.message || 'Failed to delete users.', 'error');
     }
   } catch (error) {
-    toast.error('An error occurred while deleting users.');
+    showNotification('An error occurred while deleting users.', 'error');
   }
 };
 
@@ -234,5 +233,4 @@ const AllUsers = () => {
     </main>
   );
 };
-
 export default AllUsers;

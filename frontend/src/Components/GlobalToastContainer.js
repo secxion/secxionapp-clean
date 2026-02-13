@@ -13,7 +13,7 @@ const GlobalToastContainer = () => {
     <ToastContainer
       // Position
       position="top-right"
-      autoClose={3000}
+      autoClose={2000}
       hideProgressBar={false}
       newestOnTop={true}
       closeOnClick={true}
@@ -38,7 +38,9 @@ const GlobalToastContainer = () => {
       progressClassName={() => 'toast-progress-bar'}
       closeButton={({ closeToast }) => (
         <button
-          onClick={closeToast}
+          onClick={() => {
+            closeToast();
+          }}
           className="text-white hover:opacity-70 transition-opacity flex-shrink-0 ml-3"
           aria-label="Close notification"
         >

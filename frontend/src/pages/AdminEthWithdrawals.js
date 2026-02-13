@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import SummaryApi from '../common';
-import { toast } from 'react-toastify';
+import { useNotification } from '../common/NotificationProvider';
+// ...existing code...
+// ...existing code...
 
 const AdminEthWithdrawals = () => {
+  const { showNotification } = useNotification();
   const [requests, setRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
   const [statusFilter, setStatusFilter] = useState('All');
@@ -23,10 +26,10 @@ const AdminEthWithdrawals = () => {
       if (data.success) {
         setRequests(data.data);
       } else {
-        toast.error('Failed to fetch requests');
+        showNotification('Failed to fetch requests', 'error');
       }
     } catch (err) {
-      toast.error('Server error');
+      showNotification('Server error', 'error');
     } finally {
       setLoading(false);
     }
@@ -42,13 +45,13 @@ const AdminEthWithdrawals = () => {
       });
       const data = await res.json();
       if (data.success) {
-        toast.success('Status updated');
+        showNotification('Status updated', 'success');
         fetchRequests();
       } else {
-        toast.error('Failed to update status');
+        showNotification('Failed to update status', 'error');
       }
     } catch (err) {
-      toast.error('Error updating status');
+      showNotification('Error updating status', 'error');
     }
   };
 

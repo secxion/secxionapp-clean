@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'react-toastify';
 import {
   FaUser,
   FaEnvelope,
@@ -146,12 +145,11 @@ const Settings = () => {
 
     // Validate file
     if (!file.type.startsWith('image/')) {
-      toast.error('Please select a valid image file');
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image size must be less than 5MB');
+      notifyUser.error('Image size must be less than 5MB');
       return;
     }
 
@@ -159,10 +157,8 @@ const Settings = () => {
     try {
       const result = await uploadImage(file);
       handleInputChange('profilePic', result.url);
-      toast.success('Profile picture uploaded successfully');
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error('Failed to upload image. Please try again.');
     } finally {
       setIsUploading(false);
     }
@@ -172,7 +168,6 @@ const Settings = () => {
     e.preventDefault();
 
     if (!validateForm()) {
-      toast.error('Please fix the errors before submitting');
       return;
     }
 
@@ -217,13 +212,10 @@ const Settings = () => {
         // Update original data
         setOriginalData((prev) => ({ ...prev, ...updateData }));
 
-        toast.success(data.message || 'Profile updated successfully');
       } else {
-        toast.error(data.message || 'Failed to update profile');
       }
     } catch (error) {
       console.error('Update error:', error);
-      toast.error('An error occurred while updating profile');
     } finally {
       setIsLoading(false);
     }

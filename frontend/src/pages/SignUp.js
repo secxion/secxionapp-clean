@@ -224,14 +224,7 @@ const SignUp = () => {
         credentials: 'include',
         body: JSON.stringify(data),
       });
-
-      let responseData = {};
-      try {
-        responseData = await response.json();
-      } catch (jsonError) {
-        console.error('Failed to parse response:', jsonError);
-      }
-
+      const responseData = await response.json();
       if (response.ok) {
         localStorage.removeItem('signupData');
         notifyUser.success(
@@ -244,17 +237,8 @@ const SignUp = () => {
           ? String(responseData.message).toLowerCase()
           : '';
 
-        // Check for rate limit
-        if (response.status === 429) {
-          notifyUser.error(
-            '⏳ Too many signup attempts. Please wait a minute and try again.',
-            'Rate Limit',
-          );
-        } else if (
-          response.status === 409 &&
-          backendMessage.includes('email')
-        ) {
-          // Check if email already exists
+        // Check if email already exists
+        if (response.status === 409 && backendMessage.includes('email')) {
           notifyUser.error(
             'This email is already registered. Please use a different email or log in.',
             'Registration Error',

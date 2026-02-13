@@ -19,22 +19,22 @@ export const TOAST_CONFIG = {
 export const TOAST_TYPES = {
   SUCCESS: {
     position: 'top-right',
-    autoClose: 3000,
+    autoClose: 2000,
     theme: 'colored',
   },
   ERROR: {
     position: 'top-right',
-    autoClose: 4000, // Longer for errors
+    autoClose: 2000,
     theme: 'colored',
   },
   INFO: {
     position: 'top-right',
-    autoClose: 3000,
+    autoClose: 2000,
     theme: 'colored',
   },
   WARNING: {
     position: 'top-right',
-    autoClose: 3500,
+    autoClose: 2000,
     theme: 'colored',
   },
   LOADING: {
@@ -155,14 +155,8 @@ class ToastNotification {
    * Internal method to show toast
    */
   _show(message, type, title = '', options = {}) {
-    // Check if we're at max concurrent toasts
-    if (
-      this.activeToasts.size >= this.maxConcurrentToasts &&
-      type !== 'error'
-    ) {
-      // Allow errors to bypass the limit
-      return null;
-    }
+    // Dismiss all previous toasts before showing a new one
+    this.dismissAll();
 
     const toastConfig = {
       ...TOAST_TYPES[type.toUpperCase()],

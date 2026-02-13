@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { toast } from 'react-toastify';
+// ...existing code...
 import SummaryApi from '../common';
 import { FaCloudUploadAlt } from 'react-icons/fa';
 import uploadImage from '../helpers/uploadImage';
@@ -32,7 +32,7 @@ const AdminReports = () => {
       setReports(data.data);
     } catch (err) {
       setError(err.message);
-      toast.error(err.message);
+      // ...existing code...
     } finally {
       if (loading) setLoading(false);
     }
@@ -54,7 +54,7 @@ const AdminReports = () => {
       const data = await response.json();
       setChatMessages((prev) => ({ ...prev, [reportId]: data.data }));
     } catch (err) {
-      toast.error(err.message);
+      // ...existing code...
     }
   }, []);
 
@@ -78,7 +78,7 @@ const AdminReports = () => {
 
   const handleSendMessage = async (reportId) => {
     if (!newMessage.trim() && !imageToSend) {
-      toast.error('Message cannot be empty (text or image required).');
+      // ...existing code...
       return;
     }
 
@@ -112,7 +112,7 @@ const AdminReports = () => {
       setImageToSend(null);
       await fetchChat(reportId);
     } catch (err) {
-      toast.error(err.message);
+      // ...existing code...
     } finally {
       setSendingMessage(false);
     }
@@ -125,9 +125,9 @@ const AdminReports = () => {
     try {
       const uploadResponse = await uploadImage(file);
       setImageToSend(uploadResponse.url);
-      toast.success('Image uploaded!');
+      // ...existing code...
     } catch (error) {
-      toast.error('Failed to upload image.');
+      // ...existing code...
     } finally {
       setUploadingImage(false);
     }

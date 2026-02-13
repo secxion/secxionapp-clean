@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+// ...existing code...
 import { MdExpandMore } from 'react-icons/md';
 import SummaryApi from '../common';
 
@@ -47,7 +47,7 @@ const AdminAnonymousReports = () => {
       }
     } catch (error) {
       console.error('Error fetching contact us messages:', error);
-      toast.error('Could not fetch contact us messages.');
+      // ...existing code...
     } finally {
       setLoading(false);
       console.log('Fetching contact us messages completed. Loading:', loading);

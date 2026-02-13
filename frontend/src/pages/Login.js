@@ -1,13 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { useNotification } from '../common/NotificationProvider';
 import SummaryApi from '../common';
 import Context from '../Context';
 import loginBackground from './loginbk.png';
 import thumbsUpGif from './thumbsup.gif';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Navigation from '../Components/Navigation';
-import GlobalToastContainer from '../Components/GlobalToastContainer';
 
 import SecxionLogo from '../app/slogo.png';
 import NFTBadge from '../Components/NFTBadge';
@@ -52,6 +51,7 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [csrfToken, setCsrfToken] = useState('');
   const { fetchUserDetails } = useContext(Context);
+  const { showNotification } = useNotification();
   const navigate = useNavigate();
   const [verificationVisible, setVerificationVisible] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
@@ -101,7 +101,7 @@ const Login = () => {
       setIsVerified(false);
     } catch (error) {
       console.error('Error fetching slider target:', error);
-      toast.error('Failed to load verification challenge. Please try again.');
+      showNotification('Failed to load verification challenge. Please try again.', 'error');
     }
   };
 
@@ -113,7 +113,7 @@ const Login = () => {
 
   const handleVerificationComplete = async () => {
     if (!isVerified) {
-      toast.error('Please complete the verification challenge.');
+      showNotification('Please complete the verification challenge.', 'error');
       return;
     }
     setVerifying(true);
@@ -138,12 +138,12 @@ const Login = () => {
 
       if (response.ok && result.success) {
         setVerificationVisible(false);
-        toast.success(result.message || 'Login Successful!');
+        showNotification(result.message || 'Login Successful!', 'success');
         await fetchUserDetails();
         navigate('/home');
       } else {
         setErrorMessage(result.message || 'Login failed. Please try again.');
-        toast.error(result.message || 'Verification failed. Please try again.');
+        showNotification(result.message || 'Verification failed. Please try again.', 'error');
         setVerificationVisible(true);
         fetchSliderTarget();
       }
@@ -152,7 +152,7 @@ const Login = () => {
       setErrorMessage(
         'An unexpected error occurred during login. Please try again.',
       );
-      toast.error('An unexpected error occurred. Please try again.');
+      showNotification('An unexpected error occurred. Please try again.', 'error');
     } finally {
       setFormSubmitting(false);
       setVerifying(false);
@@ -169,13 +169,11 @@ const Login = () => {
       });
       const result = await res.json();
       result.success
-        ? toast.success(
-            'Verification email sent successfully! Please check your inbox.',
-          )
-        : toast.error(result.message || 'Failed to resend verification email.');
+        ? showNotification('Verification email sent successfully! Please check your inbox.', 'success')
+        : showNotification(result.message || 'Failed to resend verification email.', 'error');
     } catch (error) {
       console.error('Resend email error:', error);
-      toast.error('Error resending verification email. Please try again.');
+      showNotification('Error resending verification email. Please try again.', 'error');
     } finally {
       setResending(false);
     }
@@ -189,7 +187,7 @@ const Login = () => {
   const onLoginClick = (e) => {
     e.preventDefault();
     if (!data.email || !data.password) {
-      toast.error('Please enter both email and password.');
+      showNotification('Please enter both email and password.', 'error');
       return;
     }
     setErrorMessage('');
@@ -442,8 +440,7 @@ const Login = () => {
           </div>
         </div>
       )}
-      {/* Global Toast Container - Single instance for entire app */}
-      <GlobalToastContainer />
+      // ...existing code...
     </section>
   );
 };

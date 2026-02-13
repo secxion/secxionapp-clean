@@ -12,8 +12,7 @@ import {
   signinUserAPI,
 } from './services/apiService';
 import SecxionLoader from './Components/SecxionLoader';
-import GlobalToastContainer from './Components/GlobalToastContainer';
-import './Components/ToastContainer.css';
+import { NotificationProvider } from './common/NotificationProvider';
 
 function setViewportHeight() {
   const vh = window.innerHeight * 0.01;
@@ -93,35 +92,35 @@ function App() {
   }
 
   return (
-    <ContextProvider>
-      <Context.Provider
-        value={{
-          fetchUserDetails,
-          fetchMarketData,
-          marketData,
-          user,
-          fetchBlogs,
-          blogs,
-          walletBalance,
-          fetchWalletBalance,
-          signinUserAPI,
-        }}
-      >
-        <div className="global-container">
-          <Suspense fallback={<Loader />}>
-            {user && <Net blogs={blogs} fetchBlogs={fetchBlogs} />}
-            <main className="main-content">
-              {user && <Header />}
-              <div>
-                <Outlet />
-              </div>
-            </main>
-          </Suspense>
-          {/* Global Toast Container - Single instance for entire app */}
-          <GlobalToastContainer />
-        </div>
-      </Context.Provider>
-    </ContextProvider>
+    <NotificationProvider>
+      <ContextProvider>
+        <Context.Provider
+          value={{
+            fetchUserDetails,
+            fetchMarketData,
+            marketData,
+            user,
+            fetchBlogs,
+            blogs,
+            walletBalance,
+            fetchWalletBalance,
+            signinUserAPI,
+          }}
+        >
+          <div className="global-container">
+            <Suspense fallback={<Loader />}>
+              {user && <Net blogs={blogs} fetchBlogs={fetchBlogs} />}
+              <main className="main-content">
+                {user && <Header />}
+                <div>
+                  <Outlet />
+                </div>
+              </main>
+            </Suspense>
+          </div>
+        </Context.Provider>
+      </ContextProvider>
+    </NotificationProvider>
   );
 }
 
