@@ -1,4 +1,3 @@
-// EthWallet.js
 import React, {
   useEffect,
   useState,
@@ -183,7 +182,7 @@ const EthWallet = () => {
   // refresh gas fee data
   const refreshGasFeeData = useCallback(async () => {
     try {
-      (await fetchGasFee) && fetchGasFee();
+      if (fetchGasFee) await fetchGasFee();
     } catch (error) {
       console.error('refreshGasFee error:', error);
       showNotification(
@@ -196,7 +195,7 @@ const EthWallet = () => {
 
   const refreshGasFee = async () => {
     try {
-      (await fetchGasFee) && fetchGasFee();
+      if (fetchGasFee) await fetchGasFee();
     } catch (error) {
       console.error('refreshGasFee error:', error);
     }
@@ -416,13 +415,12 @@ const EthWallet = () => {
 
       setExactEthEquivalent(ethAmount);
       setExactEthToSend(ethAfterFee > 0 ? ethAfterFee : 0);
-      setDisplayEthEquivalent(ethAmount.toFixed(6));
-      setDisplayEthToSend(
-        ethAfterFee > 0 ? ethAfterFee.toFixed(6) : '0.000000',
-      );
+      // Full precision display - no artificial rounding
+      setDisplayEthEquivalent(ethAmount.toPrecision(10));
+      setDisplayEthToSend(ethAfterFee > 0 ? ethAfterFee.toPrecision(10) : '0');
     } else {
-      setDisplayEthEquivalent('0.000000');
-      setDisplayEthToSend('0.000000');
+      setDisplayEthEquivalent('0');
+      setDisplayEthToSend('0');
       setExactEthEquivalent(null);
       setExactEthToSend(null);
     }
@@ -561,12 +559,13 @@ const EthWallet = () => {
   const dismissError = () => setErrorMessage('');
   const dismissSuccess = () => setSuccessMessage('');
 
-  // derived values to display safely
+  // derived values to display safely - full precision, no rounding
   const gasFeeFloat = parseFloat(gasFee) || 0;
+  const gasFeeDisplay = gasFee || '0'; // Use raw string value from context
   const svcPercent = parseFloat(serviceFeePercent) || SERVICE_FEE_PERCENT;
   const svcAmountDisplay = exactEthEquivalent
-    ? (exactEthEquivalent * (svcPercent / 100)).toFixed(6)
-    : '0.000000';
+    ? (exactEthEquivalent * (svcPercent / 100)).toPrecision(10)
+    : '0';
 
   return (
     <div className="p-10 max-w-full mt-16 mx-auto sm:p-6 md:p-8 max-w-2xl sm:mt-16 text-gray-200 bg-gray-800 shadow-2xl border border-gray-700">
@@ -621,23 +620,25 @@ const EthWallet = () => {
           {
             Icon: FireIcon,
             label: 'Est. Gas Fee (ETH)',
-            value: `${gasFeeFloat.toFixed(6)} ETH`,
+            value: `${gasFeeDisplay} ETH`,
             color: 'text-red-400',
           },
           {
             Icon: CreditCardIcon,
             label: 'Naira Balance',
-            value: nairaBalance
-              ? `₦${parseFloat(nairaBalance).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-              : '...',
+            value:
+              nairaBalance !== null && nairaBalance !== undefined
+                ? `₦${parseFloat(nairaBalance).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                : '...',
             color: 'text-yellow-300',
           },
           {
             Icon: CubeTransparentIcon,
             label: 'ETH Balance',
-            value: ethBalance
-              ? `${parseFloat(ethBalance).toFixed(6)} ETH`
-              : '...',
+            value:
+              ethBalance !== null && ethBalance !== undefined
+                ? `${parseFloat(ethBalance).toFixed(6)} ETH`
+                : '...',
             color: 'text-blue-400',
           },
         ].map(({ Icon, label, value, color }) => (
@@ -787,7 +788,7 @@ const EthWallet = () => {
           <p className="flex justify-between items-center text-gray-300">
             <span>Network Gas Fee:</span>
             <span className="font-medium text-red-300">
-              {gasFeeFloat.toFixed(6)} ETH
+              {gasFeeDisplay} ETH
             </span>
           </p>
           <p className="flex justify-between items-center text-gray-300">

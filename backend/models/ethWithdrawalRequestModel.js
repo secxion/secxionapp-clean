@@ -27,6 +27,10 @@ const ethWithdrawalRequestSchema = new mongoose.Schema({
     enum: ['Pending', 'Processed', 'Rejected'],
     default: 'Pending',
   },
+  rejectionReason: {
+    type: String,
+    default: null,
+  },
   processedAt: {
   type: Date,
 },

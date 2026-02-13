@@ -1,4 +1,4 @@
-// ETHWallet.js
+// EthContext.js - ETH wallet state provider
 import React, { useState } from 'react';
 import SummaryApi from '../common';
 
@@ -8,7 +8,7 @@ const SERVICE_FEE_PERCENT = 1.5; // 1.5% service fee
 
 export const EthProvider = ({ children }) => {
   const [ethRate, setEthRate] = useState(0); // ETH to NGN
-  const [gasFee, setGasFee] = useState('0.000000'); // ETH gas fee
+  const [gasFee, setGasFee] = useState('0.00000000'); // ETH gas fee
   const [serviceFeePercent] = useState(SERVICE_FEE_PERCENT); // %
   const [nairaBalance, setNairaBalance] = useState(0);
   const [ethBalance, setEthBalance] = useState('0.000000');
@@ -18,7 +18,14 @@ export const EthProvider = ({ children }) => {
    */
   const fetchEthRate = async () => {
     try {
-      const response = await fetch(SummaryApi.fetchEthPrice.url);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      const response = await fetch(SummaryApi.fetchEthPrice.url, {
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
       if (!response.ok) throw new Error('Failed to fetch ETH rate');
       const data = await response.json();
       const rate = data?.ethereum?.ngn || 0;
@@ -32,43 +39,79 @@ export const EthProvider = ({ children }) => {
   };
 
   /**
-   * ✅ Fetch Gas Fee from Etherscan API
+   * ✅ Fetch Gas Fee from Public Ethereum RPC (no API key required)
    */
   const fetchGasFee = async () => {
-    try {
-      const response = await fetch(
-        `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${process.env.REACT_APP_ETHERSCAN_API_KEY}`,
-      );
-      if (!response.ok) throw new Error('Failed to fetch gas fee');
-      const data = await response.json();
+    const ETH_RPC_ENDPOINTS = [
+      'https://ethereum-rpc.publicnode.com',
+      'https://rpc.ankr.com/eth',
+      'https://cloudflare-eth.com',
+    ];
 
-      // Use "ProposeGasPrice" (average gas price in Gwei)
-      const gasPriceGwei = parseFloat(data?.result?.ProposeGasPrice || 0);
-      const estimatedGasUnits = 21000; // ETH transfer
-      const gasFeeEth = (gasPriceGwei * estimatedGasUnits) / 1e9; // Convert Gwei → ETH
+    for (const rpcUrl of ETH_RPC_ENDPOINTS) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-      setGasFee(gasFeeEth.toFixed(6));
-      return gasFeeEth;
-    } catch (error) {
-      console.error('fetchGasFee error:', error);
-      setGasFee('0.000000');
-      return 0;
+        const response = await fetch(rpcUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            method: 'eth_gasPrice',
+            params: [],
+            id: 1,
+          }),
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) continue;
+        const data = await response.json();
+
+        // Result is gas price in Wei (hex), convert to ETH for total tx cost
+        const gasPriceWei = parseInt(data?.result || '0x0', 16);
+        const estimatedGasUnits = 21000; // Standard ETH transfer
+        const gasFeeWei = gasPriceWei * estimatedGasUnits;
+        const gasFeeEth = gasFeeWei / 1e18; // Wei to ETH
+
+        if (gasFeeEth > 0) {
+          // Store full precision - no rounding
+          setGasFee(gasFeeEth.toPrecision(12));
+          return gasFeeEth;
+        }
+      } catch (error) {
+        console.warn(`Gas fee fetch failed from ${rpcUrl}:`, error.message);
+        continue;
+      }
     }
+
+    // All endpoints failed, use default
+    console.error('All gas fee endpoints failed, using default');
+    setGasFee('0.00105');
+    return 0.00105;
   };
 
   /**
    * ✅ Fetch Wallet Balance (NGN + convert to ETH)
    */
   const fetchWalletBalance = async (userId) => {
-    if (!userId) return;
+    if (!userId) {
+      setNairaBalance(0);
+      setEthBalance('0.000000');
+      return;
+    }
     try {
-      const balanceRes = await fetch(
-        `${SummaryApi.getWalletBalance.url}/${userId}`,
-        {
-          method: 'GET',
-          credentials: 'include',
-        },
-      );
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      const balanceRes = await fetch(SummaryApi.getWalletBalance.url, {
+        method: 'GET',
+        credentials: 'include',
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
       if (!balanceRes.ok) throw new Error('Failed to fetch wallet balance');
       const balanceData = await balanceRes.json();
 
