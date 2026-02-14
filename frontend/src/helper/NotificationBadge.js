@@ -17,8 +17,17 @@ const NotificationBadge = () => {
   const { user } = useSelector((state) => state.user);
   const audioRef = useRef(null);
   const lastShownIdsRef = useRef(new Set());
+  const lastSoundTimeRef = useRef(0);
+  const SOUND_COOLDOWN_MS = 3000; // Minimum time between sounds
 
   const playNotificationSound = useCallback((priority = 'medium') => {
+    const now = Date.now();
+    // Prevent rapid successive sounds - enforce cooldown
+    if (now - lastSoundTimeRef.current < SOUND_COOLDOWN_MS) {
+      return;
+    }
+    lastSoundTimeRef.current = now;
+
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
       audioRef.current.volume = getSoundVolume(priority);
@@ -84,30 +93,42 @@ const NotificationBadge = () => {
           });
 
           if (newNotifications.length > 0) {
-            // Add new notifications to the stack
-            newNotifications.forEach((notification) => {
-              lastShownIdsRef.current.add(notification._id);
+            // Add all IDs to the Set FIRST to prevent race conditions
+            newNotifications.forEach((notif) => {
+              lastShownIdsRef.current.add(notif._id);
+            });
 
-              // Get metadata for this notification type
+            // Find highest priority for sound/vibration (play once per batch)
+            let highestPriority = 'low';
+            const priorityOrder = { low: 0, medium: 1, high: 2 };
+
+            // Add notifications to popup queue
+            const newPopups = newNotifications.map((notification) => {
               const metadata = getNotificationTypeMetadata(
                 notification.type || 'default',
               );
 
-              // Add to popup queue
-              setPopupNotifications((prev) => [
-                ...prev,
-                {
-                  id: notification._id,
-                  message: notification.message || 'New notification received!',
-                  type: notification.type || 'default',
-                  autoClose: true,
-                },
-              ]);
+              // Track highest priority
+              if (
+                priorityOrder[metadata.priority] >
+                priorityOrder[highestPriority]
+              ) {
+                highestPriority = metadata.priority;
+              }
 
-              // Use priority-aware sound and vibration
-              playNotificationSound(metadata.priority);
-              triggerVibration(metadata.priority);
+              return {
+                id: notification._id,
+                message: notification.message || 'New notification received!',
+                type: notification.type || 'default',
+                autoClose: true,
+              };
             });
+
+            setPopupNotifications((prev) => [...prev, ...newPopups]);
+
+            // Play sound and vibrate only ONCE per batch
+            playNotificationSound(highestPriority);
+            triggerVibration(highestPriority);
           }
         }
       } catch (error) {
