@@ -6,6 +6,8 @@ import { notifyUser } from '../utils/toastConfig';
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
+  const status = searchParams.get('status');
+  const message = searchParams.get('message');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -34,12 +36,29 @@ const VerifyEmail = () => {
       }
     };
 
+    if (status) {
+      if (status === 'success') {
+        notifyUser.success(
+          message || 'Email verified successfully! You can now log in.',
+          'Success',
+        );
+        setTimeout(() => navigate('/login'), 2500);
+      } else {
+        notifyUser.error(
+          message || 'Invalid or expired token. Please request a new link.',
+          'Verification Error',
+        );
+      }
+      setLoading(false);
+      return;
+    }
+
     if (token) verify();
     else {
       notifyUser.error('No token provided', 'Error');
       setLoading(false);
     }
-  }, [token, navigate]);
+  }, [token, status, message, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

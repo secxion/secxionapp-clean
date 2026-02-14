@@ -4,7 +4,7 @@ dotenv.config();
 import nodemailer from "nodemailer";
 import axios from "axios";
 
-const { FRONTEND_URL } = process.env;
+const { FRONTEND_URL, BACKEND_URL } = process.env;
 
 // Hostinger SMTP (Primary - for secxion.com)
 const {
@@ -300,7 +300,9 @@ const sendEmail = async (options, context) => {
 };
 
 export const sendVerificationEmail = async (email, token) => {
-  const verificationLink = `${FRONTEND_URL}/verify-email?token=${token}`;
+  const backendBaseUrl = BACKEND_URL || FRONTEND_URL;
+  const redirectUrl = `${FRONTEND_URL}/verify-email`;
+  const verificationLink = `${backendBaseUrl}/api/verify-email?token=${token}&redirect=${encodeURIComponent(redirectUrl)}`;
 
   const mailOptions = {
     from: `"${DEFAULT_FROM_NAME}" <${DEFAULT_FROM_EMAIL}>`,
