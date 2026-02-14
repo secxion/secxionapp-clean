@@ -37,7 +37,8 @@ const VerifyEmail = () => {
           const fallbackMessage =
             data.message && data.message.toLowerCase().includes('invalid token')
               ? 'This link is invalid or already used. If you already verified, please log in.'
-              : data.message || 'Invalid or expired token. Please request a new link.';
+              : data.message ||
+                'Invalid or expired token. Please request a new link.';
           setDisplayMessage(fallbackMessage);
           setShowLoginCta(true);
         }
