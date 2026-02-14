@@ -55,6 +55,7 @@ function App() {
       }
     },
     staleTime: 5 * 60 * 1000,
+    enabled: !!user, // Only fetch if user is logged in
   });
 
   const {
@@ -65,6 +66,7 @@ function App() {
     queryKey: ['marketData'],
     queryFn: fetchMarketDataAPI,
     staleTime: 5 * 60 * 1000,
+    enabled: !!user, // Only fetch if user is logged in
   });
 
   const {
@@ -75,6 +77,7 @@ function App() {
     queryKey: ['walletBalance'],
     queryFn: fetchWalletBalanceAPI,
     staleTime: 5 * 60 * 1000,
+    enabled: !!user, // Only fetch if user is logged in
   });
 
   const {
@@ -85,6 +88,7 @@ function App() {
     queryKey: ['blogs'],
     queryFn: fetchBlogsAPI,
     staleTime: 5 * 60 * 1000,
+    enabled: !!user, // Only fetch if user is logged in
   });
 
   if (isUserLoading || isMarketLoading || isBlogsLoading || isWalletLoading) {

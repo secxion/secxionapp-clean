@@ -54,6 +54,11 @@ const publicRoutes = [
     path: 'sign-up',
     element: <SignUp />,
   },
+  { path: 'reset', element: <Reset /> },
+];
+
+// Public information routes that should be accessible to everyone (logged in or not)
+const publicInfoRoutes = [
   {
     path: 'system-blog',
     element: <Net />,
@@ -78,12 +83,10 @@ const publicRoutes = [
     path: '/',
     element: <Landing />,
   },
-
   {
     path: '/verify-email',
     element: <VerifyEmail />,
   },
-  { path: 'reset', element: <Reset /> },
   { path: 'rateslider', element: <HiRateSlider /> },
 ];
 
@@ -128,10 +131,17 @@ const router = createBrowserRouter([
     path: '',
     element: <App />,
     children: [
+      // Auth routes - should redirect logged-in users to home
       ...publicRoutes.map((route) => ({
         path: route.path,
         element: <RedirectIfLoggedIn>{route.element}</RedirectIfLoggedIn>,
       })),
+      // Public info routes - accessible to everyone (logged in or not)
+      ...publicInfoRoutes.map((route) => ({
+        path: route.path,
+        element: route.element,
+      })),
+      // Protected routes
       ...protectedRoutes.map((route) => ({
         path: route.path,
         element: <ProtectedRoute>{route.element}</ProtectedRoute>,

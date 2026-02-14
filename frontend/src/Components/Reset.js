@@ -326,21 +326,10 @@ const Reset = () => {
                       <div className="space-y-2">
                         <div className="flex items-center">
                           <span className="text-yellow-600 font-medium">
-                            Support Page:
-                          </span>
-                          <a
-                            href="/report"
-                            className="ml-2 text-yellow-400 hover:text-yellow-300 underline font-medium"
-                          >
-                            Visit Support Center
-                          </a>
-                        </div>
-                        <div className="flex items-center">
-                          <span className="text-yellow-600 font-medium">
                             Email:
                           </span>
                           <span className="ml-2 text-yellow-200 font-mono">
-                            secxionapp@gmail.com
+                            moderator@mysecxion.com
                           </span>
                         </div>
                       </div>
