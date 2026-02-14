@@ -60,7 +60,7 @@ const VerifyEmail = () => {
           message || 'Email verified successfully! You can now log in.',
         );
         setShowLoginCta(true);
-        setTimeout(() => navigate('/login'), 2500);
+        setTimeout(() => navigate('/login'), 5000);
       } else {
         notifyUser.error(
           message || 'Invalid or expired token. Please request a new link.',
