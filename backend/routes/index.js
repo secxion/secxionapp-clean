@@ -175,42 +175,88 @@ async function axiosGetWithRetry(
   }
 }
 
-// Updated ETH price endpoint using CoinGecko API
+// Helper function to fetch ETH price from multiple sources
+async function fetchEthPriceFromSources() {
+  const sources = [
+    // Source 1: CoinGecko (primary)
+    async () => {
+      const url = new URL("https://api.coingecko.com/api/v3/simple/price");
+      url.searchParams.set("ids", "ethereum");
+      url.searchParams.set("vs_currencies", "usd,ngn");
+      url.searchParams.set("include_24hr_change", "true");
+      const response = await axios.get(url.toString(), {
+        headers: { Accept: "application/json", "User-Agent": "Secxion-App/1.0" },
+        timeout: 8000,
+      });
+      const data = response.data.ethereum;
+      if (!data || !data.usd) throw new Error("Invalid CoinGecko response");
+      return { usd: data.usd, ngn: data.ngn, change_24h: data.usd_24h_change, source: "coingecko" };
+    },
+    // Source 2: Binance (fallback - high rate limits)
+    async () => {
+      const response = await axios.get("https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT", {
+        timeout: 8000,
+      });
+      const usdPrice = parseFloat(response.data.price);
+      if (!usdPrice) throw new Error("Invalid Binance response");
+      // Fetch USD to NGN rate for conversion
+      let ngnRate = 1600; // Default USD/NGN rate
+      try {
+        const ngnResponse = await axios.get("https://open.er-api.com/v6/latest/USD", { timeout: 5000 });
+        ngnRate = ngnResponse.data?.rates?.NGN || 1600;
+      } catch (e) {
+        console.warn("[eth-price] Failed to fetch NGN rate, using default");
+      }
+      return { usd: usdPrice, ngn: usdPrice * ngnRate, change_24h: null, source: "binance" };
+    },
+    // Source 3: CryptoCompare (fallback)
+    async () => {
+      const response = await axios.get(
+        "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD,NGN",
+        { timeout: 8000 }
+      );
+      const data = response.data;
+      if (!data || !data.USD) throw new Error("Invalid CryptoCompare response");
+      return { usd: data.USD, ngn: data.NGN, change_24h: null, source: "cryptocompare" };
+    },
+  ];
+
+  for (const fetchFn of sources) {
+    try {
+      return await fetchFn();
+    } catch (error) {
+      console.warn(`[eth-price] Source failed: ${error.message}`);
+      continue;
+    }
+  }
+  return null; // All sources failed
+}
+
+// Updated ETH price endpoint with multiple API fallbacks
 router.get("/eth-price", async (req, res) => {
   const cacheKey = "eth-price";
   const now = Date.now();
 
-  // Check cache first
+  // Check cache first (serve fresh cache)
   if (cache[cacheKey] && cache[cacheKey].expiry > now) {
     return res.json(cache[cacheKey].data);
   }
 
   try {
-    const url = new URL("https://api.coingecko.com/api/v3/simple/price");
-    url.searchParams.set("ids", "ethereum");
-    url.searchParams.set("vs_currencies", "usd,ngn");
-    url.searchParams.set("include_24hr_change", "true");
-    url.searchParams.set("include_last_updated_at", "true");
-
-    const response = await axios.get(url.toString(), {
-      headers: {
-        Accept: "application/json",
-        "User-Agent": "Secxion-App/1.0",
-      },
-      timeout: 10000,
-    });
-
-    const data = response.data.ethereum;
-    if (!data) throw new Error("Invalid response from CoinGecko");
+    const priceData = await fetchEthPriceFromSources();
+    
+    if (!priceData) {
+      throw new Error("All price sources failed");
+    }
 
     const result = {
       ethereum: {
-        usd: data.usd,
-        ngn: data.ngn,
-        change_24h: data.usd_24h_change,
-        last_updated: data.last_updated_at,
+        usd: priceData.usd,
+        ngn: priceData.ngn,
+        change_24h: priceData.change_24h,
+        last_updated: Math.floor(now / 1000),
       },
-      source: "coingecko",
+      source: priceData.source,
       timestamp: now,
     };
 
@@ -218,13 +264,40 @@ router.get("/eth-price", async (req, res) => {
     cache[cacheKey] = { data: result, expiry: now + CACHE_TTL };
     res.json(result);
   } catch (error) {
-    console.error("[eth-price] Error fetching ETH price:", error.message);
-    res.status(500).json({ error: "Failed to fetch ETH price" });
+    console.error("[eth-price] All sources failed:", error.message);
+    
+    // Serve stale cache if available
+    if (cache[cacheKey] && cache[cacheKey].data) {
+      console.log("[eth-price] Serving stale cache due to API errors");
+      return res.json({ ...cache[cacheKey].data, stale: true });
+    }
+    
+    // Last resort: return a fallback response so frontend doesn't break
+    console.log("[eth-price] No cache available, returning fallback");
+    res.json({
+      ethereum: {
+        usd: 2800,
+        ngn: 2800 * 1600,
+        change_24h: 0,
+        last_updated: Math.floor(now / 1000),
+      },
+      source: "fallback",
+      timestamp: now,
+      stale: true,
+    });
   }
 });
 
 // Additional endpoint for detailed market data
 router.get("/eth-market", async (req, res) => {
+  const cacheKey = "eth-market";
+  const now = Date.now();
+
+  // Check cache first
+  if (cache[cacheKey] && cache[cacheKey].expiry > now) {
+    return res.json(cache[cacheKey].data);
+  }
+
   try {
     const url = new URL("https://api.coingecko.com/api/v3/coins/markets");
     url.searchParams.set("vs_currency", "usd");
@@ -241,18 +314,32 @@ router.get("/eth-market", async (req, res) => {
       timeout: 10000,
     });
 
-    res.json(response.data[0]); // Return the first result (Ethereum)
+    const result = response.data[0];
+    cache[cacheKey] = { data: result, expiry: now + CACHE_TTL };
+    res.json(result);
   } catch (error) {
-    console.error(
-      "[eth-market] Error fetching ETH market data:",
-      error.message,
-    );
+    console.error("[eth-market] Error fetching ETH market data:", error.message);
+    
+    // Serve stale cache on error
+    if (cache[cacheKey] && cache[cacheKey].data) {
+      console.log("[eth-market] Serving stale cache due to API error");
+      return res.json({ ...cache[cacheKey].data, stale: true });
+    }
+    
     res.status(500).json({ error: "Failed to fetch ETH market data" });
   }
 });
 
 // Additional endpoint for intraday chart data
 router.get("/eth-chart", async (req, res) => {
+  const cacheKey = "eth-chart";
+  const now = Date.now();
+
+  // Check cache first
+  if (cache[cacheKey] && cache[cacheKey].expiry > now) {
+    return res.json(cache[cacheKey].data);
+  }
+
   try {
     const url = new URL(
       "https://api.coingecko.com/api/v3/coins/ethereum/market_chart",
@@ -269,9 +356,18 @@ router.get("/eth-chart", async (req, res) => {
       timeout: 10000,
     });
 
-    res.json(response.data); // Return the chart data
+    const result = response.data;
+    cache[cacheKey] = { data: result, expiry: now + CACHE_TTL };
+    res.json(result);
   } catch (error) {
     console.error("[eth-chart] Error fetching ETH chart data:", error.message);
+    
+    // Serve stale cache on error
+    if (cache[cacheKey] && cache[cacheKey].data) {
+      console.log("[eth-chart] Serving stale cache due to API error");
+      return res.json({ ...cache[cacheKey].data, stale: true });
+    }
+    
     res.status(500).json({ error: "Failed to fetch ETH chart data" });
   }
 });
