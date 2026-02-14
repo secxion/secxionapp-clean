@@ -120,23 +120,25 @@ export const updateWalletBalance = async (
     wallet.transactions.push(transaction);
     await wallet.save();
 
-    // Notification
-    const formattedAmount = `₦${Math.abs(amount).toLocaleString()}`;
-    const message =
-      type === "credit"
-        ? `Your wallet has been credited with ${formattedAmount} (${status})`
-        : type === "debit"
-          ? `Your wallet has been debited by ${formattedAmount} (${status})`
-          : `A wallet transaction of ${formattedAmount} (${status}) occurred`;
+    // Skip notification for ETH withdrawals - they have their own local toast in the frontend
+    if (referenceType !== "EthWithdrawalRequest") {
+      const formattedAmount = `₦${Math.abs(amount).toLocaleString()}`;
+      const message =
+        type === "credit"
+          ? `Your wallet has been credited with ${formattedAmount} (${status})`
+          : type === "debit"
+            ? `Your wallet has been debited by ${formattedAmount} (${status})`
+            : `A wallet transaction of ${formattedAmount} (${status}) occurred`;
 
-    await createTransactionNotification(
-      userId,
-      Math.abs(amount),
-      type,
-      message,
-      "/wallet",
-      referenceId,
-    );
+      await createTransactionNotification(
+        userId,
+        Math.abs(amount),
+        type,
+        message,
+        "/wallet",
+        referenceId,
+      );
+    }
 
     return {
       success: true,

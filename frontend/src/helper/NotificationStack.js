@@ -152,8 +152,8 @@ const NotificationStack = ({ notifications = [], onRemove = () => {} }) => {
                 <span
                   className="pop-alert-badge"
                   style={{
-                    backgroundColor: metadata.badgeColor.split(' ')[0],
-                    color: metadata.badgeColor.split(' ')[1] || 'white',
+                    backgroundColor: metadata.badgeBg,
+                    color: metadata.badgeText,
                   }}
                 >
                   {metadata.priority === 'critical'

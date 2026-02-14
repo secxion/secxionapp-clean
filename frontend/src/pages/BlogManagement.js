@@ -3,10 +3,9 @@ import BlogForm from '../Components/BlogForm';
 import BlogCard from '../Components/BlogCard';
 import SummaryApi from '../common';
 import Context from '../Context';
-import { useNotification } from '../common/NotificationProvider';
+import { toast } from 'react-toastify';
 
 const BlogManagement = () => {
-  const { showNotification } = useNotification();
   const { fetchBlogs, blogs } = useContext(Context);
   const [isCreating, setIsCreating] = useState(false);
   const [editingBlog, setEditingBlog] = useState(null);
@@ -38,12 +37,12 @@ const BlogManagement = () => {
       const responseData = await response.json();
       if (responseData.success) {
         await fetchBlogs();
-        showNotification('Blog deleted successfully!', 'success');
+        toast.success('Blog deleted successfully!');
       } else {
-        showNotification('Blog deleted successfully!', 'success');
+        toast.success('Blog deleted successfully!');
       }
     } catch (error) {
-      showNotification('Failed to delete the blog. Please try again.', 'error');
+      toast.error('Failed to delete the blog. Please try again.');
     }
   };
 

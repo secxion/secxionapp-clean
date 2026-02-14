@@ -63,9 +63,25 @@ const NotificationBadge = () => {
 
         if (data.success && Array.isArray(data.newNotifications)) {
           // Process all new notifications, not just the latest
-          const newNotifications = data.newNotifications.filter(
-            (notif) => !lastShownIdsRef.current.has(notif._id),
-          );
+          // Exclude ETH notifications - ETH wallet has its own local notification system
+          const newNotifications = data.newNotifications.filter((notif) => {
+            // Skip already shown
+            if (lastShownIdsRef.current.has(notif._id)) return false;
+
+            // Skip ETH processed notifications
+            if (notif.type === 'transaction:eth_processed') return false;
+
+            // Skip ETH withdrawal debit notifications (link points to /eth-withdrawals or message contains ETH)
+            if (
+              notif.type === 'transaction:debit' &&
+              (notif.link === '/eth-withdrawals' ||
+                notif.message?.includes('ETH'))
+            ) {
+              return false;
+            }
+
+            return true;
+          });
 
           if (newNotifications.length > 0) {
             // Add new notifications to the stack
