@@ -1,63 +1,60 @@
 import SummaryApi from '../common';
+import {
+  apiFetch,
+  handleApiResponse,
+  isUnauthorized,
+} from '../utils/apiInterceptor';
 
 export const fetchUserDetailsAPI = async () => {
   try {
-    const response = await fetch(SummaryApi.current_user.url, {
+    const response = await apiFetch(SummaryApi.current_user.url, {
       method: SummaryApi.current_user.method,
-      credentials: 'include',
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
     });
 
-    return await response.json();
+    return await handleApiResponse(response);
   } catch (error) {
-    // console.error("Error fetching user details:", error);
+    console.error('[fetchUserDetailsAPI] Error:', error.message);
     return { success: false };
   }
 };
 
 export const fetchMarketDataAPI = async () => {
   try {
-    const response = await fetch(SummaryApi.myMarket.url, {
+    const response = await apiFetch(SummaryApi.myMarket.url, {
       method: 'GET',
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-      credentials: 'include',
     });
 
-    return await response.json();
+    return await handleApiResponse(response);
   } catch (error) {
-    // console.error("Error fetching market data:", error);
+    console.error('[fetchMarketDataAPI] Error:', error.message);
     return { success: false };
   }
 };
 
 export const fetchBlogsAPI = async () => {
   try {
-    const response = await fetch(SummaryApi.getBlogs.url);
-    if (!response.ok) throw new Error('Failed to fetch blogs');
+    const response = await apiFetch(SummaryApi.getBlogs.url);
 
-    return await response.json();
+    if (isUnauthorized(response)) {
+      return [];
+    }
+
+    return await handleApiResponse(response);
   } catch (error) {
-    // console.error("Error fetching blogs:", error);
+    console.error('[fetchBlogsAPI] Error:', error.message);
     return [];
   }
 };
 
 export const fetchWalletBalanceAPI = async () => {
   try {
-    const response = await fetch(SummaryApi.walletBalance.url, {
+    const response = await apiFetch(SummaryApi.walletBalance.url, {
       method: 'GET',
-      credentials: 'include',
     });
 
-    if (!response.ok) throw new Error('Failed to fetch wallet balance');
-
-    return await response.json();
+    return await handleApiResponse(response);
   } catch (error) {
-    // console.error("Error fetching wallet balance:", error);
+    console.error('[fetchWalletBalanceAPI] Error:', error.message);
     return { success: false, balance: 0 };
   }
 };
@@ -73,9 +70,9 @@ export const signinUserAPI = async (userData) => {
       credentials: 'include',
     });
 
-    return await response.json();
+    return await handleApiResponse(response);
   } catch (error) {
-    // console.error("Error signing up user:", error);
-    return { success: false, message: 'Signup failed.' };
+    console.error('[signinUserAPI] Error:', error.message);
+    return { success: false, message: 'Signin failed.' };
   }
 };
