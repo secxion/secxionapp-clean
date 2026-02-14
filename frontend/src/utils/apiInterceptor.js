@@ -73,10 +73,8 @@ export const handleUnauthorized = () => {
   sessionStorage.clear();
 
   // Redirect to login page
-  if (
-    window.location.pathname !== '/login' &&
-    window.location.pathname !== '/signup'
-  ) {
+  const publicPaths = ['/login', '/signup'];
+  if (!publicPaths.includes(window.location.pathname)) {
     window.location.href = '/login?session=expired';
   }
 };
@@ -105,10 +103,8 @@ export const isSuccess = (response) => {
  * @param {string} defaultMessage - default error message
  * @returns {string}
  */
-export const getErrorMessage = (
-  status,
-  defaultMessage = 'An error occurred',
-) => {
+export const getErrorMessage = (status, defaultMessage) => {
+  const safeDefaultMessage = defaultMessage ?? 'An error occurred';
   switch (status) {
     case 400:
       return 'Invalid request. Please check your input.';
@@ -127,7 +123,7 @@ export const getErrorMessage = (
     case 503:
       return 'Service unavailable. Please try again later.';
     default:
-      return defaultMessage;
+      return safeDefaultMessage;
   }
 };
 

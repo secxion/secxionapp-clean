@@ -1,19 +1,12 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
 import SummaryApi from '../common';
 import UserContext from '../Context';
-import {
-  CircleCheck,
-  CircleX,
-  Loader,
-  Clock,
-  Info,
-  Image,
-  X,
-} from 'lucide-react';
+import { CircleCheck, CircleX, Loader, Clock, Info, Image } from 'lucide-react';
 import currencyData from '../helpers/currencyData';
 import SecxionShimmer from './SecxionShimmer';
 import { motion } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
+import { apiFetch, handleApiResponse } from '../utils/apiInterceptor';
 
 const ImageModal = ({ imageUrl, onClose }) => {
   if (!imageUrl) return null;
@@ -83,45 +76,31 @@ const LastMarketStatus = () => {
 
   useEffect(() => {
     const fetchLastMarketStatus = async () => {
-      if (!user?._id) {
-        setError('User not logged in.');
-        setLoading(false);
-        return;
-      }
-
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(SummaryApi.lastUserMarketStatus.url, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-          credentials: 'include',
-        });
+        const response = await apiFetch(SummaryApi.lastUserMarketStatus.url);
+        const dataResponse = await handleApiResponse(response);
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          // console.error("Non-OK response for last market status:", response.status, errorText);
-          setError(
-            `Failed to fetch last market status: ${response.status} ${response.statusText}. Check server logs for details.`,
-          );
+        // If unauthorized (401), interceptor already logged out
+        if (response.status === 401) {
+          setError('Your session expired. Please login again.');
           setLastMarket(null);
-          setLoading(false);
           return;
         }
 
-        const dataResponse = await response.json();
-
-        if (dataResponse.success) {
+        if (dataResponse.success && dataResponse.data) {
           setLastMarket(dataResponse.data);
-        } else {
-          setError(
-            dataResponse.message || 'Failed to fetch last market status.',
-          );
+          setError(null);
+        } else if (!dataResponse.success) {
+          // Only show error if not a 401 (401 is handled by interceptor)
+          const errorMsg =
+            dataResponse.error || 'Failed to fetch market status.';
+          setError(errorMsg);
           setLastMarket(null);
         }
       } catch (err) {
-        // console.error("Error fetching last market status:", err);
+        console.error('Error fetching last market status:', err);
         setError('An error occurred while fetching data. Please try again.');
         setLastMarket(null);
       } finally {
