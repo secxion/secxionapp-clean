@@ -1,12 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useNotification } from '../common/NotificationProvider';
+import { toast } from 'react-toastify';
 import SummaryApi from '../common';
 import Context from '../Context';
 import loginBackground from './loginbk.png';
 import thumbsUpGif from './thumbsup.gif';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Navigation from '../Components/Navigation';
+import GlobalToastContainer from '../Components/GlobalToastContainer';
 
 import SecxionLogo from '../app/slogo.png';
 import NFTBadge from '../Components/NFTBadge';
@@ -51,7 +52,6 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [csrfToken, setCsrfToken] = useState('');
   const { fetchUserDetails } = useContext(Context);
-  const { showNotification } = useNotification();
   const navigate = useNavigate();
   const [verificationVisible, setVerificationVisible] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
@@ -101,10 +101,7 @@ const Login = () => {
       setIsVerified(false);
     } catch (error) {
       console.error('Error fetching slider target:', error);
-      showNotification(
-        'Failed to load verification challenge. Please try again.',
-        'error',
-      );
+      toast.error('Failed to load verification challenge. Please try again.');
     }
   };
 
@@ -116,7 +113,7 @@ const Login = () => {
 
   const handleVerificationComplete = async () => {
     if (!isVerified) {
-      showNotification('Please complete the verification challenge.', 'error');
+      toast.error('Please complete the verification challenge.');
       return;
     }
     setVerifying(true);
@@ -141,15 +138,12 @@ const Login = () => {
 
       if (response.ok && result.success) {
         setVerificationVisible(false);
-        showNotification(result.message || 'Login Successful!', 'success');
+        toast.success(result.message || 'Login Successful!');
         await fetchUserDetails();
         navigate('/home');
       } else {
         setErrorMessage(result.message || 'Login failed. Please try again.');
-        showNotification(
-          result.message || 'Verification failed. Please try again.',
-          'error',
-        );
+        toast.error(result.message || 'Verification failed. Please try again.');
         setVerificationVisible(true);
         fetchSliderTarget();
       }
@@ -158,10 +152,7 @@ const Login = () => {
       setErrorMessage(
         'An unexpected error occurred during login. Please try again.',
       );
-      showNotification(
-        'An unexpected error occurred. Please try again.',
-        'error',
-      );
+      toast.error('An unexpected error occurred. Please try again.');
     } finally {
       setFormSubmitting(false);
       setVerifying(false);
@@ -178,20 +169,13 @@ const Login = () => {
       });
       const result = await res.json();
       result.success
-        ? showNotification(
+        ? toast.success(
             'Verification email sent successfully! Please check your inbox.',
-            'success',
           )
-        : showNotification(
-            result.message || 'Failed to resend verification email.',
-            'error',
-          );
+        : toast.error(result.message || 'Failed to resend verification email.');
     } catch (error) {
       console.error('Resend email error:', error);
-      showNotification(
-        'Error resending verification email. Please try again.',
-        'error',
-      );
+      toast.error('Error resending verification email. Please try again.');
     } finally {
       setResending(false);
     }
@@ -205,7 +189,7 @@ const Login = () => {
   const onLoginClick = (e) => {
     e.preventDefault();
     if (!data.email || !data.password) {
-      showNotification('Please enter both email and password.', 'error');
+      toast.error('Please enter both email and password.');
       return;
     }
     setErrorMessage('');
@@ -219,6 +203,7 @@ const Login = () => {
       style={{ backgroundImage: `url(${loginBackground})` }}
     >
       <Navigation currentPage="signin" />
+
       {/* Logo background overlay */}
       <div className="fixed inset-0 pointer-events-none z-0">
         {/* Fix: Use absolute positioning and z-index for logo */}
@@ -240,7 +225,9 @@ const Login = () => {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 border border-yellow-700/20 rounded-full"></div>
         <div className="absolute bottom-20 right-10 w-24 h-24 bg-gradient-to-br from-yellow-800/30 to-yellow-700/30 transform rotate-12 animate-pulse"></div>
       </div>
+
       <div className="absolute inset-0 bg-black/70 z-0"></div>
+
       <div className="shape-lines relative bg-gradient-to-br from-gray-900/80 to-gray-800/70 bg-opacity-95 p-6 sm:p-8 mt-10 w-full max-w-md rounded-2xl shadow-2xl z-10 backdrop-blur-xl border border-yellow-700/20">
         <div className="flex items-center justify-center mb-4">
           <a href="/" className="relative">
@@ -396,12 +383,14 @@ const Login = () => {
           </a>
         </div>
       </div>
+
       {/* Move NFTBadge to a fixed footer */}
       <footer className="w-full flex justify-center items-center py-4 absolute bottom-0 left-0 z-20 bg-transparent pointer-events-none">
         <div className="pointer-events-auto">
           <NFTBadge />
         </div>
       </footer>
+
       {/* Verification Modal */}
       {verificationVisible && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
@@ -453,7 +442,8 @@ const Login = () => {
           </div>
         </div>
       )}
-      // ...existing code...
+      {/* Global Toast Container - Single instance for entire app */}
+      <GlobalToastContainer />
     </section>
   );
 };
