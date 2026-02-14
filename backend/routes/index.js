@@ -214,8 +214,8 @@ router.get("/eth-price", async (req, res) => {
       timestamp: now,
     };
 
-    // Cache the result for 10 seconds
-    cache[cacheKey] = { data: result, expiry: now + 10000 };
+    // Cache the result for CACHE_TTL duration
+    cache[cacheKey] = { data: result, expiry: now + CACHE_TTL };
     res.json(result);
   } catch (error) {
     console.error("[eth-price] Error fetching ETH price:", error.message);

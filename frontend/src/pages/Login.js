@@ -8,7 +8,6 @@ import thumbsUpGif from './thumbsup.gif';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Navigation from '../Components/Navigation';
 import GlobalToastContainer from '../Components/GlobalToastContainer';
-
 import SecxionLogo from '../app/slogo.png';
 import NFTBadge from '../Components/NFTBadge';
 
@@ -62,7 +61,6 @@ const Login = () => {
 
   const [bubbleIn, setBubbleIn] = useState(false);
 
-  // Fetch CSRF token on component mount
   useEffect(() => {
     fetchCsrfToken();
     setBubbleIn(true);
