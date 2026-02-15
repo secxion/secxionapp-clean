@@ -1,31 +1,19 @@
 import DataPad from "../models/dataPad.js";
-import userModel from "../models/userModel.js";
-
-const fetchUserDetails = async (userId) => {
-  try {
-    const user = await userModel
-      .findById(userId)
-      .select("name email profilePic");
-    return user;
-  } catch (err) {
-    console.error("Error fetching user details:", err);
-    return null;
-  }
-};
 
 export const getAllDataPads = async (req, res) => {
   try {
-    const allDataPads = await DataPad.find().sort({ createdAt: -1 });
+    // Use populate instead of N+1 queries for user details
+    const allDataPads = await DataPad.find()
+      .populate("userId", "name email profilePic")
+      .sort({ createdAt: -1 })
+      .lean();
 
-    const dataPadsWithUserDetails = await Promise.all(
-      allDataPads.map(async (entry) => {
-        const userDetails = await fetchUserDetails(entry.userId);
-        return {
-          ...entry.toObject(),
-          userDetails,
-        };
-      }),
-    );
+    // Transform to match the expected format
+    const dataPadsWithUserDetails = allDataPads.map((entry) => ({
+      ...entry,
+      userDetails: entry.userId,
+      userId: entry.userId?._id || entry.userId,
+    }));
 
     res.json({
       message: "Fetched all DataPad entries successfully",
@@ -45,7 +33,7 @@ export const getAllDataPads = async (req, res) => {
 
 export const createDataPad = async (req, res) => {
   try {
-    const { title, content, media } = req.body;
+    const { title, content, media, tags } = req.body;
     const userId = req.userId;
 
     if (!userId) {
@@ -69,6 +57,7 @@ export const createDataPad = async (req, res) => {
       title,
       content,
       media,
+      tags: tags || [],
     });
 
     await newEntry.save();
@@ -92,7 +81,7 @@ export const createDataPad = async (req, res) => {
 export const updateDataPad = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, content, media } = req.body;
+    const { title, content, media, tags } = req.body;
     const userId = req.userId;
 
     const dataPad = await DataPad.findById(id);
@@ -115,7 +104,7 @@ export const updateDataPad = async (req, res) => {
 
     const updatedEntry = await DataPad.findByIdAndUpdate(
       id,
-      { title, content, media },
+      { title, content, media, tags: tags || [] },
       { new: true },
     );
 

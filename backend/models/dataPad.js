@@ -23,6 +23,14 @@ const dataPadSchema = new mongoose.Schema(
       ],
       default: [],
     },
+    tags: {
+      type: [
+        {
+          type: String,
+        },
+      ],
+      default: [],
+    },
   },
   { timestamps: true },
 );

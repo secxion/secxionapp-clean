@@ -7,21 +7,11 @@ import {
   FaTag,
   FaImage,
   FaFileAlt,
-  FaPalette,
   FaBars,
   FaTimes,
   FaEdit,
 } from 'react-icons/fa';
-import {
-  MdSend,
-  MdClose,
-  MdUpdate,
-  MdEdit,
-  MdSave,
-  MdCancel,
-  MdFullscreen,
-  MdFullscreenExit,
-} from 'react-icons/md';
+import { MdSend, MdClose, MdUpdate } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 import SummaryApi from '../common';
@@ -35,17 +25,16 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [media, setMedia] = useState([]);
+  const [tags, setTags] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
   const [tagInput, setTagInput] = useState('');
 
   // UI state
   const [loading, setLoading] = useState(false);
-  const [isEditingContent, setIsEditingContent] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({});
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [activeTab, setActiveTab] = useState('content');
   const [showSidebar, setShowSidebar] = useState(false);
   const [wordCount, setWordCount] = useState(0);
@@ -87,16 +76,19 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
       const loadedTitle = editingDataPad.title || '';
       const loadedContent = editingDataPad.content || '';
       const loadedMedia = editingDataPad.media || [];
+      const loadedTags = editingDataPad.tags || [];
 
       setTitle(loadedTitle);
       setContent(loadedContent);
       setMedia(loadedMedia);
+      setTags(loadedTags);
 
       // Store original data for comparison
       setOriginalData({
         title: loadedTitle,
         content: loadedContent,
         media: loadedMedia,
+        tags: loadedTags,
       });
 
       // Fix: Set up previewImages for existing media
@@ -114,11 +106,13 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
       setTitle('');
       setContent('');
       setMedia([]);
+      setTags([]);
       setPreviewImages([]);
       setOriginalData({
         title: '',
         content: '',
         media: [],
+        tags: [],
       });
     }
     setHasUnsavedChanges(false);
@@ -136,10 +130,11 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
     const hasChanges =
       title !== originalData.title ||
       content !== originalData.content ||
-      JSON.stringify(media) !== JSON.stringify(originalData.media);
+      JSON.stringify(media) !== JSON.stringify(originalData.media) ||
+      JSON.stringify(tags) !== JSON.stringify(originalData.tags);
 
     setHasUnsavedChanges(hasChanges);
-  }, [title, content, media, originalData]);
+  }, [title, content, media, tags, originalData]);
 
   // Update word count when content changes
   useEffect(() => {
@@ -316,6 +311,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
         title: trimmedTitle,
         content: trimmedContent,
         media: media.filter((url) => url && url.trim()), // This should contain the URLs
+        tags: tags.filter((tag) => tag && tag.trim()), // Separate tags array
       };
 
       const url = editingDataPad
@@ -389,6 +385,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
     title,
     content,
     media,
+    tags,
     editingDataPad,
     previewImages,
     refreshData,
@@ -402,7 +399,8 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
       originalData &&
       (title !== originalData.title ||
         content !== originalData.content ||
-        JSON.stringify(media) !== JSON.stringify(originalData.media));
+        JSON.stringify(media) !== JSON.stringify(originalData.media) ||
+        JSON.stringify(tags) !== JSON.stringify(originalData.tags));
 
     if (currentHasChanges) {
       if (
@@ -420,20 +418,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
     } else {
       closeUpload();
     }
-  }, [title, content, media, originalData, previewImages, closeUpload]);
-
-  // Handle content editing
-  const handleContentEditToggle = useCallback(() => {
-    setIsEditingContent(!isEditingContent);
-  }, [isEditingContent]);
-
-  const handleContentSave = useCallback(() => {
-    setIsEditingContent(false);
-    toast.info('Content saved', {
-      position: 'top-right',
-      autoClose: 2000,
-    });
-  }, []);
+  }, [title, content, media, tags, originalData, previewImages, closeUpload]);
 
   // Handle opening a saved note - Simplified logic
   const handleOpenSavedNote = useCallback(
@@ -449,7 +434,8 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
           originalData &&
           (title !== originalData.title ||
             content !== originalData.content ||
-            JSON.stringify(media) !== JSON.stringify(originalData.media));
+            JSON.stringify(media) !== JSON.stringify(originalData.media) ||
+            JSON.stringify(tags) !== JSON.stringify(originalData.tags));
 
         if (currentHasChanges) {
           const confirmLoad = window.confirm(
@@ -464,16 +450,19 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
         const newTitle = note.title || '';
         const newContent = note.content || '';
         const newMedia = note.media || [];
+        const newTags = note.tags || [];
 
         setTitle(newTitle);
         setContent(newContent);
         setMedia(newMedia);
+        setTags(newTags);
 
         // Update original data reference
         setOriginalData({
           title: newTitle,
           content: newContent,
           media: newMedia,
+          tags: newTags,
         });
 
         // Handle media if present
@@ -497,7 +486,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
         toast.error('Failed to load note');
       }
     },
-    [title, content, media, originalData, user?._id],
+    [title, content, media, tags, originalData, user?._id],
   );
 
   // Keyboard shortcuts
@@ -522,14 +511,14 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
 
   const addTag = () => {
     const tag = tagInput.trim();
-    if (tag && !media.includes(tag)) {
-      setMedia((prev) => [...prev, tag]);
+    if (tag && !tags.includes(tag)) {
+      setTags((prev) => [...prev, tag]);
       setTagInput('');
     }
   };
 
   const removeTag = (tagToRemove) => {
-    setMedia((prev) => prev.filter((tag) => tag !== tagToRemove));
+    setTags((prev) => prev.filter((tag) => tag !== tagToRemove));
   };
 
   // Mobile-optimized tabs with better touch targets
@@ -690,7 +679,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
         {/* Desktop Sidebar */}
         <div className="hidden md:flex w-64 bg-gray-800 border-r border-gray-700 flex-col">
           <div className="p-4 border-b border-gray-700">
-            <h2 className="font-medium text-slate-800 mb-3">Note Sections</h2>
+            <h2 className="font-medium text-gray-200 mb-3">Note Sections</h2>
             <nav className="space-y-1">
               {tabs.map((tab) => (
                 <button
@@ -698,8 +687,8 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors duration-200 ${
                     activeTab === tab.id
-                      ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800'
+                      ? 'bg-blue-600 text-white border border-blue-500'
+                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
                   }`}
                 >
                   {tab.icon}
@@ -710,18 +699,22 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
           </div>
 
           {/* Desktop Stats */}
-          <div className="p-4 space-y-3 text-sm text-slate-600">
+          <div className="p-4 space-y-3 text-sm text-gray-400">
             <div className="flex justify-between">
               <span>Characters:</span>
-              <span className="font-medium">{(title + content).length}</span>
+              <span className="font-medium text-gray-200">
+                {(title + content).length}
+              </span>
             </div>
             <div className="flex justify-between">
               <span>Words:</span>
-              <span className="font-medium">{wordCount}</span>
+              <span className="font-medium text-gray-200">{wordCount}</span>
             </div>
             <div className="flex justify-between">
               <span>Images:</span>
-              <span className="font-medium">{previewImages.length}</span>
+              <span className="font-medium text-gray-200">
+                {previewImages.length}
+              </span>
             </div>
           </div>
 
@@ -729,7 +722,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
           <div className="p-4 border-t border-gray-700">
             <button
               onClick={() => setShowWritingTips(!showWritingTips)}
-              className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2"
+              className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2"
             >
               💡 Writing Tips
               <span
@@ -744,7 +737,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="space-y-1 text-xs text-slate-600 overflow-hidden"
+                  className="space-y-1 text-xs text-gray-400 overflow-hidden"
                 >
                   {writingTips.map((tip, index) => (
                     <div key={index} className="py-1">
@@ -772,42 +765,46 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                 initial={{ x: -280 }}
                 animate={{ x: 0 }}
                 exit={{ x: -280 }}
-                className="md:hidden fixed left-0 top-0 bottom-0 w-70 py-10 bg-white z-20 shadow-xl"
+                className="md:hidden fixed left-0 top-0 bottom-0 w-70 py-10 bg-gray-800 z-20 shadow-xl"
               >
-                <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-                  <h2 className="font-medium text-slate-800">Note Info</h2>
+                <div className="p-4 border-b border-gray-700 flex items-center justify-between">
+                  <h2 className="font-medium text-gray-200">Note Info</h2>
                   <button
                     onClick={() => setShowSidebar(false)}
-                    className="p-1 text-slate-500 hover:text-slate-700"
+                    className="p-1 text-gray-400 hover:text-gray-200"
                   >
                     <FaTimes className="w-4 h-4" />
                   </button>
                 </div>
 
                 {/* Mobile Stats */}
-                <div className="p-4 space-y-3 text-sm text-slate-600">
+                <div className="p-4 space-y-3 text-sm text-gray-400">
                   <div className="flex justify-between">
                     <span>Characters:</span>
-                    <span className="font-medium">
+                    <span className="font-medium text-gray-200">
                       {(title + content).length}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Words:</span>
-                    <span className="font-medium">{wordCount}</span>
+                    <span className="font-medium text-gray-200">
+                      {wordCount}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Images:</span>
-                    <span className="font-medium">{previewImages.length}</span>
+                    <span className="font-medium text-gray-200">
+                      {previewImages.length}
+                    </span>
                   </div>
                 </div>
 
                 {/* Mobile Writing Tips */}
-                <div className="p-4 border-t border-slate-200">
-                  <h3 className="text-sm font-medium text-slate-700 mb-2">
+                <div className="p-4 border-t border-gray-700">
+                  <h3 className="text-sm font-medium text-gray-300 mb-2">
                     💡 Writing Tips
                   </h3>
-                  <div className="space-y-1 text-xs text-slate-600">
+                  <div className="space-y-1 text-xs text-gray-400">
                     {writingTips.map((tip, index) => (
                       <div key={index} className="py-1">
                         {tip}
@@ -880,18 +877,18 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                   className="h-full p-4 md:p-6 overflow-y-auto"
                 >
                   <div className="mb-6">
-                    <label className="block text-sm font-medium text-slate-700 mb-3">
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
                       Upload Images ({previewImages.length}/10)
                     </label>
 
                     {/* Mobile-optimized upload area */}
-                    <label className="group relative block w-full border-2 border-dashed border-slate-300 rounded-xl p-6 md:p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 cursor-pointer touch-manipulation">
-                      <FaCloudUploadAlt className="mx-auto h-10 w-10 md:h-12 md:w-12 text-slate-400 group-hover:text-blue-500 transition-colors duration-200" />
+                    <label className="group relative block w-full border-2 border-dashed border-gray-600 rounded-xl p-6 md:p-8 text-center hover:border-blue-400 hover:bg-gray-800 transition-all duration-200 cursor-pointer touch-manipulation">
+                      <FaCloudUploadAlt className="mx-auto h-10 w-10 md:h-12 md:w-12 text-gray-500 group-hover:text-blue-400 transition-colors duration-200" />
                       <div className="mt-4">
-                        <p className="text-sm font-medium text-slate-700 group-hover:text-blue-600">
+                        <p className="text-sm font-medium text-gray-300 group-hover:text-blue-400">
                           Tap to upload photos
                         </p>
-                        <p className="text-xs text-slate-500 mt-1">
+                        <p className="text-xs text-gray-500 mt-1">
                           PNG, JPG, GIF up to 10MB each
                         </p>
                       </div>
@@ -908,7 +905,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
 
                   {previewImages.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-medium text-slate-700 mb-3">
+                      <h3 className="text-sm font-medium text-gray-300 mb-3">
                         Uploaded Images
                       </h3>
                       {/* Mobile-optimized grid */}
@@ -922,7 +919,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                               exit={{ opacity: 0, scale: 0.8 }}
                               className="relative group"
                             >
-                              <div className="aspect-square rounded-lg overflow-hidden bg-slate-100 border border-slate-200 touch-manipulation">
+                              <div className="aspect-square rounded-lg overflow-hidden bg-gray-700 border border-gray-600 touch-manipulation">
                                 <img
                                   src={imageData.url || imageData}
                                   alt={`Upload ${index + 1}`}
@@ -971,7 +968,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                   className="h-full p-4 md:p-6 overflow-y-auto"
                 >
                   <div className="mb-6">
-                    <label className="block text-sm font-medium text-slate-700 mb-3">
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
                       Add Tags
                     </label>
                     {/* Mobile-optimized tag input */}
@@ -985,7 +982,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                             ? (e.preventDefault(), addTag())
                             : null
                         }
-                        className="flex-1 px-3 py-3 md:py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors duration-200 touch-manipulation"
+                        className="flex-1 px-3 py-3 md:py-2 bg-gray-800 border border-gray-600 text-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors duration-200 touch-manipulation placeholder-gray-500"
                         placeholder="Enter a tag..."
                       />
                       <button
@@ -998,23 +995,23 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                     </div>
                   </div>
 
-                  {media.length > 0 && (
+                  {tags.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-medium text-slate-700 mb-3">
+                      <h3 className="text-sm font-medium text-gray-300 mb-3">
                         Current Tags
                       </h3>
                       {/* Mobile-optimized tag display */}
                       <div className="flex flex-wrap gap-2">
-                        {media.map((tag, index) => (
+                        {tags.map((tag, index) => (
                           <span
                             key={index}
-                            className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-2 rounded-full text-sm border border-blue-200 touch-manipulation"
+                            className="inline-flex items-center gap-2 bg-blue-900/50 text-blue-300 px-3 py-2 rounded-full text-sm border border-blue-700 touch-manipulation"
                           >
                             {tag}
                             <button
                               type="button"
                               onClick={() => removeTag(tag)}
-                              className="text-blue-500 hover:text-blue-700 transition-colors duration-200 p-1 touch-manipulation"
+                              className="text-blue-400 hover:text-blue-200 transition-colors duration-200 p-1 touch-manipulation"
                             >
                               <FaTrash className="w-3 h-3" />
                             </button>
