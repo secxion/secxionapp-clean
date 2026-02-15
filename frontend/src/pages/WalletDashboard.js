@@ -13,8 +13,6 @@ import {
   FaEye,
   FaEyeSlash,
   FaShieldAlt,
-  FaArrowUp,
-  FaArrowDown,
   FaPlus,
   FaTimes,
 } from 'react-icons/fa';
@@ -37,12 +35,6 @@ const WalletDashboard = () => {
   const [showBalance, setShowBalance] = useState(false);
   const [openAddBankAccount, setOpenAddBankAccount] = useState(false);
   const [userLoadTimeout, setUserLoadTimeout] = useState(false);
-  const [showStatValues, setShowStatValues] = useState({
-    deposits: false,
-    withdrawals: false,
-    monthly: false,
-    monthlyWithdrawals: false,
-  });
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [isLiveScriptOpen, setIsLiveScriptOpen] = useState(false);
 
@@ -163,13 +155,6 @@ const WalletDashboard = () => {
     }
   };
 
-  const toggleStatVisibility = (statType) => {
-    setShowStatValues((prev) => ({
-      ...prev,
-      [statType]: !prev[statType],
-    }));
-  };
-
   const renderContent = () => {
     switch (activeTab) {
       case 'wallet':
@@ -259,133 +244,6 @@ const WalletDashboard = () => {
                       </div>
                     )}
                   </div>
-
-                  {/* Enhanced Stats Grid */}
-                  {!errorBalance && walletBalance !== null && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                      {/* Total Deposits */}
-                      <div className="bg-gradient-to-br from-green-900/30 to-green-800/30 border border-green-500/30 rounded-2xl p-4 text-center backdrop-blur-sm">
-                        <div className="flex items-center justify-between mb-2">
-                          <FaArrowDown className="w-5 h-5 text-green-400" />
-                          <button
-                            onClick={() => toggleStatVisibility('deposits')}
-                            className="p-1 text-green-400 hover:text-green-300 transition-colors"
-                            title={
-                              showStatValues.deposits
-                                ? 'Hide deposits'
-                                : 'Show deposits'
-                            }
-                          >
-                            {showStatValues.deposits ? (
-                              <FaEyeSlash className="w-3 h-3" />
-                            ) : (
-                              <FaEye className="w-3 h-3" />
-                            )}
-                          </button>
-                        </div>
-                        <p className="text-green-400 text-xs font-medium mb-1">
-                          Total Deposits
-                        </p>
-                        <p className="text-white text-sm md:text-base font-bold break-words">
-                          {showStatValues.deposits
-                            ? `₦${((walletBalance || 0) * 1.8).toLocaleString()}`
-                            : '••••••••'}
-                        </p>
-                      </div>
-
-                      {/* Total Withdrawals */}
-                      <div className="bg-gradient-to-br from-red-900/30 to-red-800/30 border border-red-500/30 rounded-2xl p-4 text-center backdrop-blur-sm">
-                        <div className="flex items-center justify-between mb-2">
-                          <FaArrowUp className="w-5 h-5 text-red-400" />
-                          <button
-                            onClick={() => toggleStatVisibility('withdrawals')}
-                            className="p-1 text-red-400 hover:text-red-300 transition-colors"
-                            title={
-                              showStatValues.withdrawals
-                                ? 'Hide withdrawals'
-                                : 'Show withdrawals'
-                            }
-                          >
-                            {showStatValues.withdrawals ? (
-                              <FaEyeSlash className="w-3 h-3" />
-                            ) : (
-                              <FaEye className="w-3 h-3" />
-                            )}
-                          </button>
-                        </div>
-                        <p className="text-red-400 text-xs font-medium mb-1">
-                          Total Withdrawals
-                        </p>
-                        <p className="text-white text-sm md:text-base font-bold break-words">
-                          {showStatValues.withdrawals
-                            ? `₦${((walletBalance || 0) * 0.8).toLocaleString()}`
-                            : '••••••••'}
-                        </p>
-                      </div>
-
-                      {/* This Month Deposits */}
-                      <div className="bg-gradient-to-br from-blue-900/30 to-blue-800/30 border border-blue-500/30 rounded-2xl p-4 text-center backdrop-blur-sm">
-                        <div className="flex items-center justify-between mb-2">
-                          <FaArrowDown className="w-5 h-5 text-blue-400" />
-                          <button
-                            onClick={() => toggleStatVisibility('monthly')}
-                            className="p-1 text-blue-400 hover:text-blue-300 transition-colors"
-                            title={
-                              showStatValues.monthly
-                                ? 'Hide monthly stats'
-                                : 'Show monthly stats'
-                            }
-                          >
-                            {showStatValues.monthly ? (
-                              <FaEyeSlash className="w-3 h-3" />
-                            ) : (
-                              <FaEye className="w-3 h-3" />
-                            )}
-                          </button>
-                        </div>
-                        <p className="text-blue-400 text-xs font-medium mb-1">
-                          Month Deposits
-                        </p>
-                        <p className="text-white text-sm md:text-base font-bold break-words">
-                          {showStatValues.monthly
-                            ? `+₦${((walletBalance || 0) * 0.25).toLocaleString()}`
-                            : '••••••••'}
-                        </p>
-                      </div>
-
-                      {/* This Month Withdrawals */}
-                      <div className="bg-gradient-to-br from-orange-900/30 to-orange-800/30 border border-orange-500/30 rounded-2xl p-4 text-center backdrop-blur-sm">
-                        <div className="flex items-center justify-between mb-2">
-                          <FaArrowUp className="w-5 h-5 text-orange-400" />
-                          <button
-                            onClick={() =>
-                              toggleStatVisibility('monthlyWithdrawals')
-                            }
-                            className="p-1 text-orange-400 hover:text-orange-300 transition-colors"
-                            title={
-                              showStatValues.monthlyWithdrawals
-                                ? 'Hide monthly withdrawals'
-                                : 'Show monthly withdrawals'
-                            }
-                          >
-                            {showStatValues.monthlyWithdrawals ? (
-                              <FaEyeSlash className="w-3 h-3" />
-                            ) : (
-                              <FaEye className="w-3 h-3" />
-                            )}
-                          </button>
-                        </div>
-                        <p className="text-orange-400 text-xs font-medium mb-1">
-                          Month Withdrawals
-                        </p>
-                        <p className="text-white text-sm md:text-base font-bold break-words">
-                          {showStatValues.monthlyWithdrawals
-                            ? `-₦${((walletBalance || 0) * 0.15).toLocaleString()}`
-                            : '••••••••'}
-                        </p>
-                      </div>
-                    </div>
-                  )}
 
                   {/* Payment Request Button */}
                   <div className="text-center">

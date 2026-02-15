@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import scrollTop from '../helpers/scrollTop';
+import { getBrandColor } from '../helpers/brandColors';
 
 const VerticalCard = React.memo(({ loading, data = [] }) => {
   const loadingList = new Array(12).fill(null);
@@ -153,24 +154,28 @@ const VerticalCard = React.memo(({ loading, data = [] }) => {
 
                 {/* Image */}
                 <div className="relative aspect-square overflow-hidden rounded-t-xl bg-gray-800 flex items-center justify-center">
-                  {imageErrors[product._id] ? (
-                    <div className="flex flex-col items-center justify-center w-full h-full text-gray-500 bg-gray-200">
-                      <svg
-                        width="28"
-                        height="28"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="mb-2 opacity-70"
-                      >
-                        <path d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z" />
-                      </svg>
-                      <span className="text-xs font-medium opacity-80 glossy-text">
-                        No Image
-                      </span>
-                    </div>
+                  {imageErrors[product._id] || !product.productImage?.[0] ? (
+                    (() => {
+                      const brandStyle = getBrandColor(
+                        product.productName,
+                        product.brandName,
+                      );
+                      return (
+                        <div
+                          className={`w-full h-full bg-gradient-to-br ${brandStyle.bg} flex flex-col items-center justify-center text-white`}
+                        >
+                          <span className="text-4xl mb-2">
+                            {brandStyle.icon}
+                          </span>
+                          <span className="text-sm font-bold text-center px-2">
+                            {brandStyle.text}
+                          </span>
+                        </div>
+                      );
+                    })()
                   ) : (
                     <img
-                      src={product.productImage?.[0] || '/placeholder.jpg'}
+                      src={product.productImage[0]}
                       alt={product.productName}
                       className="w-full h-full object-cover transition-all duration-400 ease-in-out group-hover:scale-105"
                       loading="lazy"

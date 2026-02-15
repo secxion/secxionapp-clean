@@ -1,7 +1,10 @@
 const productCategory = [
+  // Main categories
   { id: 1, label: 'Gift Cards', value: 'gift cards' },
-  { id: 2, label: 'Visa / Credit Cards', value: 'visa / creditcards' },
-  { id: 3, label: 'Online Payments', value: 'Online Payments' },
+  { id: 2, label: 'Gaming Cards', value: 'gaming cards' },
+  { id: 3, label: 'Prepaid Cards', value: 'prepaid cards' },
+  { id: 4, label: 'Retail Cards', value: 'retail cards' },
+  { id: 5, label: 'Crypto/Online', value: 'crypto online' },
 ];
 
 export default productCategory;
