@@ -194,53 +194,304 @@ const NFTShowcase = () => {
 };
 
 // Testimonial Carousel
-const transactionTypes = [
-  'Gift Card Sale',
-  'Ethereum Trade',
-  'Bank Payment',
-  'Custom Tool Delivered',
-  'Open Source Integration',
+
+// Generate unique names - mix of full names, initials, and user IDs
+const firstNames = [
+  'Tunder',
+  'Bola',
+  'Bright',
+  'Loveth',
+  'Chidi',
+  'Amara',
+  'Emeka',
+  'Ngozi',
+  'Yusuf',
+  'Fatima',
+  'Adebayo',
+  'Kemi',
+  'Oluwaseun',
+  'Chidinma',
+  'Ibrahim',
+  'Aisha',
+  'Tayo',
+  'Funke',
+  'Obinna',
+  'Blessing',
+  'Chukwuma',
+  'Ada',
+  'Segun',
+  'Folake',
+  'Ikenna',
+  'Nneka',
+  'Dayo',
+  'Jumoke',
+  'Uche',
+  'Yetunde',
+  'Kunle',
+  'Shade',
+  'Efe',
+  'Chiamaka',
+  'Tobi',
+  'Bukola',
+  'Nnamdi',
+  'Titilayo',
+  'Femi',
+  'Pastor',
+  'Chief',
+  'Dr',
+  'Engr',
+  'Barr',
+  'Alex',
+  'James',
+  'Sarah',
+  'Mike',
+  'David',
+  'Grace',
+  'Peter',
+  'Ruth',
+  'Samuel',
+  'Mary',
+  'John',
+  'Rebecca',
+  'Daniel',
+  'Esther',
+  'Victor',
+  'Joy',
+  'Emmanuel',
+  'Mercy',
+  'Joseph',
+  'Faith',
+  'Chris',
+  'Linda',
+  'Mark',
+  'Sophie',
+  'Ben',
+  'Claire',
+  'Tom',
+  'Emma',
+  'Jake',
 ];
-const testimonials = Array.from({ length: 1200 }).map((_, i) => ({
-  name: [
-    'Alex M.',
-    'Jade L.',
-    'Samir K.',
-    'Chris O.',
-    'Linda S.',
-    'Mohammed T.',
-    'Priya R.',
-    'John D.',
-    'Sophia W.',
-    'Carlos F.',
-  ][Math.floor(Math.random() * 10)],
-  avatar: `https://randomuser.me/api/portraits/${Math.random() > 0.5 ? 'men' : 'women'}/${Math.floor(Math.random() * 80)}.jpg`,
-  text: [
-    'Secxion made selling my gift cards effortless. The custom tools are a game changer!',
-    'The NFT showcase is stunning and the platform feels ultra-secure. Highly recommended.',
-    'Lightning-fast payouts and amazing support. Secxion is my go-to for digital assets.',
-    'Received my bank payment instantly. Trustworthy and reliable!',
-    'Traded Ethereum with the best rates. Secxion rocks!',
-    'Custom scripts delivered live, solved my workflow issues.',
-    'Support team helped me integrate open source tools in minutes.',
+
+const lastNames = [
+  'Sanusi',
+  'Johnson',
+  'Okonkwo',
+  'Adeyemi',
+  'Bello',
+  'Nwosu',
+  'Abubakar',
+  'Eze',
+  'Okafor',
+  'Aliyu',
+  'Chukwu',
+  'Musa',
+  'Udeh',
+  'Obi',
+  'Yakubu',
+  'Nwachukwu',
+  'Suleiman',
+  'Okoro',
+  'Danjuma',
+  'Igwe',
+  'Hassan',
+  'Ike',
+  'Garba',
+  'Anyanwu',
+  'Lawal',
+  'Dim',
+  'Idris',
+  'Ojo',
+  'Haruna',
+  'Uzoma',
+  'K',
+  'J',
+  'T',
+  'O',
+  'A',
+  'B',
+  'M',
+  'S',
+  'D',
+  'E',
+  'L',
+  'N',
+  'P',
+  'R',
+  'W',
+  'Williams',
+  'Brown',
+  'Smith',
+  'Davis',
+  'Miller',
+  'Wilson',
+  'Moore',
+  'Taylor',
+];
+
+const testimonialsByType = {
+  'Gift Card Sale': [
+    'Secxion made selling my gift cards effortless!',
     'Gift card sale completed in seconds, super fast!',
+    'Sold my Amazon cards at great rates. Impressed!',
+    'Best platform for gift card trades. Quick and easy!',
+    'Got paid instantly for my gift cards. Love it!',
+  ],
+  'Ethereum Trade': [
+    'Traded Ethereum with the best rates. Secxion rocks!',
+    'ETH trade went smoothly. Great exchange rates!',
+    'Best ETH rates I have found online. Highly recommend!',
+    'Ethereum swap was instant. Very satisfied!',
+    'Sold my ETH at market price. No hidden fees!',
+  ],
+  'Bank Payment': [
+    'Received my bank payment instantly. Trustworthy!',
     'Bank transfer successful, funds received immediately.',
-    "Secxion's NFT collection looks amazing, can't wait!",
-  ][Math.floor(Math.random() * 10)],
-  type: transactionTypes[Math.floor(Math.random() * transactionTypes.length)],
-  date: (() => {
+    'Got paid to my bank account within minutes!',
+    'Bank withdrawal was smooth and fast. Great service!',
+    'Money hit my account faster than expected. Amazing!',
+  ],
+  'Custom Tool Delivered': [
+    'Custom scripts delivered live, solved my workflow issues.',
+    'The custom tools are a game changer for my business!',
+    'Received my custom automation tool. Works perfectly!',
+    'Custom development was exactly what I needed. Thanks!',
+    'Tool delivery was quick and documentation was clear.',
+  ],
+  'Open Source Integration': [
+    'Support team helped me integrate open source tools in minutes.',
+    'Open source setup was seamless with their help.',
+    'Integration support was top-notch. Very helpful team!',
+    'Got my open source project connected easily.',
+    'The integration docs are clear and helpful.',
+  ],
+  'Crypto Exchange': [
+    'Best rates for crypto exchange, verified!',
+    'Swapped my coins at excellent rates. No complaints!',
+    'Crypto exchange was fast and secure. Love this platform!',
+    'Exchange went through instantly. Great experience!',
+    'Best crypto swap rates I have found!',
+  ],
+  'Wallet Transfer': [
+    'Wallet setup was easy, support was helpful.',
+    'Transferred funds to my wallet in seconds!',
+    'Wallet transfer was instant. Very impressed!',
+    'Moving funds between wallets was seamless.',
+    'Quick wallet transfer with zero issues!',
+  ],
+  'NFT Purchase': [
+    'The NFT showcase is stunning. Highly recommended.',
+    "Secxion's NFT collection looks amazing!",
+    'Bought my first NFT here. Great experience!',
+    'NFT purchase was smooth and secure.',
+    'Love the NFT marketplace. Easy to use!',
+  ],
+};
+
+const transactionTypes = Object.keys(testimonialsByType);
+
+// Gradient colors for avatars
+const gradientPairs = [
+  ['#FF6B6B', '#4ECDC4'],
+  ['#A8E6CF', '#88D8B0'],
+  ['#FFD93D', '#FF6B6B'],
+  ['#6C5CE7', '#A29BFE'],
+  ['#00B894', '#00CEC9'],
+  ['#E17055', '#FDCB6E'],
+  ['#0984E3', '#74B9FF'],
+  ['#D63031', '#E84393'],
+  ['#00B894', '#55EFC4'],
+  ['#6C5CE7', '#FD79A8'],
+  ['#FFEAA7', '#DFE6E9'],
+  ['#2D3436', '#636E72'],
+  ['#F39C12', '#E74C3C'],
+  ['#9B59B6', '#3498DB'],
+  ['#1ABC9C', '#16A085'],
+];
+
+// Generate unique testimonials with no repetition
+const generateUniqueTestimonials = (count) => {
+  const usedNames = new Set();
+  const testimonials = [];
+
+  for (let i = 0; i < count; i++) {
+    let displayName;
+    let isUserId = Math.random() < 0.3; // 30% chance of user ID
+
+    if (isUserId) {
+      // Generate unique user ID
+      let userId;
+      do {
+        userId = `User_${Math.floor(100000 + Math.random() * 900000)}`;
+      } while (usedNames.has(userId));
+      usedNames.add(userId);
+      displayName = userId;
+    } else {
+      // Generate unique human name
+      let fullName;
+      let attempts = 0;
+      do {
+        const firstName =
+          firstNames[Math.floor(Math.random() * firstNames.length)];
+        const lastName =
+          lastNames[Math.floor(Math.random() * lastNames.length)];
+        // Variety in name formats
+        const formats = [
+          `${firstName} ${lastName}`,
+          `${firstName} ${lastName}.`,
+          `${firstName.charAt(0)}. ${lastName}`,
+          `${firstName}`,
+        ];
+        fullName = formats[Math.floor(Math.random() * formats.length)];
+        attempts++;
+      } while (usedNames.has(fullName) && attempts < 50);
+      usedNames.add(fullName);
+      displayName = fullName;
+    }
+
+    // Get initials for avatar
+    const initials = displayName.startsWith('User_')
+      ? displayName.slice(5, 7)
+      : displayName
+          .split(' ')
+          .map((n) => n.charAt(0))
+          .join('')
+          .slice(0, 2)
+          .toUpperCase();
+
+    const gradientIndex = i % gradientPairs.length;
+    const [color1, color2] = gradientPairs[gradientIndex];
+
+    // Generate timestamp within last 48 hours
     const now = new Date();
     const offset = Math.floor(Math.random() * 48 * 60 * 60 * 1000);
-    const d = new Date(now.getTime() - offset);
-    return d.toLocaleString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
+    const date = new Date(now.getTime() - offset);
+
+    // Pick a random transaction type and matching text
+    const type =
+      transactionTypes[Math.floor(Math.random() * transactionTypes.length)];
+    const textsForType = testimonialsByType[type];
+    const text = textsForType[Math.floor(Math.random() * textsForType.length)];
+
+    testimonials.push({
+      name: displayName,
+      initials,
+      gradient: `linear-gradient(135deg, ${color1}, ${color2})`,
+      text,
+      type,
+      date: date.toLocaleString('en-US', {
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
     });
-  })(),
-}));
+  }
+
+  return testimonials;
+};
+
+const testimonials = generateUniqueTestimonials(1200);
 
 const TestimonialCarousel = () => {
   const [index, setIndex] = useState(
@@ -261,12 +512,13 @@ const TestimonialCarousel = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, type: 'spring' }}
     >
-      <div className="flex items-center mb- 2">
-        <img
-          src={t.avatar}
-          alt={t.name}
-          className="w-12 h-12 rounded-full border-2 border-yellow-500 mr-3 shadow"
-        />
+      <div className="flex items-center mb-2">
+        <div
+          className="w-12 h-12 rounded-full border-2 border-yellow-500 mr-3 shadow flex items-center justify-center text-white font-bold text-sm"
+          style={{ background: t.gradient }}
+        >
+          {t.initials}
+        </div>
         <span className="font-bold text-yellow-200">{t.name}</span>
         <span className="ml-auto text-xs text-gray-400">{t.date}</span>
       </div>
