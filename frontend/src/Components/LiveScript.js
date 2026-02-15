@@ -377,7 +377,7 @@ const LiveScript = ({ isOpen, onClose }) => {
 
           {/* Content */}
           <div
-            className="p-4 flex-1 overflow-y-auto min-h-0"
+            className={`p-4 flex-1 min-h-0 ${activeView === 'detail' ? 'overflow-hidden flex flex-col' : 'overflow-y-auto'}`}
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {activeView === 'form' ? (
@@ -622,9 +622,9 @@ const LiveScript = ({ isOpen, onClose }) => {
             ) : (
               /* Detail View */
               selectedRequest && (
-                <div className="flex flex-col h-full">
+                <div className="flex flex-col flex-1 min-h-0">
                   {/* Request Info */}
-                  <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700 mb-4">
+                  <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700 mb-4 flex-shrink-0">
                     <h3 className="text-white font-semibold text-lg mb-2">
                       {selectedRequest.title}
                     </h3>
@@ -665,7 +665,10 @@ const LiveScript = ({ isOpen, onClose }) => {
                   </div>
 
                   {/* Conversation */}
-                  <div className="flex-1 overflow-y-auto space-y-3 mb-4 min-h-[150px] max-h-[250px]">
+                  <div
+                    className="flex-1 overflow-y-auto space-y-3 mb-4 min-h-0"
+                    style={{ WebkitOverflowScrolling: 'touch' }}
+                  >
                     {selectedRequest.messages &&
                     selectedRequest.messages.length > 0 ? (
                       selectedRequest.messages.map((msg, idx) => (
@@ -719,7 +722,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                   </div>
 
                   {/* Reply Input */}
-                  <div className="border-t border-gray-700 pt-4">
+                  <div className="border-t border-gray-700 pt-4 flex-shrink-0 bg-gray-900">
                     {/* Pending Attachments Preview */}
                     {pendingAttachments.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-3">
