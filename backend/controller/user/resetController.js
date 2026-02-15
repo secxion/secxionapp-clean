@@ -13,7 +13,8 @@ function generateNumericCode() {
 
 export async function sendResetCode(req, res) {
   try {
-    const { email, type } = req.body;
+    const { email: rawEmail, type } = req.body;
+    const email = rawEmail?.toLowerCase().trim();
 
     if (!email || !["password", "telegram"].includes(type)) {
       return res.status(400).json({ success: false, message: "Invalid input" });
@@ -70,7 +71,8 @@ export async function sendResetCode(req, res) {
 
 export async function verifyReset(req, res) {
   try {
-    const { email, code, newValue, type } = req.body;
+    const { email: rawEmail, code, newValue, type } = req.body;
+    const email = rawEmail?.toLowerCase().trim();
 
     const user = await userModel.findOne({ email });
     if (!user) {

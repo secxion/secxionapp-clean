@@ -139,10 +139,12 @@ const Login = () => {
         await fetchUserDetails();
         navigate('/home');
       } else {
-        setErrorMessage(result.message || 'Login failed. Please try again.');
-        toast.error(result.message || 'Verification failed. Please try again.');
-        setVerificationVisible(true);
-        fetchSliderTarget();
+        // Close slider and show error on the login form
+        setVerificationVisible(false);
+        setFormSubmitting(false);
+        const errorMsg = result.message || 'Login failed. Please try again.';
+        setErrorMessage(errorMsg);
+        toast.error(errorMsg);
       }
     } catch (error) {
       console.error('Login verification error:', error);
@@ -257,6 +259,23 @@ const Login = () => {
           <p className="text-sm text-gray-300 mt-1">Login to your account</p>
         </div>
 
+        {errorMessage && (
+          <div className="mb-4 text-center text-red-400 text-sm bg-red-900/20 border border-red-500/30 rounded-lg p-3">
+            <p>{errorMessage}</p>
+            {errorMessage.toLowerCase().includes('verify') && (
+              <Button
+                onClick={handleResendVerificationEmail}
+                disabled={resending}
+                variant="ghost"
+                className={`mt-2 text-yellow-500 hover:underline font-medium hover:text-yellow-400 ${bubbleIn ? 'bubble-pop' : ''}`}
+                style={getBubbleStyle(bubbleIn, 9)}
+              >
+                {resending ? 'Sending...' : 'Resend Verification Email'}
+              </Button>
+            )}
+          </div>
+        )}
+
         <form className="flex flex-col gap-4" onSubmit={onLoginClick}>
           <div>
             <label
@@ -272,7 +291,7 @@ const Login = () => {
                 type="email"
                 value={data.email}
                 onChange={handleInputChange}
-                placeholder="(case sensitive)you@example.com"
+                placeholder="you@example.com"
                 className="w-full p-3 pr-12 rounded-lg bg-gray-800 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-0"
                 required
                 autoComplete="email"
@@ -334,23 +353,6 @@ const Login = () => {
             {formSubmitting ? 'Verifying...' : 'Login'}
           </Button>
         </form>
-
-        {errorMessage && (
-          <div className="mt-4 text-center text-red-400 text-sm">
-            <p>{errorMessage}</p>
-            {errorMessage.toLowerCase().includes('verify') && (
-              <Button
-                onClick={handleResendVerificationEmail}
-                disabled={resending}
-                variant="ghost"
-                className={`mt-2 text-yellow-500 hover:underline font-medium hover:text-yellow-400 ${bubbleIn ? 'bubble-pop' : ''}`}
-                style={getBubbleStyle(bubbleIn, 9)}
-              >
-                {resending ? 'Resending...' : 'Resend Verification Email'}
-              </Button>
-            )}
-          </div>
-        )}
 
         <p className="mt-6 text-center text-gray-300 text-sm">
           Don’t have an account?{' '}

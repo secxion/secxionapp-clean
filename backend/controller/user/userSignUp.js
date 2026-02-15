@@ -6,7 +6,8 @@ import { updateWalletBalance } from "../wallet/walletController.js";
 
 async function userSignUpController(req, res, next) {
   try {
-    const { name, email, password, tag, profilePic, telegramNumber } = req.body;
+    const { name, email: rawEmail, password, tag, profilePic, telegramNumber } = req.body;
+    const email = rawEmail?.toLowerCase().trim();
     if (!name || !email || !password) {
       const err = new Error("Name, email, and password are required.");
       err.status = 400;

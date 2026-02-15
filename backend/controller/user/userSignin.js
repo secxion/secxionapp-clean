@@ -5,7 +5,8 @@ import { verifySliderValue } from "../../utils/sliderVerification.js";
 
 async function userSignInController(req, res, next) {
   try {
-    const { email, password, sliderValue, targetValue, slider } = req.body;
+    const { email: rawEmail, password, sliderValue, targetValue, slider } = req.body;
+    const email = rawEmail?.toLowerCase().trim();
     console.log("🔐 Login attempt:");
     console.log("📧 Email:", email);
     console.log("🎯 Target:", targetValue);

@@ -4,7 +4,8 @@ import crypto from "crypto";
 
 export const resendVerificationEmailController = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email: rawEmail } = req.body;
+    const email = rawEmail?.toLowerCase().trim();
     if (!email) throw new Error("Email is required");
 
     const user = await userModel.findOne({ email });
