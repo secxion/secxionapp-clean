@@ -2,11 +2,12 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus, FaCode } from 'react-icons/fa';
 import { MdRefresh } from 'react-icons/md';
 
 import UploadData from '../Components/UploadData';
 import DataPadList from '../Components/DataPadList';
+import LiveScript from '../Components/LiveScript';
 
 import EmptyState from '../Components/EmptyState';
 import SearchAndFilter from '../Components/SearchAndFilter';
@@ -28,6 +29,7 @@ const DataPad = () => {
   const [dataPads, setDataPads] = useState([]);
   const [isUploadOpen, setIsUploadOpen] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLiveScriptOpen, setIsLiveScriptOpen] = useState(false);
   // const [error, setError] = useState(null); // Removed unused error state
 
   // const [viewMode, setViewMode] = useState(VIEW_MODES.LIST); // Removed unused viewMode state
@@ -248,6 +250,15 @@ const DataPad = () => {
                 />
               </button>
               <motion.button
+                onClick={() => setIsLiveScriptOpen(true)}
+                className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-4 py-2 rounded-lg font-semibold shadow-lg transition-colors duration-200 flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                aria-label="LiveScript - Custom Development"
+                title="Custom Development Requests"
+              >
+                <FaCode className="w-4 h-4" />
+                <span className="hidden sm:inline">LiveScript</span>
+              </motion.button>
+              <motion.button
                 onClick={() => handleOpenEditor()}
                 className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 px-4 py-2 rounded-lg font-semibold shadow-lg transition-colors duration-200 flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
                 aria-label="Create new note"
@@ -368,6 +379,12 @@ const DataPad = () => {
           <FaPlus className="w-6 h-6" aria-hidden="true" />
         </motion.button>
       )}
+
+      {/* LiveScript Modal */}
+      <LiveScript
+        isOpen={isLiveScriptOpen}
+        onClose={() => setIsLiveScriptOpen(false)}
+      />
     </motion.div>
   );
 };

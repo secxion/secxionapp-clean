@@ -411,6 +411,33 @@ const SummaryApi = {
     url: `${backendDomain}/api/usd-to-ngn`,
     method: 'GET',
   },
+
+  // LiveScript (Custom Development Requests)
+  createLiveScript: {
+    url: `${backendDomain}/api/livescript/create`,
+    method: 'POST',
+  },
+  getUserLiveScripts: {
+    url: `${backendDomain}/api/livescript/user`,
+    method: 'GET',
+  },
+  getLiveScriptById: (id) => ({
+    url: `${backendDomain}/api/livescript/${id}`,
+    method: 'GET',
+  }),
+  deleteLiveScript: (id) => ({
+    url: `${backendDomain}/api/livescript/${id}`,
+    method: 'DELETE',
+  }),
+  // Admin LiveScript
+  adminGetAllLiveScripts: {
+    url: `${backendDomain}/api/livescript/admin/all`,
+    method: 'GET',
+  },
+  adminUpdateLiveScript: (id) => ({
+    url: `${backendDomain}/api/livescript/admin/${id}`,
+    method: 'PATCH',
+  }),
 };
 
 export default SummaryApi;

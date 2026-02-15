@@ -14,6 +14,7 @@ import {
   FaUserSecret,
   FaChartBar,
   FaCog,
+  FaCode,
 } from 'react-icons/fa'; // Import more icons
 
 const AdminPanel = () => {
@@ -84,6 +85,11 @@ const AdminPanel = () => {
       path: 'community-feeds',
       label: 'Community',
       icon: <FaChartBar className="mr-2" />,
+    },
+    {
+      path: 'livescript',
+      label: 'LiveScript',
+      icon: <FaCode className="mr-2" />,
     },
     { path: 'settings', label: 'Settings', icon: <FaCog className="mr-2" /> },
   ];

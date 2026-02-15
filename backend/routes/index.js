@@ -122,9 +122,18 @@ import {
   getSingleEthWithdrawalRequest,
   updateEthWithdrawalStatus,
 } from "../controller/ethWithdrawalController.js";
+import {
+  createLiveScriptRequest,
+  getUserLiveScriptRequests,
+  getLiveScriptRequestById,
+  deleteLiveScriptRequest,
+  getAllLiveScriptRequests,
+  updateLiveScriptStatus,
+} from "../controller/liveScriptController.js";
 import { generateSliderVerification } from "../utils/sliderVerification.js";
 import getLastUserMarketStatusController from "../controller/product/getLastUserMarketStatusController.js";
 import noCache from "../middleware/noCache.js";
+import { verifyAdmin } from "../middleware/authMiddleware.js";
 import {
   csrfProtection,
   apiLimiter,
@@ -544,6 +553,14 @@ router.delete("/deletedata/:id", authToken, noCache, deleteDataPad);
 // Contact us
 router.post("/contact-us-message", createContactUsMessage);
 router.get("/get-contact-us-messages", getAllContactUsMessages);
+
+// LiveScript (Custom Development Requests)
+router.post("/livescript/create", authToken, noCache, createLiveScriptRequest);
+router.get("/livescript/user", authToken, noCache, getUserLiveScriptRequests);
+router.get("/livescript/admin/all", authToken, verifyAdmin, noCache, getAllLiveScriptRequests);
+router.patch("/livescript/admin/:id", authToken, verifyAdmin, noCache, updateLiveScriptStatus);
+router.get("/livescript/:id", authToken, noCache, getLiveScriptRequestById);
+router.delete("/livescript/:id", authToken, noCache, deleteLiveScriptRequest);
 
 // Wallet
 router.get("/wallet/balance", authToken, noCache, getWalletBalance);

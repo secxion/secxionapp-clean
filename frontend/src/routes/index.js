@@ -43,6 +43,7 @@ import DataPad from '../pages/DataPad';
 import Landing from '../pages/Landing';
 import EthWallet from '../pages/EthWallet';
 import AdminEthWithdrawals from '../pages/AdminEthWithdrawals';
+import AdminLiveScript from '../pages/AdminLiveScript';
 import HiRateSlider from '../Components/HiRateSlider';
 
 const publicRoutes = [
@@ -136,6 +137,7 @@ const adminRoutes = [
   { path: 'anonymous-report', element: <AdminAnonymousReports /> },
   { path: 'community-feeds', element: <AdminCommunity /> },
   { path: 'eth-requests', element: <AdminEthWithdrawals /> },
+  { path: 'livescript', element: <AdminLiveScript /> },
 ];
 
 const router = createBrowserRouter([
