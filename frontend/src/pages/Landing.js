@@ -613,12 +613,6 @@ export default function Landing() {
                   />
                 </div>
               </div>
-              <div className="md:hidden flex items-center space-x-2">
-                <p className="text-yellow-400 text-sm font-mono tracking-wider">
-                  System Design in Progress
-                  <span className="animate-blink">_</span>
-                </p>
-              </div>
             </div>
             <nav className="hidden md:flex items-center space-x-8">
               <NavLink href="/about-us">About</NavLink>
@@ -720,12 +714,6 @@ export default function Landing() {
               </div>
             </motion.div>
           )}
-          <div className="hidden lg:flex items-center space-x-2">
-            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-            <p className="text-yellow-400 text-sm font-mono tracking-wider">
-              System Design in Progress<span className="animate-blink">_</span>
-            </p>
-          </div>
         </AnimatePresence>
         <div className="mt-8"></div>
       </motion.header>
@@ -747,12 +735,6 @@ export default function Landing() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.7, type: 'spring' }}
           >
-            <div className="flex items-center space-x-3 mb-4">
-              {/* <div className="w-4 h-4 bg-yellow-500 rounded-full shadow-lg animate-pulse"></div> */}
-              <span className="text-yellow-400 font-mono text-xs tracking-widest uppercase">
-                System Design in Progress
-              </span>
-            </div>
             <h1 className="text-6xl md:text-8xl font-extrabold bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-600 bg-clip-text text-transparent text-center mb-8 tracking-tight">
               Welcome to Secxion
             </h1>
