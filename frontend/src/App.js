@@ -12,6 +12,7 @@ import {
   signinUserAPI,
 } from './services/apiService';
 import SecxionLoader from './Components/SecxionLoader';
+import InstallPrompt from './Components/InstallPrompt';
 
 function setViewportHeight() {
   const vh = window.innerHeight * 0.01;
@@ -119,6 +120,7 @@ function App() {
               </div>
             </main>
           </Suspense>
+          <InstallPrompt />
         </div>
       </Context.Provider>
     </ContextProvider>
