@@ -19,6 +19,7 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import SidePanel from '../Components/SidePanel';
+import LiveScript from '../Components/LiveScript';
 import SummaryApi from '../common';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -43,6 +44,7 @@ const WalletDashboard = () => {
     monthlyWithdrawals: false,
   });
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [isLiveScriptOpen, setIsLiveScriptOpen] = useState(false);
 
   const toggleSidePanel = () => {
     setIsSidePanelOpen(!isSidePanelOpen);
@@ -596,7 +598,17 @@ const WalletDashboard = () => {
       </header>
 
       {/* Side Panel */}
-      <SidePanel open={isSidePanelOpen} setOpen={setIsSidePanelOpen} />
+      <SidePanel
+        open={isSidePanelOpen}
+        setOpen={setIsSidePanelOpen}
+        onOpenLiveScript={() => setIsLiveScriptOpen(true)}
+      />
+
+      {/* LiveScript Modal */}
+      <LiveScript
+        isOpen={isLiveScriptOpen}
+        onClose={() => setIsLiveScriptOpen(false)}
+      />
 
       {/* Main Content */}
       <main
