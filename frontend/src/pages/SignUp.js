@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa';
+import {
+  FaEye,
+  FaEyeSlash,
+  FaSpinner,
+  FaEnvelope,
+  FaInbox,
+  FaExclamationTriangle,
+} from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import uploadImage from '../helpers/uploadImage';
 import SummaryApi from '../common';
@@ -21,6 +28,7 @@ const SignUp = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [clock, setClock] = useState(new Date());
   const [csrfToken, setCsrfToken] = useState('');
+  const [showEmailModal, setShowEmailModal] = useState(false);
 
   const [data, setData] = useState(() => {
     const saved = localStorage.getItem('signupData');
@@ -223,11 +231,7 @@ const SignUp = () => {
       const responseData = await response.json();
       if (response.ok) {
         localStorage.removeItem('signupData');
-        notifyUser.success(
-          '🎉 Signup successful! Check your email inbox or spam for verification.',
-          'Success',
-        );
-        setTimeout(() => navigate('/login'), 2500);
+        setShowEmailModal(true);
       } else {
         const backendMessage = responseData.message
           ? String(responseData.message).toLowerCase()
@@ -291,6 +295,78 @@ const SignUp = () => {
       className="inset-0 min-h-screen flex flex-col justify-between z-50 bg-cover bg-center"
       style={{ backgroundImage: `url(${signupBackground})` }}
     >
+      {/* Email Verification Modal */}
+      <AnimatePresence>
+        {showEmailModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl p-6 max-w-md w-full border border-green-500/30 shadow-2xl"
+            >
+              {/* Success Icon */}
+              <div className="flex justify-center mb-4">
+                <div className="bg-green-500/20 p-4 rounded-full">
+                  <FaEnvelope className="text-green-400 text-4xl" />
+                </div>
+              </div>
+
+              {/* Title */}
+              <h2 className="text-2xl font-bold text-center text-green-400 mb-2">
+                🎉 Signup Successful!
+              </h2>
+
+              {/* Message */}
+              <p className="text-gray-300 text-center mb-6">
+                We've sent a verification link to{' '}
+                <span className="text-yellow-400 font-medium">
+                  {data.email}
+                </span>
+              </p>
+
+              {/* Instructions */}
+              <div className="bg-gray-800/50 rounded-xl p-4 mb-6 space-y-3">
+                <div className="flex items-start space-x-3">
+                  <FaInbox className="text-blue-400 text-lg mt-0.5 flex-shrink-0" />
+                  <p className="text-gray-300 text-sm">
+                    Check your{' '}
+                    <span className="text-white font-medium">Inbox</span> for
+                    the verification email
+                  </p>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <FaExclamationTriangle className="text-yellow-400 text-lg mt-0.5 flex-shrink-0" />
+                  <p className="text-gray-300 text-sm">
+                    If not found, check your{' '}
+                    <span className="text-yellow-400 font-medium">Spam</span> or{' '}
+                    <span className="text-yellow-400 font-medium">Junk</span>{' '}
+                    folder
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <button
+                onClick={() => navigate('/login')}
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
+              >
+                Go to Login
+              </button>
+
+              <p className="text-gray-500 text-xs text-center mt-4">
+                Didn't receive the email? Check spam or try signing up again.
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <Navigation currentPage="dashboard" />
 
       {/* Logo background overlay */}
