@@ -48,11 +48,19 @@ import HiRateSlider from '../Components/HiRateSlider';
 const publicRoutes = [
   {
     path: 'login',
-    element: <Login />,
+    element: (
+      <RedirectIfLoggedIn>
+        <Login />
+      </RedirectIfLoggedIn>
+    ),
   },
   {
     path: 'sign-up',
-    element: <SignUp />,
+    element: (
+      <RedirectIfLoggedIn>
+        <SignUp />
+      </RedirectIfLoggedIn>
+    ),
   },
   { path: 'reset', element: <Reset /> },
 ];
@@ -81,7 +89,11 @@ const publicInfoRoutes = [
   },
   {
     path: '/',
-    element: <Landing />,
+    element: (
+      <RedirectIfLoggedIn>
+        <Landing />
+      </RedirectIfLoggedIn>
+    ),
   },
   {
     path: '/verify-email',
