@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { FaTimes } from 'react-icons/fa';
 import SummaryApi from '../common';
 
 const BlogForm = ({ onClose, fetchBlogs, editingBlog }) => {
@@ -55,68 +56,92 @@ const BlogForm = ({ onClose, fetchBlogs, editingBlog }) => {
   };
 
   return (
-    <div className="container bg-white p-5 rounded-lg shadow-md mb-4">
-      <h3 className="font-bold text-lg mb-3">
-        {editingBlog ? 'Edit Blog' : 'Create Blog'}
-      </h3>
-
-      {error && <p className="text-red-500 mb-3">{error}</p>}
-
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="title" className="block font-medium mb-1">
-            Title:
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            className="w-full p-2 border rounded focus:ring focus:ring-blue-300"
-            required
-            aria-label="Blog title"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="content" className="block font-medium mb-1">
-            Content:
-          </label>
-          <textarea
-            id="content"
-            name="content"
-            value={formData.content}
-            onChange={handleChange}
-            rows="4"
-            className="w-full p-2 border rounded focus:ring focus:ring-blue-300"
-            required
-            aria-label="Blog content"
-          />
-        </div>
-
-        <div className="flex space-x-3">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="bg-slate-900 border border-slate-700/50 rounded-2xl max-w-lg w-full shadow-2xl">
+        {/* Modal Header */}
+        <div className="flex items-center justify-between p-4 border-b border-slate-700/50">
+          <h3 className="text-lg font-bold text-white">
+            {editingBlog ? 'Edit Blog' : 'Create Blog'}
+          </h3>
           <button
-            type="submit"
-            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition disabled:bg-blue-400"
-            disabled={isSubmitting}
-          >
-            {isSubmitting
-              ? 'Submitting...'
-              : editingBlog
-                ? 'Update Blog'
-                : 'Create Blog'}
-          </button>
-          <button
-            type="button"
             onClick={onClose}
-            className="bg-gray-300 text-gray-700 py-2 px-4 rounded hover:bg-gray-400 transition"
             disabled={isSubmitting}
+            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-50"
           >
-            Cancel
+            <FaTimes />
           </button>
         </div>
-      </form>
+
+        {/* Modal Body */}
+        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-3 py-2 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+
+          <div>
+            <label
+              htmlFor="title"
+              className="block text-xs text-slate-400 mb-2"
+            >
+              Title
+            </label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50"
+              placeholder="Enter blog title"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="content"
+              className="block text-xs text-slate-400 mb-2"
+            >
+              Content
+            </label>
+            <textarea
+              id="content"
+              name="content"
+              value={formData.content}
+              onChange={handleChange}
+              rows="6"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 resize-none"
+              placeholder="Write your blog content..."
+              required
+            />
+          </div>
+
+          {/* Modal Footer */}
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-slate-800 border border-slate-700 text-slate-300 rounded-lg hover:border-yellow-500/50 transition-colors disabled:opacity-50"
+              disabled={isSubmitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-yellow-500 text-slate-900 font-medium rounded-lg hover:bg-yellow-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? 'Submitting...'
+                : editingBlog
+                  ? 'Update Blog'
+                  : 'Create Blog'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

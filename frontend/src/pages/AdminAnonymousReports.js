@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 // ...existing code...
 import { MdExpandMore } from 'react-icons/md';
+import { FaUserSecret } from 'react-icons/fa';
 import SummaryApi from '../common';
 
 const AdminAnonymousReports = () => {
@@ -43,24 +44,43 @@ const AdminAnonymousReports = () => {
   };
 
   return (
-    <div className="container p-4 mt-12 max-w-4xl mx-auto bg-white rounded-xl shadow-lg h-[650px] flex flex-col overflow-hidden">
-      <h2 className="text-xl font-bold mb-4">Anonymous Contact Messages</h2>
+    <div className="p-4 lg:p-6">
+      {/* Header */}
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="p-2 bg-yellow-500/10 rounded-xl">
+          <FaUserSecret className="text-yellow-500 text-xl" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold text-white">
+            Anonymous Contact Messages
+          </h1>
+          <p className="text-slate-400 text-sm">
+            Messages from the Contact Us form
+          </p>
+        </div>
+      </div>
 
       {loading ? (
-        <p className="text-gray-500">Loading messages...</p>
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-yellow-500 border-t-transparent mr-3"></div>
+          <span className="text-slate-400">Loading messages...</span>
+        </div>
       ) : anonymousReports.length === 0 ? (
-        <p className="text-gray-500">No contact messages available.</p>
+        <div className="flex flex-col items-center justify-center py-12 text-slate-500">
+          <FaUserSecret className="text-4xl mb-3" />
+          <p>No contact messages available.</p>
+        </div>
       ) : (
-        <div className="flex-grow overflow-y-auto border rounded-lg p-2 h-[550px]">
+        <div className="space-y-3">
           {anonymousReports.map((report) => (
             <div
               key={report._id}
-              className={`p-4 border rounded-lg mb-3 bg-gray-50`}
+              className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4"
             >
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-gray-700 font-medium">Contact Us</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-white font-medium">Contact Us</p>
+                  <p className="text-xs text-slate-400">
                     By: Anonymous | {report.email || 'N/A'}
                   </p>
                 </div>
@@ -70,21 +90,22 @@ const AdminAnonymousReports = () => {
                       expandedReport === report._id ? null : report._id,
                     )
                   }
+                  className={`p-2 text-slate-400 hover:text-yellow-500 transition-transform ${
+                    expandedReport === report._id ? 'rotate-180' : ''
+                  }`}
                 >
-                  <MdExpandMore className="text-gray-600 text-2xl" />
+                  <MdExpandMore className="text-2xl" />
                 </button>
               </div>
 
               {expandedReport === report._id && (
-                <div className="mt-3">
-                  <p className="text-gray-600">{report.reason}</p>
+                <div className="mt-3 pt-3 border-t border-slate-700/50">
+                  <p className="text-slate-300">{report.reason}</p>
                 </div>
               )}
 
               <div className="flex justify-end mt-2">
-                <span
-                  className={`text-xs px-2 py-1 rounded-full bg-blue-500 text-white`}
-                >
+                <span className="text-xs px-2.5 py-1 rounded-lg font-medium bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
                   New
                 </span>
               </div>

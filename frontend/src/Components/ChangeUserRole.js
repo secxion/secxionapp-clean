@@ -1,108 +1,171 @@
 import React, { useState } from 'react';
 import ROLE from '../common/role';
 import { IoMdClose } from 'react-icons/io';
+import { FaUserShield, FaTrashAlt } from 'react-icons/fa';
 import SummaryApi from '../common';
 import { toast } from 'react-toastify';
 
 const ChangeUserRole = ({ name, email, role, userId, onClose, callFunc }) => {
   const [userRole, setUserRole] = useState(role);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleOnChangeSelect = (e) => {
     setUserRole(e.target.value);
   };
 
   const updateUserRole = async () => {
-    const fetchResponse = await fetch(SummaryApi.updateUser.url, {
-      method: SummaryApi.updateUser.method,
-      credentials: 'include',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId: userId,
-        role: userRole,
-      }),
-    });
+    setIsUpdating(true);
+    try {
+      const fetchResponse = await fetch(SummaryApi.updateUser.url, {
+        method: SummaryApi.updateUser.method,
+        credentials: 'include',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userId,
+          role: userRole,
+        }),
+      });
 
-    const responseData = await fetchResponse.json();
+      const responseData = await fetchResponse.json();
 
-    if (responseData.success) {
-      toast.success(responseData.message);
-      onClose();
-      callFunc();
-    } else {
-      toast.error(responseData.message);
+      if (responseData.success) {
+        toast.success(responseData.message);
+        onClose();
+        callFunc();
+      } else {
+        toast.error(responseData.message);
+      }
+    } finally {
+      setIsUpdating(false);
     }
   };
 
   const deleteUser = async () => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
 
-    const fetchResponse = await fetch(SummaryApi.deleteUser.url, {
-      method: SummaryApi.deleteUser.method,
-      credentials: 'include',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({ userId }),
-    });
+    setIsDeleting(true);
+    try {
+      const fetchResponse = await fetch(SummaryApi.deleteUser.url, {
+        method: SummaryApi.deleteUser.method,
+        credentials: 'include',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
 
-    const responseData = await fetchResponse.json();
+      const responseData = await fetchResponse.json();
 
-    if (responseData.success) {
-      toast.success('User deleted successfully.');
-      onClose();
-      callFunc();
-    } else {
-      toast.error(responseData.message);
+      if (responseData.success) {
+        toast.success('User deleted successfully.');
+        onClose();
+        callFunc();
+      } else {
+        toast.error(responseData.message);
+      }
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   return (
-    <div className="container fixed top-0 bottom-0 left-0 right-0 w-full h-full z-10 flex justify-center items-center bg-purple-600 bg-opacity-50">
-      <div className="bg-yellow-600 shadow-md p-6 w-full max-w-sm rounded-lg">
-        <button
-          className="block ml-auto text-2xl text-gray-800 hover:text-red-600"
-          onClick={onClose}
-        >
-          <IoMdClose />
-        </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+      />
 
-        <h1 className="pb-4 text-lg font-medium text-gray-800">
-          Change User Role
-        </h1>
-
-        <p className="text-gray-700">Name: {name}</p>
-        <p className="text-gray-700">Email: {email}</p>
-
-        <div className="flex items-center justify-between my-4">
-          <p className="text-gray-700">Role:</p>
-          <select
-            className="border px-4 py-2 rounded"
-            value={userRole}
-            onChange={handleOnChangeSelect}
+      {/* Modal */}
+      <div className="relative bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b border-slate-700">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-yellow-500/10 rounded-xl">
+              <FaUserShield className="text-yellow-500 text-lg" />
+            </div>
+            <h2 className="text-lg font-semibold text-white">Edit User Role</h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
           >
-            {Object.values(ROLE).map((el) => (
-              <option value={el} key={el}>
-                {el}
-              </option>
-            ))}
-          </select>
+            <IoMdClose size={20} />
+          </button>
         </div>
 
-        <button
-          className="w-full py-2 bg-blue-600 text-white rounded mb-2"
-          onClick={updateUserRole}
-        >
-          Change Role
-        </button>
+        {/* Body */}
+        <div className="p-5 space-y-4">
+          {/* User Info */}
+          <div className="flex items-center space-x-4 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-600 flex items-center justify-center text-slate-900 font-bold text-lg flex-shrink-0">
+              {name?.charAt(0).toUpperCase()}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-white font-medium truncate capitalize">
+                {name}
+              </p>
+              <p className="text-slate-400 text-sm truncate">{email}</p>
+            </div>
+          </div>
 
-        <button
-          className="w-full py-2 bg-red-600 text-white rounded"
-          onClick={deleteUser}
-        >
-          Delete User
-        </button>
+          {/* Role Selector */}
+          <div>
+            <label className="block text-sm font-medium text-slate-400 mb-2">
+              User Role
+            </label>
+            <select
+              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors"
+              value={userRole}
+              onChange={handleOnChangeSelect}
+            >
+              {Object.values(ROLE).map((el) => (
+                <option value={el} key={el} className="bg-slate-900">
+                  {el}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-5 border-t border-slate-700 space-y-3">
+          <button
+            className="w-full py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 font-semibold rounded-xl hover:from-yellow-400 hover:to-yellow-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            onClick={updateUserRole}
+            disabled={isUpdating || userRole === role}
+          >
+            {isUpdating ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-slate-900 border-t-transparent"></div>
+                <span>Updating...</span>
+              </>
+            ) : (
+              <span>Update Role</span>
+            )}
+          </button>
+
+          <button
+            className="w-full py-3 bg-red-500/10 text-red-400 font-medium rounded-xl border border-red-500/30 hover:bg-red-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            onClick={deleteUser}
+            disabled={isDeleting}
+          >
+            {isDeleting ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-red-400 border-t-transparent"></div>
+                <span>Deleting...</span>
+              </>
+            ) : (
+              <>
+                <FaTrashAlt />
+                <span>Delete User</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

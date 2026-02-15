@@ -138,293 +138,277 @@ const UploadProduct = ({ onClose, fetchData }) => {
   };
 
   return (
-    <div className="fixed w-full h-full bg-slate-200 bg-opacity-35 left-0 right-0 flex justify-center items-center z-50">
-      <div className="bg-white p-4 rounded w-full max-w-2xl max-h-[80%] overflow-y-auto mb-4 mt-44">
-        <div className="flex justify-between items-center pb-3">
-          <h2 className="font-semibold text-xl text-gray-800">
-            Upload Product
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <CgClose className="h-6 w-6" />
-          </button>
+    <div className="bg-slate-900 rounded-2xl border border-slate-700 w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between p-5 border-b border-slate-700 flex-shrink-0">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-yellow-500/10 rounded-xl">
+            <FaCloudUploadAlt className="text-yellow-500 text-lg" />
+          </div>
+          <h2 className="text-lg font-semibold text-white">Upload Product</h2>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+        >
+          <CgClose size={20} />
+        </button>
+      </div>
+
+      {/* Form */}
+      <form
+        onSubmit={handleSubmit}
+        className="flex-1 overflow-y-auto p-5 space-y-5"
+      >
+        {/* Product Name */}
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Product Name
+          </label>
+          <input
+            type="text"
+            name="productName"
+            value={data.productName}
+            onChange={handleOnChange}
+            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors"
+            required
+            placeholder="Enter product name"
+          />
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="productName"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Product Name:
+        {/* Brand Name */}
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Brand Name
+          </label>
+          <input
+            type="text"
+            name="brandName"
+            value={data.brandName}
+            onChange={handleOnChange}
+            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors"
+            required
+            placeholder="Enter brand name"
+          />
+        </div>
+
+        {/* Category */}
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Category
+          </label>
+          <select
+            name="category"
+            value={data.category}
+            onChange={handleOnChange}
+            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+            required
+          >
+            <option value="" className="bg-slate-900">
+              Select Category
+            </option>
+            {productCategory.map((el) => (
+              <option value={el.value} key={el.value} className="bg-slate-900">
+                {el.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Image Upload */}
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Product Images
+          </label>
+          <div className="border-2 border-dashed border-slate-700 rounded-xl p-6 text-center hover:border-yellow-500/50 transition-colors">
+            <label htmlFor="uploadImageInput" className="cursor-pointer">
+              <FaCloudUploadAlt className="mx-auto h-10 w-10 text-slate-500 mb-2" />
+              <p className="text-slate-400 text-sm">Click to upload images</p>
+              <p className="text-slate-500 text-xs mt-1">PNG, JPG up to 10MB</p>
+              <input
+                id="uploadImageInput"
+                type="file"
+                className="hidden"
+                onChange={handleUploadProduct}
+              />
             </label>
-            <input
-              type="text"
-              id="productName"
-              name="productName"
-              value={data.productName}
-              onChange={handleOnChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-              placeholder="Enter product name"
-            />
           </div>
-          <div>
-            <label
-              htmlFor="brandName"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Brand Name:
-            </label>
-            <input
-              type="text"
-              id="brandName"
-              name="brandName"
-              value={data.brandName}
-              onChange={handleOnChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-              placeholder="Enter brand name"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="category"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Category:
-            </label>
-            <select
-              id="category"
-              name="category"
-              value={data.category}
-              onChange={handleOnChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            >
-              <option value="">Select Category</option>
-              {productCategory.map((el) => (
-                <option value={el.value} key={el.value}>
-                  {el.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label
-              htmlFor="uploadImageInput"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Product Image:
-            </label>
-            <div className="mt-1 flex items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-md py-6">
-              <label htmlFor="uploadImageInput" className="cursor-pointer">
-                <div className="space-y-1 text-center">
-                  <FaCloudUploadAlt className="mx-auto h-12 w-12 text-gray-400" />
-                  <div className="flex text-sm text-gray-600">
-                    <span>Upload a file</span>
-                    <input
-                      id="uploadImageInput"
-                      name="productImage"
-                      type="file"
-                      className="sr-only"
-                      onChange={handleUploadProduct}
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    PNG, JPG, GIF up to 10MB
-                  </p>
-                </div>
-              </label>
-            </div>
-            <div className="mt-2 flex space-x-2">
-              {data.productImage.map((el, index) => (
+          {uploading && (
+            <p className="text-yellow-500 text-sm mt-2 flex items-center">
+              <span className="animate-spin rounded-full h-4 w-4 border-2 border-yellow-500 border-t-transparent mr-2"></span>
+              Uploading...
+            </p>
+          )}
+          {data.productImage.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {data.productImage.map((img, index) => (
                 <div
                   key={index}
-                  className="relative w-20 h-20 rounded-md overflow-hidden shadow-sm"
+                  className="relative w-16 h-16 rounded-lg overflow-hidden group"
                 >
                   <img
-                    src={el}
-                    alt={`Uploaded-${index}`}
-                    className="object-cover w-full h-full"
+                    src={img}
+                    alt={`Product ${index + 1}`}
+                    className="w-full h-full object-cover"
                   />
                   <button
                     type="button"
                     onClick={() => handleDeleteProductImage(index)}
-                    className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full text-xs hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    <MdDelete className="h-4 w-4" />
+                    <MdDelete className="text-red-400" size={20} />
                   </button>
                 </div>
               ))}
             </div>
-            {!data.productImage[0] && (
-              <p
-                className="text-red-500 text-sm"
-                aria-live="assertive"
-                role="alert"
-                tabIndex={0}
-              >
-                *Please upload a product image
-              </p>
-            )}
-            {uploading && (
-              <p
-                className="text-blue-500 text-sm"
-                aria-live="polite"
-                role="status"
-                tabIndex={0}
-              >
-                Uploading image...
-              </p>
-            )}
-          </div>
+          )}
+        </div>
 
-          <div>
-            <label
-              htmlFor="brandName"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Description:
-            </label>
-            <textarea
-              className="w-full p-3 border-none outline-none bg-gray-50"
-              rows={4}
-              autoFocus
-              type="text"
-              id="description"
-              name="description"
-              value={data.description}
-              onChange={handleOnChange}
-              required
-              placeholder="Enter Description"
-            />
-          </div>
+        {/* Description */}
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">
+            Description
+          </label>
+          <textarea
+            name="description"
+            value={data.description}
+            onChange={handleOnChange}
+            rows={3}
+            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors resize-none"
+            required
+            placeholder="Enter product description"
+          />
+        </div>
 
-          <div className="border-t border-gray-200 pt-4">
-            <h3 className="font-semibold text-gray-700 mb-2">Add Pricing</h3>
-            <div className="grid grid-cols-2 gap-4 mb-3">
-              <div>
-                <label
-                  htmlFor="newCurrency"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Currency:
-                </label>
-                <select
-                  value={newCurrency}
-                  onChange={(e) => setNewCurrency(e.target.value)}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                >
-                  <option value="">Select Currency</option>
-                  {currencyData.map((cur) => (
-                    <option value={cur.value} key={cur.value}>
-                      {cur.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="faceValue" className="mt-3">
-                  FaceValue :
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter face value"
-                  value={newFaceValue}
-                  onChange={(e) => setNewFaceValue(e.target.value)}
-                  className="p-2 bg-slate-100 border rounded"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="newSellingPrice"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Rate:
-                </label>
-                <input
-                  type="number"
-                  placeholder="Enter Rate"
-                  value={newSellingPrice}
-                  onChange={(e) => setNewSellingPrice(e.target.value)}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="newRequirement"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Requirement:
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter FV Requirement"
-                  value={newRequirement}
-                  onChange={(e) => setNewRequirement(e.target.value)}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
+        {/* Pricing Section */}
+        <div className="border-t border-slate-700 pt-5">
+          <h3 className="text-white font-semibold mb-4">Pricing</h3>
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div>
+              <label className="block text-xs text-slate-400 mb-1">
+                Currency
+              </label>
+              <select
+                value={newCurrency}
+                onChange={(e) => setNewCurrency(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
+              >
+                <option value="" className="bg-slate-900">
+                  Select
+                </option>
+                {currencyData.map((cur) => (
+                  <option
+                    value={cur.value}
+                    key={cur.value}
+                    className="bg-slate-900"
+                  >
+                    {cur.label}
+                  </option>
+                ))}
+              </select>
             </div>
-            <button
-              type="button"
-              onClick={handleAddPricing}
-              className="inline-flex items-center px-4 py-2 border border-green-500 rounded-md shadow-sm text-sm font-medium text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-              tabIndex={0}
-              aria-label="Add Pricing"
-            >
-              <FaPlusCircle className="mr-2" /> Add Pricing
-            </button>
-            <div className="mt-4">
+            <div>
+              <label className="block text-xs text-slate-400 mb-1">
+                Face Value
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. $10"
+                value={newFaceValue}
+                onChange={(e) => setNewFaceValue(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-slate-400 mb-1">Rate</label>
+              <input
+                type="number"
+                placeholder="Enter rate"
+                value={newSellingPrice}
+                onChange={(e) => setNewSellingPrice(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-slate-400 mb-1">
+                Requirement
+              </label>
+              <input
+                type="text"
+                placeholder="Requirements"
+                value={newRequirement}
+                onChange={(e) => setNewRequirement(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
+              />
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={handleAddPricing}
+            className="inline-flex items-center px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg text-sm text-slate-300 hover:bg-slate-700 hover:border-yellow-500/50 transition-colors"
+          >
+            <FaPlusCircle className="mr-2 text-yellow-500" /> Add Pricing
+          </button>
+
+          {/* Pricing List */}
+          {data.pricing.length > 0 && (
+            <div className="mt-4 space-y-3">
               {data.pricing.map((pricing, currencyIndex) => (
-                <div key={currencyIndex} className="mb-3 border rounded p-3">
-                  <h4 className="font-semibold">{pricing.currency}</h4>
-                  <ul className="list-disc pl-4">
+                <div
+                  key={currencyIndex}
+                  className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-semibold text-white">
+                      {pricing.currency}
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteCurrency(currencyIndex)}
+                      className="text-red-400 text-xs hover:text-red-300"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <div className="space-y-1">
                     {pricing.faceValues.map((fv, index) => (
-                      <li key={index}>
-                        {fv.faceValue} - {fv.sellingPrice} <br />
-                        <span className="text-gray-500">
-                          requirement: {fv.requirement}
+                      <div
+                        key={index}
+                        className="flex items-center justify-between text-sm"
+                      >
+                        <span className="text-slate-300">{fv.faceValue}</span>
+                        <span className="text-yellow-500">
+                          ₦{fv.sellingPrice}
                         </span>
-                      </li>
+                        <span className="text-slate-500 text-xs">
+                          {fv.requirement}
+                        </span>
+                      </div>
                     ))}
-                  </ul>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteCurrency(currencyIndex)}
-                    className="text-red-500 text-sm hover:text-red-700 focus:outline-none"
-                  >
-                    Delete {pricing.currency} Pricing
-                  </button>
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
+          )}
+        </div>
 
-          <div className="pt-4 border-t border-gray-200">
-            <button
-              type="submit"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              tabIndex={0}
-              aria-label="Upload Product"
-            >
-              Upload Product
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="ml-3 bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              tabIndex={0}
-              aria-label="Cancel Upload"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
+        {/* Footer */}
+        <div className="flex items-center space-x-3 pt-4 border-t border-slate-700">
+          <button
+            type="submit"
+            className="flex-1 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 font-semibold rounded-xl hover:from-yellow-400 hover:to-yellow-500 transition-all"
+          >
+            Upload Product
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-6 py-3 bg-slate-800 text-slate-300 font-medium rounded-xl hover:bg-slate-700 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

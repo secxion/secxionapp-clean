@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { CgClose } from 'react-icons/cg';
 import productCategory from '../helpers/productCategory';
 import currencyData from '../helpers/currencyData';
 import { FaCloudUploadAlt } from 'react-icons/fa';
 import uploadImage from '../helpers/uploadImage';
 import DisplayImage from './DisplayImage';
-import { MdDelete, MdAddCircleOutline } from 'react-icons/md';
+import {
+  MdDelete,
+  MdAddCircleOutline,
+  MdModeEditOutline,
+} from 'react-icons/md';
 import SummaryApi from '../common';
 import { toast } from 'react-toastify';
 
@@ -149,163 +153,163 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
   };
 
   return (
-    <div className="container fixed inset-0 z-50 bg-gray-900 bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-md mt-40 shadow-lg w-full max-w-2xl max-h-[80vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="font-semibold text-xl text-gray-800">Edit Product</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="relative bg-slate-900 rounded-2xl border border-slate-700 w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b border-slate-700 flex-shrink-0">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-yellow-500/10 rounded-xl">
+              <MdModeEditOutline className="text-yellow-500 text-lg" />
+            </div>
+            <h2 className="text-lg font-semibold text-white">Edit Product</h2>
+          </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
           >
-            <CgClose className="h-6 w-6" />
+            <CgClose size={20} />
           </button>
         </div>
 
+        {/* Form */}
         <form
-          className="space-y-4 overflow-y-auto pb-6"
           onSubmit={handleSubmit}
+          className="flex-1 overflow-y-auto p-5 space-y-5"
         >
+          {/* Product Name */}
           <div>
-            <label
-              htmlFor="productName"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Product Name:
+            <label className="block text-sm font-medium text-slate-400 mb-2">
+              Product Name
             </label>
             <input
               type="text"
-              id="productName"
               name="productName"
               value={data.productName}
               onChange={handleOnChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors"
               required
               placeholder="Enter product name"
             />
           </div>
+
+          {/* Brand Name */}
           <div>
-            <label
-              htmlFor="brandName"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Brand Name:
+            <label className="block text-sm font-medium text-slate-400 mb-2">
+              Brand Name
             </label>
             <input
               type="text"
-              id="brandName"
               name="brandName"
               value={data.brandName}
               onChange={handleOnChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors"
               required
               placeholder="Enter brand name"
             />
           </div>
+
+          {/* Category */}
           <div>
-            <label
-              htmlFor="category"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Category:
+            <label className="block text-sm font-medium text-slate-400 mb-2">
+              Category
             </label>
             <select
-              id="category"
               name="category"
               value={data.category}
               onChange={handleOnChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
               required
             >
-              <option value="">Select Category</option>
+              <option value="" className="bg-slate-900">
+                Select Category
+              </option>
               {productCategory.map((el) => (
-                <option value={el.value} key={el.value}>
+                <option
+                  value={el.value}
+                  key={el.value}
+                  className="bg-slate-900"
+                >
                   {el.label}
                 </option>
               ))}
             </select>
           </div>
+
+          {/* Image Upload */}
           <div>
-            <label
-              htmlFor="uploadImageInput"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Product Image:
+            <label className="block text-sm font-medium text-slate-400 mb-2">
+              Product Images
             </label>
-            <div className="mt-1 flex items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-md py-6">
+            <div className="border-2 border-dashed border-slate-700 rounded-xl p-6 text-center hover:border-yellow-500/50 transition-colors">
               <label htmlFor="uploadImageInput" className="cursor-pointer">
-                <div className="space-y-1 text-center">
-                  <FaCloudUploadAlt className="mx-auto h-12 w-12 text-gray-400" />
-                  <div className="flex text-sm text-gray-600">
-                    <span>Upload a file</span>
-                    <input
-                      id="uploadImageInput"
-                      name="productImage"
-                      type="file"
-                      className="sr-only"
-                      onChange={handleUploadProduct}
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    PNG, JPG, GIF up to 10MB
-                  </p>
-                </div>
+                <FaCloudUploadAlt className="mx-auto h-10 w-10 text-slate-500 mb-2" />
+                <p className="text-slate-400 text-sm">Click to upload images</p>
+                <p className="text-slate-500 text-xs mt-1">
+                  PNG, JPG up to 10MB
+                </p>
+                <input
+                  id="uploadImageInput"
+                  type="file"
+                  className="hidden"
+                  onChange={handleUploadProduct}
+                />
               </label>
             </div>
-            <div className="mt-2 flex space-x-2">
-              {data.productImage.map((img, index) => (
-                <div
-                  key={index}
-                  className="relative w-20 h-20 rounded-md overflow-hidden shadow-sm"
-                >
-                  <img
-                    src={img}
-                    alt={`product-${index}`}
-                    className="object-cover w-full h-full cursor-pointer"
-                    onClick={() => {
-                      setOpenFullScreenImage(true);
-                      setFullScreenImage(img);
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteProductImage(index)}
-                    className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full text-xs hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+            {uploading && (
+              <p className="text-yellow-500 text-sm mt-2 flex items-center">
+                <span className="animate-spin rounded-full h-4 w-4 border-2 border-yellow-500 border-t-transparent mr-2"></span>
+                Uploading...
+              </p>
+            )}
+            {data.productImage.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {data.productImage.map((img, index) => (
+                  <div
+                    key={index}
+                    className="relative w-16 h-16 rounded-lg overflow-hidden group"
                   >
-                    <MdDelete className="h-4 w-4" />
-                  </button>
-                </div>
-              ))}
-              {uploading && (
-                <p
-                  className="text-blue-500 text-sm"
-                  aria-live="polite"
-                  role="status"
-                  tabIndex={0}
-                >
-                  Uploading image...
-                </p>
-              )}
-            </div>
+                    <img
+                      src={img}
+                      alt={`Product ${index + 1}`}
+                      className="w-full h-full object-cover cursor-pointer"
+                      onClick={() => {
+                        setOpenFullScreenImage(true);
+                        setFullScreenImage(img);
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteProductImage(index)}
+                      className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <MdDelete className="text-red-400" size={20} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Pricing:
-            </label>
+          {/* Pricing Section */}
+          <div className="border-t border-slate-700 pt-5">
+            <h3 className="text-white font-semibold mb-4">Pricing</h3>
             {data.pricing.map((currency, currencyIndex) => (
               <div
                 key={currencyIndex}
-                className="mb-4 border rounded p-4 bg-gray-50 shadow-sm"
+                className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 mb-4"
               >
-                <div className="mb-2">
-                  <label
-                    htmlFor={`currency-${currencyIndex}`}
-                    className="block text-xs font-medium text-gray-700"
-                  >
-                    Currency:
+                <div className="mb-3">
+                  <label className="block text-xs text-slate-400 mb-1">
+                    Currency
                   </label>
                   <select
-                    id={`currency-${currencyIndex}`}
                     value={currency.currency}
                     onChange={(e) =>
                       handleUpdatePricing(
@@ -315,22 +319,31 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
                         e.target.value,
                       )
                     }
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
                   >
-                    <option value="">Select Currency</option>
+                    <option value="" className="bg-slate-900">
+                      Select Currency
+                    </option>
                     {currencyData.map((cur) => (
-                      <option value={cur.value} key={cur.value}>
+                      <option
+                        value={cur.value}
+                        key={cur.value}
+                        className="bg-slate-900"
+                      >
                         {cur.label}
                       </option>
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700">
-                    Face Values:
+                <div className="space-y-2">
+                  <label className="block text-xs text-slate-400">
+                    Face Values
                   </label>
                   {currency.faceValues.map((faceValue, faceValueIndex) => (
-                    <div key={faceValueIndex} className="flex gap-2 mb-2">
+                    <div
+                      key={faceValueIndex}
+                      className="grid grid-cols-4 gap-2 items-center"
+                    >
                       <input
                         type="text"
                         placeholder="Face Value"
@@ -343,11 +356,11 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
                             e.target.value,
                           )
                         }
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
                       />
                       <input
                         type="text"
-                        placeholder="Selling Price"
+                        placeholder="Rate"
                         value={faceValue.sellingPrice}
                         onChange={(e) =>
                           handleUpdatePricing(
@@ -357,11 +370,11 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
                             e.target.value,
                           )
                         }
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
                       />
                       <input
                         type="text"
-                        placeholder="requirement"
+                        placeholder="Requirement"
                         value={faceValue.requirement}
                         onChange={(e) =>
                           handleUpdatePricing(
@@ -371,30 +384,25 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
                             e.target.value,
                           )
                         }
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
                       />
                       <button
                         type="button"
                         onClick={() =>
                           handleDeleteFaceValue(currencyIndex, faceValueIndex)
                         }
-                        className="text-red-500 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-                        tabIndex={0}
-                        aria-label="Delete Face Value"
+                        className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-colors"
                       >
-                        <MdDelete className="h-5 w-5" />
+                        <MdDelete size={18} />
                       </button>
                     </div>
                   ))}
                   <button
                     type="button"
                     onClick={() => handleAddFaceValue(currencyIndex)}
-                    className="inline-flex items-center mt-2 px-3 py-1.5 border border-gray-300 rounded-md shadow-sm text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    tabIndex={0}
-                    aria-label="Add Face Value"
+                    className="inline-flex items-center mt-2 px-3 py-1.5 bg-slate-700 border border-slate-600 rounded-lg text-xs text-slate-300 hover:border-yellow-500/50 transition-colors"
                   >
-                    <MdAddCircleOutline className="mr-1 h-4 w-4" /> Add Face
-                    Value
+                    <MdAddCircleOutline className="mr-1" /> Add Face Value
                   </button>
                 </div>
               </div>
@@ -402,46 +410,40 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
             <button
               type="button"
               onClick={handleAddCurrency}
-              className="inline-flex items-center px-4 py-2 border border-green-500 rounded-md shadow-sm text-sm font-medium text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-              tabIndex={0}
-              aria-label="Add Currency"
+              className="inline-flex items-center px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg text-sm text-slate-300 hover:bg-slate-700 hover:border-yellow-500/50 transition-colors"
             >
-              <MdAddCircleOutline className="mr-2" /> Add Currency
+              <MdAddCircleOutline className="mr-2 text-yellow-500" /> Add
+              Currency
             </button>
           </div>
 
+          {/* Description */}
           <div>
-            <label
-              htmlFor="description"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Description:
+            <label className="block text-sm font-medium text-slate-400 mb-2">
+              Description
             </label>
             <textarea
-              id="description"
               name="description"
               value={data.description}
               onChange={handleOnChange}
-              rows="4"
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              rows={3}
+              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors resize-none"
+              placeholder="Enter product description"
             />
           </div>
 
-          <div className="pt-4 border-t border-gray-200">
+          {/* Footer */}
+          <div className="flex items-center space-x-3 pt-4 border-t border-slate-700">
             <button
               type="submit"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              tabIndex={0}
-              aria-label="Update Product"
+              className="flex-1 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 font-semibold rounded-xl hover:from-yellow-400 hover:to-yellow-500 transition-all"
             >
               Update Product
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="ml-3 bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              tabIndex={0}
-              aria-label="Cancel Edit"
+              className="px-6 py-3 bg-slate-800 text-slate-300 font-medium rounded-xl hover:bg-slate-700 transition-colors"
             >
               Cancel
             </button>

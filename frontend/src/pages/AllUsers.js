@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import SummaryApi from '../common';
 import moment from 'moment';
 import { MdModeEdit } from 'react-icons/md';
-import { FaTrashAlt } from 'react-icons/fa';
+import {
+  FaTrashAlt,
+  FaUsers,
+  FaSearch,
+  FaUserShield,
+  FaUser,
+} from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import ChangeUserRole from '../Components/ChangeUserRole';
 
@@ -55,6 +61,8 @@ const AllUsers = () => {
   const [openUpdateRole, setOpenUpdateRole] = useState(false);
   const [updateUserDetails, setUpdateUserDetails] = useState(null);
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
 
   const {
     data: allUser = [],
@@ -68,6 +76,22 @@ const AllUsers = () => {
     retry: 2,
   });
 
+  const filteredUsers = useMemo(() => {
+    return allUser.filter((user) => {
+      const matchesSearch =
+        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesRole = roleFilter === 'all' || user.role === roleFilter;
+      return matchesSearch && matchesRole;
+    });
+  }, [allUser, searchTerm, roleFilter]);
+
+  const stats = useMemo(() => {
+    const admins = allUser.filter((u) => u.role === 'ADMIN').length;
+    const users = allUser.filter((u) => u.role === 'GENERAL').length;
+    return { total: allUser.length, admins, users };
+  }, [allUser]);
+
   const toggleUserSelection = (userId) => {
     setSelectedUsers((prev) =>
       prev.includes(userId)
@@ -77,149 +101,250 @@ const AllUsers = () => {
   };
 
   const toggleSelectAll = () => {
-    if (selectedUsers.length === allUser.length) {
+    if (selectedUsers.length === filteredUsers.length) {
       setSelectedUsers([]);
     } else {
-      setSelectedUsers(allUser.map((user) => user._id));
+      setSelectedUsers(filteredUsers.map((user) => user._id));
     }
   };
 
   return (
-    <main
-      className="container pt-6 pb-4 h-full flex flex-col"
-      role="main"
-      aria-label="All Users Main Content"
-    >
-      {/* Bulk Actions */}
-      <div
-        className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-end items-center"
-        aria-label="Bulk Actions"
-      >
+    <div className="p-4 lg:p-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-yellow-500/10 rounded-xl">
+            <FaUsers className="text-yellow-500 text-xl" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-white">All Users</h1>
+            <p className="text-slate-400 text-sm">
+              Manage platform users and roles
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-slate-400 text-xs uppercase tracking-wide">
+                Total Users
+              </p>
+              <p className="text-2xl font-bold text-white mt-1">
+                {stats.total}
+              </p>
+            </div>
+            <FaUsers className="text-slate-600 text-2xl" />
+          </div>
+        </div>
+        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-slate-400 text-xs uppercase tracking-wide">
+                Admins
+              </p>
+              <p className="text-2xl font-bold text-yellow-500 mt-1">
+                {stats.admins}
+              </p>
+            </div>
+            <FaUserShield className="text-yellow-500/30 text-2xl" />
+          </div>
+        </div>
+        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-slate-400 text-xs uppercase tracking-wide">
+                Regular
+              </p>
+              <p className="text-2xl font-bold text-white mt-1">
+                {stats.users}
+              </p>
+            </div>
+            <FaUser className="text-slate-600 text-2xl" />
+          </div>
+        </div>
+      </div>
+
+      {/* Search & Filter Bar */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <div className="relative flex-1">
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+          <input
+            type="text"
+            placeholder="Search by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors"
+          />
+        </div>
+        <select
+          value={roleFilter}
+          onChange={(e) => setRoleFilter(e.target.value)}
+          className="px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+        >
+          <option value="all">All Roles</option>
+          <option value="ADMIN">Admins</option>
+          <option value="GENERAL">General</option>
+        </select>
         <button
-          className={`inline-flex  items-center px-4 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 ${selectedUsers.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`px-4 py-2.5 rounded-xl text-sm font-medium flex items-center space-x-2 transition-all ${
+            selectedUsers.length === 0
+              ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+              : 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30'
+          }`}
           onClick={() => deleteUsers(selectedUsers, refetch, setSelectedUsers)}
           disabled={selectedUsers.length === 0}
-          aria-label="Delete Selected Users"
         >
-          <FaTrashAlt className="mr-2" aria-hidden="true" /> Delete Selected
+          <FaTrashAlt />
+          <span>Delete ({selectedUsers.length})</span>
         </button>
       </div>
 
-      {/* Scrollable Table Container */}
-      <div className="flex-1 overflow-auto" aria-label="Users Table Container">
-        <table
-          className="w-full border-collapse min-w-[900px]"
-          aria-label="All Users Table"
-        >
-          <thead className="sticky top-0 bg-gray-100 border-b border-gray-200 text-left z-10">
-            <tr>
-              <th className="p-3 text-sm font-semibold text-gray-700">
-                <input
-                  type="checkbox"
-                  onChange={toggleSelectAll}
-                  checked={
-                    selectedUsers.length === allUser.length &&
-                    allUser.length > 0
-                  }
-                  className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4"
-                  aria-label="Select All Users"
-                />
-              </th>
-              <th className="p-3 text-sm font-semibold text-gray-700">#</th>
-              <th className="p-3 text-sm font-semibold text-gray-700">Name</th>
-              <th className="p-3 text-sm font-semibold text-gray-700">Email</th>
-              <th className="p-3 text-sm font-semibold text-gray-700">Role</th>
-              <th className="p-3 text-sm font-semibold text-gray-700">
-                Created Date
-              </th>
-              <th className="p-3 text-sm font-semibold text-gray-700 text-center">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              <tr>
-                <td
-                  colSpan="7"
-                  className="text-center py-5 text-gray-500 italic"
-                >
-                  Loading users...
-                </td>
+      {/* Table */}
+      <div className="bg-slate-800/30 rounded-xl border border-slate-700/50 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[800px]">
+            <thead>
+              <tr className="border-b border-slate-700/50">
+                <th className="p-4 text-left">
+                  <input
+                    type="checkbox"
+                    onChange={toggleSelectAll}
+                    checked={
+                      selectedUsers.length === filteredUsers.length &&
+                      filteredUsers.length > 0
+                    }
+                    className="w-4 h-4 rounded border-slate-600 bg-slate-700 text-yellow-500 focus:ring-yellow-500/50 focus:ring-offset-0"
+                  />
+                </th>
+                <th className="p-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                  #
+                </th>
+                <th className="p-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                  User
+                </th>
+                <th className="p-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                  Role
+                </th>
+                <th className="p-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                  Joined
+                </th>
+                <th className="p-4 text-center text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                  Actions
+                </th>
               </tr>
-            ) : error ? (
-              <tr>
-                <td colSpan="7" className="text-center py-5 text-red-500">
-                  Error loading users.
-                </td>
-              </tr>
-            ) : allUser.length > 0 ? (
-              allUser.map((el, index) => (
-                <tr key={el._id} className="hover:bg-gray-50 border-b">
-                  <td className="p-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedUsers.includes(el._id)}
-                      onChange={() => toggleUserSelection(el._id)}
-                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4"
-                      aria-label={`Select user ${el?.name}`}
-                    />
-                  </td>
-                  <td className="p-3 text-sm text-gray-500">{index + 1}</td>
-                  <td className="p-3 text-sm text-gray-700 capitalize">
-                    {el?.name}
-                  </td>
-                  <td className="p-3 text-sm text-gray-700">{el?.email}</td>
-                  <td className="p-3 text-sm text-gray-700">{el?.role}</td>
-                  <td className="p-3 text-sm text-gray-500">
-                    {moment(el?.createdAt).format('LL')}
-                  </td>
-                  <td className="p-3 text-center flex justify-center gap-2">
-                    <button
-                      className="inline-flex items-center px-3 py-1.5 border border-green-300 rounded-md shadow-sm text-xs font-medium text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                      onClick={() => {
-                        setUpdateUserDetails(el);
-                        setOpenUpdateRole(true);
-                      }}
-                      aria-label={`Edit role for user ${el?.name}`}
-                    >
-                      <MdModeEdit
-                        size={16}
-                        className="mr-1"
-                        aria-hidden="true"
-                      />{' '}
-                      Edit Role
-                    </button>
-                    <button
-                      className="inline-flex items-center px-3 py-1.5 border border-red-300 rounded-md shadow-sm text-xs font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                      onClick={() =>
-                        deleteUsers([el._id], refetch, setSelectedUsers)
-                      }
-                      aria-label={`Delete user ${el?.name}`}
-                    >
-                      <FaTrashAlt
-                        size={14}
-                        className="mr-1"
-                        aria-hidden="true"
-                      />{' '}
-                      Delete
-                    </button>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan="6" className="p-8 text-center">
+                    <div className="flex items-center justify-center space-x-3">
+                      <div className="animate-spin rounded-full h-6 w-6 border-2 border-yellow-500 border-t-transparent"></div>
+                      <span className="text-slate-400">Loading users...</span>
+                    </div>
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan="7"
-                  className="text-center py-5 text-gray-500 italic"
-                >
-                  No users found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              ) : error ? (
+                <tr>
+                  <td colSpan="6" className="p-8 text-center text-red-400">
+                    Error loading users. Please try again.
+                  </td>
+                </tr>
+              ) : filteredUsers.length > 0 ? (
+                filteredUsers.map((user, index) => (
+                  <tr
+                    key={user._id}
+                    className="border-b border-slate-700/30 hover:bg-slate-800/50 transition-colors"
+                  >
+                    <td className="p-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedUsers.includes(user._id)}
+                        onChange={() => toggleUserSelection(user._id)}
+                        className="w-4 h-4 rounded border-slate-600 bg-slate-700 text-yellow-500 focus:ring-yellow-500/50 focus:ring-offset-0"
+                      />
+                    </td>
+                    <td className="p-4 text-slate-500 text-sm">{index + 1}</td>
+                    <td className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-600 flex items-center justify-center text-slate-900 font-bold text-sm flex-shrink-0">
+                          {user.name?.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-white font-medium truncate capitalize">
+                            {user.name}
+                          </p>
+                          <p className="text-slate-400 text-sm truncate">
+                            {user.email}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${
+                          user.role === 'ADMIN'
+                            ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                            : 'bg-slate-700/50 text-slate-300 border border-slate-600/50'
+                        }`}
+                      >
+                        {user.role === 'ADMIN' && (
+                          <FaUserShield className="mr-1.5" />
+                        )}
+                        {user.role}
+                      </span>
+                    </td>
+                    <td className="p-4 text-slate-400 text-sm">
+                      {moment(user.createdAt).format('MMM D, YYYY')}
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center justify-center space-x-2">
+                        <button
+                          onClick={() => {
+                            setUpdateUserDetails(user);
+                            setOpenUpdateRole(true);
+                          }}
+                          className="p-2 rounded-lg bg-slate-700/50 text-slate-300 hover:bg-yellow-500/20 hover:text-yellow-400 transition-colors"
+                          title="Edit Role"
+                        >
+                          <MdModeEdit size={16} />
+                        </button>
+                        <button
+                          onClick={() =>
+                            deleteUsers([user._id], refetch, setSelectedUsers)
+                          }
+                          className="p-2 rounded-lg bg-slate-700/50 text-slate-300 hover:bg-red-500/20 hover:text-red-400 transition-colors"
+                          title="Delete User"
+                        >
+                          <FaTrashAlt size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="p-8 text-center text-slate-500">
+                    {searchTerm || roleFilter !== 'all'
+                      ? 'No users match your search criteria.'
+                      : 'No users found.'}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      {/* Results count */}
+      {!isLoading && !error && (
+        <div className="mt-4 text-sm text-slate-500">
+          Showing {filteredUsers.length} of {allUser.length} users
+        </div>
+      )}
 
       {openUpdateRole && updateUserDetails && (
         <ChangeUserRole
@@ -231,7 +356,7 @@ const AllUsers = () => {
           callFunc={refetch}
         />
       )}
-    </main>
+    </div>
   );
 };
 

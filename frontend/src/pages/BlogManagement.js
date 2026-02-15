@@ -4,6 +4,7 @@ import BlogCard from '../Components/BlogCard';
 import SummaryApi from '../common';
 import Context from '../Context';
 import { toast } from 'react-toastify';
+import { FaPenAlt, FaPlus } from 'react-icons/fa';
 
 const BlogManagement = () => {
   const { fetchBlogs, blogs } = useContext(Context);
@@ -28,6 +29,7 @@ const BlogManagement = () => {
     try {
       const response = await fetch(`${SummaryApi.deleteBlog.url}/${id}`, {
         method: SummaryApi.deleteBlog.method,
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -47,20 +49,27 @@ const BlogManagement = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <header
-        className="bg-white py-2 px-4 flex justify-between items-center shadow-md rounded"
-        role="banner"
-      >
+    <div className="p-4 lg:p-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-yellow-500/10 rounded-xl">
+            <FaPenAlt className="text-yellow-500 text-xl" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-white">Blog Management</h1>
+            <p className="text-slate-400 text-sm">
+              Create and manage system blog posts
+            </p>
+          </div>
+        </div>
         <button
-          className="border-2 border-purple-900 text-black hover:bg-purple-800 hover:text-white transition-all py-1 px-3 rounded focus:outline-none focus:ring-2 focus:ring-purple-400"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-yellow-500 text-slate-900 font-medium rounded-lg hover:bg-yellow-400 transition-colors"
           onClick={handleCreateBlog}
-          aria-label="Create Blog"
-          tabIndex={0}
         >
-          Create Blog
+          <FaPlus /> Create Blog
         </button>
-      </header>
+      </div>
 
       {isCreating && (
         <BlogForm
@@ -70,26 +79,23 @@ const BlogManagement = () => {
         />
       )}
 
-      <main
-        className="flex items-center flex-wrap gap-3 py-8 h-[calc(100vh-190px)] overflow-y-auto"
-        role="main"
-        aria-label="Blog List"
-      >
-        {blogs.length > 0 ? (
-          blogs.map((blog) => (
+      {blogs && blogs.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {blogs.map((blog) => (
             <BlogCard
               key={blog._id}
               blog={blog}
               onEdit={handleEditBlog}
               onDelete={handleDeleteBlog}
-              tabIndex={0}
-              aria-label={`Blog ${blog.title}`}
             />
-          ))
-        ) : (
-          <p className="text-center w-full">No Blogs Available.</p>
-        )}
-      </main>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-12 text-slate-500">
+          <FaPenAlt className="text-4xl mb-3" />
+          <p>No Blogs Available.</p>
+        </div>
+      )}
     </div>
   );
 };

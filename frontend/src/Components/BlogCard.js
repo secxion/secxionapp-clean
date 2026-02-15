@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
 const BlogCard = ({ blog, onEdit, onDelete }) => {
   const handleDelete = () => {
@@ -8,29 +9,27 @@ const BlogCard = ({ blog, onEdit, onDelete }) => {
   };
 
   return (
-    <div className="container p-4 rounded-lg shadow-neon w-full max-w-xs transition-all hover:shadow-lg bg-gradient-to-br from-neon-purple via-neon-blue to-neon-pink text-neon-white">
-      <h4 className="font-semibold text-lg truncate neon-heading">
+    <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4 hover:border-yellow-500/30 transition-all">
+      <h4 className="font-semibold text-lg text-white truncate mb-2">
         {blog.title}
       </h4>
-      <p className="text-neon-white text-sm line-clamp-2">
+      <p className="text-slate-400 text-sm line-clamp-3 mb-4">
         {blog.content.length > 100
           ? `${blog.content.substring(0, 100)}...`
           : blog.content}
       </p>
-      <div className="flex justify-between mt-4">
+      <div className="flex justify-between gap-2">
         <button
           onClick={() => onEdit(blog)}
-          className="neon-btn px-3 py-1 text-sm font-semibold"
-          aria-label="Edit blog"
+          className="flex items-center gap-2 px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-300 text-sm hover:border-yellow-500/50 transition-colors"
         >
-          Edit
+          <FaEdit className="text-yellow-500" /> Edit
         </button>
         <button
           onClick={handleDelete}
-          className="neon-btn px-3 py-1 text-sm font-semibold bg-gradient-to-r from-neon-pink to-neon-purple"
-          aria-label="Delete blog"
+          className="flex items-center gap-2 px-3 py-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm hover:bg-red-500/20 transition-colors"
         >
-          Delete
+          <FaTrash /> Delete
         </button>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import App from '../App';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
@@ -145,6 +145,22 @@ const router = createBrowserRouter([
     path: '',
     element: <App />,
     children: [
+      // Admin Panel - inside App wrapper to have access to Context
+      {
+        path: 'admin-panel',
+        element: (
+          <ProtectedRoute>
+            <AdminPanel />
+          </ProtectedRoute>
+        ),
+        children: [
+          { index: true, element: <Navigate to="all-users" replace /> },
+          ...adminRoutes.map((route) => ({
+            path: route.path,
+            element: <ProtectedRoute>{route.element}</ProtectedRoute>,
+          })),
+        ],
+      },
       // Auth routes - should redirect logged-in users to home
       ...publicRoutes.map((route) => ({
         path: route.path,
@@ -160,18 +176,6 @@ const router = createBrowserRouter([
         path: route.path,
         element: <ProtectedRoute>{route.element}</ProtectedRoute>,
       })),
-      {
-        path: 'admin-panel',
-        element: (
-          <ProtectedRoute>
-            <AdminPanel />
-          </ProtectedRoute>
-        ),
-        children: adminRoutes.map((route) => ({
-          path: route.path,
-          element: <ProtectedRoute>{route.element}</ProtectedRoute>,
-        })),
-      },
     ],
   },
   {

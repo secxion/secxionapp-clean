@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserDetails, setLoading } from './store/userSlice';
 import Context, { ContextProvider } from './Context';
@@ -29,6 +29,10 @@ function Loader() {
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
+  const location = useLocation();
+
+  // Check if we're on admin panel routes
+  const isAdminRoute = location.pathname.startsWith('/admin-panel');
 
   useEffect(() => {
     setViewportHeight();
@@ -110,18 +114,26 @@ function App() {
           signinUserAPI,
         }}
       >
-        <div className="global-container">
+        {isAdminRoute ? (
+          // Admin panel - full screen, no header/nav
           <Suspense fallback={<Loader />}>
-            {user && <Net blogs={blogs} fetchBlogs={fetchBlogs} />}
-            <main className="main-content">
-              {user && <Header />}
-              <div>
-                <Outlet />
-              </div>
-            </main>
+            <Outlet />
           </Suspense>
-          <InstallPrompt />
-        </div>
+        ) : (
+          // Regular app with header/nav
+          <div className="global-container">
+            <Suspense fallback={<Loader />}>
+              {user && <Net blogs={blogs} fetchBlogs={fetchBlogs} />}
+              <main className="main-content">
+                {user && <Header />}
+                <div>
+                  <Outlet />
+                </div>
+              </main>
+            </Suspense>
+            <InstallPrompt />
+          </div>
+        )}
       </Context.Provider>
     </ContextProvider>
   );

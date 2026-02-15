@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'react-toastify';
+import { FaUsers, FaTimes } from 'react-icons/fa';
 import SummaryApi from '../common';
 
 const AdminCommunity = () => {
@@ -102,168 +103,170 @@ const AdminCommunity = () => {
 
   if (loading)
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
-        Loading pending posts...
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-yellow-500 border-t-transparent mr-3"></div>
+        <span className="text-slate-400">Loading pending posts...</span>
       </div>
     );
   if (error)
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center text-red-500">
+      <div className="m-4 lg:m-6 bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl">
         Error loading pending posts: {error}
       </div>
     );
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center text-red-500">
+      <div className="m-4 lg:m-6 bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl text-center">
         Please log in to access this page.
       </div>
     );
   }
 
   return (
-    <div className="container min-h-screen bg-gray-100 dark:bg-gray-900 py-6">
-      <div className="container mx-auto max-w-3xl">
-        <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 text-center">
-          Pending Community Posts
-        </h2>
-        {pendingPosts.length > 0 ? (
-          <ul>
-            {pendingPosts.map((post) => (
-              <li
-                key={post._id}
-                className="mb-4 p-4 bg-white dark:bg-gray-800 shadow rounded-md border-b border-gray-200 dark:border-gray-700"
-              >
-                <div className="flex items-start space-x-3">
-                  {post.userId?.profilePict && (
-                    <img
-                      src={post.userId.profilePic}
-                      alt={post.userId.name}
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
-                  )}
-                  {!post.userId?.profilePic && (
-                    <div className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-white text-sm">
-                      {post.userId?.name?.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                  <div>
-                    <p className="font-semibold text-gray-900 dark:text-gray-100">
-                      {post.userId?.name || 'Anonymous'}
-                    </p>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">
-                      {post.content}
-                    </p>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mt-2 rounded-md max-w-full h-auto">
-                      {post.feedImage}
-                    </p>
+    <div className="p-4 lg:p-6">
+      {/* Header */}
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="p-2 bg-yellow-500/10 rounded-xl">
+          <FaUsers className="text-yellow-500 text-xl" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold text-white">
+            Pending Community Posts
+          </h1>
+          <p className="text-slate-400 text-sm">
+            Review and moderate user submissions
+          </p>
+        </div>
+      </div>
 
-                    {post.feedImage && (
+      {pendingPosts.length > 0 ? (
+        <div className="space-y-4">
+          {pendingPosts.map((post) => (
+            <div
+              key={post._id}
+              className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4"
+            >
+              <div className="flex items-start space-x-3">
+                {post.userId?.profilePict && (
+                  <img
+                    src={post.userId.profilePic}
+                    alt={post.userId.name}
+                    className="w-10 h-10 rounded-full object-cover border border-slate-600"
+                  />
+                )}
+                {!post.userId?.profilePic && (
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-600 flex items-center justify-center text-slate-900 font-bold">
+                    {post.userId?.name?.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-white">
+                    {post.userId?.name || 'Anonymous'}
+                  </p>
+                  <p className="text-slate-300 mt-1">{post.content}</p>
+                  {post.feedImage && (
+                    <>
+                      <p className="text-slate-500 text-xs mt-2 truncate">
+                        {post.feedImage}
+                      </p>
                       <img
                         src={post.feedImage}
                         alt={post.feedImage}
-                        className="mt-2 rounded-md max-w-full h-auto"
+                        className="mt-2 rounded-lg max-w-full max-h-60 h-auto border border-slate-700"
                       />
-                    )}
-                    <p className="text-gray-500 dark:text-gray-500 text-xs mt-1">
-                      Submitted{' '}
-                      {formatDistanceToNow(new Date(post.createdAt), {
-                        addSuffix: true,
-                      })}
-                    </p>
-                    <div className="mt-2 flex space-x-2">
-                      <button
-                        onClick={() => handleApprove(post._id)}
-                        className={`bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${isApprovingOrRejecting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        disabled={isApprovingOrRejecting}
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => handleOpenRejectModal(post._id)}
-                        className={`bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${isApprovingOrRejecting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        disabled={isApprovingOrRejecting}
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-600 dark:text-gray-400 text-center">
-            No pending community posts.
-          </p>
-        )}
-
-        {/* Rejection Modal */}
-        {selectedPostId && (
-          <div
-            className="fixed z-10 inset-0 overflow-y-auto"
-            aria-labelledby="modal-title"
-            role="dialog"
-            aria-modal="true"
-          >
-            <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-              <div
-                className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-                aria-hidden="true"
-              ></div>
-              <span
-                className="hidden sm:inline-block sm:align-middle sm:h-screen"
-                aria-hidden="true"
-              >
-                &#8203;
-              </span>
-              <div className="inline-block align-bottom bg-white dark:bg-gray-700 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div className="bg-white dark:bg-gray-700 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <h3
-                    className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100"
-                    id="modal-title"
-                  >
-                    Reject Post
-                  </h3>
-                  <div className="mt-2">
-                    <label
-                      htmlFor="rejectionReason"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    </>
+                  )}
+                  <p className="text-slate-500 text-xs mt-2">
+                    Submitted{' '}
+                    {formatDistanceToNow(new Date(post.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </p>
+                  <div className="mt-3 flex space-x-2">
+                    <button
+                      onClick={() => handleApprove(post._id)}
+                      className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={isApprovingOrRejecting}
                     >
-                      Rejection Reason:
-                    </label>
-                    <textarea
-                      id="rejectionReason"
-                      className="mt-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-500 rounded-md dark:bg-gray-600 dark:text-white"
-                      rows="3"
-                      value={rejectionReason}
-                      onChange={(e) => setRejectionReason(e.target.value)}
-                    ></textarea>
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleOpenRejectModal(post._id)}
+                      className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={isApprovingOrRejecting}
+                    >
+                      Reject
+                    </button>
                   </div>
-                </div>
-                <div className="bg-gray-50 dark:bg-gray-600 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                  <button
-                    type="button"
-                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={() => handleReject(selectedPostId)}
-                    disabled={isApprovingOrRejecting}
-                  >
-                    Reject
-                  </button>
-                  <button
-                    type="button"
-                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-500 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={handleCloseRejectModal}
-                    disabled={isApprovingOrRejecting}
-                  >
-                    Cancel
-                  </button>
                 </div>
               </div>
             </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-12 text-slate-500">
+          <FaUsers className="text-4xl mb-3" />
+          <p>No pending community posts.</p>
+        </div>
+      )}
+
+      {/* Rejection Modal */}
+      {selectedPostId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-slate-900 border border-slate-700/50 rounded-2xl max-w-md w-full shadow-2xl">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-slate-700/50">
+              <h3 className="text-lg font-bold text-white">Reject Post</h3>
+              <button
+                onClick={handleCloseRejectModal}
+                disabled={isApprovingOrRejecting}
+                className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-50"
+              >
+                <FaTimes />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-4">
+              <label
+                htmlFor="rejectionReason"
+                className="block text-xs text-slate-400 mb-2"
+              >
+                Rejection Reason:
+              </label>
+              <textarea
+                id="rejectionReason"
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 resize-none"
+                rows="3"
+                placeholder="Enter the reason for rejecting this post..."
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+              ></textarea>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex justify-end gap-3 p-4 border-t border-slate-700/50">
+              <button
+                type="button"
+                className="px-4 py-2 bg-slate-800 border border-slate-700 text-slate-300 rounded-lg hover:border-yellow-500/50 transition-colors disabled:opacity-50"
+                onClick={handleCloseRejectModal}
+                disabled={isApprovingOrRejecting}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => handleReject(selectedPostId)}
+                disabled={isApprovingOrRejecting}
+              >
+                Reject
+              </button>
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

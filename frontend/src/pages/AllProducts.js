@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import UploadProduct from '../Components/UploadProduct';
 import SummaryApi from '../common';
 import AdminProductCard from '../Components/AdminProductCard';
-import { FaPlus, FaBoxOpen, FaExclamationTriangle } from 'react-icons/fa';
+import {
+  FaPlus,
+  FaBoxOpen,
+  FaExclamationTriangle,
+  FaSearch,
+} from 'react-icons/fa';
 
 const fetchAllProducts = async () => {
   try {
@@ -28,6 +33,7 @@ const fetchAllProducts = async () => {
 
 const AllProducts = () => {
   const [openUploadProduct, setOpenUploadProduct] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const {
     data: allProduct = [],
@@ -41,88 +47,97 @@ const AllProducts = () => {
     retry: 2,
   });
 
-  return (
-    <main
-      className="container mx-auto mt-10 fixed h-screen w-screen pr-8"
-      role="main"
-      aria-label="All Products Main Content"
-    >
-      <header
-        className="bg-white py-2 px-4 flex justify-between items-center shadow-md rounded"
-        aria-label="Products Header"
-      >
-        <h2 className="font-semibold text-xl text-gray-800 flex items-center">
-          <FaBoxOpen className="mr-2 text-gray-600" /> Products
-        </h2>
-        <button
-          className="inline-flex items-center px-4 py-2 border border-purple-500 rounded-md shadow-sm text-sm font-medium text-purple-700 bg-white hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors duration-150"
-          onClick={() => setOpenUploadProduct(true)}
-          aria-label="Upload Product"
-        >
-          <FaPlus className="mr-2" aria-hidden="true" /> Upload Product
-        </button>
-      </header>
+  const filteredProducts = allProduct.filter(
+    (product) =>
+      product?.productName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product?.brandName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product?.category?.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
-      <section
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-8 h-[calc(100vh-190px)] overflow-y-auto"
-        aria-label="Products List"
-      >
+  return (
+    <div className="p-4 lg:p-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-yellow-500/10 rounded-xl">
+            <FaBoxOpen className="text-yellow-500 text-xl" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-white">Products</h2>
+            <p className="text-slate-400 text-sm">
+              {allProduct.length} total products
+            </p>
+          </div>
+        </div>
+        <button
+          className="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-slate-900 rounded-xl text-sm font-semibold shadow-lg shadow-yellow-500/20 transition-all duration-200"
+          onClick={() => setOpenUploadProduct(true)}
+        >
+          <FaPlus className="mr-2" /> Add Product
+        </button>
+      </div>
+
+      {/* Search */}
+      <div className="relative mb-6">
+        <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full pl-11 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors"
+        />
+      </div>
+
+      {/* Products Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         {isLoading ? (
-          <p
-            className="text-center w-full text-gray-500 italic"
-            aria-live="polite"
-            role="status"
-            tabIndex={0}
-          >
-            Loading products...
-          </p>
+          // Loading skeleton
+          [...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className="bg-slate-800/50 rounded-xl p-4 animate-pulse"
+            >
+              <div className="aspect-square bg-slate-700 rounded-lg mb-3"></div>
+              <div className="h-4 bg-slate-700 rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-slate-700 rounded w-1/2"></div>
+            </div>
+          ))
         ) : error ? (
-          <p
-            className="text-center w-full text-red-500 flex items-center justify-center"
-            aria-live="assertive"
-            role="alert"
-            tabIndex={0}
-          >
-            <FaExclamationTriangle className="mr-2" aria-hidden="true" /> Error
-            fetching products.
-          </p>
-        ) : allProduct.length > 0 ? (
-          allProduct.map((product, index) => (
+          <div className="col-span-full flex flex-col items-center justify-center py-12 text-red-400">
+            <FaExclamationTriangle className="text-4xl mb-3" />
+            <p>Error fetching products</p>
+          </div>
+        ) : filteredProducts.length > 0 ? (
+          filteredProducts.map((product, index) => (
             <AdminProductCard
               data={product}
-              key={index}
+              key={product._id || index}
               fetchdata={refetch}
-              tabIndex={0}
-              aria-label={`Product card for ${product?.name || 'product'}`}
             />
           ))
         ) : (
-          <p
-            className="text-center w-full text-gray-500 italic"
-            aria-live="polite"
-            role="status"
-            tabIndex={0}
-          >
-            No Products Available.
-          </p>
+          <div className="col-span-full flex flex-col items-center justify-center py-12 text-slate-500">
+            <FaBoxOpen className="text-4xl mb-3" />
+            <p>
+              {searchTerm
+                ? 'No products match your search'
+                : 'No products available'}
+            </p>
+          </div>
         )}
-      </section>
+      </div>
 
+      {/* Upload Modal */}
       {openUploadProduct && (
-        <div
-          className="fixed inset-0 z-50 bg-gray-900 bg-opacity-50 flex justify-center items-center"
-          aria-modal="true"
-          role="dialog"
-          aria-label="Upload Product Modal"
-          tabIndex={-1}
-        >
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-center items-center p-4">
           <UploadProduct
             onClose={() => setOpenUploadProduct(false)}
             fetchData={refetch}
           />
         </div>
       )}
-    </main>
+    </div>
   );
 };
 

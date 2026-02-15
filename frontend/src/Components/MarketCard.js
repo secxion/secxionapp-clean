@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/marketplaceUtilities.css';
+import { FaImage, FaCoins } from 'react-icons/fa';
 
 /**
  * MarketCard - Displays market/product details with pricing information
@@ -19,56 +19,29 @@ const MarketCard = ({ market }) => {
 
   if (!market) {
     return (
-      <div className="marketplace-card">
-        <p className="marketplace-text-secondary">No market data available</p>
+      <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-6">
+        <p className="text-slate-400">No market data available</p>
       </div>
     );
   }
 
   return (
-    <div className="marketplace-card marketplace-card--interactive">
+    <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-5 hover:border-yellow-500/30 transition-all">
       {/* Product Header */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        <h3
-          className="marketplace-heading-3"
-          style={{ marginBottom: '0.5rem' }}
-        >
+      <div className="mb-4">
+        <h3 className="text-lg font-bold text-white mb-1">
           {market.productName || 'Unnamed Product'}
         </h3>
         {market.description && (
-          <p
-            className="marketplace-text-secondary"
-            style={{ marginTop: '0.5rem' }}
-          >
-            {market.description}
-          </p>
+          <p className="text-slate-400 text-sm">{market.description}</p>
         )}
       </div>
 
       {/* Total Amount */}
       {market.totalAmount && (
-        <div
-          style={{
-            backgroundColor: '#f8fafc',
-            padding: '1rem',
-            borderRadius: '0.75rem',
-            marginBottom: '1.5rem',
-            borderLeft: '4px solid #6366f1',
-          }}
-        >
-          <p
-            className="marketplace-text-secondary"
-            style={{ marginBottom: '0.25rem' }}
-          >
-            Total Amount
-          </p>
-          <p
-            style={{
-              fontSize: '1.5rem',
-              fontWeight: '700',
-              color: '#6366f1',
-            }}
-          >
+        <div className="bg-slate-800/50 p-4 rounded-lg mb-4 border-l-4 border-yellow-500">
+          <p className="text-slate-400 text-xs mb-1">Total Amount</p>
+          <p className="text-2xl font-bold text-yellow-500">
             {formatCurrency(market.totalAmount)}
           </p>
         </div>
@@ -76,42 +49,20 @@ const MarketCard = ({ market }) => {
 
       {/* Pricing Details */}
       {market.pricing && market.pricing.length > 0 && (
-        <div style={{ marginBottom: '1.5rem' }}>
-          <h4
-            className="marketplace-heading-3"
-            style={{
-              fontSize: '1.125rem',
-              marginBottom: '1rem',
-              color: '#1e293b',
-            }}
-          >
-            Pricing Details
-          </h4>
-          <div style={{ display: 'grid', gap: '1rem' }}>
+        <div className="mb-4">
+          <div className="flex items-center gap-2 mb-3">
+            <FaCoins className="text-yellow-500" />
+            <h4 className="text-white font-semibold">Pricing Details</h4>
+          </div>
+          <div className="space-y-3">
             {market.pricing.map((price, index) => (
               <div
                 key={price._id || index}
-                style={{
-                  border: '1px solid rgba(100, 116, 139, 0.1)',
-                  borderRadius: '0.75rem',
-                  padding: '1rem',
-                  backgroundColor: '#ffffff',
-                }}
+                className="bg-slate-800/30 border border-slate-700/50 rounded-lg p-4"
               >
-                <div style={{ marginBottom: '0.75rem' }}>
-                  <p
-                    className="marketplace-text-secondary"
-                    style={{ marginBottom: '0.25rem' }}
-                  >
-                    Currency
-                  </p>
-                  <p
-                    style={{
-                      fontSize: '0.95rem',
-                      fontWeight: '600',
-                      color: '#1e293b',
-                    }}
-                  >
+                <div className="mb-3">
+                  <p className="text-slate-400 text-xs mb-1">Currency</p>
+                  <p className="text-white font-semibold">
                     {price.currency || 'N/A'}
                   </p>
                 </div>
@@ -119,66 +70,33 @@ const MarketCard = ({ market }) => {
                 {/* Face Values */}
                 {price.faceValues && price.faceValues.length > 0 ? (
                   <div>
-                    <p
-                      className="marketplace-text-secondary"
-                      style={{
-                        fontSize: '0.875rem',
-                        marginBottom: '0.75rem',
-                        fontWeight: '600',
-                      }}
-                    >
+                    <p className="text-slate-400 text-xs font-semibold mb-2">
                       Available Rates
                     </p>
-                    <div style={{ display: 'grid', gap: '0.75rem' }}>
+                    <div className="space-y-2">
                       {price.faceValues.map((face, i) => (
                         <div
                           key={i}
-                          style={{
-                            display: 'grid',
-                            gridTemplateColumns: '1fr 1fr',
-                            gap: '0.5rem',
-                            padding: '0.75rem',
-                            backgroundColor: '#f8fafc',
-                            borderRadius: '0.5rem',
-                            fontSize: '0.875rem',
-                          }}
+                          className="grid grid-cols-2 gap-3 p-3 bg-slate-900/50 rounded-lg text-sm"
                         >
                           <div>
-                            <p
-                              className="marketplace-text-secondary"
-                              style={{ marginBottom: '0.25rem' }}
-                            >
+                            <p className="text-slate-500 text-xs mb-0.5">
                               Face Value
                             </p>
-                            <p style={{ fontWeight: '600', color: '#1e293b' }}>
+                            <p className="text-white font-semibold">
                               {face.faceValue || 'N/A'}
                             </p>
                           </div>
                           <div>
-                            <p
-                              className="marketplace-text-secondary"
-                              style={{ marginBottom: '0.25rem' }}
-                            >
+                            <p className="text-slate-500 text-xs mb-0.5">
                               Rate
                             </p>
-                            <p
-                              style={{
-                                fontWeight: '700',
-                                color: '#10b981',
-                              }}
-                            >
+                            <p className="text-emerald-400 font-bold">
                               {formatCurrency(face.sellingPrice)}
                             </p>
                           </div>
                           {face.description && (
-                            <p
-                              className="marketplace-text-secondary"
-                              style={{
-                                gridColumn: '1 / -1',
-                                fontSize: '0.8rem',
-                                marginTop: '0.25rem',
-                              }}
-                            >
+                            <p className="col-span-2 text-slate-400 text-xs mt-1">
                               📝 {face.description}
                             </p>
                           )}
@@ -187,10 +105,7 @@ const MarketCard = ({ market }) => {
                     </div>
                   </div>
                 ) : (
-                  <p
-                    className="marketplace-text-secondary"
-                    style={{ fontSize: '0.875rem' }}
-                  >
+                  <p className="text-slate-500 text-sm">
                     No pricing tiers available
                   </p>
                 )}
@@ -202,38 +117,18 @@ const MarketCard = ({ market }) => {
 
       {/* Product Image */}
       {market.Image && market.Image.length > 0 ? (
-        <div
-          style={{
-            marginTop: '1.5rem',
-            borderRadius: '0.75rem',
-            overflow: 'hidden',
-          }}
-        >
+        <div className="mt-4 rounded-lg overflow-hidden">
           <img
             src={market.Image[0]}
             alt={market.productName}
-            style={{
-              width: '100%',
-              height: 'auto',
-              display: 'block',
-              maxHeight: '300px',
-              objectFit: 'cover',
-            }}
+            className="w-full max-h-72 object-cover"
             loading="lazy"
           />
         </div>
       ) : (
-        <div
-          style={{
-            marginTop: '1.5rem',
-            padding: '2rem',
-            backgroundColor: '#f8fafc',
-            borderRadius: '0.75rem',
-            textAlign: 'center',
-            border: '1px dashed rgba(100, 116, 139, 0.2)',
-          }}
-        >
-          <p className="marketplace-text-secondary">📷 No image available</p>
+        <div className="mt-4 p-8 bg-slate-800/30 rounded-lg text-center border border-dashed border-slate-700/50">
+          <FaImage className="text-slate-600 text-3xl mx-auto mb-2" />
+          <p className="text-slate-500 text-sm">No image available</p>
         </div>
       )}
     </div>

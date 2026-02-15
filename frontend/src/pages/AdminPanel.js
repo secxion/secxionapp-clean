@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid';
+import { Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
 import {
   FaTachometerAlt,
   FaUsers,
@@ -13,145 +12,183 @@ import {
   FaFileAlt,
   FaUserSecret,
   FaChartBar,
-  FaCog,
   FaCode,
-} from 'react-icons/fa'; // Import more icons
+  FaBars,
+  FaTimes,
+  FaEthereum,
+  FaArrowLeft,
+  FaSignOutAlt,
+} from 'react-icons/fa';
 
 const AdminPanel = () => {
   const user = useSelector((state) => state?.user?.user);
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState(location.pathname);
-  const [isUserInfoExpanded, setIsUserInfoExpanded] = useState(false);
-  const menuRef = useRef(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleTabClick = (path) => {
-    setActiveTab(path);
     navigate(path);
+    setIsSidebarOpen(false);
   };
-
-  const toggleUserInfo = () => {
-    setIsUserInfoExpanded(!isUserInfoExpanded);
-  };
-
-  useEffect(() => {
-    if (menuRef.current) {
-      menuRef.current.scrollLeft = 0;
-    }
-  }, [location.pathname]);
 
   if (!user) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-yellow-500"></div>
       </div>
     );
   }
 
   const menuItems = [
-    { path: 'all-users', label: 'Users', icon: <FaUsers className="mr-2" /> },
-    {
-      path: 'all-products',
-      label: 'Products',
-      icon: <FaBoxOpen className="mr-2" />,
-    },
-    {
-      path: 'admin-rpr',
-      label: 'RPR',
-      icon: <FaMoneyBillAlt className="mr-2" />,
-    },
-    {
-      path: 'users-market',
-      label: 'Market',
-      icon: <FaShoppingCart className="mr-2" />,
-    },
-    {
-      path: 'users-datapad',
-      label: 'Datapad',
-      icon: <FaMobileAlt className="mr-2" />,
-    },
-    { path: 'system-blog', label: 'Blog', icon: <FaPenAlt className="mr-2" /> },
-    {
-      path: 'admin-report',
-      label: 'Reports',
-      icon: <FaFileAlt className="mr-2" />,
-    },
-    {
-      path: 'anonymous-report',
-      label: 'Anonymous',
-      icon: <FaUserSecret className="mr-2" />,
-    },
-    {
-      path: 'community-feeds',
-      label: 'Community',
-      icon: <FaChartBar className="mr-2" />,
-    },
-    {
-      path: 'livescript',
-      label: 'LiveScript',
-      icon: <FaCode className="mr-2" />,
-    },
-    { path: 'settings', label: 'Settings', icon: <FaCog className="mr-2" /> },
+    { path: 'all-users', label: 'Users', icon: <FaUsers /> },
+    { path: 'all-products', label: 'Products', icon: <FaBoxOpen /> },
+    { path: 'admin-rpr', label: 'Payments', icon: <FaMoneyBillAlt /> },
+    { path: 'eth-requests', label: 'ETH', icon: <FaEthereum /> },
+    { path: 'users-market', label: 'Market', icon: <FaShoppingCart /> },
+    { path: 'users-datapad', label: 'Datapad', icon: <FaMobileAlt /> },
+    { path: 'system-blog', label: 'Blog', icon: <FaPenAlt /> },
+    { path: 'admin-report', label: 'Reports', icon: <FaFileAlt /> },
+    { path: 'anonymous-report', label: 'Anonymous', icon: <FaUserSecret /> },
+    { path: 'community-feeds', label: 'Community', icon: <FaChartBar /> },
+    { path: 'livescript', label: 'LiveScript', icon: <FaCode /> },
   ];
 
-  const minMenuWidth = `${menuItems.length * 10}px`;
-
   return (
-    <div className="container min-h-screen bg-gray-100">
-      <nav className="pt-28 bg-white shadow-md w-full overflow-x-auto scrollbar-hide fixed top-0 left-0 right-0 z-30 flex items-center justify-between py-2 px-4">
-        <div
-          className="flex items-center cursor-pointer"
-          onClick={toggleUserInfo}
-        >
-          <div className="rounded-full bg-gray-300 h-10 w-10 flex items-center justify-center mr-3">
+    <div className="min-h-screen bg-slate-950">
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-slate-900 border-b border-slate-800 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="p-2 rounded-lg bg-slate-800 text-yellow-500 hover:bg-slate-700 transition-colors"
+            >
+              {isSidebarOpen ? (
+                <FaTimes className="w-5 h-5" />
+              ) : (
+                <FaBars className="w-5 h-5" />
+              )}
+            </button>
+            <Link
+              to="/home"
+              className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors"
+            >
+              <FaArrowLeft className="w-4 h-4" />
+            </Link>
+          </div>
+          <div className="flex items-center space-x-3">
+            <FaTachometerAlt className="text-yellow-500" />
+            <span className="text-white font-semibold">Admin</span>
+          </div>
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-600 flex items-center justify-center text-slate-900 font-bold text-sm">
             {user?.name?.charAt(0).toUpperCase()}
           </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-800">{user?.name}</p>
-            {isUserInfoExpanded && (
-              <p className="text-xs text-gray-600">{user?.role}</p>
-            )}
-          </div>
-          <div className="ml-2">
-            {isUserInfoExpanded ? (
-              <ChevronUpIcon className="h-5 w-5 text-gray-500" />
-            ) : (
-              <ChevronDownIcon className="h-5 w-5 text-gray-500" />
-            )}
-          </div>
-        </div>
-
-        <ul
-          ref={menuRef}
-          className="flex items-center space-x-4 overflow-x-auto scrollbar-hidden"
-          style={{ minWidth: minMenuWidth }}
-        >
-          {menuItems.map(({ path, label, icon }) => (
-            <li key={path}>
-              <button
-                onClick={() => handleTabClick(path)}
-                className={`px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap focus:outline-none flex items-center ${
-                  location.pathname.includes(path)
-                    ? 'bg-blue-500 text-white shadow-sm'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {icon}
-                {label}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      <div className="pt-20 p-6 md:p-8 h-full overflow-y-auto">
-        <h1 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-5 flex items-center">
-          <FaTachometerAlt className="mr-3 text-gray-600" /> Admin Dashboard
-        </h1>
-        <div className="h-full overflow-y-auto bg-white rounded-md shadow">
-          <Outlet />
         </div>
       </div>
+
+      {/* Sidebar Overlay (Mobile) */}
+      {isSidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-30 bg-black/60 backdrop-blur-sm"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed top-0 left-0 z-40 h-full w-64 bg-slate-900 border-r border-slate-800 transform transition-transform duration-300 ease-in-out ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } lg:translate-x-0`}
+      >
+        {/* Sidebar Header */}
+        <div className="p-4 border-b border-slate-800">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-500 to-yellow-600 flex items-center justify-center text-slate-900 font-bold">
+              {user?.name?.charAt(0).toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-semibold truncate">{user?.name}</p>
+              <p className="text-yellow-500 text-xs font-medium uppercase tracking-wide">
+                {user?.role}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className="p-3 space-y-1 overflow-y-auto h-[calc(100vh-180px)]">
+          {menuItems.map(({ path, label, icon }) => {
+            const isActive = location.pathname.includes(path);
+            return (
+              <button
+                key={path}
+                onClick={() => handleTabClick(path)}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  isActive
+                    ? 'bg-gradient-to-r from-yellow-500/20 to-yellow-600/10 text-yellow-500 border border-yellow-500/30'
+                    : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                }`}
+              >
+                <span
+                  className={`text-lg ${isActive ? 'text-yellow-500' : ''}`}
+                >
+                  {icon}
+                </span>
+                <span>{label}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Exit Admin Panel */}
+        <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-slate-800 bg-slate-900">
+          <Link
+            to="/home"
+            className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-xl text-sm font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-all duration-200"
+          >
+            <FaSignOutAlt className="text-lg" />
+            <span>Exit Admin Panel</span>
+          </Link>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="lg:ml-64 min-h-screen pt-16 lg:pt-0">
+        {/* Desktop Header */}
+        <div className="hidden lg:flex items-center justify-between p-6 border-b border-slate-800 bg-slate-900/50 backdrop-blur-xl sticky top-0 z-20">
+          <div className="flex items-center space-x-4">
+            <Link
+              to="/home"
+              className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors"
+              title="Back to App"
+            >
+              <FaArrowLeft className="w-4 h-4" />
+            </Link>
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-yellow-500/10 rounded-xl">
+                <FaTachometerAlt className="text-yellow-500 text-xl" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-white">
+                  Admin Dashboard
+                </h1>
+                <p className="text-slate-400 text-sm">Manage your platform</p>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center space-x-4">
+            <span className="text-slate-400 text-sm">Welcome back,</span>
+            <span className="text-yellow-500 font-semibold">{user?.name}</span>
+          </div>
+        </div>
+
+        {/* Content Area */}
+        <div className="p-4 lg:p-6">
+          <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-800 min-h-[calc(100vh-180px)] lg:min-h-[calc(100vh-140px)]">
+            <Outlet />
+          </div>
+        </div>
+      </main>
     </div>
   );
 };
