@@ -625,107 +625,110 @@ const LiveScript = ({ isOpen, onClose }) => {
             ) : (
               /* Detail View */
               selectedRequest && (
-                <div className="flex flex-col flex-1 min-h-0">
-                  {/* Request Info */}
-                  <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700 mb-4 flex-shrink-0">
-                    <h3 className="text-white font-semibold text-lg mb-2">
-                      {selectedRequest.title}
-                    </h3>
-                    <p className="text-gray-400 text-sm mb-3">
-                      {selectedRequest.description}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3 text-xs text-gray-500">
-                        <span>
-                          {
-                            CATEGORIES.find(
-                              (c) => c.value === selectedRequest.category,
-                            )?.icon
-                          }{' '}
-                          {
-                            CATEGORIES.find(
-                              (c) => c.value === selectedRequest.category,
-                            )?.label
-                          }
-                        </span>
-                        <span>•</span>
-                        <span>{formatDate(selectedRequest.createdAt)}</span>
-                      </div>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium border ${STATUS_COLORS[selectedRequest.status]}`}
-                      >
-                        {selectedRequest.status.replace('_', ' ')}
-                      </span>
-                    </div>
-                    {selectedRequest.adminNotes && (
-                      <div className="mt-3 p-2 bg-purple-900/30 rounded-lg border border-purple-500/30">
-                        <p className="text-xs text-purple-300">
-                          <strong>Admin Notes:</strong>{' '}
-                          {selectedRequest.adminNotes}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Conversation */}
+                <div className="flex flex-col flex-1 min-h-0 justify-between">
                   <div
-                    className="flex-1 overflow-y-auto space-y-3 mb-4 min-h-0"
+                    className="flex-1 overflow-y-auto min-h-0"
                     style={{ WebkitOverflowScrolling: 'touch' }}
                   >
-                    {selectedRequest.messages &&
-                    selectedRequest.messages.length > 0 ? (
-                      selectedRequest.messages.map((msg, idx) => (
-                        <div
-                          key={idx}
-                          className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                        >
-                          <div
-                            className={`max-w-[80%] rounded-xl px-4 py-2 ${
-                              msg.sender === 'user'
-                                ? 'bg-yellow-500/20 border border-yellow-500/30 text-yellow-100'
-                                : 'bg-purple-900/40 border border-purple-500/30 text-purple-100'
-                            }`}
-                          >
-                            <p className="text-xs font-medium mb-1 opacity-70">
-                              {msg.sender === 'user' ? 'You' : 'Admin'}
-                            </p>
-                            {msg.message && (
-                              <p className="text-sm">{msg.message}</p>
-                            )}
-                            {msg.attachments && msg.attachments.length > 0 && (
-                              <div className="mt-2 space-y-2">
-                                {msg.attachments.map((att, attIdx) => (
-                                  <a
-                                    key={attIdx}
-                                    href={att.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block"
-                                  >
-                                    <img
-                                      src={att.url}
-                                      alt={att.name || 'attachment'}
-                                      className="max-w-full rounded-lg max-h-40 object-cover border border-white/10"
-                                    />
-                                  </a>
-                                ))}
-                              </div>
-                            )}
-                            <p className="text-xs opacity-50 mt-1">
-                              {formatMessageTime(msg.timestamp)}
-                            </p>
-                          </div>
+                    {/* Request Info */}
+                    <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700 mb-4">
+                      <h3 className="text-white font-semibold text-lg mb-2">
+                        {selectedRequest.title}
+                      </h3>
+                      <p className="text-gray-400 text-sm mb-3">
+                        {selectedRequest.description}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3 text-xs text-gray-500">
+                          <span>
+                            {
+                              CATEGORIES.find(
+                                (c) => c.value === selectedRequest.category,
+                              )?.icon
+                            }{' '}
+                            {
+                              CATEGORIES.find(
+                                (c) => c.value === selectedRequest.category,
+                              )?.label
+                            }
+                          </span>
+                          <span>•</span>
+                          <span>{formatDate(selectedRequest.createdAt)}</span>
                         </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-8 text-gray-500 text-sm">
-                        No messages yet. Start a conversation with our team.
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium border ${STATUS_COLORS[selectedRequest.status]}`}
+                        >
+                          {selectedRequest.status.replace('_', ' ')}
+                        </span>
                       </div>
-                    )}
+                      {selectedRequest.adminNotes && (
+                        <div className="mt-3 p-2 bg-purple-900/30 rounded-lg border border-purple-500/30">
+                          <p className="text-xs text-purple-300">
+                            <strong>Admin Notes:</strong>{' '}
+                            {selectedRequest.adminNotes}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Conversation */}
+                    <div className="space-y-3">
+                      {selectedRequest.messages &&
+                      selectedRequest.messages.length > 0 ? (
+                        selectedRequest.messages.map((msg, idx) => (
+                          <div
+                            key={idx}
+                            className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                          >
+                            <div
+                              className={`max-w-[80%] rounded-xl px-4 py-2 ${
+                                msg.sender === 'user'
+                                  ? 'bg-yellow-500/20 border border-yellow-500/30 text-yellow-100'
+                                  : 'bg-purple-900/40 border border-purple-500/30 text-purple-100'
+                              }`}
+                            >
+                              <p className="text-xs font-medium mb-1 opacity-70">
+                                {msg.sender === 'user' ? 'You' : 'Admin'}
+                              </p>
+                              {msg.message && (
+                                <p className="text-sm">{msg.message}</p>
+                              )}
+                              {msg.attachments &&
+                                msg.attachments.length > 0 && (
+                                  <div className="mt-2 space-y-2">
+                                    {msg.attachments.map((att, attIdx) => (
+                                      <a
+                                        key={attIdx}
+                                        href={att.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="block"
+                                      >
+                                        <img
+                                          src={att.url}
+                                          alt={att.name || 'attachment'}
+                                          className="max-w-full rounded-lg max-h-40 object-cover border border-white/10"
+                                        />
+                                      </a>
+                                    ))}
+                                  </div>
+                                )}
+                              <p className="text-xs opacity-50 mt-1">
+                                {formatMessageTime(msg.timestamp)}
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center py-4 text-gray-500 text-sm">
+                          No messages yet. Start a conversation with our team.
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Reply Input */}
-                  <div className="border-t border-gray-700 pt-4 flex-shrink-0 bg-gray-900">
+                  <div className="border-t border-gray-700 pt-3 flex-shrink-0 mt-auto">
                     {/* Pending Attachments Preview */}
                     {pendingAttachments.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-3">

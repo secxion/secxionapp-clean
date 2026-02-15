@@ -1,4 +1,4 @@
-import { FaCaretUp } from 'react-icons/fa';
+import { FaCaretUp, FaNairaSign, FaEthereum } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
@@ -7,6 +7,10 @@ import EthereumButtonImg from '../app/Buttons/ethereumbutton.png';
 
 const HomeFooter = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [imagesLoaded, setImagesLoaded] = useState({
+    naira: false,
+    eth: false,
+  });
 
   const { user } = useSelector((state) => state.user);
   const { profilePic } = user || {};
@@ -41,28 +45,48 @@ const HomeFooter = () => {
         {/* Naira Wallet */}
         <Link
           to="/mywallet"
-          className="flex flex-col items-center justify-center transition-colors duration-300 ease-in-out h-12 w-16 hover:scale-105"
+          className="flex flex-col items-center justify-center transition-colors duration-300 ease-in-out h-14 w-14 hover:scale-105 rounded-lg border-2 border-green-500 bg-gray-800"
           aria-label="Naira Wallet"
         >
+          {imagesLoaded.naira ? (
+            <img
+              src={NairaButtonImg}
+              alt="Naira Wallet"
+              className="h-12 w-12 object-contain"
+              style={{ display: 'block' }}
+            />
+          ) : (
+            <FaNairaSign className="text-green-400 text-2xl" />
+          )}
           <img
             src={NairaButtonImg}
-            alt="Naira Wallet"
-            className="h-20 w-auto object-contain"
-            style={{ display: 'block' }}
+            alt=""
+            className="hidden"
+            onLoad={() => setImagesLoaded((prev) => ({ ...prev, naira: true }))}
           />
         </Link>
 
         {/* Ethereum */}
         <Link
           to="/eth"
-          className="flex flex-col items-center justify-center transition-colors duration-300 ease-in-out h-12 w-16 hover:scale-105"
+          className="flex flex-col items-center justify-center transition-colors duration-300 ease-in-out h-14 w-14 hover:scale-105 rounded-lg border-2 border-cyan-500 bg-gray-800"
           aria-label="Ethereum"
         >
+          {imagesLoaded.eth ? (
+            <img
+              src={EthereumButtonImg}
+              alt="Ethereum"
+              className="h-12 w-12 object-contain"
+              style={{ display: 'block' }}
+            />
+          ) : (
+            <FaEthereum className="text-cyan-400 text-2xl" />
+          )}
           <img
             src={EthereumButtonImg}
-            alt="Ethereum"
-            className="h-20 w-auto object-contain"
-            style={{ display: 'block' }}
+            alt=""
+            className="hidden"
+            onLoad={() => setImagesLoaded((prev) => ({ ...prev, eth: true }))}
           />
         </Link>
       </div>
