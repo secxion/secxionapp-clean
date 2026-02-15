@@ -123,7 +123,8 @@ const InstallPrompt = () => {
                     <Plus className="w-4 h-4 text-white" />
                   </span>
                   <span>
-                    Then <strong className="text-white">Add to Home Screen</strong>
+                    Then{' '}
+                    <strong className="text-white">Add to Home Screen</strong>
                   </span>
                 </div>
                 <button
