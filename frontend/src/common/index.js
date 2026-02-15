@@ -429,6 +429,10 @@ const SummaryApi = {
     url: `${backendDomain}/api/livescript/${id}`,
     method: 'DELETE',
   }),
+  replyToLiveScript: (id) => ({
+    url: `${backendDomain}/api/livescript/${id}/reply`,
+    method: 'POST',
+  }),
   // Admin LiveScript
   adminGetAllLiveScripts: {
     url: `${backendDomain}/api/livescript/admin/all`,
@@ -437,6 +441,10 @@ const SummaryApi = {
   adminUpdateLiveScript: (id) => ({
     url: `${backendDomain}/api/livescript/admin/${id}`,
     method: 'PATCH',
+  }),
+  adminReplyToLiveScript: (id) => ({
+    url: `${backendDomain}/api/livescript/admin/${id}/reply`,
+    method: 'POST',
   }),
 };
 

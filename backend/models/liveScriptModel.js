@@ -49,6 +49,34 @@ const liveScriptSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    messages: [
+      {
+        sender: {
+          type: String,
+          enum: ["user", "admin"],
+          required: true,
+        },
+        message: {
+          type: String,
+          default: "",
+        },
+        attachments: [
+          {
+            url: String,
+            type: {
+              type: String,
+              enum: ["image", "file"],
+              default: "image",
+            },
+            name: String,
+          },
+        ],
+        timestamp: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
     attachments: [
       {
         name: String,

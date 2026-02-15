@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { FaPaperclip, FaTimes, FaSmile } from 'react-icons/fa';
+import { FaPaperclip, FaTimes, FaSmile, FaClock } from 'react-icons/fa';
 import { MdSend } from 'react-icons/md';
 import uploadImage from '../helpers/uploadImage';
 import { toast } from 'react-toastify';
@@ -15,6 +15,29 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
   const [uploadedImage, setUploadedImage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [pendingPosts, setPendingPosts] = useState([]);
+
+  // Fetch user's pending posts
+  const fetchPendingPosts = useCallback(async () => {
+    if (!user) return;
+    try {
+      const response = await fetch(SummaryApi.myposts.url, {
+        method: SummaryApi.myposts.method,
+        credentials: 'include',
+      });
+      const data = await response.json();
+      if (data.success) {
+        const pending = data.data.filter((post) => post.status === 'pending');
+        setPendingPosts(pending);
+      }
+    } catch (err) {
+      console.error('Error fetching pending posts:', err);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchPendingPosts();
+  }, [fetchPendingPosts]);
 
   const handleUploadImage = async (e) => {
     const file = e.target.files[0];
@@ -66,9 +89,9 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
       });
       const data = await response.json();
       if (data.success) {
-        toast.success('Post submitted successfully!');
         setNewPostContent('');
         setUploadedImage('');
+        fetchPendingPosts(); // Refresh pending posts to show the new one
         window.dispatchEvent(new CustomEvent('newPostCreated'));
       } else {
         toast.error(data.message || 'Failed to submit post.');
@@ -188,6 +211,29 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Pending Posts Notification */}
+      <AnimatePresence>
+        {pendingPosts.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="relative z-10 mt-3 bg-yellow-500/20 border border-yellow-500/40 rounded-lg p-3"
+          >
+            <div className="flex items-center space-x-2">
+              <FaClock className="text-yellow-400 animate-pulse" />
+              <p className="text-yellow-200 text-sm">
+                <span className="font-semibold">
+                  {pendingPosts.length} post{pendingPosts.length > 1 ? 's' : ''}
+                </span>{' '}
+                pending review. Your post{pendingPosts.length > 1 ? 's' : ''}{' '}
+                will appear once approved by admin.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.form>
   );
 };

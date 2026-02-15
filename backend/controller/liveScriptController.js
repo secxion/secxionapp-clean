@@ -135,7 +135,7 @@ export const getAllLiveScriptRequests = async (req, res, next) => {
 export const updateLiveScriptStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { status, adminNotes } = req.body;
+    const { status, adminNotes, message } = req.body;
 
     const validStatuses = ["pending", "in_review", "accepted", "in_progress", "completed", "rejected"];
     
@@ -145,26 +145,117 @@ export const updateLiveScriptStatus = async (req, res, next) => {
       throw err;
     }
 
-    const updateData = {};
-    if (status) updateData.status = status;
-    if (adminNotes !== undefined) updateData.adminNotes = adminNotes;
-
-    const updatedRequest = await LiveScript.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedRequest) {
+    const request = await LiveScript.findById(id);
+    if (!request) {
       const err = new Error("Request not found.");
       err.status = 404;
       throw err;
     }
 
+    // Update fields
+    if (status) request.status = status;
+    if (adminNotes !== undefined) request.adminNotes = adminNotes;
+    
+    // Add admin message to conversation if provided
+    if (message && message.trim()) {
+      request.messages.push({
+        sender: "admin",
+        message: message.trim(),
+        timestamp: new Date(),
+      });
+    }
+
+    await request.save();
+
     res.status(200).json({
       success: true,
       message: "Request updated successfully.",
-      data: updatedRequest,
+      data: request,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// User reply to LiveScript request
+export const replyToLiveScriptRequest = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { message, attachments } = req.body;
+    const userId = req.userId;
+
+    // Require either message or attachments
+    const hasMessage = message && message.trim();
+    const hasAttachments = attachments && attachments.length > 0;
+    
+    if (!hasMessage && !hasAttachments) {
+      const err = new Error("Message or attachment is required.");
+      err.status = 400;
+      throw err;
+    }
+
+    const request = await LiveScript.findOne({ _id: id, userId });
+    if (!request) {
+      const err = new Error("Request not found.");
+      err.status = 404;
+      throw err;
+    }
+
+    request.messages.push({
+      sender: "user",
+      message: hasMessage ? message.trim() : "",
+      attachments: hasAttachments ? attachments : [],
+      timestamp: new Date(),
+    });
+
+    await request.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Reply sent successfully.",
+      data: request,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Admin reply to LiveScript request
+export const adminReplyToLiveScriptRequest = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { message, attachments } = req.body;
+
+    // Require either message or attachments
+    const hasMessage = message && message.trim();
+    const hasAttachments = attachments && attachments.length > 0;
+    
+    if (!hasMessage && !hasAttachments) {
+      const err = new Error("Message or attachment is required.");
+      err.status = 400;
+      throw err;
+    }
+
+    const request = await LiveScript.findById(id);
+    if (!request) {
+      const err = new Error("Request not found.");
+      err.status = 404;
+      throw err;
+    }
+
+    request.messages.push({
+      sender: "admin",
+      message: hasMessage ? message.trim() : "",
+      attachments: hasAttachments ? attachments : [],
+      timestamp: new Date(),
+    });
+
+    await request.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Reply sent successfully.",
+      data: request,
     });
   } catch (error) {
     next(error);

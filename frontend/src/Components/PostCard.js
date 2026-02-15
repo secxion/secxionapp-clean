@@ -233,7 +233,7 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
                       value={commentContent}
                       onChange={(e) => setCommentContent(e.target.value)}
                       placeholder="Add a comment..."
-                      className="w-full p-2 border border-gray-300 rounded-md dark:bg-gray-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full p-2 border border-gray-300 rounded-md bg-white text-gray-900 dark:bg-gray-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       rows={2}
                     />
                     <button

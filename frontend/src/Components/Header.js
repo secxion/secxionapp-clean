@@ -26,6 +26,7 @@ import notificationSound from '../Assets/notification.mp3';
 import SummaryApi from '../common';
 import { BiSearch } from 'react-icons/bi';
 import SidePanel from './SidePanel';
+import LiveScript from './LiveScript';
 import Slogo from '../app/slogo.png';
 import DataPadButtonImg from '../app/Buttons/datapadbutton.png';
 import TradeStatusButtonImg from '../app/Buttons/tradestatusbutton.png';
@@ -81,6 +82,7 @@ const Header = () => {
   const dispatch = useDispatch();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isLiveScriptOpen, setIsLiveScriptOpen] = useState(false);
   const { user } = useSelector((state) => state.user);
   const { soundEnabled, toggleSound, volume, setVolume } = useSound();
   const { token } = useContext(Context);
@@ -427,6 +429,15 @@ const Header = () => {
                   />
                 </Link>
               )}
+
+              {/* LiveScript Button */}
+              <button
+                onClick={() => setIsLiveScriptOpen(true)}
+                className="group relative flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white border-2 border-purple-500 shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
+              >
+                <span className="text-lg">{'</>'}</span>
+                <span className="hidden lg:inline">LiveScript</span>
+              </button>
             </nav>
           </div>
 
@@ -564,6 +575,13 @@ const Header = () => {
         handleLogout={handleLogout}
         loading={loading}
         onCloseMenu={closeMobileMenu}
+        onOpenLiveScript={() => setIsLiveScriptOpen(true)}
+      />
+
+      {/* LiveScript Modal */}
+      <LiveScript
+        isOpen={isLiveScriptOpen}
+        onClose={() => setIsLiveScriptOpen(false)}
       />
 
       {/* Enhanced CSS for smooth button interactions */}

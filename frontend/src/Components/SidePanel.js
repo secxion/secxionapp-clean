@@ -16,6 +16,7 @@ import {
   ChevronDownIcon,
   CheckIcon,
   ArrowRightOnRectangleIcon,
+  CodeBracketIcon,
 } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
@@ -24,7 +25,14 @@ import timezones from '../helpers/timeZones';
 import './Header.css';
 import SecxionLogo from '../app/slogo.png';
 
-const SidePanel = ({ open, setOpen, handleLogout, loading, onCloseMenu }) => {
+const SidePanel = ({
+  open,
+  setOpen,
+  handleLogout,
+  loading,
+  onCloseMenu,
+  onOpenLiveScript,
+}) => {
   const [timezone, setTimezone] = useState('Africa/Lagos');
   const [showTimezones, setShowTimezones] = useState(false);
   const { user } = useSelector((state) => state.user);
@@ -194,6 +202,25 @@ const SidePanel = ({ open, setOpen, handleLogout, loading, onCloseMenu }) => {
                       </Link>
                     ),
                 )}
+
+                {/* LiveScript Button */}
+                <button
+                  onClick={() => {
+                    handleLinkClick();
+                    onOpenLiveScript?.();
+                  }}
+                  className="group flex items-center w-full px-4 py-3 rounded-xl bg-gradient-to-r from-purple-900/50 to-purple-800/50 hover:from-purple-800/70 hover:to-purple-700/70 border-2 border-purple-500/50 hover:border-purple-400/70 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg"
+                >
+                  <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 mr-4 group-hover:scale-110 transition-transform duration-300">
+                    <CodeBracketIcon className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-white font-medium text-sm transition-colors duration-200 glossy-text">
+                    LiveScript
+                  </span>
+                  <span className="ml-auto text-xs bg-purple-500/30 text-purple-300 px-2 py-0.5 rounded-full">
+                    Custom Dev
+                  </span>
+                </button>
               </nav>
               {/* Timezone Selector */}
               <div className="px-4 py-4 border-t border-gray-700">

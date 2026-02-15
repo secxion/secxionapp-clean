@@ -129,6 +129,8 @@ import {
   deleteLiveScriptRequest,
   getAllLiveScriptRequests,
   updateLiveScriptStatus,
+  replyToLiveScriptRequest,
+  adminReplyToLiveScriptRequest,
 } from "../controller/liveScriptController.js";
 import { generateSliderVerification } from "../utils/sliderVerification.js";
 import getLastUserMarketStatusController from "../controller/product/getLastUserMarketStatusController.js";
@@ -559,6 +561,8 @@ router.post("/livescript/create", authToken, noCache, createLiveScriptRequest);
 router.get("/livescript/user", authToken, noCache, getUserLiveScriptRequests);
 router.get("/livescript/admin/all", authToken, verifyAdmin, noCache, getAllLiveScriptRequests);
 router.patch("/livescript/admin/:id", authToken, verifyAdmin, noCache, updateLiveScriptStatus);
+router.post("/livescript/admin/:id/reply", authToken, verifyAdmin, noCache, adminReplyToLiveScriptRequest);
+router.post("/livescript/:id/reply", authToken, noCache, replyToLiveScriptRequest);
 router.get("/livescript/:id", authToken, noCache, getLiveScriptRequestById);
 router.delete("/livescript/:id", authToken, noCache, deleteLiveScriptRequest);
 

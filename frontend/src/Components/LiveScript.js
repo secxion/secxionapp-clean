@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
 import {
@@ -11,9 +11,11 @@ import {
   FaCheckCircle,
   FaSpinner,
   FaExclamationCircle,
+  FaImage,
 } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
 import SummaryApi from '../common';
+import uploadImage from '../helpers/uploadImage';
 
 const CATEGORIES = [
   { value: 'script', label: 'Script', icon: '📜' },
@@ -58,10 +60,16 @@ const STATUS_ICONS = {
 };
 
 const LiveScript = ({ isOpen, onClose }) => {
-  const [activeView, setActiveView] = useState('form'); // 'form' or 'requests'
+  const [activeView, setActiveView] = useState('form'); // 'form', 'requests', or 'detail'
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [replyMessage, setReplyMessage] = useState('');
+  const [sendingReply, setSendingReply] = useState(false);
+  const [pendingAttachments, setPendingAttachments] = useState([]);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -175,6 +183,106 @@ const LiveScript = ({ isOpen, onClose }) => {
     });
   };
 
+  const formatMessageTime = (dateString) => {
+    return new Date(dateString).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const openRequestDetail = (request) => {
+    setSelectedRequest(request);
+    setReplyMessage('');
+    setPendingAttachments([]);
+    setActiveView('detail');
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please select an image file (JPEG, PNG, GIF, or WebP)');
+      return;
+    }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size must be less than 5MB');
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const result = await uploadImage(file);
+      if (result.error) {
+        toast.error('Failed to upload image');
+        return;
+      }
+      setPendingAttachments((prev) => [
+        ...prev,
+        { url: result.secure_url, type: 'image', name: file.name },
+      ]);
+      toast.success('Image uploaded');
+    } catch (error) {
+      toast.error('Failed to upload image');
+    } finally {
+      setUploadingImage(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const removeAttachment = (index) => {
+    setPendingAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSendReply = async () => {
+    const hasMessage = replyMessage.trim();
+    const hasAttachments = pendingAttachments.length > 0;
+
+    if (!hasMessage && !hasAttachments) return;
+    if (!selectedRequest) return;
+
+    setSendingReply(true);
+    try {
+      const endpoint = SummaryApi.replyToLiveScript(selectedRequest._id);
+      const response = await fetch(endpoint.url, {
+        method: endpoint.method,
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          message: replyMessage.trim(),
+          attachments: pendingAttachments,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        toast.success('Reply sent!');
+        setReplyMessage('');
+        setPendingAttachments([]);
+        setSelectedRequest(data.data);
+        // Update the request in the list
+        setRequests((prev) =>
+          prev.map((r) => (r._id === data.data._id ? data.data : r)),
+        );
+      } else {
+        toast.error(data.message || 'Failed to send reply.');
+      }
+    } catch (error) {
+      toast.error('Failed to send reply.');
+    } finally {
+      setSendingReply(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -217,30 +325,44 @@ const LiveScript = ({ isOpen, onClose }) => {
             </div>
 
             {/* Tabs */}
-            <div className="flex mt-4 space-x-2">
-              <button
-                onClick={() => setActiveView('form')}
-                className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all duration-200 ${
-                  activeView === 'form'
-                    ? 'bg-yellow-500 text-gray-900'
-                    : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700'
-                }`}
-              >
-                <FaPaperPlane className="inline mr-2" />
-                New Request
-              </button>
-              <button
-                onClick={() => setActiveView('requests')}
-                className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all duration-200 ${
-                  activeView === 'requests'
-                    ? 'bg-yellow-500 text-gray-900'
-                    : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700'
-                }`}
-              >
-                <FaRocket className="inline mr-2" />
-                My Requests ({requests.length})
-              </button>
-            </div>
+            {activeView === 'detail' ? (
+              <div className="flex mt-4">
+                <button
+                  onClick={() => {
+                    setActiveView('requests');
+                    setSelectedRequest(null);
+                  }}
+                  className="flex items-center py-2 px-4 rounded-lg font-medium bg-gray-700/50 text-gray-300 hover:bg-gray-700 transition-all duration-200"
+                >
+                  ← Back to Requests
+                </button>
+              </div>
+            ) : (
+              <div className="flex mt-4 space-x-2">
+                <button
+                  onClick={() => setActiveView('form')}
+                  className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all duration-200 ${
+                    activeView === 'form'
+                      ? 'bg-yellow-500 text-gray-900'
+                      : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  <FaPaperPlane className="inline mr-2" />
+                  New Request
+                </button>
+                <button
+                  onClick={() => setActiveView('requests')}
+                  className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all duration-200 ${
+                    activeView === 'requests'
+                      ? 'bg-yellow-500 text-gray-900'
+                      : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  <FaRocket className="inline mr-2" />
+                  My Requests ({requests.length})
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Content */}
@@ -374,7 +496,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                   24-48 hours.
                 </p>
               </form>
-            ) : (
+            ) : activeView === 'requests' ? (
               /* Requests List */
               <div className="space-y-3">
                 {loading ? (
@@ -395,12 +517,15 @@ const LiveScript = ({ isOpen, onClose }) => {
                 ) : (
                   requests.map((request) => {
                     const StatusIcon = STATUS_ICONS[request.status] || FaClock;
+                    const hasMessages =
+                      request.messages && request.messages.length > 0;
                     return (
                       <motion.div
                         key={request._id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-gray-800/50 rounded-xl p-4 border border-gray-700"
+                        onClick={() => openRequestDetail(request)}
+                        className="bg-gray-800/50 rounded-xl p-4 border border-gray-700 cursor-pointer hover:border-purple-500/50 hover:bg-gray-800/70 transition-all"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -413,7 +538,10 @@ const LiveScript = ({ isOpen, onClose }) => {
                           </div>
                           {request.status === 'pending' && (
                             <button
-                              onClick={() => handleDelete(request._id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(request._id);
+                              }}
                               className="p-2 text-gray-500 hover:text-red-400 transition-colors"
                               title="Delete request"
                             >
@@ -455,10 +583,21 @@ const LiveScript = ({ isOpen, onClose }) => {
                           </span>
                         </div>
 
-                        {request.adminNotes && (
+                        {(request.adminNotes || hasMessages) && (
                           <div className="mt-3 p-2 bg-purple-900/30 rounded-lg border border-purple-500/30">
                             <p className="text-xs text-purple-300">
-                              <strong>Admin Notes:</strong> {request.adminNotes}
+                              {hasMessages ? (
+                                <span>
+                                  💬 {request.messages.length} message
+                                  {request.messages.length > 1 ? 's' : ''} - Tap
+                                  to view conversation
+                                </span>
+                              ) : (
+                                <>
+                                  <strong>Admin Notes:</strong>{' '}
+                                  {request.adminNotes}
+                                </>
+                              )}
                             </p>
                           </div>
                         )}
@@ -467,6 +606,176 @@ const LiveScript = ({ isOpen, onClose }) => {
                   })
                 )}
               </div>
+            ) : (
+              /* Detail View */
+              selectedRequest && (
+                <div className="flex flex-col h-full">
+                  {/* Request Info */}
+                  <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700 mb-4">
+                    <h3 className="text-white font-semibold text-lg mb-2">
+                      {selectedRequest.title}
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-3">
+                      {selectedRequest.description}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3 text-xs text-gray-500">
+                        <span>
+                          {
+                            CATEGORIES.find(
+                              (c) => c.value === selectedRequest.category,
+                            )?.icon
+                          }{' '}
+                          {
+                            CATEGORIES.find(
+                              (c) => c.value === selectedRequest.category,
+                            )?.label
+                          }
+                        </span>
+                        <span>•</span>
+                        <span>{formatDate(selectedRequest.createdAt)}</span>
+                      </div>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium border ${STATUS_COLORS[selectedRequest.status]}`}
+                      >
+                        {selectedRequest.status.replace('_', ' ')}
+                      </span>
+                    </div>
+                    {selectedRequest.adminNotes && (
+                      <div className="mt-3 p-2 bg-purple-900/30 rounded-lg border border-purple-500/30">
+                        <p className="text-xs text-purple-300">
+                          <strong>Admin Notes:</strong>{' '}
+                          {selectedRequest.adminNotes}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Conversation */}
+                  <div className="flex-1 overflow-y-auto space-y-3 mb-4 min-h-[150px] max-h-[250px]">
+                    {selectedRequest.messages &&
+                    selectedRequest.messages.length > 0 ? (
+                      selectedRequest.messages.map((msg, idx) => (
+                        <div
+                          key={idx}
+                          className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div
+                            className={`max-w-[80%] rounded-xl px-4 py-2 ${
+                              msg.sender === 'user'
+                                ? 'bg-yellow-500/20 border border-yellow-500/30 text-yellow-100'
+                                : 'bg-purple-900/40 border border-purple-500/30 text-purple-100'
+                            }`}
+                          >
+                            <p className="text-xs font-medium mb-1 opacity-70">
+                              {msg.sender === 'user' ? 'You' : 'Admin'}
+                            </p>
+                            {msg.message && (
+                              <p className="text-sm">{msg.message}</p>
+                            )}
+                            {msg.attachments && msg.attachments.length > 0 && (
+                              <div className="mt-2 space-y-2">
+                                {msg.attachments.map((att, attIdx) => (
+                                  <a
+                                    key={attIdx}
+                                    href={att.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block"
+                                  >
+                                    <img
+                                      src={att.url}
+                                      alt={att.name || 'attachment'}
+                                      className="max-w-full rounded-lg max-h-40 object-cover border border-white/10"
+                                    />
+                                  </a>
+                                ))}
+                              </div>
+                            )}
+                            <p className="text-xs opacity-50 mt-1">
+                              {formatMessageTime(msg.timestamp)}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-gray-500 text-sm">
+                        No messages yet. Start a conversation with our team.
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Reply Input */}
+                  <div className="border-t border-gray-700 pt-4">
+                    {/* Pending Attachments Preview */}
+                    {pendingAttachments.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {pendingAttachments.map((att, idx) => (
+                          <div key={idx} className="relative group">
+                            <img
+                              src={att.url}
+                              alt={att.name}
+                              className="w-16 h-16 object-cover rounded-lg border border-gray-600"
+                            />
+                            <button
+                              onClick={() => removeAttachment(idx)}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <FaTimes size={10} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex space-x-2">
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleImageUpload}
+                        accept="image/*"
+                        className="hidden"
+                      />
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploadingImage}
+                        className="bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
+                        title="Attach image"
+                      >
+                        {uploadingImage ? (
+                          <FaSpinner className="animate-spin" />
+                        ) : (
+                          <FaImage />
+                        )}
+                      </button>
+                      <input
+                        type="text"
+                        value={replyMessage}
+                        onChange={(e) => setReplyMessage(e.target.value)}
+                        onKeyPress={(e) =>
+                          e.key === 'Enter' && handleSendReply()
+                        }
+                        placeholder="Type your message..."
+                        className="flex-1 bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none"
+                      />
+                      <button
+                        onClick={handleSendReply}
+                        disabled={
+                          sendingReply ||
+                          (!replyMessage.trim() &&
+                            pendingAttachments.length === 0)
+                        }
+                        className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                      >
+                        {sendingReply ? (
+                          <FaSpinner className="animate-spin" />
+                        ) : (
+                          <FaPaperPlane />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )
             )}
           </div>
         </motion.div>
