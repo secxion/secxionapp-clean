@@ -291,14 +291,15 @@ const LiveScript = ({ isOpen, onClose }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm"
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
         <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.9, opacity: 0 }}
-          className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden border border-purple-500/30 shadow-2xl"
+          initial={{ opacity: 0, y: 100 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 100 }}
+          className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-t-2xl sm:rounded-2xl w-full sm:max-w-2xl border border-purple-500/30 shadow-2xl sm:m-4"
+          style={{ maxHeight: '85vh' }}
         >
           {/* Header */}
           <div className="bg-gradient-to-r from-purple-900 via-purple-800 to-purple-900 p-4 border-b border-purple-500/30">
@@ -366,7 +367,13 @@ const LiveScript = ({ isOpen, onClose }) => {
           </div>
 
           {/* Content */}
-          <div className="p-4 overflow-y-auto max-h-[calc(90vh-180px)]">
+          <div
+            className="p-4 overflow-y-scroll"
+            style={{
+              maxHeight: 'calc(85vh - 180px)',
+              WebkitOverflowScrolling: 'touch',
+            }}
+          >
             {activeView === 'form' ? (
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Title */}

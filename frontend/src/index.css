@@ -23,32 +23,16 @@ body,
   scroll-behavior: smooth;
 }
 
-/* Prevent mobile bounce/elastic overscroll */
-html {
-  overscroll-behavior: none;
-  overscroll-behavior-y: none;
-  -webkit-overflow-scrolling: auto;
-}
-
+/* Prevent mobile bounce/elastic overscroll - but allow modal scrolling */
+html,
 body {
-  overscroll-behavior: none;
-  overscroll-behavior-y: none;
-  position: fixed;
-  width: 100%;
+  overscroll-behavior-y: contain;
   height: 100%;
-  overflow: hidden;
 }
 
 #root {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
+  height: 100%;
+  overscroll-behavior-y: contain;
 }
 
 /* Global container for full-height layouts */
