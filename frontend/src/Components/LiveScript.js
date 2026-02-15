@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
 import {
@@ -285,14 +286,21 @@ const LiveScript = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  return (
+  return ReactDOM.createPortal(
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 flex items-center justify-center bg-black/90 backdrop-blur-sm"
-        style={{ zIndex: 9999 }}
+        className="fixed inset-0 flex items-center justify-center bg-black/95"
+        style={{
+          zIndex: 99999,
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
         <motion.div
@@ -300,6 +308,7 @@ const LiveScript = ({ isOpen, onClose }) => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 w-full h-full sm:w-auto sm:h-auto sm:max-w-2xl sm:max-h-[90vh] sm:rounded-2xl border-0 sm:border border-purple-500/30 shadow-2xl sm:m-4 flex flex-col"
+          style={{ position: 'relative', zIndex: 99999 }}
         >
           {/* Header */}
           <div className="bg-gradient-to-r from-purple-900 via-purple-800 to-purple-900 p-4 border-b border-purple-500/30 flex-shrink-0">
@@ -784,7 +793,8 @@ const LiveScript = ({ isOpen, onClose }) => {
           </div>
         </motion.div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 };
 
