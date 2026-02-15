@@ -326,12 +326,15 @@ const LiveScript = ({ isOpen, onClose }) => {
                   </p>
                 </div>
               </div>
-              <button
+              <motion.button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-gray-700"
+                className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500/50 border-2 border-white/20"
+                whileHover={{ rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                aria-label="Close LiveScript"
               >
-                <MdClose className="text-xl" />
-              </button>
+                <FaTimes className="w-5 h-5" />
+              </motion.button>
             </div>
 
             {/* Tabs */}
