@@ -728,7 +728,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                   </div>
 
                   {/* Reply Input */}
-                  <div className="border-t border-gray-700 pt-3 flex-shrink-0 mt-auto">
+                  <div className="border-t border-gray-700/50 pt-3 flex-shrink-0 mt-auto">
                     {/* Pending Attachments Preview */}
                     {pendingAttachments.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-3">
@@ -760,7 +760,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                       <button
                         onClick={() => fileInputRef.current?.click()}
                         disabled={uploadingImage}
-                        className="bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
+                        className="bg-gray-700/50 hover:bg-gray-600 text-gray-300 px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
                         title="Attach image"
                       >
                         {uploadingImage ? (
@@ -777,7 +777,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                           e.key === 'Enter' && handleSendReply()
                         }
                         placeholder="Type your message..."
-                        className="flex-1 bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none"
+                        className="flex-1 bg-transparent border border-gray-600/50 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none"
                       />
                       <button
                         onClick={handleSendReply}
