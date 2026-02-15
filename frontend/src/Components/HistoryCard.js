@@ -123,18 +123,14 @@ const HistoryCard = ({ data, isDetailViewOpen, onCloseDetailView }) => {
       </motion.div>
 
       {/* Full-Screen Image Viewer */}
-      {openFullScreenImage &&
-        fullScreenImage &&
-        (console.log('Rendering DisplayImage with:', fullScreenImage), // Debug log
-        (
-          <DisplayImage
-            imgUrl={fullScreenImage} // Pass the selected image URL
-            onClose={() => {
-              console.log('Closing DisplayImage from HistoryCard'); // Debug log
-              setOpenFullScreenImage(false);
-            }}
-          />
-        ))}
+      {openFullScreenImage && fullScreenImage && (
+        <DisplayImage
+          imgUrl={fullScreenImage}
+          onClose={() => {
+            setOpenFullScreenImage(false);
+          }}
+        />
+      )}
 
       {showDetailView && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">

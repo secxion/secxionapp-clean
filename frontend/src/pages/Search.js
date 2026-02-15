@@ -9,15 +9,12 @@ const Search = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  console.log('query', query.search);
-
   const fetchProduct = async () => {
     setLoading(true);
     const response = await fetch(SummaryApi.searchProduct.url + query.search);
     const dataResponse = await response.json();
     setLoading(false);
 
-    console.log('dataResponse', dataResponse);
     setData(dataResponse.data);
   };
 

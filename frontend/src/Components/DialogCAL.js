@@ -25,7 +25,6 @@ const DialogCal = () => {
   };
 
   const handleLogout = () => {
-    console.log('Logout clicked');
     closeSidebar(); // Close sidebar on logout (optional, depending on your UX)
     navigate('/login');
   };

@@ -15,34 +15,23 @@ const AdminAnonymousReports = () => {
   const fetchAnonymousReports = async () => {
     try {
       setLoading(true);
-      console.log(
-        'Fetching contact us messages from:',
-        SummaryApi.getContactUsMessages.url,
-      );
 
       const response = await fetch(SummaryApi.getContactUsMessages.url, {
         method: SummaryApi.getContactUsMessages.method || 'GET',
         credentials: 'include',
       });
 
-      console.log('Contact us messages response:', response);
-
       if (!response.ok) {
-        const errorMessage = `Failed to fetch contact us messages. Status: ${response.status}`;
-        console.error(errorMessage);
-        throw new Error(errorMessage);
+        throw new Error(
+          `Failed to fetch contact us messages. Status: ${response.status}`,
+        );
       }
 
       const data = await response.json();
-      console.log('Contact us messages data:', data);
 
       if (data.success && Array.isArray(data.data)) {
-        console.log('Successfully fetched contact us messages:', data.data);
         setAnonymousReports(data.data);
       } else {
-        console.log(
-          'No contact us messages found in the data or data format is incorrect.',
-        );
         setAnonymousReports([]);
       }
     } catch (error) {
@@ -50,7 +39,6 @@ const AdminAnonymousReports = () => {
       // ...existing code...
     } finally {
       setLoading(false);
-      console.log('Fetching contact us messages completed. Loading:', loading);
     }
   };
 

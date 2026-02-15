@@ -68,10 +68,7 @@ const WalletDashboard = () => {
 
     try {
       const url = SummaryApi.getWalletBalance.url;
-      console.log('Fetching wallet balance from:', url);
-      console.log('User authenticated:', !!user);
 
-      const fetchStartTime = Date.now();
       const response = await fetch(url, {
         method: 'GET',
         credentials: 'include',
@@ -81,11 +78,6 @@ const WalletDashboard = () => {
         },
       });
 
-      const fetchTime = Date.now() - fetchStartTime;
-      console.log(
-        `Response received in ${fetchTime}ms - Status: ${response.status}`,
-      );
-
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`API error response:`, errorText);
@@ -93,7 +85,6 @@ const WalletDashboard = () => {
       }
 
       const data = await response.json();
-      console.log('Balance data:', data);
 
       if (data.success) {
         setWalletBalance(data.balance);

@@ -63,12 +63,6 @@ const NetBlog = () => {
   const handleCommunityFeedClick = () => {
     const isMobile = window.innerWidth <= 768;
 
-    // 🔍 Track clicks (you can replace this with a real analytics call)
-    console.log('Community Feed Clicked:', {
-      time: new Date().toISOString(),
-      platform: isMobile ? 'Mobile' : 'Web',
-    });
-
     // 🎯 Smooth animation effect
     const delay = 100;
     setTimeout(() => {

@@ -7,7 +7,6 @@ import loginBackground from './loginbk.png';
 import thumbsUpGif from './thumbsup.gif';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Navigation from '../Components/Navigation';
-import GlobalToastContainer from '../Components/GlobalToastContainer';
 import SecxionLogo from '../app/slogo.png';
 import NFTBadge from '../Components/NFTBadge';
 
@@ -440,8 +439,6 @@ const Login = () => {
           </div>
         </div>
       )}
-      {/* Global Toast Container - Single instance for entire app */}
-      <GlobalToastContainer />
     </section>
   );
 };

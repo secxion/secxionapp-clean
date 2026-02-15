@@ -64,10 +64,6 @@ const SignUp = () => {
     }
   };
 
-  useEffect(() => {
-    console.log('Current form step state:', step);
-  }, [step]);
-
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));

@@ -74,7 +74,6 @@ const TransactionHistory = () => {
           url += `&status=${currentStatusFilter}`;
         }
 
-        console.log('Fetching transactions from:', url);
         const response = await fetch(url, {
           method: 'GET',
           credentials: 'include',
@@ -83,7 +82,6 @@ const TransactionHistory = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Transactions data:', data);
         if (data.success && data.transactions) {
           setTransactions(data.transactions);
         } else {
@@ -111,7 +109,6 @@ const TransactionHistory = () => {
     const statusValue = statusText.toLowerCase().replace(/ /g, '-');
     setStatusFilter(statusValue);
     setIsFilterOpen(false);
-    console.log('statusFilter updated:', statusValue);
   };
 
   const handleViewMore = () => {

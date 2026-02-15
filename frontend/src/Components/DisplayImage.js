@@ -20,9 +20,7 @@ const DisplayImage = ({ imgUrl, onClose }) => {
     };
   }, [onClose]);
 
-  console.log('DisplayImage component rendered with imgUrl:', imgUrl); // Debug log
   if (!imgUrl) {
-    console.log('DisplayImage not rendered because imgUrl is invalid'); // Debug log
     return null;
   }
 

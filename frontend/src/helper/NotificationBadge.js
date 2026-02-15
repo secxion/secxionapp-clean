@@ -138,6 +138,9 @@ const NotificationBadge = () => {
   }, [user?._id, playNotificationSound, triggerVibration]);
 
   useEffect(() => {
+    // Only poll for notifications if user is logged in
+    if (!user?._id) return;
+
     fetchUnreadCount();
     fetchNewNotifications();
 
@@ -148,7 +151,7 @@ const NotificationBadge = () => {
       clearInterval(unreadCountIntervalId);
       clearInterval(newNotificationsIntervalId);
     };
-  }, [fetchUnreadCount, fetchNewNotifications]);
+  }, [user?._id, fetchUnreadCount, fetchNewNotifications]);
 
   const handleRemoveNotification = useCallback((id) => {
     setPopupNotifications((prev) => prev.filter((notif) => notif.id !== id));

@@ -194,6 +194,8 @@ const Header = () => {
   }, [debouncedSearch, navigate]);
 
   const handleLogout = useCallback(async () => {
+    // Clear any pending toasts before logout
+    toast.dismiss();
     setLoading(true);
     try {
       const response = await fetch(SummaryApi.logout_user.url, {
@@ -220,6 +222,9 @@ const Header = () => {
   }, [dispatch, navigate, token]);
 
   useEffect(() => {
+    // Only poll for notifications if user is logged in
+    if (!user?._id) return;
+
     fetchUnreadCount();
     fetchNewNotifications();
     const unreadInterval = setInterval(fetchUnreadCount, 5000);
@@ -228,7 +233,7 @@ const Header = () => {
       clearInterval(unreadInterval);
       clearInterval(notifyInterval);
     };
-  }, [fetchUnreadCount, fetchNewNotifications]);
+  }, [user?._id, fetchUnreadCount, fetchNewNotifications]);
 
   // Close volume control when clicking outside
   useEffect(() => {

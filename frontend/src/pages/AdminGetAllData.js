@@ -12,13 +12,11 @@ const AdminGetAllData = () => {
       setLoading(true);
       setError(null);
       try {
-        console.log('Fetching admin data from:', SummaryApi.adminAllData.url);
         const response = await fetch(SummaryApi.adminAllData.url);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Admin data received:', data);
         setUsersWithData(data.data);
       } catch (err) {
         setError(err.message);
