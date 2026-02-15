@@ -206,8 +206,8 @@ const SidePanel = ({
                 {/* LiveScript Button */}
                 <button
                   onClick={() => {
-                    handleLinkClick();
                     onOpenLiveScript?.();
+                    setTimeout(() => handleLinkClick(), 100);
                   }}
                   className="group flex items-center w-full px-4 py-3 rounded-xl bg-gradient-to-r from-purple-900/50 to-purple-800/50 hover:from-purple-800/70 hover:to-purple-700/70 border-2 border-purple-500/50 hover:border-purple-400/70 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg"
                 >
