@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { CgClose } from 'react-icons/cg';
 import productCategory from '../helpers/productCategory';
 import currencyData from '../helpers/currencyData';
-import { FaCloudUploadAlt, FaPlusCircle } from 'react-icons/fa';
+import { FaCloudUploadAlt, FaPlusCircle, FaFileImport } from 'react-icons/fa';
 import uploadImage from '../helpers/uploadImage';
 import { MdDelete } from 'react-icons/md';
 import SummaryApi from '../common';
 import { toast } from 'react-toastify';
 import RequirementInput from './RequirementInput';
+import BulkImportModal from './BulkImportModal';
 
 const UploadProduct = ({ onClose, fetchData }) => {
   const [data, setData] = useState({
@@ -23,10 +24,50 @@ const UploadProduct = ({ onClose, fetchData }) => {
   const [newSellingPrice, setNewSellingPrice] = useState('');
   const [newRequirement, setNewRequirement] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [showBulkImport, setShowBulkImport] = useState(false);
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handle bulk import data
+  const handleBulkImport = (importedData) => {
+    // importedData is { currency: [{ faceValue, sellingPrice, requirement }] }
+    setData((prev) => {
+      const updatedPricing = [...prev.pricing];
+
+      for (const [currency, faceValues] of Object.entries(importedData)) {
+        if (currency === 'UNKNOWN') continue; // Skip unknown currencies
+
+        const existingIndex = updatedPricing.findIndex(
+          (p) => p.currency === currency,
+        );
+
+        if (existingIndex !== -1) {
+          // Add to existing currency
+          for (const fv of faceValues) {
+            updatedPricing[existingIndex].faceValues.push({
+              faceValue: fv.faceValue,
+              sellingPrice: parseFloat(fv.sellingPrice) || 0,
+              requirement: fv.requirement || '',
+            });
+          }
+        } else {
+          // Create new currency entry
+          updatedPricing.push({
+            currency,
+            faceValues: faceValues.map((fv) => ({
+              faceValue: fv.faceValue,
+              sellingPrice: parseFloat(fv.sellingPrice) || 0,
+              requirement: fv.requirement || '',
+            })),
+          });
+        }
+      }
+
+      return { ...prev, pricing: updatedPricing };
+    });
   };
 
   const handleAddPricing = () => {
@@ -341,13 +382,22 @@ const UploadProduct = ({ onClose, fetchData }) => {
               />
             </div>
           </div>
-          <button
-            type="button"
-            onClick={handleAddPricing}
-            className="inline-flex items-center px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg text-sm text-slate-300 hover:bg-slate-700 hover:border-yellow-500/50 transition-colors"
-          >
-            <FaPlusCircle className="mr-2 text-yellow-500" /> Add Pricing
-          </button>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={handleAddPricing}
+              className="inline-flex items-center px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg text-sm text-slate-300 hover:bg-slate-700 hover:border-yellow-500/50 transition-colors"
+            >
+              <FaPlusCircle className="mr-2 text-yellow-500" /> Add Pricing
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowBulkImport(true)}
+              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-500/50 rounded-lg text-sm text-yellow-400 hover:from-yellow-500/30 hover:to-yellow-600/30 transition-colors"
+            >
+              <FaFileImport className="mr-2" /> Bulk Import
+            </button>
+          </div>
 
           {/* Pricing List */}
           {data.pricing.length > 0 && (
@@ -414,6 +464,14 @@ const UploadProduct = ({ onClose, fetchData }) => {
           </button>
         </div>
       </form>
+
+      {/* Bulk Import Modal */}
+      <BulkImportModal
+        isOpen={showBulkImport}
+        onClose={() => setShowBulkImport(false)}
+        onImport={handleBulkImport}
+        existingCurrencies={data.pricing.map((p) => p.currency)}
+      />
     </div>
   );
 };

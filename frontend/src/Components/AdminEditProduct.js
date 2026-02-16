@@ -2,7 +2,7 @@
 import { CgClose } from 'react-icons/cg';
 import productCategory from '../helpers/productCategory';
 import currencyData from '../helpers/currencyData';
-import { FaCloudUploadAlt } from 'react-icons/fa';
+import { FaCloudUploadAlt, FaFileImport } from 'react-icons/fa';
 import uploadImage from '../helpers/uploadImage';
 import DisplayImage from './DisplayImage';
 import {
@@ -13,6 +13,7 @@ import {
 import SummaryApi from '../common';
 import { toast } from 'react-toastify';
 import RequirementInput from './RequirementInput';
+import BulkImportModal from './BulkImportModal';
 
 const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
   const [data, setData] = useState({
@@ -28,6 +29,7 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
   const [openFullScreenImage, setOpenFullScreenImage] = useState(false);
   const [fullScreenImage, setFullScreenImage] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [showBulkImport, setShowBulkImport] = useState(false);
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -103,6 +105,42 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
       if (!updatedPricing[currencyIndex]?.faceValues[faceValueIndex])
         return prev;
       updatedPricing[currencyIndex].faceValues.splice(faceValueIndex, 1);
+      return { ...prev, pricing: updatedPricing };
+    });
+  };
+
+  // Handle bulk import data
+  const handleBulkImport = (importedData) => {
+    setData((prev) => {
+      const updatedPricing = [...prev.pricing];
+
+      for (const [currency, faceValues] of Object.entries(importedData)) {
+        if (currency === 'UNKNOWN') continue;
+
+        const existingIndex = updatedPricing.findIndex(
+          (p) => p.currency === currency,
+        );
+
+        if (existingIndex !== -1) {
+          for (const fv of faceValues) {
+            updatedPricing[existingIndex].faceValues.push({
+              faceValue: fv.faceValue,
+              sellingPrice: parseFloat(fv.sellingPrice) || 0,
+              requirement: fv.requirement || '',
+            });
+          }
+        } else {
+          updatedPricing.push({
+            currency,
+            faceValues: faceValues.map((fv) => ({
+              faceValue: fv.faceValue,
+              sellingPrice: parseFloat(fv.sellingPrice) || 0,
+              requirement: fv.requirement || '',
+            })),
+          });
+        }
+      }
+
       return { ...prev, pricing: updatedPricing };
     });
   };
@@ -421,6 +459,13 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
               <MdAddCircleOutline className="mr-2 text-yellow-500" /> Add
               Currency
             </button>
+            <button
+              type="button"
+              onClick={() => setShowBulkImport(true)}
+              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-500/50 rounded-lg text-sm text-yellow-400 hover:from-yellow-500/30 hover:to-yellow-600/30 transition-colors"
+            >
+              <FaFileImport className="mr-2" /> Bulk Import
+            </button>
           </div>
 
           {/* Description */}
@@ -463,6 +508,14 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
           imgUrl={fullScreenImage}
         />
       )}
+
+      {/* Bulk Import Modal */}
+      <BulkImportModal
+        isOpen={showBulkImport}
+        onClose={() => setShowBulkImport(false)}
+        onImport={handleBulkImport}
+        existingCurrencies={data.pricing.map((p) => p.currency)}
+      />
     </div>
   );
 };

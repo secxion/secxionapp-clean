@@ -454,73 +454,72 @@ const ProductDetails = () => {
                   {currentFaceValues.map((fv, index) => (
                     <div
                       key={`${fv.faceValue}-${index}`}
-                      className="bg-white rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 transition-colors border-2 border-transparent hover:border-4 hover:border-yellow-500 hover:shadow-lg" // White background and yellow border on hover
+                      className="bg-white rounded-xl p-4 space-y-3 transition-colors border-2 border-transparent hover:border-4 hover:border-yellow-500 hover:shadow-lg"
                     >
-                      <div className="flex items-center space-x-4">
-                        {selectedCurrencyInfo?.flag && (
-                          <img
-                            src={selectedCurrencyInfo.flag}
-                            alt={`${selectedCurrencyInfo.currency} flag`}
-                            className="w-6 h-6 rounded-sm object-contain shadow-sm flex-shrink-0"
-                            style={{ minWidth: '20Height', minHeight: '20px' }}
-                            loading="lazy"
-                          />
-                        )}
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm font-medium text-gray-600 glossy-text">
-                              {' '}
-                              {/* Applied glossy text */}
-                              Face Value:
-                            </span>
-                            <span className="font-semibold text-gray-900 glossy-text">
-                              {' '}
-                              {/* Applied glossy text */}
-                              {fv.faceValue}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm font-medium text-gray-600 glossy-text">
-                              {' '}
-                              {/* Applied glossy text */}
-                              Rate:
-                            </span>
-                            <span className="font-semibold text-emerald-600 glossy-text">
-                              {' '}
-                              {/* Applied glossy text */}
-                              {fv.sellingPrice}
-                            </span>
+                      {/* Top row: Face value info + Sell button */}
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div className="flex items-center space-x-4">
+                          {selectedCurrencyInfo?.flag && (
+                            <img
+                              src={selectedCurrencyInfo.flag}
+                              alt={`${selectedCurrencyInfo.currency} flag`}
+                              className="w-6 h-6 rounded-sm object-contain shadow-sm flex-shrink-0"
+                              style={{ minWidth: '20px', minHeight: '20px' }}
+                              loading="lazy"
+                            />
+                          )}
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-sm font-medium text-gray-600 glossy-text">
+                                Face Value:
+                              </span>
+                              <span className="font-semibold text-gray-900 glossy-text">
+                                {fv.faceValue}
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <span className="text-sm font-medium text-gray-600 glossy-text">
+                                Rate:
+                              </span>
+                              <span className="font-semibold text-emerald-600 glossy-text">
+                                {fv.sellingPrice}
+                              </span>
+                            </div>
                           </div>
                         </div>
+
+                        <button
+                          className="inline-flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 focus:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-2 px-6 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all duration-200 hover:shadow-md border-4 border-yellow-700 glossy-text flex-shrink-0"
+                          onClick={() => handleSell(fv)}
+                          disabled={!user}
+                          aria-label={`Sell ${fv.faceValue} ${selectedCurrencyInfo?.currency} at rate ${fv.sellingPrice}`}
+                        >
+                          <svg
+                            className="w-4 h-4 mr-2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                            />
+                          </svg>
+                          Sell Now
+                        </button>
                       </div>
 
+                      {/* Requirement block - always full width below */}
                       {fv.requirement && (
-                        <div className="text-sm text-gray-600 italic glossy-text whitespace-pre-line bg-gray-50 rounded-lg p-3 border border-gray-200">
+                        <div
+                          className="text-sm text-gray-600 italic glossy-text bg-gray-50 rounded-lg p-3 border border-gray-200"
+                          style={{ whiteSpace: 'pre-line' }}
+                        >
                           {fv.requirement}
                         </div>
                       )}
-
-                      <button
-                        className="inline-flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 focus:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-2 px-6 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all duration-200 hover:shadow-md border-4 border-yellow-700 glossy-text" // Yellow border and glossy text
-                        onClick={() => handleSell(fv)}
-                        disabled={!user}
-                        aria-label={`Sell ${fv.faceValue} ${selectedCurrencyInfo?.currency} at rate ${fv.sellingPrice}`}
-                      >
-                        <svg
-                          className="w-4 h-4 mr-2"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                          />
-                        </svg>
-                        Sell Now
-                      </button>
                     </div>
                   ))}
                 </div>

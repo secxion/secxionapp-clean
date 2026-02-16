@@ -17,11 +17,11 @@ import SummaryApi from '../common';
 import uploadImage from '../helpers/uploadImage';
 
 const CATEGORIES = {
-  script: { label: 'Script', icon: 'ðŸ“œ' },
-  tool: { label: 'Tool', icon: 'ðŸ› ï¸' },
-  bot: { label: 'Bot', icon: 'ðŸ¤–' },
-  automation: { label: 'Automation', icon: 'âš™ï¸' },
-  other: { label: 'Other', icon: 'ðŸ“¦' },
+  script: { label: 'Script', icon: '📜' },
+  tool: { label: 'Tool', icon: '🛠️' },
+  bot: { label: 'Bot', icon: '🤖' },
+  automation: { label: 'Automation', icon: '⚙️' },
+  other: { label: 'Other', icon: '📦' },
 };
 
 const BUDGETS = {
