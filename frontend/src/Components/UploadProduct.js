@@ -7,6 +7,7 @@ import uploadImage from '../helpers/uploadImage';
 import { MdDelete } from 'react-icons/md';
 import SummaryApi from '../common';
 import { toast } from 'react-toastify';
+import RequirementInput from './RequirementInput';
 
 const UploadProduct = ({ onClose, fetchData }) => {
   const [data, setData] = useState({
@@ -329,16 +330,14 @@ const UploadProduct = ({ onClose, fetchData }) => {
                 className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
               />
             </div>
-            <div>
+            <div className="col-span-2">
               <label className="block text-xs text-slate-400 mb-1">
-                Requirement
+                Requirement (click to expand)
               </label>
-              <input
-                type="text"
-                placeholder="Requirements"
+              <RequirementInput
                 value={newRequirement}
-                onChange={(e) => setNewRequirement(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
+                onChange={(val) => setNewRequirement(val)}
+                placeholder="Click to add requirements..."
               />
             </div>
           </div>
@@ -358,7 +357,7 @@ const UploadProduct = ({ onClose, fetchData }) => {
                   key={currencyIndex}
                   className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50"
                 >
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center justify-between mb-3">
                     <h4 className="font-semibold text-white">
                       {pricing.currency}
                     </h4>
@@ -370,19 +369,25 @@ const UploadProduct = ({ onClose, fetchData }) => {
                       Remove
                     </button>
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-3">
                     {pricing.faceValues.map((fv, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between text-sm"
+                        className="bg-slate-700/30 rounded-lg p-3"
                       >
-                        <span className="text-slate-300">{fv.faceValue}</span>
-                        <span className="text-yellow-500">
-                          ₦{fv.sellingPrice}
-                        </span>
-                        <span className="text-slate-500 text-xs">
-                          {fv.requirement}
-                        </span>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-white font-medium">
+                            {fv.faceValue}
+                          </span>
+                          <span className="text-yellow-500 font-semibold">
+                            ₦{fv.sellingPrice}
+                          </span>
+                        </div>
+                        {fv.requirement && (
+                          <div className="text-slate-400 text-xs whitespace-pre-line border-t border-slate-600/50 pt-2 mt-2">
+                            {fv.requirement}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

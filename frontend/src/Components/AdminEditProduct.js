@@ -12,6 +12,7 @@ import {
 } from 'react-icons/md';
 import SummaryApi from '../common';
 import { toast } from 'react-toastify';
+import RequirementInput from './RequirementInput';
 
 const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
   const [data, setData] = useState({
@@ -342,59 +343,64 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
                   {currency.faceValues.map((faceValue, faceValueIndex) => (
                     <div
                       key={faceValueIndex}
-                      className="grid grid-cols-4 gap-2 items-center"
+                      className="bg-slate-700/30 rounded-lg p-3 space-y-2"
                     >
-                      <input
-                        type="text"
-                        placeholder="Face Value"
-                        value={faceValue.faceValue}
-                        onChange={(e) =>
-                          handleUpdatePricing(
-                            currencyIndex,
-                            faceValueIndex,
-                            'faceValue',
-                            e.target.value,
-                          )
-                        }
-                        className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Rate"
-                        value={faceValue.sellingPrice}
-                        onChange={(e) =>
-                          handleUpdatePricing(
-                            currencyIndex,
-                            faceValueIndex,
-                            'sellingPrice',
-                            e.target.value,
-                          )
-                        }
-                        className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Requirement"
-                        value={faceValue.requirement}
-                        onChange={(e) =>
-                          handleUpdatePricing(
-                            currencyIndex,
-                            faceValueIndex,
-                            'requirement',
-                            e.target.value,
-                          )
-                        }
-                        className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleDeleteFaceValue(currencyIndex, faceValueIndex)
-                        }
-                        className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-colors"
-                      >
-                        <MdDelete size={18} />
-                      </button>
+                      <div className="grid grid-cols-3 gap-2 items-center">
+                        <input
+                          type="text"
+                          placeholder="Face Value"
+                          value={faceValue.faceValue}
+                          onChange={(e) =>
+                            handleUpdatePricing(
+                              currencyIndex,
+                              faceValueIndex,
+                              'faceValue',
+                              e.target.value,
+                            )
+                          }
+                          className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Rate"
+                          value={faceValue.sellingPrice}
+                          onChange={(e) =>
+                            handleUpdatePricing(
+                              currencyIndex,
+                              faceValueIndex,
+                              'sellingPrice',
+                              e.target.value,
+                            )
+                          }
+                          className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleDeleteFaceValue(currencyIndex, faceValueIndex)
+                          }
+                          className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-colors justify-self-end"
+                        >
+                          <MdDelete size={18} />
+                        </button>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-slate-400 mb-1">
+                          Requirement (click to expand)
+                        </label>
+                        <RequirementInput
+                          value={faceValue.requirement}
+                          onChange={(val) =>
+                            handleUpdatePricing(
+                              currencyIndex,
+                              faceValueIndex,
+                              'requirement',
+                              val,
+                            )
+                          }
+                          placeholder="Click to add requirements..."
+                        />
+                      </div>
                     </div>
                   ))}
                   <button

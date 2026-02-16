@@ -495,11 +495,9 @@ const ProductDetails = () => {
                       </div>
 
                       {fv.requirement && (
-                        <p className="text-sm text-gray-600 italic glossy-text">
-                          {' '}
-                          {/* Applied glossy text */}
+                        <div className="text-sm text-gray-600 italic glossy-text whitespace-pre-line bg-gray-50 rounded-lg p-3 border border-gray-200">
                           {fv.requirement}
-                        </p>
+                        </div>
                       )}
 
                       <button
