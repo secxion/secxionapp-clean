@@ -127,6 +127,14 @@ const Home = () => {
   const portfolioValue = walletBalance;
   // Removed unused portfolioGrowth
 
+  // Filter transactions from the last 7 days
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const recentTransactions = transactions.filter((t) => {
+    const txDate = new Date(t.createdAt || t.date);
+    return txDate >= sevenDaysAgo;
+  });
+
   const quickStats = [
     {
       label: 'Portfolio Value',
@@ -135,9 +143,9 @@ const Home = () => {
     },
     {
       label: 'Recent Transactions',
-      value: `${transactions.length}`,
-      change: `${transactions.length} total`,
-      positive: transactions.length > 0,
+      value: `${recentTransactions.length}`,
+      change: 'last 7 days',
+      positive: recentTransactions.length > 0,
     },
   ];
 

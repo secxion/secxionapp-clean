@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Turnstile } from 'react-turnstile';
 import SummaryApi from '../common';
 import Context from '../Context';
 import loginBackground from './loginbk.png';
@@ -52,10 +53,8 @@ const Login = () => {
   const { fetchUserDetails } = useContext(Context);
   const navigate = useNavigate();
   const [verificationVisible, setVerificationVisible] = useState(false);
-  const [sliderValue, setSliderValue] = useState(0);
-  const [targetValue, setTargetValue] = useState(0);
+  const [turnstileToken, setTurnstileToken] = useState(null);
   const [isVerified, setIsVerified] = useState(false);
-  const [sliderSignature, setSliderSignature] = useState('');
   const [verifying, setVerifying] = useState(false);
 
   const [bubbleIn, setBubbleIn] = useState(false);
@@ -81,31 +80,27 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (verificationVisible) fetchSliderTarget();
+    if (verificationVisible) {
+      // Reset Turnstile state when modal opens
+      setTurnstileToken(null);
+      setIsVerified(false);
+    }
   }, [verificationVisible]);
 
-  const fetchSliderTarget = async () => {
-    try {
-      const res = await fetch(SummaryApi.sliderVerification.url, {
-        method: SummaryApi.sliderVerification.method,
-        credentials: 'include',
-      });
-      if (!res.ok) throw new Error('Failed to fetch verification challenge.');
-      const { target, signature } = await res.json();
-      setTargetValue(target);
-      setSliderSignature(signature);
-      setSliderValue(0);
-      setIsVerified(false);
-    } catch (error) {
-      console.error('Error fetching slider target:', error);
-      toast.error('Failed to load verification challenge. Please try again.');
-    }
+  const handleTurnstileSuccess = (token) => {
+    setTurnstileToken(token);
+    setIsVerified(true);
   };
 
-  const handleSliderChange = (e) => {
-    const val = Number(e.target.value);
-    setSliderValue(val);
-    setIsVerified(Math.abs(val - targetValue) <= 3);
+  const handleTurnstileExpire = () => {
+    setTurnstileToken(null);
+    setIsVerified(false);
+  };
+
+  const handleTurnstileError = () => {
+    setTurnstileToken(null);
+    setIsVerified(false);
+    toast.error('Verification failed. Please try again.');
   };
 
   const handleVerificationComplete = async () => {
@@ -126,9 +121,7 @@ const Login = () => {
         },
         body: JSON.stringify({
           ...data,
-          sliderValue,
-          targetValue,
-          slider: { value: sliderValue, signature: sliderSignature },
+          turnstileToken,
         }),
       });
       const result = await response.json();
@@ -394,29 +387,24 @@ const Login = () => {
       {verificationVisible && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/70 p-6 rounded-xl border-2 border-yellow-700 shadow-lg w-full max-w-sm text-gray-100 backdrop-blur-xl">
-            <h2 className="text-lg font-bold mb-2 text-center text-yellow-200">
-              Human Verification
+            <h2 className="text-lg font-bold mb-4 text-center">
+              <span className="bg-yellow-500 text-gray-900 px-2 py-1 rounded">
+                Human
+              </span>{' '}
+              <span className="text-yellow-400">Verification</span>
             </h2>
-            <div className="text-sm text-gray-300 mb-4 text-center space-y-3">
-              Slide to match{' '}
-              <span className="font-semibold text-yellow-500 px-1 border-2 border-yellow-700 rounded-md">
-                {targetValue}
-              </span>
-              <div className="text-center text-sm mb-3">
-                <span className="text-gray-400">Current: </span>
-                <span className="font-bold text-yellow-400 px-1">
-                  {sliderValue}
-                </span>
-              </div>
+            <div className="flex justify-center mb-4">
+              <Turnstile
+                sitekey={
+                  process.env.REACT_APP_TURNSTILE_SITE_KEY ||
+                  '1x00000000000000000000AA'
+                }
+                onSuccess={handleTurnstileSuccess}
+                onExpire={handleTurnstileExpire}
+                onError={handleTurnstileError}
+                theme="dark"
+              />
             </div>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={sliderValue}
-              onChange={handleSliderChange}
-              className="w-full h-2 accent-yellow-500 mb-4 cursor-pointer"
-            />
             <Button
               onClick={handleVerificationComplete}
               disabled={!isVerified || verifying}

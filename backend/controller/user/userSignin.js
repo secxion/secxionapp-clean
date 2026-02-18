@@ -1,36 +1,33 @@
 import bcrypt from "bcryptjs";
 import userModel from "../../models/userModel.js";
 import jwt from "jsonwebtoken";
-import { verifySliderValue } from "../../utils/sliderVerification.js";
+import { verifyTurnstileToken } from "../../utils/turnstileVerification.js";
 
 async function userSignInController(req, res, next) {
   try {
-    const { email: rawEmail, password, sliderValue, targetValue, slider } = req.body;
+    const { email: rawEmail, password, turnstileToken } = req.body;
     const email = rawEmail?.toLowerCase().trim();
     console.log("🔐 Login attempt:");
     console.log("📧 Email:", email);
-    console.log("🎯 Target:", targetValue);
-    console.log("📍 Slider:", sliderValue);
-    console.log("📩 Slider Signature Object:", slider);
+    console.log("🔒 Turnstile token present:", !!turnstileToken);
+    
     if (!email || !password) {
       const err = new Error("Please provide email and password.");
       err.status = 400;
       throw err;
     }
-    if (
-      typeof sliderValue !== "number" ||
-      typeof targetValue !== "number" ||
-      Math.abs(sliderValue - targetValue) > 3
-    ) {
-      const err = new Error("Verification failed. Please try again.");
+
+    // Verify Cloudflare Turnstile token
+    const remoteIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    const turnstileResult = await verifyTurnstileToken(turnstileToken, remoteIp);
+    
+    if (!turnstileResult.success) {
+      console.log("❌ Turnstile verification failed:", turnstileResult.errorCodes);
+      const err = new Error("Human verification failed. Please try again.");
       err.status = 403;
       throw err;
     }
-    if (!slider || !verifySliderValue(slider.value, slider.signature)) {
-      const err = new Error("Verification failed. Please try again.");
-      err.status = 403;
-      throw err;
-    }
+
     const user = await userModel.findOne({ email }).select("+password");
     if (!user) {
       const err = new Error("User not found.");
