@@ -452,7 +452,7 @@ router.delete("/delete-user", deleteUser);
 
 // Wallet balance
 router.get(
-  "/wallet/balane/:userId",
+  "/wallet/balance/:userId",
   authToken,
   noCache,
   getOtherUserWalletBalance,
