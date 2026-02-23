@@ -17,15 +17,22 @@ async function userSignInController(req, res, next) {
       throw err;
     }
 
-    // Verify Cloudflare Turnstile token
-    const remoteIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-    const turnstileResult = await verifyTurnstileToken(turnstileToken, remoteIp);
+    // Skip Turnstile verification for mobile app requests
+    const isMobileApp = req.headers["x-platform"] === "mobile";
     
-    if (!turnstileResult.success) {
-      console.log("❌ Turnstile verification failed:", turnstileResult.errorCodes);
-      const err = new Error("Human verification failed. Please try again.");
-      err.status = 403;
-      throw err;
+    if (!isMobileApp) {
+      // Verify Cloudflare Turnstile token for web requests only
+      const remoteIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+      const turnstileResult = await verifyTurnstileToken(turnstileToken, remoteIp);
+      
+      if (!turnstileResult.success) {
+        console.log("❌ Turnstile verification failed:", turnstileResult.errorCodes);
+        const err = new Error("Human verification failed. Please try again.");
+        err.status = 403;
+        throw err;
+      }
+    } else {
+      console.log("📱 Mobile app request - skipping Turnstile verification");
     }
 
     const user = await userModel.findOne({ email }).select("+password");
