@@ -17,6 +17,7 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
   const [successMsg, setSuccessMsg] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
+  const [sendingCode, setSendingCode] = useState(false);
 
   // Countdown timer
   useEffect(() => {
@@ -92,7 +93,9 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
   }, [form.accountNumber, form.bankCode]);
 
   const sendVerificationCode = async () => {
+    if (sendingCode) return; // Prevent multiple clicks
     setError('');
+    setSendingCode(true);
     try {
       const res = await fetch(SummaryApi.sendBankCode.url, {
         method: 'POST',
@@ -104,8 +107,11 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
       setCodeSent(true);
       setResendTimer(60); // Start countdown
       setShowConfirmModal(false); // Close modal after sending code
+      setSuccessMsg('Verification code sent to your email!');
     } catch (err) {
       setError(err.message);
+    } finally {
+      setSendingCode(false);
     }
   };
 
@@ -175,8 +181,8 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
             required
           >
             <option value="">-- Select Bank --</option>
-            {banks.map((bank) => (
-              <option key={bank.code} value={bank.code}>
+            {banks.map((bank, index) => (
+              <option key={`${bank.code}-${index}`} value={bank.code}>
                 {bank.name}
               </option>
             ))}
@@ -195,9 +201,9 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
             maxLength={10}
           />
           {loadingResolve && (
-            <p className="text-sm text-gray-500 mt-1">
+            <div className="text-sm text-gray-500 mt-1">
               <SecxionSpinner size="small" message="" />
-            </p>
+            </div>
           )}
         </label>
 
@@ -218,16 +224,19 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
               onChange={(e) => setVerificationCode(e.target.value)}
               placeholder="Enter 6-digit code"
               maxLength={6}
-              className="w-full border px-3 py-2 rounded text-center focus:ring-green-500 focus:border-green-500 shadow-sm"
+              className="w-full border px-3 py-2 rounded text-center text-black focus:ring-green-500 focus:border-green-500 shadow-sm"
             />
             <div className="text-sm mt-2 text-gray-600">
               {resendTimer > 0 ? (
                 <>Resend available in {resendTimer}s</>
+              ) : sendingCode ? (
+                <span className="text-gray-500">Sending...</span>
               ) : (
                 <button
                   type="button"
                   onClick={sendVerificationCode}
-                  className="text-blue-600 hover:underline"
+                  disabled={sendingCode}
+                  className="text-blue-600 hover:underline disabled:text-gray-400"
                 >
                   Resend Code
                 </button>
@@ -270,9 +279,10 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
 
             <button
               onClick={sendVerificationCode}
-              className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 "
+              disabled={sendingCode}
+              className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed"
             >
-              Send Verification Code
+              {sendingCode ? 'Sending...' : 'Send Verification Code'}
             </button>
           </div>
         </div>
