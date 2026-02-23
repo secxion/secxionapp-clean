@@ -18,7 +18,9 @@ async function userSignInController(req, res, next) {
     }
 
     // Skip Turnstile verification for mobile app requests
-    const isMobileApp = req.headers["x-platform"] === "mobile";
+    const platform = req.headers["x-platform"] || req.headers["X-Platform"];
+    const isMobileApp = platform === "mobile";
+    console.log("🔍 Platform header:", platform, "| isMobile:", isMobileApp);
     
     if (!isMobileApp) {
       // Verify Cloudflare Turnstile token for web requests only
