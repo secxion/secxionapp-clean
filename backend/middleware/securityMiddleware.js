@@ -98,6 +98,11 @@ export const authLimiter = rateLimit({
   message: "Too many login attempts, please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    // Skip rate limiting for mobile app requests
+    const platform = req.headers["x-platform"];
+    return platform === "mobile";
+  },
   handler: (req, res) => {
     logger.logAuth("LOGIN_ATTEMPT", "BRUTE_FORCE", "blocked", {
       ip: req.ip,
