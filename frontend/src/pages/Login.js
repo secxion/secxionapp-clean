@@ -333,18 +333,20 @@ const Login = () => {
             </Link>
           </div>
 
-          <Button
-            type="submit"
-            disabled={formSubmitting}
-            className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg ${
-              formSubmitting
-                ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                : ''
-            } ${bubbleIn ? 'bubble-pop' : ''}`}
-            style={getBubbleStyle(bubbleIn, 8)}
-          >
-            {formSubmitting ? 'Verifying...' : 'Login'}
-          </Button>
+          {!verificationVisible && (
+            <Button
+              type="submit"
+              disabled={formSubmitting}
+              className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg ${
+                formSubmitting
+                  ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                  : ''
+              } ${bubbleIn ? 'bubble-pop' : ''}`}
+              style={getBubbleStyle(bubbleIn, 8)}
+            >
+              Login
+            </Button>
+          )}
         </form>
 
         <p className="mt-6 text-center text-gray-300 text-sm">
