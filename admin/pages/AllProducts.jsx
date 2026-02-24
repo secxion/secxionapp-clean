@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import UploadProduct from '../Components/UploadProduct';
+import UploadProduct from '../components/UploadProduct';
 import SummaryApi from '../common';
-import AdminProductCard from '../Components/AdminProductCard';
+import AdminProductCard from '../components/AdminProductCard';
 import {
   FaPlus,
   FaBoxOpen,

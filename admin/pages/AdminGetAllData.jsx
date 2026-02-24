@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import SummaryApi from '../common';
-import UserDatapadCard from '../Components/UserDatapadCard';
+import UserDatapadCard from '../components/UserDatapadCard';
 import { FaMobileAlt } from 'react-icons/fa';
 
 const AdminGetAllData = () => {

@@ -11,7 +11,7 @@ import {
   FaUser,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import ChangeUserRole from '../Components/ChangeUserRole';
+import ChangeUserRole from '../components/ChangeUserRole';
 
 const fetchAllUsers = async () => {
   const response = await fetch(SummaryApi.allUser.url, {
