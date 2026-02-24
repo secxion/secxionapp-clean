@@ -31,8 +31,7 @@ function App() {
   const user = useSelector((state) => state.user.user);
   const location = useLocation();
 
-  // Check if we're on admin panel routes
-  const isAdminRoute = location.pathname.startsWith('/admin-panel');
+  // Admin panel has been moved to standalone app - no longer check isAdminRoute
 
   useEffect(() => {
     setViewportHeight();
@@ -114,26 +113,19 @@ function App() {
           signinUserAPI,
         }}
       >
-        {isAdminRoute ? (
-          // Admin panel - full screen, no header/nav
+        {/* Regular app with header/nav */}
+        <div className="global-container">
           <Suspense fallback={<Loader />}>
-            <Outlet />
+            {user && <Net blogs={blogs} fetchBlogs={fetchBlogs} />}
+            <main className="main-content">
+              {user && <Header />}
+              <div>
+                <Outlet />
+              </div>
+            </main>
           </Suspense>
-        ) : (
-          // Regular app with header/nav
-          <div className="global-container">
-            <Suspense fallback={<Loader />}>
-              {user && <Net blogs={blogs} fetchBlogs={fetchBlogs} />}
-              <main className="main-content">
-                {user && <Header />}
-                <div>
-                  <Outlet />
-                </div>
-              </main>
-            </Suspense>
-            <InstallPrompt />
-          </div>
-        )}
+          <InstallPrompt />
+        </div>
       </Context.Provider>
     </ContextProvider>
   );

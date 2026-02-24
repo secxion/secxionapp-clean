@@ -324,11 +324,11 @@ const Net = ({ blogs }) => {
                 </Link>
               )}
 
-              {/* Conditionally render Admin Panel link */}
-              {user?.role === ROLE.ADMIN && currentRoute !== '/admin-panel' && (
+              {/* Admin Panel link - DEACTIVATED: Admin moved to standalone app */}
+              {/* {user?.role === ROLE.ADMIN && currentRoute !== '/admin-panel' && (
                 <Link
                   to="/admin-panel"
-                  className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 transition-colors duration-150 group glossy-text" // Applied glossy-text
+                  className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 transition-colors duration-150 group glossy-text"
                   onClick={() => setIsDropdownOpen(false)}
                 >
                   <Shield className="w-4 h-4 mr-3 text-gray-500 group-hover:text-purple-600" />
@@ -336,7 +336,7 @@ const Net = ({ blogs }) => {
                     Admin Panel
                   </span>
                 </Link>
-              )}
+              )} */}
 
               {/* Conditionally render Profile Settings link */}
               {currentRoute !== '/profile' && (

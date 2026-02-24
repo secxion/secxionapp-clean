@@ -73,7 +73,8 @@ const PDSidePanel = ({ isSidePanelOpen, onCloseSidePanel, onLogout }) => {
             <FontAwesomeIcon icon={faFileAlt} className="mr-3 w-5 h-5" />
             Card Status
           </Link>
-          {user?.role === ROLE.ADMIN && (
+          {/* Admin Panel link - DEACTIVATED: Admin moved to standalone app */}
+          {/* {user?.role === ROLE.ADMIN && (
             <Link
               to="/admin-panel"
               onClick={onCloseSidePanel}
@@ -82,7 +83,7 @@ const PDSidePanel = ({ isSidePanelOpen, onCloseSidePanel, onLogout }) => {
               <FontAwesomeIcon icon={faLockOpen} className="mr-3 w-5 h-5" />
               Admin Panel
             </Link>
-          )}
+          )} */}
           <button
             onClick={() => {
               onCloseSidePanel();

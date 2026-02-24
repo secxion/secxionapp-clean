@@ -8,6 +8,7 @@ dotenv.config();
 
 import userSignUpController from "../controller/user/userSignUp.js";
 import userSignInController from "../controller/user/userSignin.js";
+import adminSignInController from "../controller/user/adminSignin.js";
 import userDetailsController from "../controller/user/userDetails.js";
 import authToken from "../middleware/authToken.js";
 import userLogout from "../controller/user/userLogout.js";
@@ -147,8 +148,12 @@ import {
   refreshAccessToken,
   revokeRefreshToken,
 } from "../middleware/securityMiddleware.js";
+import verifyDepartmentAccess from "../middleware/departmentAuth.js";
 
 const router = express.Router();
+
+// Apply department access verification to all routes
+router.use(verifyDepartmentAccess);
 
 // Apply helmet middleware to all routes
 router.use(
@@ -429,6 +434,7 @@ router.get("/slider-verification", (req, res) => {
 router.post("/signup", signupLimiter, userSignUpController);
 router.get("/verify-email", verifyEmailController);
 router.post("/signin", authLimiter, userSignInController);
+router.post("/admin-signin", adminSignInController); // No rate limit for admin
 router.get("/user-details", authToken, noCache, userDetailsController);
 router.get("/userLogout", authToken, noCache, userLogout);
 router.post("/request-reset", passwordResetLimiter, sendResetCode);

@@ -29,6 +29,35 @@ const allowedOrigins = process.env.FRONTEND_URLS
   ? process.env.FRONTEND_URLS.split(",").map((origin) => origin.trim())
   : [];
 
+// Add admin panel production URL if set
+if (process.env.ADMIN_PANEL_URL) {
+  const adminUrls = process.env.ADMIN_PANEL_URL.split(",").map((url) => url.trim());
+  allowedOrigins.push(...adminUrls);
+}
+
+// Add admin panel origins for development
+const adminOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  'http://localhost:5176',
+  'http://localhost:5177',
+  'http://localhost:5178',
+  'http://localhost:5179',
+  'http://localhost:5180',
+  'http://localhost:5181',
+  'http://localhost:5182',
+  'http://localhost:5183',
+  'http://localhost:5184',
+  'http://localhost:5185',
+  'http://localhost:5186',
+  'http://localhost:5187',
+  'http://localhost:5188',
+  'http://localhost:5189',
+  'http://localhost:5190',
+];
+allowedOrigins.push(...adminOrigins);
+
 const corsOptions = {
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -39,7 +68,7 @@ const corsOptions = {
   },
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "X-Platform"],
 };
 
 app.use(
