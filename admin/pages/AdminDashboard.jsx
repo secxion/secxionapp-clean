@@ -12,7 +12,8 @@ import {
   FaTerminal,
   FaArrowRight,
   FaLock,
-  FaCoins
+  FaCoins,
+  FaWallet
 } from 'react-icons/fa';
 import summaryApi, { authFetch } from '../common/index.js';
 
@@ -36,6 +37,8 @@ const AdminDashboard = () => {
     reports: 0
   });
   const [loading, setLoading] = useState(true);
+  const [wallet, setWallet] = useState(null);
+  const [walletLoading, setWalletLoading] = useState(true);
 
   useEffect(() => {
     // Only fetch stats for SUPER admin
@@ -44,7 +47,23 @@ const AdminDashboard = () => {
     } else {
       setLoading(false);
     }
+    // Fetch wallet for all admins
+    fetchMyWallet();
   }, [isSuperAdmin]);
+
+  const fetchMyWallet = async () => {
+    try {
+      const res = await authFetch(summaryApi.myAdminWallet.url);
+      const data = await res.json();
+      if (data.success) {
+        setWallet(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching wallet:', error);
+    } finally {
+      setWalletLoading(false);
+    }
+  };
 
   const fetchStats = async () => {
     try {
@@ -121,6 +140,45 @@ const AdminDashboard = () => {
           <StatCard title="Reports" value={stats.reports} icon={FaFlag} color="bg-red-500" />
         </div>
       )}
+
+      {/* My Wallet Card - ALL ADMINS */}
+      <div className="mb-6 sm:mb-8">
+        <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-xl p-4 sm:p-6 border border-yellow-500/30">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-yellow-500 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/30">
+                <FaWallet className="text-xl sm:text-2xl text-black" />
+              </div>
+              <div>
+                <p className="text-gray-400 text-xs sm:text-sm">My Admin Wallet</p>
+                <p className="text-2xl sm:text-3xl font-bold text-white">
+                  {walletLoading ? (
+                    <span className="animate-pulse">...</span>
+                  ) : wallet ? (
+                    <>₦{wallet.balance?.toLocaleString() || '0'}</>
+                  ) : (
+                    '₦0'
+                  )}
+                </p>
+              </div>
+            </div>
+            {wallet && (
+              <div className="hidden sm:flex flex-col items-end text-sm">
+                <span className="text-gray-400">Total Received</span>
+                <span className="text-green-400 font-medium">₦{wallet.totalReceived?.toLocaleString() || '0'}</span>
+              </div>
+            )}
+          </div>
+          {wallet && wallet.totalReceived > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-700/50 sm:hidden">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Total Received</span>
+                <span className="text-green-400 font-medium">₦{wallet.totalReceived?.toLocaleString() || '0'}</span>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Quick Links */}
       <div className="mb-6 sm:mb-8">
