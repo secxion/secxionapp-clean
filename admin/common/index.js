@@ -9,6 +9,13 @@ const backendDomain = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 export const authFetch = async (url, options = {}) => {
   const token = localStorage.getItem('adminToken');
   
+  // Debug logging
+  console.log('[authFetch] URL:', url);
+  console.log('[authFetch] Token exists:', !!token);
+  if (token) {
+    console.log('[authFetch] Token preview:', token.substring(0, 20) + '...');
+  }
+  
   const headers = {
     ...options.headers,
   };
@@ -24,8 +31,11 @@ export const authFetch = async (url, options = {}) => {
     credentials: 'include', // Still include cookies as fallback
   });
   
+  console.log('[authFetch] Response status:', response.status);
+  
   // If unauthorized, clear auth and redirect to login
   if (response.status === 401) {
+    console.log('[authFetch] 401 - clearing auth and redirecting');
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminAuth');
     localStorage.removeItem('adminUser');
