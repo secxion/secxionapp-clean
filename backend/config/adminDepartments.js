@@ -14,7 +14,7 @@ export const DEPARTMENTS = {
   SUPER: {
     name: 'Super Admin',
     envKey: 'ADMIN_KEY_SUPER',
-    routes: ['*'], // Full access
+    routes: ['*', 'admin-management'], // Full access + admin management
     description: 'Full access to all admin features'
   },
   USERS: {
