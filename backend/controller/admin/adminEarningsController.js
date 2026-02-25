@@ -164,10 +164,35 @@ export const updateCommissionRate = async (req, res) => {
 
 /**
  * Get all admin wallets (Super Admin only)
+ * Auto-creates wallets for all authorized admins if they don't exist
  * GET /api/admin/wallets
  */
 export const getAdminWallets = async (req, res) => {
   try {
+    // First, ensure all authorized admins have wallets
+    for (const [dept, emails] of Object.entries(AUTHORIZED_ADMINS)) {
+      for (const email of emails) {
+        // Find user by email
+        const user = await userModel.findOne({ email: email.toLowerCase() });
+        if (user) {
+          // Check if wallet exists
+          const existingWallet = await AdminWallet.findOne({ adminId: user._id });
+          if (!existingWallet) {
+            // Create wallet
+            await AdminWallet.create({
+              adminId: user._id,
+              email: user.email,
+              department: dept,
+              balance: 0,
+              totalReceived: 0,
+              totalWithdrawn: 0,
+            });
+            console.log(`✅ Created wallet for ${email} (${dept})`);
+          }
+        }
+      }
+    }
+    
     const wallets = await AdminWallet.find({}).sort({ balance: -1 });
     
     res.json({
