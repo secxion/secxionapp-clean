@@ -3,7 +3,7 @@ import userModel from "../../models/userModel.js";
 import jwt from "jsonwebtoken";
 import { 
   getDepartmentByKey, 
-  isEmailAuthorized, 
+  isEmailAuthorizedAsync, 
   getDepartmentRoutes 
 } from "../../config/adminDepartments.js";
 
@@ -65,7 +65,8 @@ async function adminSignInController(req, res, next) {
     }
 
     // Step 4: Check if email is authorized for this department
-    if (!isEmailAuthorized(email, department.id)) {
+    const isAuthorized = await isEmailAuthorizedAsync(email, department.id);
+    if (!isAuthorized) {
       console.log("❌ Email not authorized for department:", department.id);
       const err = new Error(`You are not authorized to access the ${department.name} department.`);
       err.status = 403;

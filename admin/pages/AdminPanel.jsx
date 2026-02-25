@@ -19,6 +19,7 @@ import {
 	FaArrowLeft,
 	FaSignOutAlt,
 	FaCoins,
+	FaUserShield,
 } from 'react-icons/fa';
 
 const AdminPanel = () => {
@@ -62,6 +63,7 @@ const AdminPanel = () => {
 		{ path: 'anonymous-report', label: 'Anonymous', icon: <FaUserSecret /> },
 		{ path: 'community-feeds', label: 'Community', icon: <FaChartBar /> },
 		{ path: 'livescript', label: 'LiveScript', icon: <FaCode /> },
+		{ path: 'admin-management', label: 'Admins', icon: <FaUserShield /> },
 	];
 
 	// Filter menu items based on department's allowed routes

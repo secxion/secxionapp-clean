@@ -32,6 +32,7 @@ import AdminReports from './pages/AdminReports.jsx';
 import AdminCommunity from './pages/AdminCommunity.jsx';
 import AdminLiveScript from './pages/AdminLiveScript.jsx';
 import AdminEarnings from './pages/AdminEarnings.jsx';
+import AdminManagement from './pages/AdminManagement.jsx';
 import UsersMarket from './pages/UsersMarket.jsx';
 import './index.css';
 
@@ -60,6 +61,7 @@ const App = () => (
             <Route path="community-feeds" element={<AdminCommunity />} />
             <Route path="livescript" element={<AdminLiveScript />} />
             <Route path="earnings" element={<AdminEarnings />} />
+            <Route path="admin-management" element={<AdminManagement />} />
           </Route>
           
           {/* Catch-all redirect */}

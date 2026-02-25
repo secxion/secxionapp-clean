@@ -155,13 +155,45 @@ export const getDepartmentByKey = (key) => {
 };
 
 /**
- * Check if email is authorized for department
+ * Check if email is authorized for department (sync - hardcoded list only)
  * @param {string} email - User email
  * @param {string} departmentId - Department ID
  * @returns {boolean}
  */
 export const isEmailAuthorized = (email, departmentId) => {
   const normalizedEmail = email.toLowerCase().trim();
+  const authorizedEmails = AUTHORIZED_ADMINS[departmentId] || [];
+  return authorizedEmails.map(e => e.toLowerCase().trim()).includes(normalizedEmail);
+};
+
+/**
+ * Check if email is authorized for department (async - checks DB first, then fallback to hardcoded)
+ * @param {string} email - User email
+ * @param {string} departmentId - Department ID
+ * @returns {Promise<boolean>}
+ */
+export const isEmailAuthorizedAsync = async (email, departmentId) => {
+  const normalizedEmail = email.toLowerCase().trim();
+  
+  try {
+    // Dynamic import to avoid circular dependency
+    const { default: AuthorizedAdmin } = await import("../models/authorizedAdminModel.js");
+    
+    // Check database first
+    const dbAuth = await AuthorizedAdmin.findOne({
+      email: normalizedEmail,
+      department: departmentId,
+      isActive: true,
+    });
+    
+    if (dbAuth) {
+      return true;
+    }
+  } catch (error) {
+    console.log("⚠️ DB check failed, falling back to hardcoded list:", error.message);
+  }
+  
+  // Fallback to hardcoded list
   const authorizedEmails = AUTHORIZED_ADMINS[departmentId] || [];
   return authorizedEmails.map(e => e.toLowerCase().trim()).includes(normalizedEmail);
 };
@@ -186,5 +218,6 @@ export default {
   AUTHORIZED_ADMINS,
   getDepartmentByKey,
   isEmailAuthorized,
+  isEmailAuthorizedAsync,
   getDepartmentRoutes
 };

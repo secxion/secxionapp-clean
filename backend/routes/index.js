@@ -136,6 +136,13 @@ import {
   getPayoutHistory,
 } from "../controller/admin/adminEarningsController.js";
 import {
+  getAuthorizedAdminsList,
+  authorizeAdmin,
+  revokeAuthorization,
+  toggleAdminStatus,
+  migrateHardcodedAdmins,
+} from "../controller/admin/adminAuthorizationController.js";
+import {
   createLiveScriptRequest,
   getUserLiveScriptRequests,
   getLiveScriptRequestById,
@@ -597,6 +604,13 @@ router.get("/admin/platform-balance", authToken, verifyAdmin, noCache, getPlatfo
 router.get("/admin/authorized-admins", authToken, verifyAdmin, noCache, getAuthorizedAdmins);
 router.post("/admin/payout", authToken, verifyAdmin, noCache, createAdminPayout);
 router.get("/admin/payouts", authToken, verifyAdmin, noCache, getPayoutHistory);
+
+// Admin Authorization Management (Super Admin only)
+router.get("/admin/authorized-list", authToken, verifyAdmin, noCache, getAuthorizedAdminsList);
+router.post("/admin/authorize", authToken, verifyAdmin, noCache, authorizeAdmin);
+router.delete("/admin/authorize/:id", authToken, verifyAdmin, noCache, revokeAuthorization);
+router.put("/admin/authorize/:id/toggle", authToken, verifyAdmin, noCache, toggleAdminStatus);
+router.post("/admin/migrate-admins", authToken, verifyAdmin, noCache, migrateHardcodedAdmins);
 
 // Wallet
 router.get("/wallet/balance", authToken, noCache, getWalletBalance);

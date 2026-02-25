@@ -528,6 +528,28 @@ const SummaryApi = {
     url: `${backendDomain}/api/admin/payouts`,
     method: 'GET',
   },
+  
+  // Admin Authorization Management
+  authorizedAdminsList: {
+    url: `${backendDomain}/api/admin/authorized-list`,
+    method: 'GET',
+  },
+  authorizeNewAdmin: {
+    url: `${backendDomain}/api/admin/authorize`,
+    method: 'POST',
+  },
+  revokeAdminAuth: {
+    url: (id) => `${backendDomain}/api/admin/authorize/${id}`,
+    method: 'DELETE',
+  },
+  toggleAdminAuth: {
+    url: (id) => `${backendDomain}/api/admin/authorize/${id}/toggle`,
+    method: 'PUT',
+  },
+  migrateAdmins: {
+    url: `${backendDomain}/api/admin/migrate-admins`,
+    method: 'POST',
+  },
 };
 
 export default SummaryApi;
