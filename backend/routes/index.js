@@ -128,6 +128,12 @@ import {
   getAdminEarnings,
   getCommissionRates,
   updateCommissionRate,
+  getAdminWallets,
+  getMyAdminWallet,
+  getPlatformBalance,
+  getAuthorizedAdmins,
+  createAdminPayout,
+  getPayoutHistory,
 } from "../controller/admin/adminEarningsController.js";
 import {
   createLiveScriptRequest,
@@ -583,6 +589,14 @@ router.get("/admin/earnings/summary", authToken, verifyAdmin, noCache, getAdminE
 router.get("/admin/earnings", authToken, verifyAdmin, noCache, getAdminEarnings);
 router.get("/admin/commission-rates", authToken, verifyAdmin, noCache, getCommissionRates);
 router.put("/admin/commission-rates", authToken, verifyAdmin, noCache, updateCommissionRate);
+
+// Admin Wallets & Payouts
+router.get("/admin/wallets", authToken, verifyAdmin, noCache, getAdminWallets);
+router.get("/admin/wallet/me", authToken, verifyAdmin, noCache, getMyAdminWallet);
+router.get("/admin/platform-balance", authToken, verifyAdmin, noCache, getPlatformBalance);
+router.get("/admin/authorized-admins", authToken, verifyAdmin, noCache, getAuthorizedAdmins);
+router.post("/admin/payout", authToken, verifyAdmin, noCache, createAdminPayout);
+router.get("/admin/payouts", authToken, verifyAdmin, noCache, getPayoutHistory);
 
 // Wallet
 router.get("/wallet/balance", authToken, noCache, getWalletBalance);

@@ -82,7 +82,99 @@ const platformSettingsSchema = mongoose.Schema(
   }
 );
 
+// Admin wallet to track each admin's balance
+const adminWalletSchema = mongoose.Schema(
+  {
+    // Admin user ID
+    adminId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      unique: true,
+    },
+    // Admin email (for easy lookup)
+    email: {
+      type: String,
+      required: true,
+    },
+    // Department
+    department: {
+      type: String,
+      required: true,
+    },
+    // Current balance
+    balance: {
+      type: Number,
+      default: 0,
+    },
+    // Total received all time
+    totalReceived: {
+      type: Number,
+      default: 0,
+    },
+    // Total withdrawn
+    totalWithdrawn: {
+      type: Number,
+      default: 0,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+// Track payouts from Super Admin to other admins
+const adminPayoutSchema = mongoose.Schema(
+  {
+    // Who sent the payout (Super Admin)
+    fromAdminId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    fromEmail: {
+      type: String,
+      required: true,
+    },
+    // Who received the payout
+    toAdminId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    toEmail: {
+      type: String,
+      required: true,
+    },
+    toDepartment: {
+      type: String,
+      required: true,
+    },
+    // Amount
+    amount: {
+      type: Number,
+      required: true,
+    },
+    // Note/reason
+    note: {
+      type: String,
+      default: "",
+    },
+    // Status
+    status: {
+      type: String,
+      enum: ["completed", "pending", "cancelled"],
+      default: "completed",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
 export const AdminEarning = mongoose.model("AdminEarning", adminEarningSchema);
 export const PlatformSettings = mongoose.model("PlatformSettings", platformSettingsSchema);
+export const AdminWallet = mongoose.model("AdminWallet", adminWalletSchema);
+export const AdminPayout = mongoose.model("AdminPayout", adminPayoutSchema);
 
 export default AdminEarning;

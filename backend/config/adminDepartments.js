@@ -59,6 +59,12 @@ export const DEPARTMENTS = {
     routes: ['dashboard', 'system-blog'],
     description: 'Create and manage blog posts'
   },
+  EARNINGS: {
+    name: 'Earnings Management',
+    envKey: 'ADMIN_KEY_EARNINGS',
+    routes: ['dashboard', 'earnings'],
+    description: 'View platform earnings and commissions'
+  },
   REPORTS: {
     name: 'Reports Management',
     envKey: 'ADMIN_KEY_REPORTS',

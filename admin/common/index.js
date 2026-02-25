@@ -502,6 +502,32 @@ const SummaryApi = {
     url: `${backendDomain}/api/admin/commission-rates`,
     method: 'PUT',
   },
+  
+  // Admin Wallets & Payouts
+  adminWallets: {
+    url: `${backendDomain}/api/admin/wallets`,
+    method: 'GET',
+  },
+  myAdminWallet: {
+    url: `${backendDomain}/api/admin/wallet/me`,
+    method: 'GET',
+  },
+  platformBalance: {
+    url: `${backendDomain}/api/admin/platform-balance`,
+    method: 'GET',
+  },
+  authorizedAdmins: {
+    url: `${backendDomain}/api/admin/authorized-admins`,
+    method: 'GET',
+  },
+  createPayout: {
+    url: `${backendDomain}/api/admin/payout`,
+    method: 'POST',
+  },
+  payoutHistory: {
+    url: `${backendDomain}/api/admin/payouts`,
+    method: 'GET',
+  },
 };
 
 export default SummaryApi;

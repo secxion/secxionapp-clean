@@ -67,6 +67,7 @@ const AdminPanel = () => {
 	// Filter menu items based on department's allowed routes
 	const menuItems = useMemo(() => {
 		if (!department?.allowedRoutes) return allMenuItems;
+		if (department.allowedRoutes.includes('*')) return allMenuItems; // Wildcard = full access
 		return allMenuItems.filter(item => 
 			department.allowedRoutes.includes(item.path)
 		);
