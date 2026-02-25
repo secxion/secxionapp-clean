@@ -93,6 +93,7 @@ const AdminPanel = () => {
 	const currentPath = location.pathname.split('/').pop() || 'dashboard';
 	const isCurrentRouteAllowed = () => {
 		if (!department?.allowedRoutes) return true;
+		if (department.allowedRoutes.includes('*')) return true; // Wildcard = full access
 		if (currentPath === 'dashboard') return true; // Dashboard is always allowed
 		return department.allowedRoutes.includes(currentPath);
 	};
