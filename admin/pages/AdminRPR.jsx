@@ -1,6 +1,6 @@
 // components/admin/AdminRPR.js
 import React, { useState, useEffect } from 'react';
-import SummaryApi from '../common';
+import SummaryApi, { authFetch } from '../common';
 import {
   FaMoneyBillWave,
   FaSearch,
@@ -39,9 +39,8 @@ const AdminRPR = () => {
     setLoadingRequests(true);
     setErrorRequests('');
     try {
-      const response = await fetch(SummaryApi.getAllPayment.url, {
+      const response = await authFetch(SummaryApi.getAllPayment.url, {
         method: SummaryApi.getAllPayment.method,
-        credentials: 'include',
       });
       const data = await response.json();
       if (data.success) {
@@ -69,11 +68,10 @@ const AdminRPR = () => {
     setLoadingBalance(true);
     setErrorBalance('');
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `${SummaryApi.getWalletBalance.url}/${userId}`,
         {
           method: 'GET',
-          credentials: 'include',
         },
       );
       const data = await response.json();
@@ -128,14 +126,13 @@ const AdminRPR = () => {
     };
 
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `${SummaryApi.updatePayment.url}/${selectedRequest._id}`,
         {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
           },
-          credentials: 'include',
           body: JSON.stringify(payload),
         },
       );

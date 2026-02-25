@@ -13,7 +13,7 @@ import {
   FaComment,
   FaImage,
 } from 'react-icons/fa';
-import SummaryApi from '../common';
+import SummaryApi, { authFetch } from '../common';
 import uploadImage from '../helpers/uploadImage';
 
 const CATEGORIES = {
@@ -69,9 +69,8 @@ const AdminLiveScript = () => {
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      const res = await fetch(SummaryApi.adminGetAllLiveScripts.url, {
+      const res = await authFetch(SummaryApi.adminGetAllLiveScripts.url, {
         method: SummaryApi.adminGetAllLiveScripts.method,
-        credentials: 'include',
       });
       const data = await res.json();
       if (data.success) {
@@ -89,10 +88,9 @@ const AdminLiveScript = () => {
   const updateStatus = async (id, status) => {
     setUpdating(true);
     try {
-      const res = await fetch(SummaryApi.adminUpdateLiveScript(id).url, {
+      const res = await authFetch(SummaryApi.adminUpdateLiveScript(id).url, {
         method: SummaryApi.adminUpdateLiveScript(id).method,
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ status, adminNotes }),
       });
       const data = await res.json();
@@ -120,12 +118,11 @@ const AdminLiveScript = () => {
 
     setSendingReply(true);
     try {
-      const res = await fetch(
+      const res = await authFetch(
         SummaryApi.adminReplyToLiveScript(selectedRequest._id).url,
         {
           method: SummaryApi.adminReplyToLiveScript(selectedRequest._id).method,
           headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
           body: JSON.stringify({
             message: replyMessage,
             attachments: pendingAttachments,

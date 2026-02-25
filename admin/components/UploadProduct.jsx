@@ -5,7 +5,7 @@ import currencyData from '../helpers/currencyData';
 import { FaCloudUploadAlt, FaPlusCircle, FaFileImport } from 'react-icons/fa';
 import uploadImage from '../helpers/uploadImage';
 import { MdDelete } from 'react-icons/md';
-import SummaryApi from '../common';
+import SummaryApi, { authFetch } from '../common';
 import { toast } from 'react-toastify';
 import RequirementInput from './RequirementInput';
 import BulkImportModal from './BulkImportModal';
@@ -153,9 +153,8 @@ const UploadProduct = ({ onClose, fetchData }) => {
     }
 
     try {
-      const response = await fetch(SummaryApi.uploadProduct.url, {
+      const response = await authFetch(SummaryApi.uploadProduct.url, {
         method: SummaryApi.uploadProduct.method,
-        credentials: 'include',
         headers: {
           'content-type': 'application/json',
         },

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CgClose } from 'react-icons/cg';
 import DisplayImage from './DisplayImage';
 import { toast } from 'react-toastify';
-import SummaryApi from '../common';
+import SummaryApi, { authFetch } from '../common';
 import { motion } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
 
@@ -34,9 +34,8 @@ const HistoryDetailView = ({
     e.preventDefault();
 
     try {
-      const response = await fetch(SummaryApi.marketRecord.url, {
+      const response = await authFetch(SummaryApi.marketRecord.url, {
         method: SummaryApi.marketRecord.method,
-        credentials: 'include',
         headers: {
           'content-type': 'application/json',
         },

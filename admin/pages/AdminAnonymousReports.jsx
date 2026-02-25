@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 // ...existing code...
 import { MdExpandMore } from 'react-icons/md';
 import { FaUserSecret } from 'react-icons/fa';
-import SummaryApi from '../common';
+import SummaryApi, { authFetch } from '../common';
 
 const AdminAnonymousReports = () => {
   const [anonymousReports, setAnonymousReports] = useState([]);
@@ -17,9 +17,8 @@ const AdminAnonymousReports = () => {
     try {
       setLoading(true);
 
-      const response = await fetch(SummaryApi.getContactUsMessages.url, {
+      const response = await authFetch(SummaryApi.getContactUsMessages.url, {
         method: SummaryApi.getContactUsMessages.method || 'GET',
-        credentials: 'include',
       });
 
       if (!response.ok) {

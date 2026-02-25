@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import SummaryApi from '../common';
+import SummaryApi, { authFetch } from '../common';
 import moment from 'moment';
 import { MdModeEdit } from 'react-icons/md';
 import {
@@ -14,9 +14,8 @@ import { toast } from 'react-toastify';
 import ChangeUserRole from '../components/ChangeUserRole';
 
 const fetchAllUsers = async () => {
-  const response = await fetch(SummaryApi.allUser.url, {
+  const response = await authFetch(SummaryApi.allUser.url, {
     method: SummaryApi.allUser.method,
-    credentials: 'include',
   });
   const dataResponse = await response.json();
 
@@ -36,9 +35,8 @@ const deleteUsers = async (userIds, refetch, setSelectedUsers) => {
     return;
 
   try {
-    const response = await fetch(SummaryApi.deleteUser.url, {
+    const response = await authFetch(SummaryApi.deleteUser.url, {
       method: SummaryApi.deleteUser.method,
-      credentials: 'include',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ userIds }),
     });

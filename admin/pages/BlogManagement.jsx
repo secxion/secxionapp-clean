@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import BlogForm from '../components/BlogForm.jsx';
 import BlogCard from '../components/BlogCard.jsx';
-import SummaryApi from '../common';
+import SummaryApi, { authFetch } from '../common';
 import Context from '../Context/index.jsx';
 import { toast } from 'react-toastify';
 import { FaPenAlt, FaPlus } from 'react-icons/fa';
@@ -29,9 +29,8 @@ const BlogManagement = () => {
 
   const handleDeleteBlog = async (id) => {
     try {
-      const response = await fetch(`${SummaryApi.deleteBlog.url}/${id}`, {
+      const response = await authFetch(`${SummaryApi.deleteBlog.url}/${id}`, {
         method: SummaryApi.deleteBlog.method,
-        credentials: 'include',
       });
 
       if (!response.ok) {

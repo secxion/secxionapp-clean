@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'react-toastify';
 import { FaUsers, FaTimes } from 'react-icons/fa';
-import SummaryApi from '../common';
+import SummaryApi, { authFetch } from '../common';
 
 const AdminCommunity = () => {
   // Get user from localStorage (set on admin login) or Redux as fallback
@@ -22,9 +22,7 @@ const AdminCommunity = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(SummaryApi.getPendingPosts.url, {
-        credentials: 'include',
-      });
+      const response = await authFetch(SummaryApi.getPendingPosts.url);
       if (!response.ok) {
         throw new Error('Failed to fetch pending posts');
       }
@@ -48,9 +46,8 @@ const AdminCommunity = () => {
   const handleApprove = async (postId) => {
     setIsApprovingOrRejecting(true);
     try {
-      const response = await fetch(SummaryApi.approvePost(postId).url, {
+      const response = await authFetch(SummaryApi.approvePost(postId).url, {
         method: SummaryApi.approvePost(postId).method,
-        credentials: 'include',
       });
       const data = await response.json();
       if (data.success) {
@@ -73,9 +70,8 @@ const AdminCommunity = () => {
     }
     setIsApprovingOrRejecting(true);
     try {
-      const response = await fetch(SummaryApi.rejectPost(postId).url, {
+      const response = await authFetch(SummaryApi.rejectPost(postId).url, {
         method: SummaryApi.rejectPost(postId).method,
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason: rejectionReason }),
       });

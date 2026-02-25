@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
-import SummaryApi from '../common';
+import SummaryApi, { authFetch } from '../common';
 import UserContext from '../Context';
 import { toast } from 'react-toastify';
 import MarketCard from './MarketCard';
@@ -45,11 +45,8 @@ const UsersMarket = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(SummaryApi.allUserMarkets.url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        credentials: 'include',
+      const response = await authFetch(SummaryApi.allUserMarkets.url, {
+        method: 'GET',
       });
       const dataResponse = await response.json();
       if (dataResponse.success) {
@@ -168,15 +165,13 @@ const UsersMarket = () => {
     const { reason, image } = cancelData[marketId] || {};
     const imageUrl = image;
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `${SummaryApi.updateMarketStatus.url}/${marketId}`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
-          credentials: 'include',
           body: JSON.stringify({
             status,
             cancelReason: status === 'CANCEL' ? reason : undefined,

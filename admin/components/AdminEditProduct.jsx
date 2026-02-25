@@ -10,7 +10,7 @@ import {
   MdAddCircleOutline,
   MdModeEditOutline,
 } from 'react-icons/md';
-import SummaryApi from '../common';
+import SummaryApi, { authFetch } from '../common';
 import { toast } from 'react-toastify';
 import RequirementInput from './RequirementInput';
 import BulkImportModal from './BulkImportModal';
@@ -167,9 +167,8 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
     };
 
     try {
-      const response = await fetch(SummaryApi.updateProduct.url, {
+      const response = await authFetch(SummaryApi.updateProduct.url, {
         method: SummaryApi.updateProduct.method,
-        credentials: 'include',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(transformedData),
       });

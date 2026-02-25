@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import UploadProduct from '../components/UploadProduct';
-import SummaryApi from '../common';
+import SummaryApi, { authFetch } from '../common';
 import AdminProductCard from '../components/AdminProductCard';
 import {
   FaPlus,
@@ -12,9 +12,8 @@ import {
 
 const fetchAllProducts = async () => {
   try {
-    const response = await fetch(SummaryApi.allProduct.url, {
+    const response = await authFetch(SummaryApi.allProduct.url, {
       method: 'GET',
-      credentials: 'include',
     });
 
     if (!response.ok) {

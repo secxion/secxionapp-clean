@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { FaTimes } from 'react-icons/fa';
-import SummaryApi from '../common';
+import SummaryApi, { authFetch } from '../common';
 
 const BlogForm = ({ onClose, fetchBlogs, editingBlog }) => {
   const [formData, setFormData] = useState({ title: '', content: '' });
@@ -36,9 +36,8 @@ const BlogForm = ({ onClose, fetchBlogs, editingBlog }) => {
     const method = editingBlog ? 'PUT' : 'POST';
 
     try {
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });

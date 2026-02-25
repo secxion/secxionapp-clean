@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 // ...existing code...
-import SummaryApi from '../common';
+import SummaryApi, { authFetch } from '../common';
 import { FaCloudUploadAlt, FaFlag, FaTimes } from 'react-icons/fa';
 import uploadImage from '../helpers/uploadImage';
 import { format } from 'date-fns';
@@ -20,9 +20,8 @@ const AdminReports = () => {
 
   const fetchReports = useCallback(async () => {
     try {
-      const response = await fetch(SummaryApi.getAllReports.url, {
+      const response = await authFetch(SummaryApi.getAllReports.url, {
         method: SummaryApi.getAllReports.method,
-        credentials: 'include',
       });
       if (!response.ok) {
         const errorData = await response.json();
@@ -40,11 +39,10 @@ const AdminReports = () => {
 
   const fetchChat = useCallback(async (reportId) => {
     try {
-      const response = await fetch(
+      const response = await authFetch(
         SummaryApi.getReportChat.url.replace(':id', reportId),
         {
           method: SummaryApi.getReportChat.method,
-          credentials: 'include',
         },
       );
       if (!response.ok) {
@@ -92,11 +90,10 @@ const AdminReports = () => {
         requestBody.image = imageToSend;
       }
 
-      const response = await fetch(
+      const response = await authFetch(
         SummaryApi.sendChatMessage.url.replace(':id', reportId),
         {
           method: SummaryApi.sendChatMessage.method,
-          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },

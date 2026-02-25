@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import SummaryApi from '../common';
+import SummaryApi, { authFetch } from '../common';
 import { toast } from 'react-toastify';
 import {
   FaEthereum,
@@ -24,9 +24,7 @@ const AdminEthWithdrawals = () => {
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      const res = await fetch(SummaryApi.ethWithdrawals.getAll, {
-        credentials: 'include',
-      });
+      const res = await authFetch(SummaryApi.ethWithdrawals.getAll);
       const data = await res.json();
       if (data.success) {
         setRequests(data.data);
@@ -42,10 +40,9 @@ const AdminEthWithdrawals = () => {
 
   const updateStatus = async (id, status) => {
     try {
-      const res = await fetch(SummaryApi.ethWithdrawals.updateStatus(id), {
+      const res = await authFetch(SummaryApi.ethWithdrawals.updateStatus(id), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ status }),
       });
       const data = await res.json();

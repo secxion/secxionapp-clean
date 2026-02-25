@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ROLE from '../common/role';
 import { IoMdClose } from 'react-icons/io';
 import { FaUserShield, FaTrashAlt } from 'react-icons/fa';
-import SummaryApi from '../common';
+import SummaryApi, { authFetch } from '../common';
 import { toast } from 'react-toastify';
 
 const ChangeUserRole = ({ name, email, role, userId, onClose, callFunc }) => {
@@ -17,9 +17,8 @@ const ChangeUserRole = ({ name, email, role, userId, onClose, callFunc }) => {
   const updateUserRole = async () => {
     setIsUpdating(true);
     try {
-      const fetchResponse = await fetch(SummaryApi.updateUser.url, {
+      const fetchResponse = await authFetch(SummaryApi.updateUser.url, {
         method: SummaryApi.updateUser.method,
-        credentials: 'include',
         headers: {
           'content-type': 'application/json',
         },
@@ -48,9 +47,8 @@ const ChangeUserRole = ({ name, email, role, userId, onClose, callFunc }) => {
 
     setIsDeleting(true);
     try {
-      const fetchResponse = await fetch(SummaryApi.deleteUser.url, {
+      const fetchResponse = await authFetch(SummaryApi.deleteUser.url, {
         method: SummaryApi.deleteUser.method,
-        credentials: 'include',
         headers: {
           'content-type': 'application/json',
         },

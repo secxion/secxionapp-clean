@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import SummaryApi from '../common';
+import SummaryApi, { authFetch } from '../common';
 import UserDatapadCard from '../components/UserDatapadCard';
 import { FaMobileAlt } from 'react-icons/fa';
 
@@ -13,9 +13,7 @@ const AdminGetAllData = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(SummaryApi.adminAllData.url, {
-          credentials: 'include',
-        });
+        const response = await authFetch(SummaryApi.adminAllData.url);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

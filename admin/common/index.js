@@ -1,6 +1,42 @@
 // Use environment variable for production, fallback to localhost for development
 const backendDomain = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+/**
+ * Authenticated fetch helper for cross-origin API calls
+ * Uses JWT token from localStorage for Authorization header
+ * This is required for cross-domain auth (admin panel on different domain than API)
+ */
+export const authFetch = async (url, options = {}) => {
+  const token = localStorage.getItem('adminToken');
+  
+  const headers = {
+    ...options.headers,
+  };
+  
+  // Add Authorization header if we have a token
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  const response = await fetch(url, {
+    ...options,
+    headers,
+    credentials: 'include', // Still include cookies as fallback
+  });
+  
+  // If unauthorized, clear auth and redirect to login
+  if (response.status === 401) {
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminAuth');
+    localStorage.removeItem('adminUser');
+    localStorage.removeItem('adminDepartment');
+    window.location.href = '/login';
+    throw new Error('Session expired. Please login again.');
+  }
+  
+  return response;
+};
+
 const SummaryApi = {
   baseURL: backendDomain,
   signUP: {

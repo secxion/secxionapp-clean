@@ -4,10 +4,19 @@ import User from "../models/userModel.js";
 const authToken = async (req, res, next) => {
   const startTime = Date.now();
   try {
-    const token = req.cookies?.token;
+    // Check for token in cookies first, then Authorization header
+    let token = req.cookies?.token;
+    
+    // If no cookie token, check Authorization header (for cross-origin admin panel)
+    if (!token) {
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      }
+    }
 
     if (!token) {
-      console.warn("[AUTH] No token found in cookies");
+      console.warn("[AUTH] No token found in cookies or Authorization header");
       return res.status(401).json({
         message: "Please login to continue.",
         error: true,

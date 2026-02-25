@@ -32,7 +32,8 @@ const AdminLogin = () => {
 
       if (data.success) {
         toast.success(data.message || 'Welcome!');
-        // Store auth data with department info
+        // Store JWT token and auth data for cross-origin API calls
+        localStorage.setItem('adminToken', data.data.token);
         localStorage.setItem('adminAuth', 'true');
         localStorage.setItem('adminUser', JSON.stringify(data.data.user));
         localStorage.setItem('adminDepartment', JSON.stringify(data.data.department));

@@ -13,7 +13,7 @@ import {
   FaArrowRight,
   FaLock
 } from 'react-icons/fa';
-import summaryApi from '../common/index.js';
+import summaryApi, { authFetch } from '../common/index.js';
 
 const AdminDashboard = () => {
   // Get department from localStorage for access control
@@ -49,9 +49,9 @@ const AdminDashboard = () => {
     try {
       // Fetch basic counts - these can be expanded based on available APIs
       const [usersRes, productsRes, blogsRes] = await Promise.all([
-        fetch(summaryApi.allUser.url, { credentials: 'include' }).catch(() => null),
-        fetch(summaryApi.allProduct.url, { credentials: 'include' }).catch(() => null),
-        fetch(summaryApi.getBlogs.url, { credentials: 'include' }).catch(() => null)
+        authFetch(summaryApi.allUser.url).catch(() => null),
+        authFetch(summaryApi.allProduct.url).catch(() => null),
+        authFetch(summaryApi.getBlogs.url).catch(() => null)
       ]);
 
       const users = usersRes ? await usersRes.json().catch(() => []) : [];

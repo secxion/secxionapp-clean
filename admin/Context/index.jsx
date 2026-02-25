@@ -32,8 +32,13 @@ export const ContextProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
+    // Check for admin token (used for cross-origin auth)
+    const adminToken = localStorage.getItem('adminToken');
+    const adminUser = localStorage.getItem('adminUser');
+    
+    // Fallback to regular storage for compatibility
+    const storedUser = adminUser || localStorage.getItem('user');
+    const storedToken = adminToken || localStorage.getItem('token');
 
     if (storedUser && storedToken) {
       try {
@@ -43,12 +48,21 @@ export const ContextProvider = ({ children }) => {
           setUser(parsedUser);
           setToken(storedToken);
         } else {
+          // Clear all auth storage
           localStorage.removeItem('user');
           localStorage.removeItem('token');
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUser');
+          localStorage.removeItem('adminAuth');
+          localStorage.removeItem('adminDepartment');
         }
       } catch (error) {
         localStorage.removeItem('user');
         localStorage.removeItem('token');
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+        localStorage.removeItem('adminAuth');
+        localStorage.removeItem('adminDepartment');
       }
     }
 
@@ -66,8 +80,13 @@ export const ContextProvider = ({ children }) => {
   }, [token]);
 
   const logout = useCallback(async () => {
+    // Clear all auth storage
     localStorage.removeItem('user');
     localStorage.removeItem('token');
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
+    localStorage.removeItem('adminAuth');
+    localStorage.removeItem('adminDepartment');
     setUser(null);
     setToken(null);
     setWalletBalance(null);
@@ -205,9 +224,17 @@ export const ContextProvider = ({ children }) => {
   const [blogs, setBlogs] = useState([]);
   const fetchBlogs = useCallback(async () => {
     try {
+      // Use token for auth header
+      const adminToken = localStorage.getItem('adminToken');
+      const headers = {};
+      if (adminToken) {
+        headers['Authorization'] = `Bearer ${adminToken}`;
+      }
+      
       const response = await fetch(SummaryApi.getBlogs.url, {
         method: SummaryApi.getBlogs.method,
         credentials: 'include',
+        headers,
       });
       if (!response.ok) {
         setBlogs([]);
