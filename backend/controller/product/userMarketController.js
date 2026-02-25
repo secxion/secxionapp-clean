@@ -2,6 +2,7 @@ import userProduct from "../../models/userProduct.js";
 import userModel from "../../models/userModel.js";
 import { updateWalletBalance } from "../wallet/walletController.js";
 import { createMarketUploadNotification } from "../notifications/notificationsController.js";
+import { processMarketplaceCommission, getCommissionRate, calculateCommission } from "../../helpers/commissionHelper.js";
 
 const fetchUserDetails = async (userId) => {
   try {
@@ -88,14 +89,18 @@ export const updateMarketStatus = async (req, res) => {
       updateData.crImage = null;
 
       const userId = existingMarket.userId;
-      const amountToCredit =
-        parseFloat(existingMarket.calculatedTotalAmount) || 0;
+      const originalAmount = parseFloat(existingMarket.calculatedTotalAmount) || 0;
 
+      // Calculate and apply commission
+      const commissionRate = await getCommissionRate("marketplace");
+      const { commissionAmount, userReceivedAmount } = calculateCommission(originalAmount, commissionRate);
+
+      // Credit user with amount AFTER commission deduction
       const walletUpdateResult = await updateWalletBalance(
         userId,
-        amountToCredit,
+        userReceivedAmount,
         "credit",
-        "Product Approved and Completed",
+        `Product Approved (${commissionRate}% platform fee deducted)`,
         existingMarket._id,
         "userproduct",
       );
@@ -105,6 +110,14 @@ export const updateMarketStatus = async (req, res) => {
           "Error updating wallet after marking market as DONE:",
           walletUpdateResult.error,
         );
+      }
+
+      // Record commission earning for admin
+      const commissionResult = await processMarketplaceCommission(existingMarket);
+      if (!commissionResult.success) {
+        console.error("Error recording commission:", commissionResult.error);
+      } else {
+        console.log(`Commission recorded: ₦${commissionAmount} from ₦${originalAmount} sale`);
       }
     } else if (status === "PROCESSING") {
       updateData.cancelReason = null;

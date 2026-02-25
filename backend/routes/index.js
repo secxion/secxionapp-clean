@@ -124,6 +124,12 @@ import {
   updateEthWithdrawalStatus,
 } from "../controller/ethWithdrawalController.js";
 import {
+  getAdminEarningsSummary,
+  getAdminEarnings,
+  getCommissionRates,
+  updateCommissionRate,
+} from "../controller/admin/adminEarningsController.js";
+import {
   createLiveScriptRequest,
   getUserLiveScriptRequests,
   getLiveScriptRequestById,
@@ -571,6 +577,12 @@ router.post("/livescript/admin/:id/reply", authToken, verifyAdmin, noCache, admi
 router.post("/livescript/:id/reply", authToken, noCache, replyToLiveScriptRequest);
 router.get("/livescript/:id", authToken, noCache, getLiveScriptRequestById);
 router.delete("/livescript/:id", authToken, noCache, deleteLiveScriptRequest);
+
+// Admin Earnings & Commission
+router.get("/admin/earnings/summary", authToken, verifyAdmin, noCache, getAdminEarningsSummary);
+router.get("/admin/earnings", authToken, verifyAdmin, noCache, getAdminEarnings);
+router.get("/admin/commission-rates", authToken, verifyAdmin, noCache, getCommissionRates);
+router.put("/admin/commission-rates", authToken, verifyAdmin, noCache, updateCommissionRate);
 
 // Wallet
 router.get("/wallet/balance", authToken, noCache, getWalletBalance);

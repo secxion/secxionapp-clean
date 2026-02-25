@@ -11,7 +11,8 @@ import {
   FaComments,
   FaTerminal,
   FaArrowRight,
-  FaLock
+  FaLock,
+  FaCoins
 } from 'react-icons/fa';
 import summaryApi, { authFetch } from '../common/index.js';
 
@@ -77,6 +78,7 @@ const AdminDashboard = () => {
     { to: '/system-blog', route: 'system-blog', label: 'Blog Management', icon: FaNewspaper, color: 'bg-yellow-500' },
     { to: '/eth-requests', route: 'eth-requests', label: 'ETH Withdrawals', icon: FaEthereum, color: 'bg-purple-500' },
     { to: '/users-market', route: 'users-market', label: 'Users Market', icon: FaStore, color: 'bg-pink-500' },
+    { to: '/earnings', route: 'earnings', label: 'Platform Earnings', icon: FaCoins, color: 'bg-green-600' },
     { to: '/admin-report', route: 'admin-report', label: 'Reports', icon: FaFlag, color: 'bg-red-500' },
     { to: '/community-feeds', route: 'community-feeds', label: 'Community', icon: FaComments, color: 'bg-indigo-500' },
     { to: '/livescript', route: 'livescript', label: 'Live Script', icon: FaTerminal, color: 'bg-cyan-500' },

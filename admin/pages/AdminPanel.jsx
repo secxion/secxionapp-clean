@@ -18,6 +18,7 @@ import {
 	FaEthereum,
 	FaArrowLeft,
 	FaSignOutAlt,
+	FaCoins,
 } from 'react-icons/fa';
 
 const AdminPanel = () => {
@@ -54,6 +55,7 @@ const AdminPanel = () => {
 		{ path: 'admin-rpr', label: 'Payments', icon: <FaMoneyBillAlt /> },
 		{ path: 'eth-requests', label: 'ETH', icon: <FaEthereum /> },
 		{ path: 'users-market', label: 'Market', icon: <FaShoppingCart /> },
+		{ path: 'earnings', label: 'Earnings', icon: <FaCoins /> },
 		{ path: 'users-datapad', label: 'Datapad', icon: <FaMobileAlt /> },
 		{ path: 'system-blog', label: 'Blog', icon: <FaPenAlt /> },
 		{ path: 'admin-report', label: 'Reports', icon: <FaFileAlt /> },

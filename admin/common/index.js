@@ -484,6 +484,24 @@ const SummaryApi = {
     url: `${backendDomain}/api/livescript/admin/${id}/reply`,
     method: 'POST',
   }),
+  
+  // Admin Earnings & Commission
+  adminEarningsSummary: {
+    url: `${backendDomain}/api/admin/earnings/summary`,
+    method: 'GET',
+  },
+  adminEarnings: {
+    url: `${backendDomain}/api/admin/earnings`,
+    method: 'GET',
+  },
+  commissionRates: {
+    url: `${backendDomain}/api/admin/commission-rates`,
+    method: 'GET',
+  },
+  updateCommissionRate: {
+    url: `${backendDomain}/api/admin/commission-rates`,
+    method: 'PUT',
+  },
 };
 
 export default SummaryApi;
