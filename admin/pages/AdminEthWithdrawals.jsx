@@ -246,8 +246,8 @@ const AdminEthWithdrawals = () => {
       ) : (
         <>
           <div className="bg-slate-800/30 rounded-xl border border-slate-700/50 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[900px]">
+            <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+              <table className="w-full min-w-[700px] sm:min-w-[900px]">
                 <thead>
                   <tr className="border-b border-slate-700/50">
                     <th className="p-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wide">

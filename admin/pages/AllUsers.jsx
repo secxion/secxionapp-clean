@@ -124,87 +124,89 @@ const AllUsers = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
-          <div className="flex items-center justify-between">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
+        <div className="bg-slate-800/50 rounded-xl p-2.5 sm:p-4 border border-slate-700/50">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-1">
             <div>
-              <p className="text-slate-400 text-xs uppercase tracking-wide">
-                Total Users
+              <p className="text-slate-400 text-[10px] sm:text-xs uppercase tracking-wide">
+                Total
               </p>
-              <p className="text-2xl font-bold text-white mt-1">
+              <p className="text-lg sm:text-2xl font-bold text-white mt-0.5 sm:mt-1">
                 {stats.total}
               </p>
             </div>
-            <FaUsers className="text-slate-600 text-2xl" />
+            <FaUsers className="hidden sm:block text-slate-600 text-2xl" />
           </div>
         </div>
-        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
-          <div className="flex items-center justify-between">
+        <div className="bg-slate-800/50 rounded-xl p-2.5 sm:p-4 border border-slate-700/50">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-1">
             <div>
-              <p className="text-slate-400 text-xs uppercase tracking-wide">
+              <p className="text-slate-400 text-[10px] sm:text-xs uppercase tracking-wide">
                 Admins
               </p>
-              <p className="text-2xl font-bold text-yellow-500 mt-1">
+              <p className="text-lg sm:text-2xl font-bold text-yellow-500 mt-0.5 sm:mt-1">
                 {stats.admins}
               </p>
             </div>
-            <FaUserShield className="text-yellow-500/30 text-2xl" />
+            <FaUserShield className="hidden sm:block text-yellow-500/30 text-2xl" />
           </div>
         </div>
-        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
-          <div className="flex items-center justify-between">
+        <div className="bg-slate-800/50 rounded-xl p-2.5 sm:p-4 border border-slate-700/50">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-1">
             <div>
-              <p className="text-slate-400 text-xs uppercase tracking-wide">
+              <p className="text-slate-400 text-[10px] sm:text-xs uppercase tracking-wide">
                 Regular
               </p>
-              <p className="text-2xl font-bold text-white mt-1">
+              <p className="text-lg sm:text-2xl font-bold text-white mt-0.5 sm:mt-1">
                 {stats.users}
               </p>
             </div>
-            <FaUser className="text-slate-600 text-2xl" />
+            <FaUser className="hidden sm:block text-slate-600 text-2xl" />
           </div>
         </div>
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-3 sm:mb-4">
         <div className="relative flex-1">
           <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
-            placeholder="Search by name or email..."
+            placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors"
+            className="w-full pl-10 pr-4 py-2 sm:py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm sm:text-base text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors"
           />
         </div>
-        <select
-          value={roleFilter}
-          onChange={(e) => setRoleFilter(e.target.value)}
-          className="px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
-        >
-          <option value="all">All Roles</option>
-          <option value="ADMIN">Admins</option>
-          <option value="GENERAL">General</option>
-        </select>
-        <button
-          className={`px-4 py-2.5 rounded-xl text-sm font-medium flex items-center space-x-2 transition-all ${
-            selectedUsers.length === 0
-              ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-              : 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30'
-          }`}
-          onClick={() => deleteUsers(selectedUsers, refetch, setSelectedUsers)}
-          disabled={selectedUsers.length === 0}
-        >
-          <FaTrashAlt />
-          <span>Delete ({selectedUsers.length})</span>
-        </button>
+        <div className="flex gap-2">
+          <select
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+            className="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm sm:text-base text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+          >
+            <option value="all">All</option>
+            <option value="ADMIN">Admins</option>
+            <option value="GENERAL">General</option>
+          </select>
+          <button
+            className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium flex items-center space-x-1.5 sm:space-x-2 transition-all ${
+              selectedUsers.length === 0
+                ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                : 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30'
+            }`}
+            onClick={() => deleteUsers(selectedUsers, refetch, setSelectedUsers)}
+            disabled={selectedUsers.length === 0}
+          >
+            <FaTrashAlt />
+            <span className="hidden sm:inline">Delete </span>({selectedUsers.length})
+          </button>
+        </div>
       </div>
 
       {/* Table */}
       <div className="bg-slate-800/30 rounded-xl border border-slate-700/50 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[800px]">
+        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+          <table className="w-full min-w-[600px] sm:min-w-[800px]">
             <thead>
               <tr className="border-b border-slate-700/50">
                 <th className="p-4 text-left">

@@ -50,22 +50,22 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-3 sm:p-4">
       <div className="w-full max-w-md">
         {/* Logo/Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-yellow-500 rounded-full mb-4">
-            <FaUserShield className="text-4xl text-gray-900" />
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-yellow-500 rounded-full mb-3 sm:mb-4">
+            <FaUserShield className="text-2xl sm:text-4xl text-gray-900" />
           </div>
-          <h1 className="text-3xl font-bold text-white">Admin Portal</h1>
-          <p className="text-gray-400 mt-2">Secxion Management System</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Admin Portal</h1>
+          <p className="text-gray-400 mt-1.5 sm:mt-2 text-sm sm:text-base">Secxion Management System</p>
         </div>
 
         {/* Login Form */}
-        <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-700">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-gray-800 rounded-2xl shadow-2xl p-5 sm:p-8 border border-gray-700">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
+              <label className="block text-gray-300 text-xs sm:text-sm font-medium mb-1.5 sm:mb-2">
                 Email Address
               </label>
               <div className="relative">
@@ -73,16 +73,16 @@ const AdminLogin = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 pl-12 focus:outline-none focus:ring-2 focus:ring-yellow-500 border border-gray-600"
+                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-2.5 sm:py-3 pl-10 sm:pl-12 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-yellow-500 border border-gray-600"
                   placeholder="admin@secxion.com"
                   required
                 />
-                <FaUserShield className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <FaUserShield className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm sm:text-base" />
               </div>
             </div>
 
             <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
+              <label className="block text-gray-300 text-xs sm:text-sm font-medium mb-1.5 sm:mb-2">
                 Password
               </label>
               <div className="relative">
@@ -90,15 +90,15 @@ const AdminLogin = () => {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 pl-12 pr-12 focus:outline-none focus:ring-2 focus:ring-yellow-500 border border-gray-600"
+                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-2.5 sm:py-3 pl-10 sm:pl-12 pr-10 sm:pr-12 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-yellow-500 border border-gray-600"
                   placeholder="Enter your password"
                   required
                 />
-                <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <FaLock className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm sm:text-base" />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                  className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
@@ -106,7 +106,7 @@ const AdminLogin = () => {
             </div>
 
             <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
+              <label className="block text-gray-300 text-xs sm:text-sm font-medium mb-1.5 sm:mb-2">
                 Department Key
               </label>
               <div className="relative">
@@ -114,53 +114,53 @@ const AdminLogin = () => {
                   type={showKey ? 'text' : 'password'}
                   value={departmentKey}
                   onChange={(e) => setDepartmentKey(e.target.value)}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 pl-12 pr-12 focus:outline-none focus:ring-2 focus:ring-yellow-500 border border-gray-600"
-                  placeholder="Enter your department key"
+                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-2.5 sm:py-3 pl-10 sm:pl-12 pr-10 sm:pr-12 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-yellow-500 border border-gray-600"
+                  placeholder="Enter department key"
                   required
                 />
-                <FaKey className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <FaKey className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm sm:text-base" />
                 <button
                   type="button"
                   onClick={() => setShowKey(!showKey)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                  className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
                 >
                   {showKey ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
-              <p className="text-gray-500 text-xs mt-1">Contact your supervisor for department access key</p>
+              <p className="text-gray-500 text-[10px] sm:text-xs mt-1">Contact your supervisor for access key</p>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-2.5 sm:py-3 px-4 rounded-lg text-sm sm:text-base transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  Authenticating...
+                  <span>Authenticating...</span>
                 </>
               ) : (
                 <>
                   <FaUserShield />
-                  Sign In to Admin Panel
+                  <span>Sign In</span>
                 </>
               )}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-gray-500 text-sm">
+          <div className="mt-4 sm:mt-6 text-center">
+            <p className="text-gray-500 text-xs sm:text-sm">
               Protected area. Authorized personnel only.
             </p>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-6 text-gray-500 text-sm">
+        <div className="text-center mt-4 sm:mt-6 text-gray-500 text-xs sm:text-sm">
           © 2026 Secxion. All rights reserved.
         </div>
       </div>
