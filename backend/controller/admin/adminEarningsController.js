@@ -298,13 +298,20 @@ export const getPlatformBalance = async (req, res) => {
  */
 export const getAuthorizedAdmins = async (req, res) => {
   try {
-    // Get all authorized admin emails from config
+    // Get all authorized admin emails from config - deduplicated
+    const seenEmails = new Set();
     const adminList = [];
     
     for (const [dept, emails] of Object.entries(AUTHORIZED_ADMINS)) {
       for (const email of emails) {
+        const normalizedEmail = email.toLowerCase();
+        
+        // Skip if we've already added this email
+        if (seenEmails.has(normalizedEmail)) continue;
+        seenEmails.add(normalizedEmail);
+        
         // Find user by email
-        const user = await userModel.findOne({ email });
+        const user = await userModel.findOne({ email: normalizedEmail });
         if (user) {
           adminList.push({
             _id: user._id,
