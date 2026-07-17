@@ -29,13 +29,14 @@
 }
 
 .sidepanel-scroll-area {
-  scrollbar-width: none;
-  scrollbar-color: rgba(250, 204, 21, 0.75) transparent;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  scrollbar-gutter: stable;
   transition: scrollbar-color 0.2s ease;
 }
 
 .sidepanel-scroll-area::-webkit-scrollbar {
-  width: 0;
+  width: 9px;
 }
 
 .sidepanel-scroll-area::-webkit-scrollbar-track {
@@ -43,7 +44,7 @@
 }
 
 .sidepanel-scroll-area::-webkit-scrollbar-thumb {
-  background: rgba(250, 204, 21, 0.75);
+  background: transparent;
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: content-box;
@@ -52,11 +53,11 @@
 .sidepanel-scroll-area:hover,
 .sidepanel-scroll-area:focus-within,
 .sidepanel-scroll-area.sidepanel-scroll-area--active {
-  scrollbar-width: thin;
+  scrollbar-color: rgba(250, 204, 21, 0.78) transparent;
 }
 
-.sidepanel-scroll-area:hover::-webkit-scrollbar,
-.sidepanel-scroll-area:focus-within::-webkit-scrollbar,
-.sidepanel-scroll-area.sidepanel-scroll-area--active::-webkit-scrollbar {
-  width: 9px;
+.sidepanel-scroll-area:hover::-webkit-scrollbar-thumb,
+.sidepanel-scroll-area:focus-within::-webkit-scrollbar-thumb,
+.sidepanel-scroll-area.sidepanel-scroll-area--active::-webkit-scrollbar-thumb {
+  background: rgba(250, 204, 21, 0.78);
 }

@@ -49,15 +49,39 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
     setOpen(false);
   };
 
-  const revealScrollBar = useCallback(() => {
-    setShowScrollBar(true);
+  const scheduleHideScrollBar = useCallback((delay = 1200) => {
     if (scrollVisibilityTimeoutRef.current) {
       clearTimeout(scrollVisibilityTimeoutRef.current);
     }
     scrollVisibilityTimeoutRef.current = setTimeout(() => {
       setShowScrollBar(false);
-    }, 1400);
+    }, delay);
   }, []);
+
+  const revealScrollBar = useCallback(() => {
+    setShowScrollBar(true);
+    scheduleHideScrollBar(1600);
+  }, [scheduleHideScrollBar]);
+
+  const showScrollBarNow = useCallback(() => {
+    if (scrollVisibilityTimeoutRef.current) {
+      clearTimeout(scrollVisibilityTimeoutRef.current);
+    }
+    setShowScrollBar(true);
+  }, []);
+
+  const hideScrollBarSoon = useCallback(() => {
+    scheduleHideScrollBar(350);
+  }, [scheduleHideScrollBar]);
+
+  useEffect(() => {
+    if (open) {
+      setShowScrollBar(true);
+      scheduleHideScrollBar(1200);
+    } else {
+      setShowScrollBar(false);
+    }
+  }, [open, scheduleHideScrollBar]);
 
   useEffect(() => {
     return () => {
@@ -189,9 +213,13 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
               {/* Navigation */}
               <nav
                 className={`flex-1 px-4 py-6 space-y-3 overflow-y-auto sidepanel-scroll-area ${showScrollBar ? 'sidepanel-scroll-area--active' : ''}`}
-                onPointerEnter={revealScrollBar}
+                onPointerEnter={showScrollBarNow}
+                onPointerLeave={hideScrollBarSoon}
+                onPointerDown={revealScrollBar}
                 onPointerMove={revealScrollBar}
                 onTouchStart={revealScrollBar}
+                onTouchMove={revealScrollBar}
+                onWheel={revealScrollBar}
                 onScroll={revealScrollBar}
               >
                 {navigationItems.map(
