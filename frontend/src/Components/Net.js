@@ -6,11 +6,10 @@ import React, {
   useCallback,
 } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Home, Settings, Shield } from 'lucide-react';
+import { ArrowRight, Home, Settings } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaCaretDown } from 'react-icons/fa';
-import ROLE from '../common/role';
 import './Net.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
@@ -78,27 +77,25 @@ const CustomDialog = ({ open, onOpenChange, children, title, description }) => {
         {title && (
           <h2
             id="dialog-title"
-            className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 glossy-heading"
+            className="text-xl font-bold text-gray-900 mb-3 line-clamp-2"
           >
-            {' '}
-            {/* Applied glossy-heading */}
             {title}
           </h2>
         )}
         {description && (
           <div
             id="dialog-description"
-            className="text-gray-600 mb-6 max-h-60 overflow-y-auto glossy-text"
+            className="text-gray-600 mb-6 max-h-60 overflow-y-auto "
           >
             {' '}
-            {/* Applied glossy-text */}
+            {/* Applied  */}
             <p className="leading-relaxed">{description}</p>
           </div>
         )}
         {children}
         <button
           onClick={() => onOpenChange(false)}
-          className="w-full mt-4 px-4 py-3 bg-gray-800 text-white rounded-xl font-medium hover:bg-gray-900 transition-colors duration-200 shadow-md hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98] glossy-text" // Applied glossy-text
+          className="w-full mt-4 px-4 py-3 bg-gray-800 text-white rounded-xl font-medium hover:bg-gray-900 transition-colors duration-200 shadow-md hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98] " // Applied
         >
           Close
         </button>
@@ -125,7 +122,7 @@ const Net = ({ blogs }) => {
   const location = useLocation();
 
   const { user } = useSelector((state) => state.user);
-  const { profilePic, name, role } = user || {};
+  const { profilePic, name } = user || {};
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -227,9 +224,6 @@ const Net = ({ blogs }) => {
 
   const currentBlog = blogs && blogs.length > 0 ? blogs[currentIndex] : null;
 
-  // Get responsive text lengths based on screen size
-  const getNameLength = () =>
-    screenSize.isMobile ? 8 : screenSize.isTablet ? 15 : 20;
   const getTitleLength = () =>
     screenSize.isMobile ? 12 : screenSize.isTablet ? 30 : 50;
   const getContentLength = () =>
@@ -277,7 +271,7 @@ const Net = ({ blogs }) => {
             onClick={toggleDropdown}
           >
             <FaCaretDown
-              className={`w-7 h-7 md:w-7 md:h-7 ml-1 md:ml-1.5 text-gray-500 hover:text-black transition-transform duration-300 glossy-text ${
+              className={`w-7 h-7 md:w-7 md:h-7 ml-1 md:ml-1.5 text-gray-500 hover:text-black transition-transform duration-300  ${
                 isDropdownOpen ? 'rotate-180' : ''
               }`}
             />
@@ -294,7 +288,7 @@ const Net = ({ blogs }) => {
               className="absolute top-full left-0 mt-2 w-52 bg-white rounded-xl shadow-lg py-2 z-50 border-4 border-yellow-500" // Added bold yellow border
             >
               <div className=" flex px-4 py-3 border-b border-gray-100">
-                <p className="text-sm font-bold text-gray-800 truncate glossy-text">
+                <p className="text-sm font-bold text-gray-800 truncate ">
                   {name}
                 </p>
                 {user?._id && (
@@ -305,7 +299,7 @@ const Net = ({ blogs }) => {
                       handleLogout();
                     }}
                     disabled={loading}
-                    className="px-1 py-1 -mt-1 text-xs ml-20 border-4 border-red-700 text-black rounded flex items-center glossy-text disabled:opacity-50"
+                    className="px-1 py-1 -mt-1 text-xs ml-20 border-4 border-red-700 text-black rounded flex items-center  disabled:opacity-50"
                   >
                     <FontAwesomeIcon icon={faSignOutAlt} className="mr-1" />
                   </button>
@@ -316,7 +310,7 @@ const Net = ({ blogs }) => {
               {currentRoute !== '/home' && (
                 <Link
                   to="/home"
-                  className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 transition-colors duration-150 group glossy-text" // Applied glossy-text
+                  className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 transition-colors duration-150 group " // Applied
                   onClick={() => setIsDropdownOpen(false)}
                 >
                   <Home className="w-4 h-4 mr-3 text-gray-500 group-hover:text-blue-600" />
@@ -328,7 +322,7 @@ const Net = ({ blogs }) => {
               {/* {user?.role === ROLE.ADMIN && currentRoute !== '/admin-panel' && (
                 <Link
                   to="/admin-panel"
-                  className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 transition-colors duration-150 group glossy-text"
+                  className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 transition-colors duration-150 group "
                   onClick={() => setIsDropdownOpen(false)}
                 >
                   <Shield className="w-4 h-4 mr-3 text-gray-500 group-hover:text-purple-600" />
@@ -342,7 +336,7 @@ const Net = ({ blogs }) => {
               {currentRoute !== '/profile' && (
                 <Link
                   to="/profile"
-                  className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-green-50 transition-colors duration-150 group glossy-text" // Applied glossy-text
+                  className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-green-50 transition-colors duration-150 group " // Applied
                   onClick={() => setIsDropdownOpen(false)}
                 >
                   <Settings className="w-4 h-4 mr-3 text-gray-500 group-hover:text-green-600" />
@@ -377,7 +371,7 @@ const Net = ({ blogs }) => {
                 style={{ animationDelay: '0.2s' }}
               ></div>
             </div>
-            <span className="text-xs md:text-sm font-medium text-gray-500 glossy-text">
+            <span className="text-xs md:text-sm font-medium text-gray-500 ">
               Loading latest news...
             </span>
           </div>
@@ -397,9 +391,9 @@ const Net = ({ blogs }) => {
                   {/* Added yellow border */}
                   <div className="absolute inset-0 w-1.5 h-1.5 md:w-2 md:h-2 bg-yellow-400 rounded-full animate-ping"></div>
                 </div>
-                <span className="text-xs md:text-sm lg:text-base font-bold text-yellow-600  transition-colors duration-300 glossy-text">
+                <span className="text-xs md:text-sm lg:text-base font-bold text-yellow-600  transition-colors duration-300 ">
                   {' '}
-                  {/* Applied glossy-text */}
+                  {/* Applied  */}
                   {getResponsiveText(
                     currentBlog.title,
                     getTitleLength(),
@@ -408,11 +402,11 @@ const Net = ({ blogs }) => {
                   )}
                 </span>
               </div>
-              <ArrowRight className="w-3 h-3 md:w-4 md:h-4 text-gray-400   flex-shrink-0 glossy-text" />{' '}
-              {/* Applied glossy-text */}
-              <span className="text-xs md:text-sm font-medium text-gray-800  truncate flex-grow glossy-text">
+              <ArrowRight className="w-3 h-3 md:w-4 md:h-4 text-gray-400   flex-shrink-0 " />{' '}
+              {/* Applied  */}
+              <span className="text-xs md:text-sm font-medium text-gray-800  truncate flex-grow ">
                 {' '}
-                {/* Applied glossy-text */}
+                {/* Applied  */}
                 {getResponsiveText(
                   currentBlog.content,
                   getContentLength(),
@@ -426,18 +420,18 @@ const Net = ({ blogs }) => {
           <div className="flex items-center space-x-2 text-gray-500">
             <div className="w-1.5 h-1.5 bg-gray-400 rounded-full opacity-50 border border-gray-600"></div>{' '}
             {/* Added border */}
-            <span className="italic text-xs md:text-sm glossy-text">
+            <span className="italic text-xs md:text-sm ">
               No news available at the moment
             </span>{' '}
-            {/* Applied glossy-text */}
+            {/* Applied  */}
           </div>
         )}
       </div>
       {/* Blog count indicator */}
       {blogs && blogs.length > 1 && (
-        <div className="hidden md:flex items-center space-x-1 ml-4 text-gray-400 text-xs glossy-text">
+        <div className="hidden md:flex items-center space-x-1 ml-4 text-gray-400 text-xs ">
           {' '}
-          {/* Applied glossy-text */}
+          {/* Applied  */}
           <span>{currentIndex + 1}</span>
           <div className="w-1 h-1 bg-gray-400/70 rounded-full border border-gray-600"></div>{' '}
           {/* Added border */}

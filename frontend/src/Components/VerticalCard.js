@@ -16,20 +16,6 @@ const VerticalCard = React.memo(({ loading, data = [] }) => {
     <>
       {/* Inline styles for custom properties and animations not directly supported by Tailwind */}
       <style>{`
-        /* Glossy text styles for general use, reduced intensity */
-        .glossy-text {
-          text-shadow:
-            0.5px 0.5px 1px rgba(255,255,255,0.3), /* Reduced white shadow */
-            -0.5px -0.5px 1px rgba(0,0,0,0.15); /* Subtle black shadow */
-          color: #222; /* Darker base color for better contrast */
-        }
-        /* Glossy text styles for headings, reduced intensity */
-        .glossy-heading {
-          text-shadow:
-            0 0 2px rgba(255,255,255,0.3), /* Reduced white glow */
-            1px 1px 2px rgba(0,0,0,0.15); /* Reduced black shadow */
-          color: #111; /* Darker base color */
-        }
         /* A subtle gloss for icons */
         .glossy-icon-text {
           filter: drop-shadow(0.5px 0.5px 1px rgba(0,0,0,0.4));
@@ -186,7 +172,7 @@ const VerticalCard = React.memo(({ loading, data = [] }) => {
 
                 {/* Content */}
                 <div className="p-3 relative z-10">
-                  <h3 className="text-sm font-semibold text-gray-100 leading-tight my-1 line-clamp-2 transition-colors duration-300 group-hover:text-yellow-200 glossy-heading">
+                  <h3 className="text-sm font-semibold text-gray-100 leading-tight my-1 line-clamp-2 transition-colors duration-300 group-hover:text-yellow-200">
                     {product.productName}
                   </h3>
                   <div className="flex flex-col gap-1 mt-2">

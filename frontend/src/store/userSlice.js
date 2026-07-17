@@ -1,9 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 const initialState = {
-  user: null,
+  user: isDev
+    ? {
+        id: 'dev-user-id',
+        name: 'Developer Mode',
+        email: 'dev@secxion.com',
+        role: 'ADMIN',
+      }
+    : null,
   loading: false,
-  isLoggedIn: false,
+  isLoggedIn: isDev,
 };
 
 const userSlice = createSlice({

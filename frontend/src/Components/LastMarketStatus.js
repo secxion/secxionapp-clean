@@ -198,7 +198,7 @@ const LastMarketStatus = () => {
 
   return (
     <section className="bg-white max-w-7xl mx-auto my-8 p-4 rounded-xl shadow-lg border-2 border-gray-400">
-      <h2 className="text-2xl font-bold text-gray-800 glossy-heading mb-6 border-b pb-3">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">
         Last Market Activity
       </h2>
       <div className="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-100 mb-6 text-gray-700">

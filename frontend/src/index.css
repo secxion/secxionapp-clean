@@ -55,16 +55,6 @@ body {
 
 .glossy-icon-text {
 }
-.glossy-text {
-  text-shadow: white;
-  -webkit-text-stroke: 0.5px #000;
-  color: #000;
-}
-.glossy-heading {
-  text-shadow: white;
-  -webkit-text-stroke: 0.7px #000000;
-  color: #000;
-}
 .animate-fade-in {
   animation: fade-in 0.3s ease-out;
 }

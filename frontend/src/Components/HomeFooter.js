@@ -29,7 +29,7 @@ const HomeFooter = () => {
       <div className="flex justify-around items-center text-gray-300 dark:text-gray-100 text-xl h-16">
         <Link
           to="/profile"
-          className="flex flex-col bg-transparent items-center text-blue-400 outline-none ring-2 ring-blue-400 ring-offset-1 transition-colors duration-300 ease-in-out border-4 border-yellow-500 rounded-lg p-2 glossy-text h-12 w-12"
+          className="flex flex-col bg-transparent items-center text-blue-400 outline-none ring-2 ring-blue-400 ring-offset-1 transition-colors duration-300 ease-in-out border-4 border-yellow-500 rounded-lg p-2  h-12 w-12"
           aria-label="Profile"
         >
           <div className="relative">

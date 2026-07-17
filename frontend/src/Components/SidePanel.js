@@ -12,10 +12,8 @@ import {
   ChatBubbleBottomCenterTextIcon,
   ShoppingBagIcon,
   ClockIcon,
-  XMarkIcon,
   ChevronDownIcon,
   CheckIcon,
-  ArrowRightOnRectangleIcon,
   CodeBracketIcon,
 } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
@@ -35,7 +33,6 @@ const SidePanel = ({
 }) => {
   const [timezone, setTimezone] = useState('Africa/Lagos');
   const [showTimezones, setShowTimezones] = useState(false);
-  const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -52,14 +49,6 @@ const SidePanel = ({
     onCloseMenu?.();
     setOpen(false);
   };
-  const handleLogoutClick = async () => {
-    if (!loading) {
-      handleLogout();
-      setOpen(false);
-      navigate('/login');
-    }
-  };
-
   const hideTradeStatus = location.pathname === '/record';
   const hideDataPad = location.pathname === '/datapad';
   const hideWallet = location.pathname === '/mywallet';
@@ -196,7 +185,7 @@ const SidePanel = ({
                         >
                           <Icon className="h-5 w-5 text-white" />
                         </div>
-                        <span className="text-white font-medium text-sm transition-colors duration-200 glossy-text">
+                        <span className="text-white font-medium text-sm transition-colors duration-200 ">
                           {label}
                         </span>
                       </Link>
@@ -214,7 +203,7 @@ const SidePanel = ({
                   <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 mr-4 group-hover:scale-110 transition-transform duration-300">
                     <CodeBracketIcon className="h-5 w-5 text-white" />
                   </div>
-                  <span className="text-white font-medium text-sm transition-colors duration-200 glossy-text">
+                  <span className="text-white font-medium text-sm transition-colors duration-200 ">
                     LiveScript
                   </span>
                   <span className="ml-auto text-xs bg-purple-500/30 text-purple-300 px-2 py-0.5 rounded-full">
@@ -233,12 +222,12 @@ const SidePanel = ({
                     <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-400 mr-3">
                       <GlobeAltIcon className="h-4 w-4 text-white" />
                     </div>
-                    <span className="text-sm font-medium glossy-text">
+                    <span className="text-sm font-medium ">
                       {getSelectedTimezoneLabel() || 'Select Timezone'}
                     </span>
                   </div>
                   <ChevronDownIcon
-                    className={`h-5 w-5 text-gray-400 transform transition-transform duration-300 ${showTimezones ? 'rotate-180' : ''} group-hover:text-white glossy-text`}
+                    className={`h-5 w-5 text-gray-400 transform transition-transform duration-300 ${showTimezones ? 'rotate-180' : ''} group-hover:text-white `}
                   />
                 </button>
                 {showTimezones && (
@@ -252,12 +241,12 @@ const SidePanel = ({
                               timezone === tz.value
                                 ? 'text-cyan-400 font-semibold bg-gray-700'
                                 : 'text-gray-300 hover:text-white'
-                            } glossy-text`}
+                            } `}
                           >
                             <div className="flex items-center justify-between">
                               <span>{tz.label}</span>
                               {timezone === tz.value && (
-                                <CheckIcon className="h-4 w-4 text-cyan-400 glossy-text" />
+                                <CheckIcon className="h-4 w-4 text-cyan-400 " />
                               )}
                             </div>
                           </button>
@@ -271,8 +260,8 @@ const SidePanel = ({
               <div className="px-4 py-6 text-center border-t border-gray-700">
                 <div className="bg-gray-800/50 border-2 border-yellow-500/30 rounded-xl p-4">
                   <div className="flex items-center justify-center mb-2">
-                    <ClockIcon className="h-5 w-5 text-cyan-400 mr-2 glossy-text" />
-                    <span className="text-gray-400 text-xs uppercase tracking-wide font-medium glossy-text">
+                    <ClockIcon className="h-5 w-5 text-cyan-400 mr-2 " />
+                    <span className="text-gray-400 text-xs uppercase tracking-wide font-medium ">
                       Current Time
                     </span>
                   </div>
@@ -280,13 +269,13 @@ const SidePanel = ({
                     format={'HH:mm:ss'}
                     ticking={true}
                     timezone={timezone}
-                    className="text-xl font-bold text-white mb-2 tabular-nums glossy-heading"
+                    className="text-xl font-bold text-white mb-2 tabular-nums"
                   />
                   <Clock
                     format={'dddd, MMMM Do YYYY'}
                     ticking={true}
                     timezone={timezone}
-                    className="text-xs text-gray-400 font-medium glossy-text"
+                    className="text-xs text-gray-400 font-medium "
                   />
                 </div>
               </div>

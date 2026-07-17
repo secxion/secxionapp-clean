@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import SummaryApi from '../common';
 import VerticalCard from '../Components/VerticalCard';
@@ -9,7 +9,7 @@ const SearchProduct = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -24,13 +24,13 @@ const SearchProduct = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [query.search]);
 
   useEffect(() => {
     if (query.search) {
       fetchProduct();
     }
-  }, [query]);
+  }, [query.search, fetchProduct]);
 
   return (
     <div className="container mx-auto p-4 mt-16">

@@ -4,7 +4,6 @@ import SummaryApi from '../common';
 import SecxionLoader from './SecxionLoader';
 import { formatDistanceToNow } from 'date-fns';
 import { FaCircle, FaExternalLinkAlt, FaTimes } from 'react-icons/fa';
-import FullBlogDialog from './FullBlogDialog';
 import { useNavigate } from 'react-router-dom';
 
 const blogCardVariants = {
@@ -18,9 +17,6 @@ const NetBlog = () => {
   const [showBlogs, setShowBlogs] = useState(true);
   const [loadingBlogs, setLoadingBlogs] = useState(true);
   const [errorBlogs, setErrorBlogs] = useState(null);
-  const [communityFeedData, setCommunityFeedData] = useState(null);
-  const [loadingFeed, setLoadingFeed] = useState(false);
-  const [errorFeed, setErrorFeed] = useState(null);
   const [selectedBlog, setSelectedBlog] = useState(null);
   const navigate = useNavigate();
 
@@ -44,19 +40,13 @@ const NetBlog = () => {
   }, []);
 
   const fetchCommunityFeedData = async () => {
-    setLoadingFeed(true);
-    setErrorFeed(null);
     try {
       const response = await fetch(SummaryApi.getApprovedPosts.url, {
         credentials: 'include',
       });
       if (!response.ok) throw new Error('Failed to fetch community posts');
-      const data = await response.json();
-      setCommunityFeedData(data.data);
     } catch (err) {
-      setErrorFeed(err.message);
-    } finally {
-      setLoadingFeed(false);
+      // Ignore warmup errors because this call is only used to prefetch.
     }
   };
 
@@ -110,7 +100,7 @@ const NetBlog = () => {
           whileTap={{ scale: 0.95 }}
           onMouseEnter={fetchCommunityFeedData}
           onClick={handleCommunityFeedClick}
-          className="relative group px-5 py-2 text-white font-semibold items-center justify-center rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-xs bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:brightness-110 flex items-center gap-2 border-4 border-yellow-500 glossy-text" // Applied glossy-text
+          className="relative group px-5 py-2 text-white font-semibold items-center justify-center rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-xs bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:brightness-110 flex items-center gap-2 border-4 border-yellow-500 " // Applied
         >
           <span className="hidden sm:inline">Community</span> Feed
           <FaExternalLinkAlt className="text-white text-[10px] hidden sm:inline" />
@@ -122,7 +112,7 @@ const NetBlog = () => {
         <div className="flex gap-2">
           <button
             onClick={toggleBlogVisibility}
-            className="text-sm font-semibold text-gray-700 border-4 border-yellow-500 px-4 py-1 rounded-full transition glossy-text" // Applied glossy-text
+            className="text-sm font-semibold text-gray-700 border-4 border-yellow-500 px-4 py-1 rounded-full transition " // Applied
           >
             {showBlogs ? 'Hide Blogs' : 'Show Blogs'}
           </button>
@@ -141,13 +131,11 @@ const NetBlog = () => {
               <motion.div
                 key={blog._id}
                 variants={blogCardVariants}
-                className="rounded-2xl overflow-hidden shadow-lg bg-white  border-4 border-yellow-500 transition-all duration-300 hover:scale-[1.015] glossy-text"
+                className="rounded-2xl overflow-hidden shadow-lg bg-white  border-4 border-yellow-500 transition-all duration-300 hover:scale-[1.015] "
               >
                 <div className="p-6 minecraft-font text-xs">
                   <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-sm font-semibold line-clamp-2 text-gray-800 glossy-heading">
-                      {' '}
-                      {/* Applied glossy-heading */}
+                    <h3 className="text-sm font-semibold line-clamp-2 text-gray-800">
                       {blog.title}
                     </h3>
                     {blog.isActive && (
@@ -156,12 +144,12 @@ const NetBlog = () => {
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-600 text-xs line-clamp-3 glossy-text">
+                  <p className="text-gray-600 text-xs line-clamp-3 ">
                     {blog.content || 'No content available.'}
                   </p>
-                  <p className="text-[10px] text-gray-500 mt-3 glossy-text">
+                  <p className="text-[10px] text-gray-500 mt-3 ">
                     {' '}
-                    {/* Applied glossy-text */}
+                    {/* Applied  */}
                     Published{' '}
                     {formatDistanceToNow(new Date(blog.createdAt), {
                       addSuffix: true,
@@ -169,7 +157,7 @@ const NetBlog = () => {
                   </p>
                   <button
                     onClick={() => setSelectedBlog(blog)}
-                    className="mt-3 text-xs font-medium text-pink-500 hover:text-pink-400 transition-colors focus:outline-none glossy-text border-2 border-black rounded-md px-2 py-1"
+                    className="mt-3 text-xs font-medium text-pink-500 hover:text-pink-400 transition-colors focus:outline-none  border-2 border-black rounded-md px-2 py-1"
                   >
                     Read More →
                   </button>
@@ -182,7 +170,7 @@ const NetBlog = () => {
             <div className="flex justify-center mt-8">
               <button
                 onClick={toggleMoreBlogs}
-                className="px-4 py-2 text-xs font-semibold bg-pink-500 text-white rounded-full hover:bg-pink-600 transition border-4 border-yellow-500 glossy-text" // Applied glossy-text
+                className="px-4 py-2 text-xs font-semibold bg-pink-500 text-white rounded-full hover:bg-pink-600 transition border-4 border-yellow-500 " // Applied
               >
                 {visibleBlogs === 6 ? 'Show More' : 'Show Less'}
               </button>
@@ -190,9 +178,9 @@ const NetBlog = () => {
           )}
         </>
       ) : (
-        <p className="text-gray-500 dark:text-gray-400 text-center py-12 text-sm minecraft-font glossy-text border-2 border-black">
+        <p className="text-gray-500 dark:text-gray-400 text-center py-12 text-sm minecraft-font  border-2 border-black">
           {' '}
-          {/* Applied glossy-text */}
+          {/* Applied  */}
           No blog posts available yet.
         </p>
       )}

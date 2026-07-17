@@ -102,7 +102,7 @@ const WalletDashboard = () => {
                     <h2 className="text-md font-semibold flex items-center">
                         <FaWallet className="mr-2 text-black" />
                         <span className="text-gray-800">Balance:</span>
-                        <span className="ml-2 font-bold text-purple-700 glossy-text">
+                        <span className="ml-2 font-bold text-purple-700 ">
                             {isLoadingBalance ? (
                                 <svg
                                     className="w-5 h-5 animate-spin text-indigo-500"

@@ -8,7 +8,7 @@ import {
   FaMoneyBillWave,
   FaFilter,
 } from 'react-icons/fa';
-import VerticalCard from '../Components/VerticalCard';
+import ProductListView from '../Components/ProductListView';
 import debounce from 'lodash.debounce';
 import SecxionSpinner from '../Components/SecxionSpinner';
 
@@ -119,7 +119,7 @@ const CategoryProduct = () => {
 
       {/* Desktop Sidebar Filter */}
       <aside className="hidden md:block md:w-[250px] bg-gray-900 p-4 shadow-lg overflow-y-auto border-r border-gray-800 border-4 border-yellow-500 rounded-bl-xl rounded-tl-xl">
-        <h4 className="text-lg font-semibold mb-3 flex items-center glossy-heading">
+        <h4 className="text-lg font-semibold mb-3 flex items-center">
           <FaFilter className="mr-2" /> Filter
         </h4>
         <form className="space-y-4 ">
@@ -159,19 +159,23 @@ const CategoryProduct = () => {
       {/* Product List */}
       <main className="flex-1 bg-gray-950 p-3 overflow-hidden border-2 border-black rounded-tr-xl rounded-br-xl">
         <div className="h-full flex flex-col">
-          {filterCategoryList.length > 0 && (
-            <p className="mb-2 text-xs text-blue-400 ">
-              Showing:{' '}
-              {filterCategoryList.map((cat, i) => (
-                <span key={cat}>
-                  <span className="text-gray-400 font-semibold">
-                    {productCategory.find((p) => p.value === cat)?.label || cat}
+          <div className="flex items-center justify-between mb-2">
+            {filterCategoryList.length > 0 && (
+              <p className="text-xs text-blue-400 ">
+                Showing:{' '}
+                {filterCategoryList.map((cat, i) => (
+                  <span key={cat}>
+                    <span className="text-gray-400 font-semibold">
+                      {productCategory.find((p) => p.value === cat)?.label ||
+                        cat}
+                    </span>
+                    {i < filterCategoryList.length - 1 ? ', ' : ''}
                   </span>
-                  {i < filterCategoryList.length - 1 ? ', ' : ''}
-                </span>
-              ))}
-            </p>
-          )}
+                ))}
+              </p>
+            )}
+          </div>
+
           <div className="flex-1 overflow-y-auto rounded-lg border border-blue-700 bg-gray-900 p-3 shadow-inner scrollbar-thin scrollbar-thumb-blue-500 border-4 border-yellow-500">
             {loading ? (
               <div className="flex items-center justify-center h-full">
@@ -179,7 +183,7 @@ const CategoryProduct = () => {
               </div>
             ) : error ? (
               <p
-                className="text-red-400 font-semibold text-center glossy-text"
+                className="text-red-400 font-semibold text-center "
                 aria-live="assertive"
                 role="alert"
                 tabIndex={0}
@@ -188,7 +192,7 @@ const CategoryProduct = () => {
               </p>
             ) : data.length === 0 ? (
               <p
-                className="text-gray-400 text-center text-sm glossy-text"
+                className="text-gray-400 text-center text-sm "
                 aria-live="polite"
                 role="status"
                 tabIndex={0}
@@ -198,7 +202,7 @@ const CategoryProduct = () => {
                   : 'No products found.'}
               </p>
             ) : (
-              <VerticalCard data={data} loading={loading} />
+              <ProductListView data={data} loading={loading} />
             )}
           </div>
         </div>

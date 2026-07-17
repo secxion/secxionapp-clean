@@ -4,6 +4,8 @@
  */
 
 import request from "supertest";
+import jwt from "jsonwebtoken";
+import { jest } from "@jest/globals";
 
 /**
  * Create a test request helper for API endpoints
@@ -50,7 +52,6 @@ export const mockWalletData = {
  * Helper to generate JWT token for authenticated requests
  */
 export function generateMockToken(userId, role = "GENERAL") {
-  const jwt = require("jsonwebtoken");
   const token = jwt.sign(
     {
       _id: userId,

@@ -1,12 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Turnstile } from 'react-turnstile';
 import SummaryApi from '../common';
 import Context from '../Context';
+import { setUserDetails } from '../store/userSlice';
 import loginBackground from './loginbk.png';
-import thumbsUpGif from './thumbsup.gif';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEye, FaEyeSlash, FaTerminal } from 'react-icons/fa';
 import Navigation from '../Components/Navigation';
 import SecxionLogo from '../app/slogo.png';
 import NFTBadge from '../Components/NFTBadge';
@@ -52,6 +53,7 @@ const Login = () => {
   const [csrfToken, setCsrfToken] = useState('');
   const { fetchUserDetails } = useContext(Context);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [verificationVisible, setVerificationVisible] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState(null);
   const [isVerified, setIsVerified] = useState(false);
@@ -188,6 +190,21 @@ const Login = () => {
     setVerificationVisible(true);
     setFormSubmitting(true);
   };
+
+  const handleDevLogin = () => {
+    dispatch(
+      setUserDetails({
+        id: 'dev-user-id',
+        name: 'Developer Mode',
+        email: 'dev@secxion.com',
+        role: 'ADMIN',
+      }),
+    );
+    toast.success('Developer login successful!');
+    navigate('/home');
+  };
+
+  const isDev = process.env.NODE_ENV === 'development';
 
   return (
     <section
@@ -334,18 +351,31 @@ const Login = () => {
           </div>
 
           {!verificationVisible && (
-            <Button
-              type="submit"
-              disabled={formSubmitting}
-              className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg ${
-                formSubmitting
-                  ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                  : ''
-              } ${bubbleIn ? 'bubble-pop' : ''}`}
-              style={getBubbleStyle(bubbleIn, 8)}
-            >
-              Login
-            </Button>
+            <div className="flex flex-col gap-3">
+              <Button
+                type="submit"
+                disabled={formSubmitting}
+                className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg ${
+                  formSubmitting
+                    ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                    : ''
+                } ${bubbleIn ? 'bubble-pop' : ''}`}
+                style={getBubbleStyle(bubbleIn, 8)}
+              >
+                Login
+              </Button>
+
+              {isDev && (
+                <button
+                  type="button"
+                  onClick={handleDevLogin}
+                  className="flex items-center justify-center gap-2 w-full py-2 px-4 rounded-lg bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600/30 transition-all text-sm font-medium"
+                >
+                  <FaTerminal className="w-3 h-3" />
+                  Dev Access (Bypass Auth)
+                </button>
+              )}
+            </div>
           )}
         </form>
 

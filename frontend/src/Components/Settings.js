@@ -103,17 +103,15 @@ const Settings = () => {
 
   return (
     <div className="mt-16 px-6 py-8 max-w-xl mx-auto bg-white space-y-8">
-      <h2 className="text-2xl font-semibold text-black text-center glossy-heading">
+      <h2 className="text-2xl font-semibold text-black text-center">
         Edit Profile
       </h2>
       {error && (
-        <p className="text-red-600 text-center font-medium glossy-text">
-          {error}
-        </p>
+        <p className="text-red-600 text-center font-medium ">{error}</p>
       )}
 
       <div className="text-center">
-        <label className="block text-black mb-2 font-medium glossy-text">
+        <label className="block text-black mb-2 font-medium ">
           Profile Picture
         </label>
         <div className="w-28 h-28 mx-auto rounded-full overflow-hidden bg-yellow-100 border border-yellow-300 flex items-center justify-center mb-3">
@@ -148,9 +146,7 @@ const Settings = () => {
 
       <div className="space-y-4">
         <div>
-          <label className="block mb-1 font-medium text-black glossy-text">
-            Name
-          </label>
+          <label className="block mb-1 font-medium text-black ">Name</label>
           <input
             type="text"
             value={name}
@@ -160,9 +156,7 @@ const Settings = () => {
         </div>
 
         <div>
-          <label className="block mb-1 font-medium text-black glossy-text">
-            Tag
-          </label>
+          <label className="block mb-1 font-medium text-black ">Tag</label>
           <input
             type="text"
             value={tag}
@@ -172,9 +166,7 @@ const Settings = () => {
         </div>
 
         <div>
-          <label className="block mb-1 font-medium text-black glossy-text">
-            Email
-          </label>
+          <label className="block mb-1 font-medium text-black ">Email</label>
           <input
             type="text"
             value={state?.email || ''}
@@ -189,9 +181,7 @@ const Settings = () => {
         </div>
 
         <div>
-          <label className="block mb-1 font-medium text-black glossy-text">
-            Telegram
-          </label>
+          <label className="block mb-1 font-medium text-black ">Telegram</label>
           <input
             type="text"
             value={telegramNumber}
@@ -201,7 +191,7 @@ const Settings = () => {
         </div>
 
         <div>
-          <label className="block mb-1 font-medium text-black glossy-text">
+          <label className="block mb-1 font-medium text-black ">
             Current Password
           </label>
           <input
@@ -215,7 +205,7 @@ const Settings = () => {
         </div>
 
         <div>
-          <label className="block mb-1 font-medium text-black glossy-text">
+          <label className="block mb-1 font-medium text-black ">
             New Password
           </label>
           <input
@@ -249,10 +239,10 @@ const Settings = () => {
       {showEmailModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-md text-center">
-            <h3 className="text-xl font-semibold mb-4 text-black glossy-heading">
+            <h3 className="text-xl font-semibold mb-4 text-black">
               Change Email?
             </h3>
-            <p className="text-yellow-800 mb-6 glossy-text">
+            <p className="text-yellow-800 mb-6 ">
               To change your email, please contact support via the Report
               section.
             </p>

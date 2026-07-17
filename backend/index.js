@@ -12,8 +12,30 @@ import mongoSanitize from "express-mongo-sanitize";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import errorHandler from "./middleware/errorHandler.js";
 
 dotenv.config();
+
+const validateEnvironment = () => {
+  const requiredEnvVars = ["TOKEN_SECRET_KEY", "FRONTEND_URLS"];
+  const missingVars = requiredEnvVars.filter((name) => !process.env[name]);
+
+  if (process.env.NODE_ENV === "production") {
+    if (!process.env.MONGODB_URI) {
+      missingVars.push("MONGODB_URI");
+    }
+    if (!process.env.SESSION_SECRET) {
+      missingVars.push("SESSION_SECRET");
+    }
+  }
+
+  if (missingVars.length > 0) {
+    console.error("❌ Missing required environment variables:", missingVars);
+    process.exit(1);
+  }
+};
+
+validateEnvironment();
 
 console.log("🚀 Starting server...");
 console.log(`   NODE_ENV: ${process.env.NODE_ENV || "development"}`);
@@ -102,29 +124,19 @@ app.use(mongoSanitize());
 
 app.use("/api", router);
 
+app.use("/api", (req, res) => {
+  return res.status(404).json({
+    success: false,
+    status: 404,
+    message: "API endpoint not found",
+    path: req.originalUrl,
+  });
+});
+
+app.use(errorHandler);
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// Error handling middleware for catching errors from async route handlers
-app.use((err, req, res, next) => {
-  // Only handle API errors as JSON
-  if (req.baseUrl.startsWith("/api") || req.path.startsWith("/api")) {
-    const statusCode = err.status || 500;
-    console.error("❌ API Error:", {
-      status: statusCode,
-      message: err.message,
-      path: req.path,
-      method: req.method,
-    });
-    return res.status(statusCode).json({
-      message: err.message || "Internal server error",
-      status: statusCode,
-      success: false,
-    });
-  }
-  // Pass non-API errors to next handler
-  next(err);
-});
 
 // Serve static files only in production mode
 const buildPath = path.join(__dirname, "build");

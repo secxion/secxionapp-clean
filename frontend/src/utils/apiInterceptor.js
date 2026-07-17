@@ -177,7 +177,7 @@ export const handleApiResponse = async (response) => {
  * }
  */
 
-export default {
+const apiInterceptor = {
   apiFetch,
   handleUnauthorized,
   isUnauthorized,
@@ -185,3 +185,5 @@ export default {
   getErrorMessage,
   handleApiResponse,
 };
+
+export default apiInterceptor;

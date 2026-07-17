@@ -328,8 +328,10 @@ export const cleanupExpiredTokens = () => {
   }
 };
 
-// Run cleanup every hour
-setInterval(cleanupExpiredTokens, 60 * 60 * 1000);
+// Run cleanup every hour outside test environment.
+if (process.env.NODE_ENV !== "test") {
+  setInterval(cleanupExpiredTokens, 60 * 60 * 1000);
+}
 
 export default {
   csrfProtection,

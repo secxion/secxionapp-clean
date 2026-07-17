@@ -1,15 +1,16 @@
-module.exports = {
+export default {
   testEnvironment: "node",
   roots: ["<rootDir>"],
-  testMatch: ["**/__tests__/**/*.js", "**/?(*.)+(spec|test).js"],
+  testMatch: ["**/__tests__/**/*.test.js", "**/?(*.)+(spec|test).js"],
   collectCoverageFrom: [
     "**/*.js",
     "!**/node_modules/**",
     "!**/build/**",
     "!**/dist/**",
     "!**/jest.config.js",
+    "!**/__tests__/testUtils.js",
   ],
-  coverageThresholds: {
+  coverageThreshold: {
     global: {
       branches: 40,
       functions: 40,

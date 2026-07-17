@@ -181,6 +181,8 @@ router.use(
   }),
 );
 
+router.use(apiLimiter);
+
 const cache = {};
 const CACHE_TTL = 5 * 60 * 1000;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -453,7 +455,7 @@ router.get("/slider-verification", (req, res) => {
 router.post("/signup", signupLimiter, userSignUpController);
 router.get("/verify-email", verifyEmailController);
 router.post("/signin", authLimiter, userSignInController);
-router.post("/admin-signin", adminSignInController); // No rate limit for admin
+router.post("/admin-signin", authLimiter, adminSignInController);
 router.get("/user-details", authToken, noCache, userDetailsController);
 router.get("/userLogout", authToken, noCache, userLogout);
 router.post("/request-reset", passwordResetLimiter, sendResetCode);

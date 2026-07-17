@@ -1,17 +1,18 @@
-// Centralized error handling middleware for Express
-module.exports = function errorHandler(err, req, res, next) {
-  // Log the error (could be enhanced to use a logger)
-  console.error(err);
+// Centralized error handling middleware for API responses.
+export default function errorHandler(err, req, res, next) {
+  const isApiRequest = req.originalUrl?.startsWith("/api");
 
-  // Set default status code and message
-  let status = err.status || 500;
+  if (!isApiRequest) {
+    return next(err);
+  }
+
+  let status = err.status || err.statusCode || 500;
   let message = err.message || "Internal Server Error";
 
-  // Handle Mongoose/MongoDB errors
   if (err.name === "ValidationError") {
     status = 400;
     message = err.message;
-  } else if (err.name === "MongoError") {
+  } else if (err.name === "MongoError" || err.name === "MongoServerError") {
     status = 500;
     message = "Database Error";
   } else if (err.name === "CastError") {
@@ -19,7 +20,6 @@ module.exports = function errorHandler(err, req, res, next) {
     message = "Invalid ID format";
   }
 
-  // JWT errors
   if (err.name === "UnauthorizedError" || err.name === "JsonWebTokenError") {
     status = 401;
     message = "Invalid or expired token";
@@ -28,10 +28,17 @@ module.exports = function errorHandler(err, req, res, next) {
     message = "Token expired";
   }
 
-  // Send error response
-  res.status(status).json({
+  console.error("❌ API Error:", {
+    status,
+    message,
+    path: req.originalUrl,
+    method: req.method,
+  });
+
+  return res.status(status).json({
     success: false,
-    error: message,
+    status,
+    message,
     ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
   });
-};
+}

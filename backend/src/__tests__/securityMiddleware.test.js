@@ -12,38 +12,47 @@ import {
   generateRefreshToken,
   refreshAccessToken,
   revokeRefreshToken,
-} from "../middleware/securityMiddleware";
-import { createMockRequest, createMockResponse } from "./testUtils";
+} from "../../middleware/securityMiddleware.js";
+import jwt from "jsonwebtoken";
+import { jest } from "@jest/globals";
+import { createMockRequest, createMockResponse } from "./testUtils.js";
 
 describe("Security Middleware", () => {
+  beforeAll(() => {
+    process.env.TOKEN_SECRET_KEY = process.env.TOKEN_SECRET_KEY || "test-secret";
+  });
+
   describe("CSRF Protection", () => {
     it("should generate and set CSRF token", () => {
       const req = createMockRequest();
-      req.session = {};
+      req.method = "GET";
       const res = createMockResponse();
+      res.locals = {};
       const next = jest.fn();
 
       csrfProtection(req, res, next);
 
-      expect(req.session.csrfToken).toBeDefined();
       expect(res.setHeader).toHaveBeenCalledWith(
         "X-CSRF-Token",
         expect.any(String),
       );
+      expect(res.locals.csrfToken).toBeDefined();
       expect(next).toHaveBeenCalled();
     });
 
     it("should return existing CSRF token if present", () => {
       const existingToken = "existing-token-12345";
-      const req = createMockRequest();
-      req.session = { csrfToken: existingToken };
+      const req = createMockRequest({}, {}, {}, { "x-csrf-token": existingToken });
+      req.method = "GET";
       const res = createMockResponse();
+      res.locals = {};
       const next = jest.fn();
 
       csrfProtection(req, res, next);
 
-      expect(req.session.csrfToken).toBe(existingToken);
+      expect(res.locals.csrfToken).toBe(existingToken);
       expect(res.setHeader).toHaveBeenCalledWith("X-CSRF-Token", existingToken);
+      expect(next).toHaveBeenCalled();
     });
   });
 
@@ -61,7 +70,7 @@ describe("Security Middleware", () => {
     });
 
     it("should generate valid refresh token", () => {
-      const token = generateRefreshToken("user123");
+      const token = generateRefreshToken("user123").refreshToken;
 
       expect(token).toBeDefined();
       expect(typeof token).toBe("string");
@@ -69,14 +78,14 @@ describe("Security Middleware", () => {
     });
 
     it("should include user data in access token", () => {
-      const jwt = require("jsonwebtoken");
       const token = generateAccessToken("user123", "test@example.com", "ADMIN");
       const decoded = jwt.verify(
         token,
-        process.env.TOKEN_SECRET_KEY || "test-secret",
+        process.env.TOKEN_SECRET_KEY,
+        { issuer: "secxion", audience: "secxion-app" },
       );
 
-      expect(decoded._id).toBe("user123");
+      expect(decoded.userId).toBe("user123");
       expect(decoded.email).toBe("test@example.com");
       expect(decoded.role).toBe("ADMIN");
     });
@@ -99,35 +108,18 @@ describe("Security Middleware", () => {
   describe("Token Refresh", () => {
     it("should refresh access token with valid refresh token", async () => {
       const userId = "user123";
-      const refreshToken = generateRefreshToken(userId);
+      const refreshToken = generateRefreshToken(userId).refreshToken;
+      const refreshed = refreshAccessToken(refreshToken);
 
-      // Mock the token storage
-      global.TOKEN_STORE = new Map();
-      global.TOKEN_STORE.set(refreshToken, {
-        userId,
-        createdAt: Date.now(),
-        expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000,
-        isRevoked: false,
-      });
-
-      const newAccessToken = refreshAccessToken(refreshToken);
-
-      expect(newAccessToken).toBeDefined();
-      expect(typeof newAccessToken).toBe("string");
+      expect(refreshed).toBeDefined();
+      expect(typeof refreshed.accessToken).toBe("string");
+      expect(refreshed.expiresIn).toBe("15m");
     });
 
     it("should not refresh revoked tokens", () => {
       const userId = "user123";
-      const refreshToken = generateRefreshToken(userId);
-
-      // Mock revoked token
-      global.TOKEN_STORE = new Map();
-      global.TOKEN_STORE.set(refreshToken, {
-        userId,
-        createdAt: Date.now(),
-        expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000,
-        isRevoked: true, // Token is revoked
-      });
+      const refreshToken = generateRefreshToken(userId).refreshToken;
+      revokeRefreshToken(refreshToken);
 
       expect(() => refreshAccessToken(refreshToken)).toThrow();
     });
@@ -136,21 +128,9 @@ describe("Security Middleware", () => {
   describe("Token Revocation", () => {
     it("should revoke refresh token on logout", async () => {
       const userId = "user123";
-      const refreshToken = generateRefreshToken(userId);
+      const refreshToken = generateRefreshToken(userId).refreshToken;
 
-      // Mock token storage
-      global.TOKEN_STORE = new Map();
-      global.TOKEN_STORE.set(refreshToken, {
-        userId,
-        createdAt: Date.now(),
-        expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000,
-        isRevoked: false,
-      });
-
-      revokeRefreshToken(refreshToken);
-
-      const tokenData = global.TOKEN_STORE.get(refreshToken);
-      expect(tokenData.isRevoked).toBe(true);
+      expect(() => revokeRefreshToken(refreshToken)).not.toThrow();
     });
   });
 });

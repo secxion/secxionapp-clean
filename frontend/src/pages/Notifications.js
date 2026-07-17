@@ -20,8 +20,8 @@ const NotificationsPage = () => {
   const [filter, setFilter] = useState('all');
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [isMarkingAllRead, setIsMarkingAllRead] = useState(false);
-  const [isDeletingAll, setIsDeletingAll] = useState(false);
+  const [, setIsMarkingAllRead] = useState(false);
+  const [, setIsDeletingAll] = useState(false);
 
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
@@ -233,7 +233,6 @@ const NotificationsPage = () => {
   };
 
   const hasUnread = notifications.some((n) => !n.isRead);
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   // Loading State Component
   const LoadingState = () => (

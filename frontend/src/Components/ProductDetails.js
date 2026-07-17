@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import UserUploadMarket from './UserUploadMarket';
 import GetInTouchFooter from './GetInTouchFooter';
@@ -186,40 +186,6 @@ const ProductDetails = () => {
     }
   }, [retryCount, fetchProductDetails]);
 
-  // API calls
-
-  const handleLogout = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(SummaryApi.logout_user.url, {
-        method: SummaryApi.logout_user.method,
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const logoutData = await response.json();
-
-      if (logoutData.success) {
-        toast.success(logoutData.message);
-        dispatch(setUserDetails(null));
-        navigate('/login');
-      } else {
-        toast.error(logoutData.message);
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-      toast.error('Logout failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate, dispatch]);
-
-  const toggleMobileMenu = useCallback(() => {
-    setIsPDSidePanelOpen((prev) => !prev);
-  }, []);
-
   const closePDSidePanel = useCallback(() => {
     setIsPDSidePanelOpen(false);
   }, []);
@@ -267,7 +233,7 @@ const ProductDetails = () => {
             {/* White background and yellow border */}
             <div className="mb-4">
               <svg
-                className="mx-auto h-12 w-12 text-red-500 glossy-text"
+                className="mx-auto h-12 w-12 text-red-500 "
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -280,17 +246,17 @@ const ProductDetails = () => {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4 glossy-heading">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
               Error Loading Product
             </h2>
-            <p className="text-gray-600 mb-6 glossy-text" role="alert">
+            <p className="text-gray-600 mb-6 " role="alert">
               {error}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={handleRetry}
                 disabled={isRetrying || retryCount >= MAX_RETRY_ATTEMPTS}
-                className="bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors border-4 border-yellow-700 glossy-text" // Yellow border and glossy text
+                className="bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors border-4 border-yellow-700 " // Yellow border and glossy text
                 aria-label={
                   isRetrying ? 'Retrying...' : 'Retry loading product'
                 }
@@ -325,7 +291,7 @@ const ProductDetails = () => {
               </button>
               <button
                 onClick={handleGoBack}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors border-4 border-yellow-700 glossy-text" // Yellow border and glossy text
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors border-4 border-yellow-700 " // Yellow border and glossy text
                 aria-label="Go back to previous page"
               >
                 Go Back
@@ -373,7 +339,7 @@ const ProductDetails = () => {
                           isActive
                             ? 'bg-emerald-500 text-white shadow-md transform scale-105 border-4 border-yellow-700' // Bold yellow border for active
                             : 'bg-white text-gray-700 hover:bg-gray-200 hover:scale-105 border-4 border-yellow-500' // Lighter yellow border for inactive and hover
-                        } glossy-text`} // Applied glossy text
+                        } `} // Applied glossy text
                         onClick={() => handleCurrencyChange(currency.currency)}
                         aria-label={`Select ${fullCurrencyName} currency`}
                       >
@@ -405,20 +371,18 @@ const ProductDetails = () => {
           <div className="border-4 border-yellow-700 rounded-xl p-4 bg-white shadow-sm mb-6">
             {' '}
             {/* White background and yellow border */}
-            <h2 className="text-lg font-semibold text-gray-900 mb-3 glossy-heading">
-              {' '}
-              {/* Applied glossy heading */}
+            <h2 className="text-lg font-semibold text-gray-900 mb-3">
               Product Description
             </h2>
             <div className="flex items-start gap-4">
               <div className="flex-1">
-                <p className="text-gray-700 leading-relaxed glossy-text">
+                <p className="text-gray-700 leading-relaxed ">
                   {' '}
                   {/* Applied glossy text */}
                   {data.description || 'No description available.'}
                 </p>
                 {data.brandName && (
-                  <span className="inline-block mt-2 px-3 py-1 bg-emerald-100 text-emerald-800 text-sm rounded-full glossy-text">
+                  <span className="inline-block mt-2 px-3 py-1 bg-emerald-100 text-emerald-800 text-sm rounded-full ">
                     {' '}
                     {/* Applied glossy text */}
                     {data.brandName}
@@ -433,12 +397,10 @@ const ProductDetails = () => {
             {' '}
             {/* White background and yellow border */}
             <div className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 glossy-heading">
-                {' '}
-                {/* Applied glossy heading */}
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Select Face Value
                 {selectedCurrencyInfo && (
-                  <span className="ml-2 text-sm font-normal text-gray-600 glossy-text">
+                  <span className="ml-2 text-sm font-normal text-gray-600 ">
                     {' '}
                     {/* Applied glossy text */}({selectedCurrencyInfo.fullName})
                   </span>
@@ -470,18 +432,18 @@ const ProductDetails = () => {
                           )}
                           <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0">
                             <div className="flex items-center space-x-2">
-                              <span className="text-sm font-medium text-gray-600 glossy-text">
+                              <span className="text-sm font-medium text-gray-600 ">
                                 Face Value:
                               </span>
-                              <span className="font-semibold text-gray-900 glossy-text">
+                              <span className="font-semibold text-gray-900 ">
                                 {fv.faceValue}
                               </span>
                             </div>
                             <div className="flex items-center space-x-2">
-                              <span className="text-sm font-medium text-gray-600 glossy-text">
+                              <span className="text-sm font-medium text-gray-600 ">
                                 Rate:
                               </span>
-                              <span className="font-semibold text-emerald-600 glossy-text">
+                              <span className="font-semibold text-emerald-600 ">
                                 {fv.sellingPrice}
                               </span>
                             </div>
@@ -489,7 +451,7 @@ const ProductDetails = () => {
                         </div>
 
                         <button
-                          className="inline-flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 focus:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-2 px-6 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all duration-200 hover:shadow-md border-4 border-yellow-700 glossy-text flex-shrink-0"
+                          className="inline-flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 focus:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-2 px-6 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all duration-200 hover:shadow-md border-4 border-yellow-700  flex-shrink-0"
                           onClick={() => handleSell(fv)}
                           disabled={!user}
                           aria-label={`Sell ${fv.faceValue} ${selectedCurrencyInfo?.currency} at rate ${fv.sellingPrice}`}
@@ -514,7 +476,7 @@ const ProductDetails = () => {
                       {/* Requirement block - always full width below */}
                       {fv.requirement && (
                         <div
-                          className="text-sm text-gray-600 italic glossy-text bg-gray-50 rounded-lg p-3 border border-gray-200"
+                          className="text-sm text-gray-600 italic  bg-gray-50 rounded-lg p-3 border border-gray-200"
                           style={{ whiteSpace: 'pre-line' }}
                         >
                           {fv.requirement}
@@ -528,7 +490,7 @@ const ProductDetails = () => {
                   {' '}
                   {/* White background and yellow border */}
                   <svg
-                    className="mx-auto h-12 w-12 text-gray-400 mb-4 glossy-text"
+                    className="mx-auto h-12 w-12 text-gray-400 mb-4 "
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -540,12 +502,10 @@ const ProductDetails = () => {
                       d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
                     />
                   </svg>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2 glossy-heading">
-                    {' '}
-                    {/* Applied glossy heading */}
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
                     No Denominations Available
                   </h3>
-                  <p className="text-gray-600 glossy-text">
+                  <p className="text-gray-600 ">
                     {' '}
                     {/* Applied glossy text */}
                     {hasValidPricing
@@ -578,9 +538,7 @@ const ProductDetails = () => {
                 </svg>
               </button>
               <div className="py-6 px-6">
-                <h2 className="text-lg font-semibold text-gray-800 mb-4 glossy-heading">
-                  {' '}
-                  {/* Applied glossy heading */}
+                <h2 className="text-lg font-semibold text-gray-800 mb-4">
                   Upload Market Item ({activeCurrency?.currency}{' '}
                   {selectedFaceValue?.faceValue})
                 </h2>
