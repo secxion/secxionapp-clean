@@ -1,0 +1,64 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.secxion.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.secxion.app"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // The name of the PWA
+        resValue "string", "appName", "Secxion"
+        // The URL of the PWA
+        resValue "string", "launchUrl", "https://secxion.com/"
+        // The URL of the PWA without the protocol (for Digital Asset Links)
+        resValue "string", "hostName", "secxion.com"
+        // The color to use for the status bar
+        resValue "color", "colorPrimary", "#0f172a"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0'
+    
+    // TWA Support
+    implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.5.0'
+    
+    // Splash Screen API
+    implementation 'androidx.core:core-splashscreen:1.0.1'
+    
+    // Firebase
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation 'com.google.firebase:firebase-messaging-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:core:3.5.1'
+}
+
+if (file('google-services.json').exists()) {
+    apply plugin: 'com.google.gms.google-services'
+} else {
+    logger.lifecycle('google-services.json not found in android/app; skipping Google Services plugin for this build.')
+}

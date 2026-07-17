@@ -81,3 +81,13 @@ Thumbs.db
 .next/
 .nuxt/
 .vite/
+
+# =========================
+# 🤖 Android local files
+# =========================
+local.properties
+android/local.properties
+android/app/google-services.json
+**/google-services.json
+.gradle/
+android/.gradle/

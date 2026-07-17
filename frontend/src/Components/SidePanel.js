@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  Fragment,
-  useRef,
-  useCallback,
-  useEffect,
-} from 'react';
+import React, { useState, Fragment } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
 import {
@@ -31,8 +25,6 @@ import SecxionLogo from '../app/slogo.png';
 const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
   const [timezone, setTimezone] = useState('Africa/Lagos');
   const [showTimezones, setShowTimezones] = useState(false);
-  const [showScrollBar, setShowScrollBar] = useState(false);
-  const scrollVisibilityTimeoutRef = useRef(null);
   const location = useLocation();
 
   const toggleTimezones = () => setShowTimezones(!showTimezones);
@@ -48,48 +40,6 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
     onCloseMenu?.();
     setOpen(false);
   };
-
-  const scheduleHideScrollBar = useCallback((delay = 1200) => {
-    if (scrollVisibilityTimeoutRef.current) {
-      clearTimeout(scrollVisibilityTimeoutRef.current);
-    }
-    scrollVisibilityTimeoutRef.current = setTimeout(() => {
-      setShowScrollBar(false);
-    }, delay);
-  }, []);
-
-  const revealScrollBar = useCallback(() => {
-    setShowScrollBar(true);
-    scheduleHideScrollBar(1600);
-  }, [scheduleHideScrollBar]);
-
-  const showScrollBarNow = useCallback(() => {
-    if (scrollVisibilityTimeoutRef.current) {
-      clearTimeout(scrollVisibilityTimeoutRef.current);
-    }
-    setShowScrollBar(true);
-  }, []);
-
-  const hideScrollBarSoon = useCallback(() => {
-    scheduleHideScrollBar(350);
-  }, [scheduleHideScrollBar]);
-
-  useEffect(() => {
-    if (open) {
-      setShowScrollBar(true);
-      scheduleHideScrollBar(1200);
-    } else {
-      setShowScrollBar(false);
-    }
-  }, [open, scheduleHideScrollBar]);
-
-  useEffect(() => {
-    return () => {
-      if (scrollVisibilityTimeoutRef.current) {
-        clearTimeout(scrollVisibilityTimeoutRef.current);
-      }
-    };
-  }, []);
   const hideTradeStatus = location.pathname === '/record';
   const hideDataPad = location.pathname === '/datapad';
   const hideWallet = location.pathname === '/mywallet';
@@ -211,17 +161,7 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
                 </motion.button>
               </div>
               {/* Navigation */}
-              <nav
-                className={`flex-1 px-4 py-6 space-y-3 overflow-y-auto sidepanel-scroll-area ${showScrollBar ? 'sidepanel-scroll-area--active' : ''}`}
-                onPointerEnter={showScrollBarNow}
-                onPointerLeave={hideScrollBarSoon}
-                onPointerDown={revealScrollBar}
-                onPointerMove={revealScrollBar}
-                onTouchStart={revealScrollBar}
-                onTouchMove={revealScrollBar}
-                onWheel={revealScrollBar}
-                onScroll={revealScrollBar}
-              >
+              <nav className="flex-1 px-4 py-6 pr-3 space-y-3 overflow-y-auto sidepanel-scroll-area">
                 {navigationItems.map(
                   ({ path, icon: Icon, label, gradient, hide }) =>
                     !hide && (

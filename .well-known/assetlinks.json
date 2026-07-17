@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.secxion.app",
+    "sha256_cert_fingerprints": ["24:50:B4:43:D5:F4:A7:B2:74:66:C9:A0:99:A1:11:D9:6D:18:6E:25:0B:A1:61:C6:BB:77:0B:9C:6D:29:49:62"]
+  }
+}]
