@@ -12,12 +12,16 @@ import {
 } from '../utils/notificationTypeHelper';
 
 const NotificationBadge = () => {
+  const NOTIFICATION_POLL_MS = 30000;
+  const UNREAD_COUNT_POLL_MS = 45000;
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const [popupNotifications, setPopupNotifications] = useState([]);
   const { user } = useSelector((state) => state.user);
   const audioRef = useRef(null);
   const lastShownIdsRef = useRef(new Set());
   const lastSoundTimeRef = useRef(0);
+  const notificationCooldownUntilRef = useRef(0);
+  const unreadCooldownUntilRef = useRef(0);
   const SOUND_COOLDOWN_MS = 3000; // Minimum time between sounds
 
   const playNotificationSound = useCallback((priority = 'medium') => {
@@ -46,11 +50,21 @@ const NotificationBadge = () => {
 
   const fetchUnreadCount = useCallback(async () => {
     if (user?._id) {
+      if (Date.now() < unreadCooldownUntilRef.current) {
+        return;
+      }
+
       try {
         const response = await fetch(SummaryApi.notificationCount.url, {
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
         });
+
+        if (response.status === 429) {
+          unreadCooldownUntilRef.current = Date.now() + 60000;
+          return;
+        }
+
         const data = await response.json();
         if (data.success) {
           setUnreadNotificationCount(data.count);
@@ -63,11 +77,21 @@ const NotificationBadge = () => {
 
   const fetchNewNotifications = useCallback(async () => {
     if (user?._id) {
+      if (Date.now() < notificationCooldownUntilRef.current) {
+        return;
+      }
+
       try {
         const response = await fetch(SummaryApi.getNewNotifications.url, {
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
         });
+
+        if (response.status === 429) {
+          notificationCooldownUntilRef.current = Date.now() + 60000;
+          return;
+        }
+
         const data = await response.json();
 
         if (data.success && Array.isArray(data.newNotifications)) {
@@ -141,11 +165,32 @@ const NotificationBadge = () => {
     // Only poll for notifications if user is logged in
     if (!user?._id) return;
 
-    fetchUnreadCount();
-    fetchNewNotifications();
+    const shouldPoll = () =>
+      document.visibilityState === 'visible' && navigator.onLine;
 
-    const unreadCountIntervalId = setInterval(fetchUnreadCount, 5000);
-    const newNotificationsIntervalId = setInterval(fetchNewNotifications, 5000);
+    const pollUnreadCount = () => {
+      if (shouldPoll()) {
+        fetchUnreadCount();
+      }
+    };
+
+    const pollNewNotifications = () => {
+      if (shouldPoll()) {
+        fetchNewNotifications();
+      }
+    };
+
+    pollUnreadCount();
+    pollNewNotifications();
+
+    const unreadCountIntervalId = setInterval(
+      pollUnreadCount,
+      UNREAD_COUNT_POLL_MS,
+    );
+    const newNotificationsIntervalId = setInterval(
+      pollNewNotifications,
+      NOTIFICATION_POLL_MS,
+    );
 
     return () => {
       clearInterval(unreadCountIntervalId);

@@ -3,6 +3,7 @@ import SummaryApi from '../common';
 import { Link } from 'react-router-dom';
 import SecxionShimmer from './SecxionShimmer';
 import { getBrandColor } from '../helpers/brandColors';
+import { ensureHttpsUrl } from '../utils/secureUrl';
 
 const HorizontalCardProduct = ({ heading }) => {
   const [categoryProduct, setCategoryProduct] = useState([]);
@@ -57,30 +58,35 @@ const HorizontalCardProduct = ({ heading }) => {
         <div className="flex items-center gap-2 justify-between overflow-scroll scrollbar-none">
           {categoryProduct.map((product, index) => {
             const hasImage = product?.productImage?.[0];
-            const brandStyle = getBrandColor(product?.productName || product?.category, product?.brandName);
+            const brandStyle = getBrandColor(
+              product?.productName || product?.category,
+              product?.brandName,
+            );
             return (
-            <Link
-              to={`product/${product?._id}`}
-              className="p-2 cursor-pointer"
-              key={product?._id || index}
-            >
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden p-1 bg-slate-100 flex items-center justify-center">
-                {hasImage ? (
-                  <img
-                    src={product.productImage[0]}
-                    alt={product?.category}
-                    className="h-full object-scale-down mix-blend-multiply hover:scale-150 transition-all"
-                  />
-                ) : (
-                  <div className={`w-full h-full rounded-full bg-gradient-to-br ${brandStyle.bg} flex items-center justify-center`}>
-                    <span className="text-xl">{brandStyle.icon}</span>
-                  </div>
-                )}
-              </div>
-              <p className="text-center font-bold text-sm md:text-base capitalize">
-                {product?.category}
-              </p>
-            </Link>
+              <Link
+                to={`product/${product?._id}`}
+                className="p-2 cursor-pointer"
+                key={product?._id || index}
+              >
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden p-1 bg-slate-100 flex items-center justify-center">
+                  {hasImage ? (
+                    <img
+                      src={ensureHttpsUrl(product.productImage[0])}
+                      alt={product?.category}
+                      className="h-full object-scale-down mix-blend-multiply hover:scale-150 transition-all"
+                    />
+                  ) : (
+                    <div
+                      className={`w-full h-full rounded-full bg-gradient-to-br ${brandStyle.bg} flex items-center justify-center`}
+                    >
+                      <span className="text-xl">{brandStyle.icon}</span>
+                    </div>
+                  )}
+                </div>
+                <p className="text-center font-bold text-sm md:text-base capitalize">
+                  {product?.category}
+                </p>
+              </Link>
             );
           })}
         </div>

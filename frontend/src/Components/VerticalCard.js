@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import scrollTop from '../helpers/scrollTop';
 import { getBrandColor } from '../helpers/brandColors';
+import { ensureHttpsUrl } from '../utils/secureUrl';
 
 const VerticalCard = React.memo(({ loading, data = [] }) => {
   const loadingList = new Array(12).fill(null);
@@ -161,7 +162,7 @@ const VerticalCard = React.memo(({ loading, data = [] }) => {
                     })()
                   ) : (
                     <img
-                      src={product.productImage[0]}
+                      src={ensureHttpsUrl(product.productImage[0])}
                       alt={product.productName}
                       className="w-full h-full object-cover transition-all duration-400 ease-in-out group-hover:scale-105"
                       loading="lazy"

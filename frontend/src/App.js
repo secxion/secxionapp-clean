@@ -51,13 +51,21 @@ function App() {
       if (res.success) {
         dispatch(setUserDetails(res.data));
         return res.data;
-      } else {
+      }
+
+      // Keep current user state on transient errors like 429/500 to avoid
+      // forced logouts from temporary backend throttling.
+      if (res.status === 401 || res.status === 403) {
         dispatch(setUserDetails(null));
         return null;
       }
+
+      return user;
     },
     staleTime: 5 * 60 * 1000,
     enabled: !!user,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   const {
@@ -69,6 +77,8 @@ function App() {
     queryFn: fetchMarketDataAPI,
     staleTime: 5 * 60 * 1000,
     enabled: !!user,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   const {
@@ -80,6 +90,8 @@ function App() {
     queryFn: fetchWalletBalanceAPI,
     staleTime: 5 * 60 * 1000,
     enabled: !!user,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   const {
@@ -91,6 +103,8 @@ function App() {
     queryFn: fetchBlogsAPI,
     staleTime: 5 * 60 * 1000,
     enabled: !!user,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   if (isUserLoading || isMarketLoading || isBlogsLoading || isWalletLoading) {

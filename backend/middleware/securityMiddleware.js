@@ -65,7 +65,7 @@ export const csrfProtection = (req, res, next) => {
 // General API rate limiter
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 600, // Allow normal authenticated polling and page activity
   message: "Too many requests from this IP, please try again later.",
   standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false, // Disable `X-RateLimit-*` headers
@@ -92,7 +92,7 @@ export const apiLimiter = rateLimit({
 // Strict rate limiter for authentication endpoints
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 attempts per windowMs
+  max: 15, // Reduce false lockouts while still throttling brute-force attempts
   skipSuccessfulRequests: true, // Don't count successful requests
   skipFailedRequests: false, // Count failed requests
   message: "Too many login attempts, please try again later.",

@@ -7,6 +7,7 @@ import SecxionShimmer from './SecxionShimmer';
 import { motion } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
 import { apiFetch, handleApiResponse } from '../utils/apiInterceptor';
+import { ensureHttpsUrl } from '../utils/secureUrl';
 
 const ImageModal = ({ imageUrl, onClose }) => {
   if (!imageUrl) return null;
@@ -34,7 +35,7 @@ const ImageModal = ({ imageUrl, onClose }) => {
         </motion.button>
 
         <img
-          src={imageUrl}
+          src={ensureHttpsUrl(imageUrl)}
           alt="Expanded view"
           className="max-w-[90vw] max-h-[90vh] object-contain rounded-md"
         />
@@ -268,7 +269,7 @@ const LastMarketStatus = () => {
                                 ) => (
                                   <img
                                     key={`product-thumb-${idx}`}
-                                    src={img}
+                                    src={ensureHttpsUrl(img)}
                                     alt={`${lastMarket.productName} thumbnail ${idx + 1}`}
                                     className="inline-block h-8 w-8 rounded-full ring-2 object-cover cursor-pointer ring-blue-500 transition-all duration-200"
                                   />
@@ -278,7 +279,11 @@ const LastMarketStatus = () => {
                                 <span
                                   className="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-gray-200 text-gray-600 flex items-center justify-center text-xs font-bold cursor-pointer hover:bg-gray-300 transition-all duration-200"
                                   onClick={() =>
-                                    handleImageClick(lastMarket.productImage[0])
+                                    handleImageClick(
+                                      ensureHttpsUrl(
+                                        lastMarket.productImage[0],
+                                      ),
+                                    )
                                   }
                                 >
                                   +{lastMarket.productImage.length - 3}
@@ -311,10 +316,12 @@ const LastMarketStatus = () => {
                                 ) => (
                                   <img
                                     key={`market-thumb-${idx}`}
-                                    src={img}
+                                    src={ensureHttpsUrl(img)}
                                     alt={`${lastMarket._id} thumbnail ${idx + 1}`}
                                     className="inline-block h-12 w-12 ring-2 ring-white object-cover cursor-pointer hover:ring-blue-500 transition-all duration-200"
-                                    onClick={() => handleImageClick(img)}
+                                    onClick={() =>
+                                      handleImageClick(ensureHttpsUrl(img))
+                                    }
                                   />
                                 ),
                               )}
@@ -322,7 +329,9 @@ const LastMarketStatus = () => {
                                 <span
                                   className="inline-block h-12 w-12 ring-2 ring-white bg-gray-200 text-gray-600 flex items-center justify-center text-xs font-bold cursor-pointer hover:bg-gray-300 transition-all duration-200"
                                   onClick={() =>
-                                    handleImageClick(lastMarket.Image[0])
+                                    handleImageClick(
+                                      ensureHttpsUrl(lastMarket.Image[0]),
+                                    )
                                   }
                                 >
                                   +{lastMarket.Image.length - 3}

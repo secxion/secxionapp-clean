@@ -6,6 +6,7 @@ import addToCart from '../helpers/addToCart';
 import Context from '../Context';
 import SecxionShimmer from './SecxionShimmer';
 import { getBrandColor } from '../helpers/brandColors';
+import { ensureHttpsUrl } from '../utils/secureUrl';
 
 const VerticalCardProduct = ({ category, heading }) => {
   const [data, setData] = useState([]);
@@ -78,7 +79,10 @@ const VerticalCardProduct = ({ category, heading }) => {
         </button>
         {data.map((product, index) => {
           const hasImage = product?.productImage?.[0];
-          const brandStyle = getBrandColor(product?.productName, product?.brandName);
+          const brandStyle = getBrandColor(
+            product?.productName,
+            product?.brandName,
+          );
           return (
             <Link
               to={'product/' + product?._id}
@@ -88,12 +92,14 @@ const VerticalCardProduct = ({ category, heading }) => {
               <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden p-1 bg-slate-100 flex items-center justify-center">
                 {hasImage ? (
                   <img
-                    src={product.productImage[0]}
+                    src={ensureHttpsUrl(product.productImage[0])}
                     alt={product?.category}
                     className="h-full object-scale-down mix-blend-multiply hover:scale-150 transition-all"
                   />
                 ) : (
-                  <div className={`w-full h-full rounded-full bg-gradient-to-br ${brandStyle.bg} flex items-center justify-center`}>
+                  <div
+                    className={`w-full h-full rounded-full bg-gradient-to-br ${brandStyle.bg} flex items-center justify-center`}
+                  >
                     <span className="text-xl">{brandStyle.icon}</span>
                   </div>
                 )}
