@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 import UserUploadMarket from './UserUploadMarket';
 import GetInTouchFooter from './GetInTouchFooter';
 import SummaryApi from '../common';
-import { setUserDetails } from '../store/userSlice';
 import currencyFullNames from '../helpers/currencyFullNames';
 import flagImageMap from '../helpers/flagImageMap';
 import Loader from './Loader';
@@ -35,7 +34,6 @@ const ProductDetails = () => {
   const [isRetrying, setIsRetrying] = useState(false);
 
   // Redux and routing
-  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
   const { id } = useParams();
   const navigate = useNavigate();
