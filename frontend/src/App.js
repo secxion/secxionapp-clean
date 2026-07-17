@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserDetails, setLoading } from './store/userSlice';
 import Context, { ContextProvider } from './Context';
@@ -29,7 +29,6 @@ function Loader() {
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
-  const location = useLocation();
 
   // Admin panel has been moved to standalone app - no longer check isAdminRoute
 
@@ -58,7 +57,7 @@ function App() {
       }
     },
     staleTime: 5 * 60 * 1000,
-    enabled: !!user, // Only fetch if user is logged in
+    enabled: !!user,
   });
 
   const {
@@ -69,7 +68,7 @@ function App() {
     queryKey: ['marketData'],
     queryFn: fetchMarketDataAPI,
     staleTime: 5 * 60 * 1000,
-    enabled: !!user, // Only fetch if user is logged in
+    enabled: !!user,
   });
 
   const {
@@ -80,7 +79,7 @@ function App() {
     queryKey: ['walletBalance'],
     queryFn: fetchWalletBalanceAPI,
     staleTime: 5 * 60 * 1000,
-    enabled: !!user, // Only fetch if user is logged in
+    enabled: !!user,
   });
 
   const {
@@ -91,7 +90,7 @@ function App() {
     queryKey: ['blogs'],
     queryFn: fetchBlogsAPI,
     staleTime: 5 * 60 * 1000,
-    enabled: !!user, // Only fetch if user is logged in
+    enabled: !!user,
   });
 
   if (isUserLoading || isMarketLoading || isBlogsLoading || isWalletLoading) {
