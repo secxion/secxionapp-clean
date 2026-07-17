@@ -332,11 +332,11 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="absolute right-1 top-0 bottom-0 w-2.5 z-20"
+                        className="sidepanel-scrollbar-shell"
                       >
                         <div
                           onMouseDown={handleMouseDown}
-                          className="absolute right-0 w-1.5 bg-yellow-500/60 rounded-full cursor-pointer hover:bg-yellow-500/80 active:bg-yellow-500 hover:w-2 transition-[width,background-color] duration-200"
+                          className={`sidepanel-scrollbar-thumb ${scrollbarState.isDragging ? 'is-dragging' : ''}`}
                           style={{
                             height: `${scrollbarState.thumbHeight}px`,
                             top: `${scrollbarState.thumbTop}px`,
