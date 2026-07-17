@@ -2,27 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import productCategory from '../helpers/productCategory';
 import SummaryApi from '../common';
-import {
-  FaCreditCard,
-  FaGift,
-  FaMoneyBillWave,
-  FaFilter,
-} from 'react-icons/fa';
+import { FaFilter } from 'react-icons/fa';
 import ProductListView from '../Components/ProductListView';
 import debounce from 'lodash.debounce';
 import SecxionSpinner from '../Components/SecxionSpinner';
-
-const iconMap = {
-  'gift cards': (
-    <FaGift className="text-emerald-400 w-4 h-4 glossy-icon-text" />
-  ), // Applied glossy-icon-text
-  'visa / creditcards': (
-    <FaCreditCard className="text-yellow-400 w-4 h-4 glossy-icon-text" />
-  ), // Applied glossy-icon-text
-  'Online Payments': (
-    <FaMoneyBillWave className="text-indigo-400 w-4 h-4 glossy-icon-text" />
-  ), // Applied glossy-icon-text
-};
 
 const CategoryProduct = () => {
   const [data, setData] = useState([]);
@@ -102,7 +85,6 @@ const CategoryProduct = () => {
             tabIndex={0}
             aria-label={`Filter by ${category.label}`}
           >
-            {iconMap[category.value]}
             <input
               type="checkbox"
               value={category.value}
@@ -130,7 +112,6 @@ const CategoryProduct = () => {
               tabIndex={0}
               aria-label={`Filter by ${category.label}`}
             >
-              {iconMap[category.value]}
               <input
                 type="checkbox"
                 value={category.value}

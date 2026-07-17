@@ -1,6 +1,11 @@
-import React, { useState, Fragment, useRef, useCallback, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import React, {
+  useState,
+  Fragment,
+  useRef,
+  useCallback,
+  useEffect,
+} from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
 import {
   HomeIcon,
@@ -23,19 +28,11 @@ import timezones from '../helpers/timeZones';
 import './Header.css';
 import SecxionLogo from '../app/slogo.png';
 
-const SidePanel = ({
-  open,
-  setOpen,
-  handleLogout,
-  loading,
-  onCloseMenu,
-  onOpenLiveScript,
-}) => {
+const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
   const [timezone, setTimezone] = useState('Africa/Lagos');
   const [showTimezones, setShowTimezones] = useState(false);
   const [showScrollBar, setShowScrollBar] = useState(false);
   const scrollVisibilityTimeoutRef = useRef(null);
-  const navigate = useNavigate();
   const location = useLocation();
 
   const toggleTimezones = () => setShowTimezones(!showTimezones);
