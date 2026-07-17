@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useRef, useCallback, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Dialog, Transition } from '@headlessui/react';
@@ -33,6 +33,8 @@ const SidePanel = ({
 }) => {
   const [timezone, setTimezone] = useState('Africa/Lagos');
   const [showTimezones, setShowTimezones] = useState(false);
+  const [showScrollBar, setShowScrollBar] = useState(false);
+  const scrollVisibilityTimeoutRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -49,6 +51,24 @@ const SidePanel = ({
     onCloseMenu?.();
     setOpen(false);
   };
+
+  const revealScrollBar = useCallback(() => {
+    setShowScrollBar(true);
+    if (scrollVisibilityTimeoutRef.current) {
+      clearTimeout(scrollVisibilityTimeoutRef.current);
+    }
+    scrollVisibilityTimeoutRef.current = setTimeout(() => {
+      setShowScrollBar(false);
+    }, 1400);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (scrollVisibilityTimeoutRef.current) {
+        clearTimeout(scrollVisibilityTimeoutRef.current);
+      }
+    };
+  }, []);
   const hideTradeStatus = location.pathname === '/record';
   const hideDataPad = location.pathname === '/datapad';
   const hideWallet = location.pathname === '/mywallet';
@@ -170,7 +190,13 @@ const SidePanel = ({
                 </motion.button>
               </div>
               {/* Navigation */}
-              <nav className="flex-1 px-4 py-6 space-y-3 overflow-y-auto">
+              <nav
+                className={`flex-1 px-4 py-6 space-y-3 overflow-y-auto sidepanel-scroll-area ${showScrollBar ? 'sidepanel-scroll-area--active' : ''}`}
+                onPointerEnter={revealScrollBar}
+                onPointerMove={revealScrollBar}
+                onTouchStart={revealScrollBar}
+                onScroll={revealScrollBar}
+              >
                 {navigationItems.map(
                   ({ path, icon: Icon, label, gradient, hide }) =>
                     !hide && (

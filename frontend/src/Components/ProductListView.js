@@ -31,19 +31,19 @@ const ProductListView = React.memo(({ loading, data = [] }) => {
   }
 
   return (
-    <div className="space-y-5 text-gray-200">
+    <div className="space-y-6 text-gray-200">
       {groupedEntries.map(([category, products]) => (
         <section key={category} aria-label={`${category} products`}>
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-yellow-400 border-b border-gray-700 pb-1">
+          <h3 className="text-base font-extrabold uppercase tracking-[0.12em] text-yellow-300 border-b border-yellow-500/40 pb-2">
             {category}
           </h3>
-          <ul className="mt-2 space-y-1">
+          <ul className="mt-3 space-y-2">
             {products.map((product) => (
-              <li key={product._id}>
+              <li key={product._id} className="border-l-2 border-gray-700 pl-3">
                 <Link
                   to={`/product/${product._id}`}
                   onClick={scrollTop}
-                  className="text-sm text-gray-200 hover:text-yellow-300 underline-offset-2 hover:underline"
+                  className="text-[15px] font-semibold tracking-tight text-gray-100 hover:text-yellow-200 transition-colors duration-150"
                 >
                   {product.productName}
                 </Link>

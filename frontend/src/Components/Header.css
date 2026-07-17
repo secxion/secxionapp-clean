@@ -27,3 +27,36 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
+
+.sidepanel-scroll-area {
+  scrollbar-width: none;
+  scrollbar-color: rgba(250, 204, 21, 0.75) transparent;
+  transition: scrollbar-color 0.2s ease;
+}
+
+.sidepanel-scroll-area::-webkit-scrollbar {
+  width: 0;
+}
+
+.sidepanel-scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidepanel-scroll-area::-webkit-scrollbar-thumb {
+  background: rgba(250, 204, 21, 0.75);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.sidepanel-scroll-area:hover,
+.sidepanel-scroll-area:focus-within,
+.sidepanel-scroll-area.sidepanel-scroll-area--active {
+  scrollbar-width: thin;
+}
+
+.sidepanel-scroll-area:hover::-webkit-scrollbar,
+.sidepanel-scroll-area:focus-within::-webkit-scrollbar,
+.sidepanel-scroll-area.sidepanel-scroll-area--active::-webkit-scrollbar {
+  width: 9px;
+}
