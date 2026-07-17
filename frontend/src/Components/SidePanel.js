@@ -274,14 +274,14 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
 
               {/* Navigation with Custom Scrollbar Area */}
               <div
-                className="relative flex-1 min-h-0 overflow-hidden"
+                className="relative flex-1 min-h-0 overflow-hidden pr-4"
                 onMouseEnter={revealScrollBar}
                 onMouseLeave={hideScrollBarSoon}
                 onTouchStart={revealScrollBar}
               >
                 <nav
                   ref={scrollContainerRef}
-                  className="h-full px-4 py-6 pr-3 space-y-3 overflow-y-auto scrollbar-hide sidepanel-scroll-area"
+                  className="h-full px-4 py-6 pr-7 space-y-3 overflow-y-auto scrollbar-hide sidepanel-scroll-area"
                 >
                   {navigationItems.map(
                     ({ path, icon: Icon, label, gradient, hide }) =>
