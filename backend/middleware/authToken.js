@@ -16,7 +16,6 @@ const authToken = async (req, res, next) => {
     }
 
     if (!token) {
-      console.warn("[AUTH] No token found in cookies or Authorization header");
       return res.status(401).json({
         message: "Please login to continue.",
         error: true,
@@ -56,15 +55,29 @@ const authToken = async (req, res, next) => {
     );
     next();
   } catch (err) {
-    console.error(
-      "[AUTH] Error:",
-      err.message,
-      "after",
-      Date.now() - startTime,
-      "ms",
-    );
-    return res.status(400).json({
-      message: err.message || "Authentication error",
+    const authDuration = Date.now() - startTime;
+    const isJwtIssue =
+      err?.name === "JsonWebTokenError" || err?.name === "TokenExpiredError";
+
+    if (isJwtIssue) {
+      // Clear bad token cookie so client can re-auth cleanly.
+      res.clearCookie("token", {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      });
+
+      console.warn("[AUTH] Invalid token:", err.message, "after", authDuration, "ms");
+      return res.status(401).json({
+        message: "Session expired or invalid. Please login again.",
+        error: true,
+        success: false,
+      });
+    }
+
+    console.error("[AUTH] Error:", err.message, "after", authDuration, "ms");
+    return res.status(500).json({
+      message: "Authentication error",
       error: true,
       success: false,
     });

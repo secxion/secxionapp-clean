@@ -33,3 +33,15 @@
   backdrop-filter: blur(6px);
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
+
+/* CUSTOM SCROLLBAR: HOVER TO REVEAL */
+.sidepanel-scroll-area {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.sidepanel-scroll-area::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}

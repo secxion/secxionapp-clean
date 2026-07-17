@@ -101,27 +101,31 @@ const CategoryProduct = () => {
 
       {/* Desktop Sidebar Filter */}
       <aside className="hidden md:block md:w-[250px] bg-gray-900 p-4 shadow-lg overflow-y-auto border-r border-gray-800 border-4 border-yellow-500 rounded-bl-xl rounded-tl-xl">
-        <h4 className="text-lg font-semibold mb-3 flex items-center">
-          <FaFilter className="mr-2" /> Filter
+        <h4 className="text-xl font-bold mb-5 flex items-center tracking-tight text-white uppercase italic">
+          <FaFilter className="mr-2 text-yellow-500" /> Filter
         </h4>
-        <form className="space-y-4 ">
+        <form className="space-y-3">
           {productCategory.map((category) => (
             <label
               key={category.id}
-              className="flex items-center gap-2 p-2 rounded-lg cursor-pointer hover:bg-blue-600/50 transition border border-gray-700 hover:border-yellow-400 focus-within:ring-2 focus-within:ring-yellow-400"
+              className="group flex items-center gap-3 p-2.5 rounded-xl cursor-pointer bg-gray-800/40 hover:bg-gray-700/60 transition-all border border-gray-700/50 hover:border-yellow-500/50 focus-within:ring-2 focus-within:ring-yellow-500/30"
               tabIndex={0}
               aria-label={`Filter by ${category.label}`}
             >
-              <input
-                type="checkbox"
-                value={category.value}
-                checked={!!selectCategory[category.value]}
-                onChange={handleSelectCategory}
-                className="accent-blue-500 h-5 w-5 focus:ring-2 focus:ring-yellow-400"
-                aria-checked={!!selectCategory[category.value]}
-                aria-label={category.label}
-              />
-              <span className="text-sm text-gray-400">{category.label}</span>
+              <div className="relative flex items-center">
+                <input
+                  type="checkbox"
+                  value={category.value}
+                  checked={!!selectCategory[category.value]}
+                  onChange={handleSelectCategory}
+                  className="peer h-5 w-5 rounded border-gray-600 bg-gray-700 text-yellow-500 focus:ring-yellow-500/50 focus:ring-offset-gray-900"
+                  aria-checked={!!selectCategory[category.value]}
+                  aria-label={category.label}
+                />
+              </div>
+              <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
+                {category.label}
+              </span>
             </label>
           ))}
         </form>

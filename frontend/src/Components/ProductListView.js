@@ -31,21 +31,29 @@ const ProductListView = React.memo(({ loading, data = [] }) => {
   }
 
   return (
-    <div className="space-y-6 text-gray-200">
+    <div className="space-y-8 text-gray-200">
       {groupedEntries.map(([category, products]) => (
-        <section key={category} aria-label={`${category} products`}>
-          <h3 className="text-base font-extrabold uppercase tracking-[0.12em] text-yellow-300 border-b border-yellow-500/40 pb-2">
+        <section
+          key={category}
+          aria-label={`${category} products`}
+          className="group"
+        >
+          <h3 className="text-sm font-black uppercase tracking-[0.2em] text-yellow-500/90 mb-4 flex items-center gap-3">
+            <span className="h-px bg-gradient-to-r from-yellow-500/60 to-transparent flex-1"></span>
             {category}
+            <span className="h-px bg-gradient-to-l from-yellow-500/60 to-transparent flex-1"></span>
           </h3>
-          <ul className="mt-3 space-y-2">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
             {products.map((product) => (
-              <li key={product._id} className="border-l-2 border-gray-700 pl-3">
+              <li key={product._id} className="relative group/item">
                 <Link
                   to={`/product/${product._id}`}
                   onClick={scrollTop}
-                  className="text-[15px] font-semibold tracking-tight text-gray-100 hover:text-yellow-200 transition-colors duration-150"
+                  className="block px-4 py-2.5 rounded-xl bg-gray-800/30 hover:bg-gray-800/60 border border-gray-700/30 hover:border-yellow-500/40 transition-all duration-200"
                 >
-                  {product.productName}
+                  <span className="text-[14px] font-bold tracking-tight text-gray-100 group-hover/item:text-yellow-400 transition-colors">
+                    {product.productName}
+                  </span>
                 </Link>
               </li>
             ))}

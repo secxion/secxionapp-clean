@@ -1,4 +1,10 @@
-import React, { useState, Fragment } from 'react';
+import React, {
+  useState,
+  Fragment,
+  useRef,
+  useEffect,
+  useCallback,
+} from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
 import {
@@ -15,7 +21,7 @@ import {
   CheckIcon,
   CodeBracketIcon,
 } from '@heroicons/react/24/outline';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
 import Clock from 'react-live-clock';
 import timezones from '../helpers/timeZones';
@@ -26,6 +32,16 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
   const [timezone, setTimezone] = useState('Africa/Lagos');
   const [showTimezones, setShowTimezones] = useState(false);
   const location = useLocation();
+  const scrollContainerRef = useRef(null);
+
+  // Custom Scrollbar State
+  const [scrollbarState, setScrollbarState] = useState({
+    isVisible: false,
+    thumbHeight: 0,
+    thumbTop: 0,
+    isDragging: false,
+  });
+  const hideTimeoutRef = useRef(null);
 
   const toggleTimezones = () => setShowTimezones(!showTimezones);
   const handleTimezoneChange = (newTimezone) => {
@@ -40,6 +56,101 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
     onCloseMenu?.();
     setOpen(false);
   };
+
+  const updateScrollbar = useCallback(() => {
+    const element = scrollContainerRef.current;
+    if (!element) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = element;
+    const ratio = clientHeight / scrollHeight;
+
+    if (ratio >= 1) {
+      setScrollbarState((prev) => ({ ...prev, thumbHeight: 0 }));
+      return;
+    }
+
+    setScrollbarState((prev) => ({
+      ...prev,
+      thumbHeight: clientHeight * ratio,
+      thumbTop: scrollTop * ratio,
+    }));
+  }, []);
+
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+    setScrollbarState((prev) => ({ ...prev, isDragging: true }));
+    const startY = e.clientY;
+    const startTop = scrollbarState.thumbTop;
+
+    const onMouseMove = (moveEvent) => {
+      const element = scrollContainerRef.current;
+      if (!element) return;
+
+      const deltaY = moveEvent.clientY - startY;
+      const ratio = element.clientHeight / element.scrollHeight;
+      const newThumbTop = Math.max(
+        0,
+        Math.min(
+          element.clientHeight - scrollbarState.thumbHeight,
+          startTop + deltaY,
+        ),
+      );
+
+      element.scrollTop = newThumbTop / ratio;
+    };
+
+    const onMouseUp = () => {
+      setScrollbarState((prev) => ({ ...prev, isDragging: false }));
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      hideScrollBarSoon();
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  };
+
+  const revealScrollBar = useCallback(() => {
+    if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
+    setScrollbarState((prev) => ({ ...prev, isVisible: true }));
+    updateScrollbar();
+  }, [updateScrollbar]);
+
+  const hideScrollBarSoon = () => {
+    if (scrollbarState.isDragging) return;
+    if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
+    hideTimeoutRef.current = setTimeout(() => {
+      setScrollbarState((prev) => {
+        if (prev.isDragging) return prev;
+        return { ...prev, isVisible: false };
+      });
+    }, 1500);
+  };
+
+  useEffect(() => {
+    const element = scrollContainerRef.current;
+    if (!element) return;
+
+    element.addEventListener('scroll', revealScrollBar, { passive: true });
+    window.addEventListener('resize', updateScrollbar);
+
+    const observer = new MutationObserver(updateScrollbar);
+    observer.observe(element, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+    });
+
+    updateScrollbar();
+
+    return () => {
+      element.removeEventListener('scroll', revealScrollBar);
+      window.removeEventListener('resize', updateScrollbar);
+      observer.disconnect();
+      if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
+    };
+  }, [updateScrollbar, open, revealScrollBar]);
+
   const hideTradeStatus = location.pathname === '/record';
   const hideDataPad = location.pathname === '/datapad';
   const hideWallet = location.pathname === '/mywallet';
@@ -160,48 +271,82 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
                   <FaTimes className="w-5 h-5" />
                 </motion.button>
               </div>
-              {/* Navigation */}
-              <nav className="flex-1 px-4 py-6 pr-3 space-y-3 overflow-y-auto sidepanel-scroll-area">
-                {navigationItems.map(
-                  ({ path, icon: Icon, label, gradient, hide }) =>
-                    !hide && (
-                      <Link
-                        key={label}
-                        to={path}
-                        onClick={handleLinkClick}
-                        className="group flex items-center px-4 py-3 rounded-xl bg-gray-800/50 hover:bg-gray-700/70 border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg"
+
+              {/* Navigation with Custom Scrollbar Area */}
+              <div
+                className="relative flex-1 min-h-0 overflow-hidden"
+                onMouseEnter={revealScrollBar}
+                onMouseLeave={hideScrollBarSoon}
+                onTouchStart={revealScrollBar}
+              >
+                <nav
+                  ref={scrollContainerRef}
+                  className="h-full px-4 py-6 pr-3 space-y-3 overflow-y-auto scrollbar-hide sidepanel-scroll-area"
+                >
+                  {navigationItems.map(
+                    ({ path, icon: Icon, label, gradient, hide }) =>
+                      !hide && (
+                        <Link
+                          key={label}
+                          to={path}
+                          onClick={handleLinkClick}
+                          className="group flex items-center px-4 py-3 rounded-xl bg-gray-800/50 hover:bg-gray-700/70 border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg"
+                        >
+                          <div
+                            className={`flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r ${gradient} mr-4 group-hover:scale-110 transition-transform duration-300`}
+                          >
+                            <Icon className="h-5 w-5 text-white" />
+                          </div>
+                          <span className="text-white font-medium text-sm transition-colors duration-200 ">
+                            {label}
+                          </span>
+                        </Link>
+                      ),
+                  )}
+
+                  {/* LiveScript Button */}
+                  <button
+                    onClick={() => {
+                      onOpenLiveScript?.();
+                      setTimeout(() => handleLinkClick(), 100);
+                    }}
+                    className="group flex items-center w-full px-4 py-3 rounded-xl bg-gradient-to-r from-purple-900/50 to-purple-800/50 hover:from-purple-800/70 hover:to-purple-700/70 border-2 border-purple-500/50 hover:border-purple-400/70 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg"
+                  >
+                    <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 mr-4 group-hover:scale-110 transition-transform duration-300">
+                      <CodeBracketIcon className="h-5 w-5 text-white" />
+                    </div>
+                    <span className="text-white font-medium text-sm transition-colors duration-200 ">
+                      LiveScript
+                    </span>
+                    <span className="ml-auto text-xs bg-purple-500/30 text-purple-300 px-2 py-0.5 rounded-full">
+                      Custom Dev
+                    </span>
+                  </button>
+                </nav>
+
+                {/* Custom Scrollbar Visual */}
+                <AnimatePresence>
+                  {(scrollbarState.isVisible || scrollbarState.isDragging) &&
+                    scrollbarState.thumbHeight > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute right-1 top-0 bottom-0 w-2.5 z-20"
                       >
                         <div
-                          className={`flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r ${gradient} mr-4 group-hover:scale-110 transition-transform duration-300`}
-                        >
-                          <Icon className="h-5 w-5 text-white" />
-                        </div>
-                        <span className="text-white font-medium text-sm transition-colors duration-200 ">
-                          {label}
-                        </span>
-                      </Link>
-                    ),
-                )}
+                          onMouseDown={handleMouseDown}
+                          className="absolute right-0 w-1.5 bg-yellow-500/60 rounded-full cursor-pointer hover:bg-yellow-500/80 active:bg-yellow-500 hover:w-2 transition-[width,background-color] duration-200"
+                          style={{
+                            height: `${scrollbarState.thumbHeight}px`,
+                            top: `${scrollbarState.thumbTop}px`,
+                          }}
+                        />
+                      </motion.div>
+                    )}
+                </AnimatePresence>
+              </div>
 
-                {/* LiveScript Button */}
-                <button
-                  onClick={() => {
-                    onOpenLiveScript?.();
-                    setTimeout(() => handleLinkClick(), 100);
-                  }}
-                  className="group flex items-center w-full px-4 py-3 rounded-xl bg-gradient-to-r from-purple-900/50 to-purple-800/50 hover:from-purple-800/70 hover:to-purple-700/70 border-2 border-purple-500/50 hover:border-purple-400/70 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg"
-                >
-                  <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 mr-4 group-hover:scale-110 transition-transform duration-300">
-                    <CodeBracketIcon className="h-5 w-5 text-white" />
-                  </div>
-                  <span className="text-white font-medium text-sm transition-colors duration-200 ">
-                    LiveScript
-                  </span>
-                  <span className="ml-auto text-xs bg-purple-500/30 text-purple-300 px-2 py-0.5 rounded-full">
-                    Custom Dev
-                  </span>
-                </button>
-              </nav>
               {/* Timezone Selector */}
               <div className="px-4 py-4 border-t border-gray-700">
                 <button

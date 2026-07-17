@@ -1,17 +1,11 @@
-# Task: Pre-Launch Audit & Optimization
+# Task: Frontend Design Enhancements
 
-- [x] Project Cleanup
-    - [x] Delete `backups/` directory
-    - [x] Delete `.tmp/` directory
-    - [x] Identify redundant `node_modules` (Found 1.5GB in frontend)
-- [x] Security & Quality Audit
-    - [x] Scan for exposed secrets/API keys (Found `REACT_APP_DEV_AUTH_BYPASS` in `.env.local`)
-    - [x] Check for `console.log` and `debugger` in production code (Minimal logs found)
-    - [x] Review environment variable usage
-- [x] Frontend Optimization
-    - [x] Asset audit (Large/Duplicate images in `frontend/src/gcl`)
-    - [x] Architecture review (App.js and Providers are efficient)
-    - [x] Remove unused dependency `react-hot-toast`
-- [ ] Final Verification
-    - [ ] Run `npm audit` for dependencies
-    - [ ] Verify build integrity
+- [x] SidePanel Scrollbar Enhancement
+    - [x] Update `sidepanel-utils.css` with hover-sensitive scrollbar
+- [x] Typography & Branding Refinement
+    - [x] Update `index.css` global font to 'Inter'
+    - [x] Refine `CategoryProduct.js` filter styling
+    - [x] Enhance `ProductListView.js` category and product typography
+- [x] Verification
+    - [x] Manually verify SidePanel scrollbar behavior
+    - [x] Manually verify Category/Product typography branding
