@@ -91,3 +91,6 @@ android/app/google-services.json
 **/google-services.json
 .gradle/
 android/.gradle/
+*.jks
+signing.properties
+android/signing.properties

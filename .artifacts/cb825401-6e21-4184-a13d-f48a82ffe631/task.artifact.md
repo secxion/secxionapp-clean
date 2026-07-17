@@ -16,5 +16,10 @@
     - [x] Verify `google-services.json` is in `android/app/`
     - [x] Add Firebase SDK to Gradle files
     - [x] Add Firebase Messaging service to Manifest
-- [ ] Play Store Verification
-    - [ ] Verify `assetlinks.json` deployment on `https://secxion.com`
+- [/] Production Readiness (Release Build)
+    - [x] Generate Production Keystore (`secxion-release.jks`)
+    - [x] Configure `signingConfigs` in `app/build.gradle`
+    - [x] Create `signing.properties`
+    - [x] Generate Production App Bundle (.aab)
+- [x] Play Store Verification
+    - [x] Verify `assetlinks.json` deployment on `https://secxion.com` (Added Production Fingerprint)

@@ -6,6 +6,20 @@ android {
     namespace 'com.secxion.app'
     compileSdk 34
 
+    signingConfigs {
+        release {
+            def signingPropsFile = file('../signing.properties')
+            if (signingPropsFile.exists()) {
+                def props = new Properties()
+                props.load(new FileInputStream(signingPropsFile))
+                storeFile = file("../" + props['STORE_FILE'])
+                storePassword = props['STORE_PASSWORD']
+                keyAlias = props['KEY_ALIAS']
+                keyPassword = props['KEY_PASSWORD']
+            }
+        }
+    }
+
     defaultConfig {
         applicationId "com.secxion.app"
         minSdk 24
@@ -28,6 +42,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
