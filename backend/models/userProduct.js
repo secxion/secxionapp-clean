@@ -49,5 +49,8 @@ const userProductSchema = mongoose.Schema(
   },
 );
 
+userProductSchema.index({ userId: 1 });
+userProductSchema.index({ status: 1 });
+
 const userProduct = mongoose.model("userproduct", userProductSchema);
 export default userProduct;

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import UploadProduct from '../Components/UploadProduct';
 import SummaryApi from '../common';

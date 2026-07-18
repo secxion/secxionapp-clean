@@ -41,6 +41,9 @@ const ethWithdrawalRequestSchema = new mongoose.Schema(
   },
 );
 
+ethWithdrawalRequestSchema.index({ userId: 1 });
+ethWithdrawalRequestSchema.index({ status: 1 });
+
 const EthWithdrawalRequest = mongoose.model(
   "EthWithdrawalRequest",
   ethWithdrawalRequestSchema,

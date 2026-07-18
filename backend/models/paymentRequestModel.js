@@ -58,6 +58,12 @@ const paymentRequestSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+paymentRequestSchema.index({ userId: 1 });
+paymentRequestSchema.index({ status: 1 });
+
 const PaymentRequest = mongoose.model("PaymentRequest", paymentRequestSchema);
+
+paymentRequestSchema.index({ userId: 1 });
+paymentRequestSchema.index({ status: 1 });
 
 export default PaymentRequest;

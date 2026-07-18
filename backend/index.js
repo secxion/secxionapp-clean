@@ -12,22 +12,20 @@ import mongoSanitize from "express-mongo-sanitize";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import compression from "compression";
 import errorHandler from "./middleware/errorHandler.js";
+import { requestLogger } from "./utils/logger.js";
 
 dotenv.config();
 
 const validateEnvironment = () => {
-  const requiredEnvVars = ["TOKEN_SECRET_KEY", "FRONTEND_URLS"];
+  const requiredEnvVars = [
+    "TOKEN_SECRET_KEY",
+    "FRONTEND_URLS",
+    "MONGODB_URI",
+    "SESSION_SECRET",
+  ];
   const missingVars = requiredEnvVars.filter((name) => !process.env[name]);
-
-  if (process.env.NODE_ENV === "production") {
-    if (!process.env.MONGODB_URI) {
-      missingVars.push("MONGODB_URI");
-    }
-    if (!process.env.SESSION_SECRET) {
-      missingVars.push("SESSION_SECRET");
-    }
-  }
 
   if (missingVars.length > 0) {
     console.error("❌ Missing required environment variables:", missingVars);
@@ -99,6 +97,8 @@ app.use(
     frameguard: { action: "deny" }, // Set X-Frame-Options to 'DENY'
   }),
 );
+app.use(compression());
+app.use(requestLogger);
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());

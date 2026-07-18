@@ -14,7 +14,6 @@ import {
   FaArrowLeft,
   FaUpload,
   FaTrash,
-  FaEdit,
   FaLock,
 } from 'react-icons/fa';
 import { PiUserSquare } from 'react-icons/pi';
@@ -22,6 +21,7 @@ import SummaryApi from '../common';
 import { setUserDetails } from '../store/userSlice';
 import uploadImage from '../helpers/uploadImage';
 import SecxionShimmer from '../Components/SecxionShimmer';
+import { notifyUser } from '../utils/toastConfig';
 
 const Settings = () => {
   const { user } = useSelector((state) => state.user);

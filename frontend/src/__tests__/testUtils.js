@@ -43,7 +43,6 @@ export function render(
 
 // Re-export everything from React Testing Library
 export * from '@testing-library/react';
-export { render };
 
 /**
  * Mock data generators for common test scenarios
