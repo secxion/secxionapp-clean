@@ -1,7 +1,4 @@
-import React, {
-  useState,
-  Fragment,
-} from 'react';
+import React, { useState, Fragment } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
 import {
@@ -172,9 +169,7 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
 
               {/* Navigation */}
               <div className="relative flex-1 min-h-0 overflow-hidden">
-                <nav
-                  className="h-full px-4 py-6 pr-4 space-y-3 overflow-y-auto sidepanel-scroll-area"
-                >
+                <nav className="h-full px-4 py-6 pr-4 space-y-3 overflow-y-auto sidepanel-scroll-area">
                   {navigationItems.map(
                     ({ path, icon: Icon, label, gradient, hide }) =>
                       !hide && (
