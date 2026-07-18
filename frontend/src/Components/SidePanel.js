@@ -237,7 +237,7 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
   ];
 
   return (
-    <Transition.Root show={open} as={Fragment} unmount={false}>
+    <Transition.Root show={open} as={Fragment}>
       <Dialog
         as="div"
         className="fixed inset-0 z-50 md:hidden"
