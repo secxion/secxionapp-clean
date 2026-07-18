@@ -4,6 +4,13 @@ import { useSelector } from 'react-redux';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useSelector((state) => state.user);
+  const isDevAuthBypass =
+    process.env.REACT_APP_DEV_AUTH_BYPASS === 'true' &&
+    process.env.NODE_ENV !== 'production';
+
+  if (isDevAuthBypass) {
+    return children;
+  }
 
   if (loading) {
     return (

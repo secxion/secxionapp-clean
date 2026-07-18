@@ -26,7 +26,7 @@ import { FaTimes } from 'react-icons/fa';
 import Clock from 'react-live-clock';
 import timezones from '../helpers/timeZones';
 import './Header.css';
-import SecxionLogo from '../app/slogo.png';
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png';
 
 const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
   const [timezone, setTimezone] = useState('Africa/Lagos');
@@ -42,6 +42,7 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
     isDragging: false,
   });
   const hideTimeoutRef = useRef(null);
+  const rafRef = useRef(null);
 
   const toggleTimezones = () => setShowTimezones(!showTimezones);
   const handleTimezoneChange = (newTimezone) => {
@@ -65,16 +66,37 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
     const ratio = clientHeight / scrollHeight;
 
     if (ratio >= 1) {
-      setScrollbarState((prev) => ({ ...prev, thumbHeight: 0 }));
+      setScrollbarState((prev) =>
+        prev.thumbHeight === 0 && prev.thumbTop === 0
+          ? prev
+          : { ...prev, thumbHeight: 0, thumbTop: 0 },
+      );
       return;
     }
 
+    const nextThumbHeight = clientHeight * ratio;
+    const nextThumbTop = scrollTop * ratio;
+
     setScrollbarState((prev) => ({
       ...prev,
-      thumbHeight: clientHeight * ratio,
-      thumbTop: scrollTop * ratio,
+      thumbHeight:
+        Math.abs(prev.thumbHeight - nextThumbHeight) < 0.5
+          ? prev.thumbHeight
+          : nextThumbHeight,
+      thumbTop:
+        Math.abs(prev.thumbTop - nextThumbTop) < 0.5
+          ? prev.thumbTop
+          : nextThumbTop,
     }));
   }, []);
+
+  const scheduleScrollbarUpdate = useCallback(() => {
+    if (rafRef.current) return;
+    rafRef.current = window.requestAnimationFrame(() => {
+      rafRef.current = null;
+      updateScrollbar();
+    });
+  }, [updateScrollbar]);
 
   const handleMouseDown = (e) => {
     e.preventDefault();
@@ -112,9 +134,11 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
 
   const revealScrollBar = useCallback(() => {
     if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
-    setScrollbarState((prev) => ({ ...prev, isVisible: true }));
-    updateScrollbar();
-  }, [updateScrollbar]);
+    setScrollbarState((prev) =>
+      prev.isVisible ? prev : { ...prev, isVisible: true },
+    );
+    scheduleScrollbarUpdate();
+  }, [scheduleScrollbarUpdate]);
 
   const hideScrollBarSoon = () => {
     if (scrollbarState.isDragging) return;
@@ -132,24 +156,25 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
     if (!element) return;
 
     element.addEventListener('scroll', revealScrollBar, { passive: true });
-    window.addEventListener('resize', updateScrollbar);
+    window.addEventListener('resize', scheduleScrollbarUpdate);
 
-    const observer = new MutationObserver(updateScrollbar);
+    const observer = new MutationObserver(scheduleScrollbarUpdate);
     observer.observe(element, {
       childList: true,
       subtree: true,
       attributes: true,
     });
 
-    updateScrollbar();
+    scheduleScrollbarUpdate();
 
     return () => {
       element.removeEventListener('scroll', revealScrollBar);
-      window.removeEventListener('resize', updateScrollbar);
+      window.removeEventListener('resize', scheduleScrollbarUpdate);
       observer.disconnect();
       if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
+      if (rafRef.current) window.cancelAnimationFrame(rafRef.current);
     };
-  }, [updateScrollbar, open, revealScrollBar]);
+  }, [open, revealScrollBar, scheduleScrollbarUpdate]);
 
   const hideTradeStatus = location.pathname === '/record';
   const hideDataPad = location.pathname === '/datapad';
@@ -212,7 +237,7 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
   ];
 
   return (
-    <Transition.Root show={open} as={Fragment}>
+    <Transition.Root show={open} as={Fragment} unmount={false}>
       <Dialog
         as="div"
         className="fixed inset-0 z-50 md:hidden"
@@ -255,6 +280,11 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
                         src={SecxionLogo}
                         alt="Secxion Official Logo"
                         className="w-12 h-12 object-contain rounded-2xl"
+                        width="48"
+                        height="48"
+                        loading="eager"
+                        decoding="async"
+                        fetchPriority="high"
                         style={{ display: 'block' }}
                       />
                     </div>

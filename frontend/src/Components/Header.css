@@ -80,3 +80,10 @@
   background: linear-gradient(180deg, #fef08a 0%, #f59e0b 100%);
 }
 
+.sidepanel-scroll-area {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  will-change: scroll-position;
+}
+
