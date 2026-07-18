@@ -28,6 +28,7 @@ import { BiSearch } from 'react-icons/bi';
 import SidePanel from './SidePanel';
 import LiveScript from './LiveScript';
 import Slogo from '../app/slogo.png';
+import SidePanelLogo from '../Assets/optimized/secxion-logo-112.png';
 import DataPadButtonImg from '../app/Buttons/datapadbutton.png';
 import TradeStatusButtonImg from '../app/Buttons/tradestatusbutton.png';
 
@@ -125,6 +126,14 @@ const Header = () => {
       audioRef.current.volume = volume;
     }
   }, [volume]);
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = SidePanelLogo;
+    if (img.decode) {
+      img.decode().catch(() => {});
+    }
+  }, []);
 
   const triggerVibration = () => {
     if (navigator.vibrate) {

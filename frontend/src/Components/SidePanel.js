@@ -1,9 +1,6 @@
 import React, {
   useState,
   Fragment,
-  useRef,
-  useEffect,
-  useCallback,
 } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
@@ -21,7 +18,7 @@ import {
   CheckIcon,
   CodeBracketIcon,
 } from '@heroicons/react/24/outline';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
 import Clock from 'react-live-clock';
 import timezones from '../helpers/timeZones';
@@ -32,17 +29,6 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
   const [timezone, setTimezone] = useState('Africa/Lagos');
   const [showTimezones, setShowTimezones] = useState(false);
   const location = useLocation();
-  const scrollContainerRef = useRef(null);
-
-  // Custom Scrollbar State
-  const [scrollbarState, setScrollbarState] = useState({
-    isVisible: false,
-    thumbHeight: 0,
-    thumbTop: 0,
-    isDragging: false,
-  });
-  const hideTimeoutRef = useRef(null);
-  const rafRef = useRef(null);
 
   const toggleTimezones = () => setShowTimezones(!showTimezones);
   const handleTimezoneChange = (newTimezone) => {
@@ -57,124 +43,6 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
     onCloseMenu?.();
     setOpen(false);
   };
-
-  const updateScrollbar = useCallback(() => {
-    const element = scrollContainerRef.current;
-    if (!element) return;
-
-    const { scrollTop, scrollHeight, clientHeight } = element;
-    const ratio = clientHeight / scrollHeight;
-
-    if (ratio >= 1) {
-      setScrollbarState((prev) =>
-        prev.thumbHeight === 0 && prev.thumbTop === 0
-          ? prev
-          : { ...prev, thumbHeight: 0, thumbTop: 0 },
-      );
-      return;
-    }
-
-    const nextThumbHeight = clientHeight * ratio;
-    const nextThumbTop = scrollTop * ratio;
-
-    setScrollbarState((prev) => ({
-      ...prev,
-      thumbHeight:
-        Math.abs(prev.thumbHeight - nextThumbHeight) < 0.5
-          ? prev.thumbHeight
-          : nextThumbHeight,
-      thumbTop:
-        Math.abs(prev.thumbTop - nextThumbTop) < 0.5
-          ? prev.thumbTop
-          : nextThumbTop,
-    }));
-  }, []);
-
-  const scheduleScrollbarUpdate = useCallback(() => {
-    if (rafRef.current) return;
-    rafRef.current = window.requestAnimationFrame(() => {
-      rafRef.current = null;
-      updateScrollbar();
-    });
-  }, [updateScrollbar]);
-
-  const handleMouseDown = (e) => {
-    e.preventDefault();
-    setScrollbarState((prev) => ({ ...prev, isDragging: true }));
-    const startY = e.clientY;
-    const startTop = scrollbarState.thumbTop;
-
-    const onMouseMove = (moveEvent) => {
-      const element = scrollContainerRef.current;
-      if (!element) return;
-
-      const deltaY = moveEvent.clientY - startY;
-      const ratio = element.clientHeight / element.scrollHeight;
-      const newThumbTop = Math.max(
-        0,
-        Math.min(
-          element.clientHeight - scrollbarState.thumbHeight,
-          startTop + deltaY,
-        ),
-      );
-
-      element.scrollTop = newThumbTop / ratio;
-    };
-
-    const onMouseUp = () => {
-      setScrollbarState((prev) => ({ ...prev, isDragging: false }));
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-      hideScrollBarSoon();
-    };
-
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-  };
-
-  const revealScrollBar = useCallback(() => {
-    if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
-    setScrollbarState((prev) =>
-      prev.isVisible ? prev : { ...prev, isVisible: true },
-    );
-    scheduleScrollbarUpdate();
-  }, [scheduleScrollbarUpdate]);
-
-  const hideScrollBarSoon = () => {
-    if (scrollbarState.isDragging) return;
-    if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
-    hideTimeoutRef.current = setTimeout(() => {
-      setScrollbarState((prev) => {
-        if (prev.isDragging) return prev;
-        return { ...prev, isVisible: false };
-      });
-    }, 1500);
-  };
-
-  useEffect(() => {
-    const element = scrollContainerRef.current;
-    if (!element) return;
-
-    element.addEventListener('scroll', revealScrollBar, { passive: true });
-    window.addEventListener('resize', scheduleScrollbarUpdate);
-
-    const observer = new MutationObserver(scheduleScrollbarUpdate);
-    observer.observe(element, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-    });
-
-    scheduleScrollbarUpdate();
-
-    return () => {
-      element.removeEventListener('scroll', revealScrollBar);
-      window.removeEventListener('resize', scheduleScrollbarUpdate);
-      observer.disconnect();
-      if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
-      if (rafRef.current) window.cancelAnimationFrame(rafRef.current);
-    };
-  }, [open, revealScrollBar, scheduleScrollbarUpdate]);
 
   const hideTradeStatus = location.pathname === '/record';
   const hideDataPad = location.pathname === '/datapad';
@@ -302,16 +170,10 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
                 </motion.button>
               </div>
 
-              {/* Navigation with Custom Scrollbar Area */}
-              <div
-                className="relative flex-1 min-h-0 overflow-hidden pr-4"
-                onMouseEnter={revealScrollBar}
-                onMouseLeave={hideScrollBarSoon}
-                onTouchStart={revealScrollBar}
-              >
+              {/* Navigation */}
+              <div className="relative flex-1 min-h-0 overflow-hidden">
                 <nav
-                  ref={scrollContainerRef}
-                  className="h-full px-4 py-6 pr-7 space-y-3 overflow-y-auto scrollbar-hide sidepanel-scroll-area"
+                  className="h-full px-4 py-6 pr-4 space-y-3 overflow-y-auto sidepanel-scroll-area"
                 >
                   {navigationItems.map(
                     ({ path, icon: Icon, label, gradient, hide }) =>
@@ -353,28 +215,6 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
                     </span>
                   </button>
                 </nav>
-
-                {/* Custom Scrollbar Visual */}
-                <AnimatePresence>
-                  {(scrollbarState.isVisible || scrollbarState.isDragging) &&
-                    scrollbarState.thumbHeight > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="sidepanel-scrollbar-shell"
-                      >
-                        <div
-                          onMouseDown={handleMouseDown}
-                          className={`sidepanel-scrollbar-thumb ${scrollbarState.isDragging ? 'is-dragging' : ''}`}
-                          style={{
-                            height: `${scrollbarState.thumbHeight}px`,
-                            top: `${scrollbarState.thumbTop}px`,
-                          }}
-                        />
-                      </motion.div>
-                    )}
-                </AnimatePresence>
               </div>
 
               {/* Timezone Selector */}
