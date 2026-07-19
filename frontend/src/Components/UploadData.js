@@ -4,6 +4,8 @@ import {
   FaCloudUploadAlt,
   FaTrash,
   FaArrowLeft,
+  FaChevronLeft,
+  FaChevronRight,
   FaTag,
   FaImage,
   FaFileAlt,
@@ -31,7 +33,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
 
   // UI state
   const [loading, setLoading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({});
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -250,6 +252,16 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
       const updatedPreviews = previewImages.filter((_, i) => i !== index);
       const updatedMedia = media.filter((_, i) => i !== index);
 
+      if (selectedImageIndex !== null) {
+        if (updatedPreviews.length === 0) {
+          setSelectedImageIndex(null);
+        } else if (index < selectedImageIndex) {
+          setSelectedImageIndex(selectedImageIndex - 1);
+        } else if (index === selectedImageIndex) {
+          setSelectedImageIndex(Math.min(selectedImageIndex, updatedPreviews.length - 1));
+        }
+      }
+
       setPreviewImages(updatedPreviews);
       setMedia(updatedMedia);
 
@@ -258,8 +270,30 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
         autoClose: 2000,
       });
     },
-    [previewImages, media],
+    [previewImages, media, selectedImageIndex],
   );
+
+  const openImageReview = useCallback((index) => {
+    setSelectedImageIndex(index);
+  }, []);
+
+  const closeImageReview = useCallback(() => {
+    setSelectedImageIndex(null);
+  }, []);
+
+  const showPreviousImage = useCallback(() => {
+    if (!previewImages.length || selectedImageIndex === null) return;
+    setSelectedImageIndex((prev) =>
+      prev === 0 ? previewImages.length - 1 : prev - 1,
+    );
+  }, [previewImages.length, selectedImageIndex]);
+
+  const showNextImage = useCallback(() => {
+    if (!previewImages.length || selectedImageIndex === null) return;
+    setSelectedImageIndex((prev) =>
+      prev === previewImages.length - 1 ? 0 : prev + 1,
+    );
+  }, [previewImages.length, selectedImageIndex]);
 
   // Handle form submission with enhanced validation
   const handleSubmitDataPad = useCallback(async () => {
@@ -508,6 +542,35 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleSubmitDataPad, handleClose, isSubmitting]);
+
+  useEffect(() => {
+    const handleImageReviewKeys = (e) => {
+      if (selectedImageIndex === null) return;
+
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        showPreviousImage();
+      }
+
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        showNextImage();
+      }
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeImageReview();
+      }
+    };
+
+    document.addEventListener('keydown', handleImageReviewKeys);
+    return () => document.removeEventListener('keydown', handleImageReviewKeys);
+  }, [selectedImageIndex, showPreviousImage, showNextImage, closeImageReview]);
+
+  const selectedImage =
+    selectedImageIndex !== null && previewImages[selectedImageIndex]
+      ? previewImages[selectedImageIndex].url || previewImages[selectedImageIndex]
+      : null;
 
   const addTag = () => {
     const tag = tagInput.trim();
@@ -924,9 +987,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                                   src={imageData.url || imageData}
                                   alt={`Upload ${index + 1}`}
                                   className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
-                                  onClick={() =>
-                                    setSelectedImage(imageData.url || imageData)
-                                  }
+                                  onClick={() => openImageReview(index)}
                                 />
                               </div>
 
@@ -1035,20 +1096,54 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/95 flex items-center justify-center z-[60] p-4 touch-manipulation"
-            onClick={() => setSelectedImage(null)}
+            onClick={closeImageReview}
           >
             <button
               className="absolute top-6 right-6 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-200 z-10 touch-manipulation backdrop-blur-md"
-              onClick={() => setSelectedImage(null)}
+              onClick={closeImageReview}
+              aria-label="Close image review"
             >
               <MdClose className="w-8 h-8" />
             </button>
+
+            {previewImages.length > 1 && (
+              <>
+                <button
+                  className="absolute left-4 md:left-8 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-200 z-10 touch-manipulation backdrop-blur-md"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    showPreviousImage();
+                  }}
+                  aria-label="Previous image"
+                >
+                  <FaChevronLeft className="w-6 h-6" />
+                </button>
+
+                <button
+                  className="absolute right-4 md:right-8 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-200 z-10 touch-manipulation backdrop-blur-md"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    showNextImage();
+                  }}
+                  aria-label="Next image"
+                >
+                  <FaChevronRight className="w-6 h-6" />
+                </button>
+              </>
+            )}
+
+            {selectedImageIndex !== null && (
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 text-white text-sm px-4 py-2 rounded-full border border-white/20 backdrop-blur-md">
+                {selectedImageIndex + 1} / {previewImages.length}
+              </div>
+            )}
+
             <motion.img
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               src={selectedImage}
-              alt="Full Preview"
+              alt={`Photo ${selectedImageIndex !== null ? selectedImageIndex + 1 : 1}`}
               className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />
