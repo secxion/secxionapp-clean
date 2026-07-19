@@ -3,7 +3,13 @@ import { motion } from 'framer-motion';
 import { FaEdit, FaTrash, FaTag, FaClock, FaImage } from 'react-icons/fa';
 import SecxionShimmer from './SecxionShimmer';
 
-const DataPadList = ({ dataPads, onOpen, onDelete, onImageClick, isLoading }) => {
+const DataPadList = ({
+  dataPads,
+  onOpen,
+  onDelete,
+  onImageClick,
+  isLoading,
+}) => {
   if (isLoading) {
     return <SecxionShimmer type="list" count={5} />;
   }
