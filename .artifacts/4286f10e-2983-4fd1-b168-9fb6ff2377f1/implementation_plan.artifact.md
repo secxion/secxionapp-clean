@@ -1,46 +1,39 @@
-# Phase 3 Implementation Plan: Performance & TWA Optimization
+# DataPad Fixes & Improvements
 
-This phase focuses on optimizing the backend for better performance and ensuring the Android TWA (Trusted Web Activity) provides a seamless app-like experience.
+This plan addresses two issues in the DataPad feature:
+1. The "Create Your First Note" button not working in the empty state.
+2. Missing image previews in the note list and ensuring the preview modal works as expected.
 
 ## User Review Required
 
-> [!TIP]
-> **TWA Verification**: Since your app is already live at `www.secxion.com`, the most important step for the Play Store launch is ensuring the `assetlinks.json` file is accessible at `https://secxion.com/.well-known/assetlinks.json`. This removes the browser URL bar in the app.
-> I have verified your `assetlinks.json` contains the correct release fingerprint.
+> [!NOTE]
+> I will be adding a small image thumbnail strip to each note in the list view. Clicking these thumbnails will open a full-screen preview.
 
 ## Proposed Changes
 
-### 1. Backend Performance Optimization
+### [DataPad Feature]
 
-#### [MODIFY] [backend/package.json](file:///Users/mac/secxionapp-clean/backend/package.json)
-- Add `compression` middleware to reduce payload sizes.
-- Add `morgan` for better HTTP request logging.
+#### [MODIFY] [DataPad.js](file:///Users/mac/secxionapp-clean/frontend/src/pages/DataPad.js)
+- Fix the `EmptyState` component props: change `onCreateFirst` to `onCreateNew`.
+- Add `hasActiveFilters` and `hasDataPads` props to `EmptyState`.
+- Add `selectedImage` state to manage a global full-screen image preview.
+- Add an `ImagePreviewModal` at the bottom of the component.
+- Pass `onImageClick` to `DataPadList`.
 
-#### [MODIFY] [backend/index.js](file:///Users/mac/secxionapp-clean/backend/index.js)
-- Implement `compression()` middleware.
-- Add `morgan` logger for better monitoring in production.
+#### [MODIFY] [DataPadList.js](file:///Users/mac/secxionapp-clean/frontend/src/Components/DataPadList.js)
+- Update the component to accept `onImageClick` prop.
+- Render a thumbnail strip for notes that have media (`pad.media`).
+- Implement `onClick` handler for thumbnails to trigger the preview.
 
-#### [MODIFY] [backend/config/db.js](file:///Users/mac/secxionapp-clean/backend/config/db.js)
-- Review and ensure critical indexes are present for common queries (e.g., `userId` on transactions, `email` on users).
-
-### 2. TWA App Experience
-
-#### [MODIFY] [frontend/public/manifest.json](file:///Users/mac/secxionapp-clean/frontend/public/manifest.json)
-- Ensure all required icon sizes are present (verified).
-- Set `display: standalone` (verified).
-
-### 3. Database Indexes (Safety Check)
-I will verify the following models have indexes on frequently queried fields:
-- `userModel.js`: `email` (unique)
-- `transactionModel.js`: `userId`
-- `notificationModel.js`: `userId`, `isRead`
+#### [MODIFY] [UploadData.js](file:///Users/mac/secxionapp-clean/frontend/src/Components/UploadData.js)
+- Ensure the existing image preview modal works correctly.
+- Add a "Tap to preview" hint or improve the visual feedback when hovering over thumbnails.
 
 ## Verification Plan
 
-### Automated Tests
-- Run `npm run dev` and verify no startup errors with new middleware.
-- Use `curl -I` to verify `Content-Encoding: gzip` headers if compression is active.
-
 ### Manual Verification
-- Verify `https://secxion.com/.well-known/assetlinks.json` is reachable via browser.
-- Check backend logs to ensure `morgan` is outputting request data correctly.
+- Go to `/datapad` with no notes and click "Create Your First Note" to ensure it opens the editor.
+- Create a note with images.
+- In the list view, verify that image thumbnails appear.
+- Click a thumbnail in the list view to verify the full-screen preview.
+- Open the editor, go to the "Photos" tab, and click an uploaded thumbnail to verify the preview.

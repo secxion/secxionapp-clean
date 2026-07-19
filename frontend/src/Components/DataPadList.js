@@ -1,9 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaEdit, FaTrash, FaTag, FaClock } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaTag, FaClock, FaImage } from 'react-icons/fa';
 import SecxionShimmer from './SecxionShimmer';
 
-const DataPadList = ({ dataPads, onOpen, onDelete, isLoading }) => {
+const DataPadList = ({ dataPads, onOpen, onDelete, onImageClick, isLoading }) => {
   if (isLoading) {
     return <SecxionShimmer type="list" count={5} />;
   }
@@ -18,14 +18,41 @@ const DataPadList = ({ dataPads, onOpen, onDelete, isLoading }) => {
           transition={{ duration: 0.2 }}
           className="group bg-gradient-to-r from-gray-900/60 to-gray-800/60 backdrop-blur-sm rounded-xl p-6 border border-purple-600/30 hover:border-yellow-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10"
         >
-          <div className="flex items-start justify-between">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
             <div className="flex-1 cursor-pointer" onClick={() => onOpen(pad)}>
               <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-yellow-400 transition-colors duration-200">
                 {pad.title}
               </h3>
-              <p className="text-gray-300 leading-relaxed line-clamp-3 mb-4">
+              <p className="text-gray-300 leading-relaxed line-clamp-2 mb-4">
                 {pad.content}
               </p>
+
+              {/* Image Previews */}
+              {pad.media && pad.media.length > 0 && (
+                <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide">
+                  {pad.media.map((img, imgIdx) => (
+                    <div
+                      key={`${pad._id}-img-${imgIdx}`}
+                      className="relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-gray-700 hover:border-purple-400 transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onImageClick(img);
+                      }}
+                    >
+                      <img
+                        src={img}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                      {imgIdx === 2 && pad.media.length > 3 && (
+                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-xs font-bold text-white">
+                          +{pad.media.length - 2}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {/* Tags */}
               {pad.tags && pad.tags.length > 0 && (

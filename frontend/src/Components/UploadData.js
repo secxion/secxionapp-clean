@@ -1034,21 +1034,21 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4 touch-manipulation"
+            className="fixed inset-0 bg-black/95 flex items-center justify-center z-[60] p-4 touch-manipulation"
             onClick={() => setSelectedImage(null)}
           >
             <button
-              className="absolute top-4 right-4 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-4 mt-10 rounded-full transition-all duration-200 z-10 touch-manipulation"
+              className="absolute top-6 right-6 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-200 z-10 touch-manipulation backdrop-blur-md"
               onClick={() => setSelectedImage(null)}
             >
-              <MdClose className="w-6 h-6" />
+              <MdClose className="w-8 h-8" />
             </button>
             <motion.img
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.8 }}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
               src={selectedImage}
-              alt="Full View"
+              alt="Full Preview"
               className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />

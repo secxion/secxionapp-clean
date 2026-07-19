@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
-import { FaPlus, FaCode } from 'react-icons/fa';
-import { MdRefresh } from 'react-icons/md';
+import { FaPlus, FaCode, FaTimes } from 'react-icons/fa';
+import { MdRefresh, MdClose } from 'react-icons/md';
 
 import UploadData from '../Components/UploadData';
 import DataPadList from '../Components/DataPadList';
@@ -27,9 +27,10 @@ const DataPad = () => {
 
   const [editingDataPad, setEditingDataPad] = useState(null);
   const [dataPads, setDataPads] = useState([]);
-  const [isUploadOpen, setIsUploadOpen] = useState(true);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLiveScriptOpen, setIsLiveScriptOpen] = useState(false);
+  const [selectedPreviewImage, setSelectedPreviewImage] = useState(null);
   // const [error, setError] = useState(null); // Removed unused error state
 
   // const [viewMode, setViewMode] = useState(VIEW_MODES.LIST); // Removed unused viewMode state
@@ -304,7 +305,9 @@ const DataPad = () => {
               />
             ) : dataPads.length === 0 ? (
               <EmptyState
-                onCreateFirst={() => handleOpenEditor()}
+                onCreateNew={() => handleOpenEditor()}
+                hasDataPads={false}
+                hasActiveFilters={false}
                 key="empty"
               />
             ) : filteredAndSortedDataPads.length === 0 ? (
@@ -346,6 +349,7 @@ const DataPad = () => {
                   dataPads={filteredAndSortedDataPads}
                   onOpen={handleOpenEditor}
                   onDelete={handleDeleteDataPad}
+                  onImageClick={(url) => setSelectedPreviewImage(url)}
                   isLoading={isLoading}
                 />
               </motion.div>
@@ -385,6 +389,35 @@ const DataPad = () => {
         isOpen={isLiveScriptOpen}
         onClose={() => setIsLiveScriptOpen(false)}
       />
+
+      {/* Full Image Preview Modal */}
+      <AnimatePresence>
+        {selectedPreviewImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/95 flex items-center justify-center z-[100] p-4 touch-manipulation"
+            onClick={() => setSelectedPreviewImage(null)}
+          >
+            <button
+              className="absolute top-6 right-6 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-200 z-10 touch-manipulation backdrop-blur-md"
+              onClick={() => setSelectedPreviewImage(null)}
+            >
+              <MdClose className="w-8 h-8" />
+            </button>
+            <motion.img
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              src={selectedPreviewImage}
+              alt="Full Preview"
+              className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };

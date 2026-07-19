@@ -33,21 +33,12 @@ export default function errorHandler(err, req, res, next) {
     message,
     path: req.originalUrl,
     method: req.method,
-    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
   });
 
-  // Always ensure we return JSON for API requests or when explicitly requested
-  const acceptsJson = req.headers.accept?.includes("application/json") || isApiRequest;
-
-  if (acceptsJson || !res.headersSent) {
-    return res.status(status).json({
-      success: false,
-      status,
-      message,
-      ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
-    });
-  }
-
-  // Fallback for non-JSON requests if headers not sent
-  return res.status(status).send(message);
+  return res.status(status).json({
+    success: false,
+    status,
+    message,
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+  });
 }
