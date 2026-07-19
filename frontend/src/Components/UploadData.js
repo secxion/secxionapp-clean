@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import {
   FaCloudUploadAlt,
   FaTrash,
+  FaEye,
   FaArrowLeft,
   FaChevronLeft,
   FaChevronRight,
@@ -971,9 +972,13 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
 
                   {previewImages.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-medium text-gray-300 mb-3">
+                      <h3 className="text-sm font-medium text-gray-300 mb-1">
                         Uploaded Images
                       </h3>
+                      <p className="text-xs text-gray-500 mb-3">
+                        Tap image or use the preview button to review in full
+                        size.
+                      </p>
                       {/* Mobile-optimized grid */}
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-3 md:gap-4">
                         <AnimatePresence>
@@ -1007,8 +1012,21 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                                   removeImage(index);
                                 }}
                                 disabled={imageData.isUploading}
+                                aria-label={`Remove image ${index + 1}`}
                               >
                                 <FaTrash className="w-3 h-3" />
+                              </button>
+
+                              <button
+                                className="absolute bottom-2 right-2 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg touch-manipulation"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openImageReview(index);
+                                }}
+                                disabled={imageData.isUploading}
+                                aria-label={`Preview image ${index + 1}`}
+                              >
+                                <FaEye className="w-3 h-3" />
                               </button>
 
                               <div className="absolute bottom-2 left-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded-full">
