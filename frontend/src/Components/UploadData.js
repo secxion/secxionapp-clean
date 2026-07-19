@@ -258,7 +258,9 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
         } else if (index < selectedImageIndex) {
           setSelectedImageIndex(selectedImageIndex - 1);
         } else if (index === selectedImageIndex) {
-          setSelectedImageIndex(Math.min(selectedImageIndex, updatedPreviews.length - 1));
+          setSelectedImageIndex(
+            Math.min(selectedImageIndex, updatedPreviews.length - 1),
+          );
         }
       }
 
@@ -569,7 +571,8 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
 
   const selectedImage =
     selectedImageIndex !== null && previewImages[selectedImageIndex]
-      ? previewImages[selectedImageIndex].url || previewImages[selectedImageIndex]
+      ? previewImages[selectedImageIndex].url ||
+        previewImages[selectedImageIndex]
       : null;
 
   const addTag = () => {
