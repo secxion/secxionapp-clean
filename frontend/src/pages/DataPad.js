@@ -401,7 +401,7 @@ const DataPad = () => {
             onClick={() => setSelectedPreviewImage(null)}
           >
             <button
-              className="absolute top-10 right-6 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-200 z-10 touch-manipulation backdrop-blur-md"
+              className="absolute top-14 right-6 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-200 z-10 touch-manipulation backdrop-blur-md"
               onClick={() => setSelectedPreviewImage(null)}
             >
               <MdClose className="w-8 h-8" />
