@@ -14,7 +14,7 @@ import {
   FaTimes,
   FaEdit,
 } from 'react-icons/fa';
-import { MdSend, MdClose, MdUpdate } from 'react-icons/md';
+import { MdSend, MdUpdate } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 import SummaryApi from '../common';
@@ -836,12 +836,15 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
               >
                 <div className="p-4 border-b border-gray-700 flex items-center justify-between">
                   <h2 className="font-medium text-gray-200">Note Info</h2>
-                  <button
+                  <motion.button
                     onClick={() => setShowSidebar(false)}
-                    className="p-1 text-gray-400 hover:text-gray-200"
+                    className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500/50 border-2 border-white/20"
+                    whileHover={{ rotate: 90 }}
+                    whileTap={{ scale: 0.9 }}
+                    aria-label="Close note info"
                   >
-                    <FaTimes className="w-4 h-4" />
-                  </button>
+                    <FaTimes className="w-5 h-5" />
+                  </motion.button>
                 </div>
 
                 {/* Mobile Stats */}
@@ -1119,13 +1122,15 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
             className="fixed inset-0 bg-black/95 flex items-center justify-center z-[60] p-4 touch-manipulation"
             onClick={closeImageReview}
           >
-            <button
-              className="absolute top-6 right-6 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-200 z-10 touch-manipulation backdrop-blur-md"
+            <motion.button
+              className="absolute top-14 right-6 bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500/50 border-2 border-white/20 z-10 touch-manipulation"
               onClick={closeImageReview}
               aria-label="Close image review"
+              whileHover={{ rotate: 90 }}
+              whileTap={{ scale: 0.9 }}
             >
-              <MdClose className="w-8 h-8" />
-            </button>
+              <FaTimes className="w-5 h-5" />
+            </motion.button>
 
             {previewImages.length > 1 && (
               <>

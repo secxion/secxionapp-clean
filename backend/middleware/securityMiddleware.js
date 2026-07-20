@@ -70,8 +70,30 @@ export const apiLimiter = rateLimit({
   standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false, // Disable `X-RateLimit-*` headers
   skip: (req) => {
-    // Skip rate limiting for health checks
-    return req.path === "/api/health";
+    // Skip global limiter for authenticated traffic and auth lifecycle endpoints.
+    // Login/signup/reset keep their dedicated strict limiters.
+    const path = req.originalUrl || req.path || "";
+    const hasAuthToken = Boolean(
+      req.cookies?.token || req.headers.authorization,
+    );
+
+    if (hasAuthToken) {
+      return true;
+    }
+
+    const alwaysBypassPaths = [
+      "/api/health",
+      "/api/signin",
+      "/api/signup",
+      "/api/admin-signin",
+      "/api/request-reset",
+      "/api/confirm-reset",
+      "/api/resend-verification",
+      "/api/verify-email",
+      "/api/csrf-token",
+    ];
+
+    return alwaysBypassPaths.some((bypassPath) => path.startsWith(bypassPath));
   },
   handler: (req, res) => {
     logger.logError("RATE_LIMIT", "Rate limit exceeded", null, {
