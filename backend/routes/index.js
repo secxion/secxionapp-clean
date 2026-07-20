@@ -181,10 +181,26 @@ router.use(
   }),
 );
 
-router.use(apiLimiter);
+const rateLimitBypassPaths = new Set([
+  "/eth-price",
+  "/eth-market",
+  "/eth-chart",
+  "/ping",
+]);
+
+router.use((req, res, next) => {
+  if (rateLimitBypassPaths.has(req.path)) {
+    return next();
+  }
+  return apiLimiter(req, res, next);
+});
 
 const cache = {};
 const CACHE_TTL = 5 * 60 * 1000;
+const ETH_PRICE_CACHE_TTL = 30 * 1000;
+const ETH_MARKET_CACHE_TTL = 60 * 1000;
+const ETH_CHART_CACHE_TTL = 60 * 1000;
+const USD_NGN_CACHE_TTL = 60 * 1000;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function verifyApiKey(req, res, next) {
@@ -214,6 +230,37 @@ async function axiosGetWithRetry(
 
 // Helper function to fetch ETH price from multiple sources
 async function fetchEthPriceFromSources() {
+  const fetchUsdToNgn = async () => {
+    const fxSources = [
+      async () => {
+        const response = await axios.get("https://open.er-api.com/v6/latest/USD", {
+          timeout: 5000,
+        });
+        const rate = response.data?.rates?.NGN;
+        if (!rate) throw new Error("open.er-api missing NGN");
+        return rate;
+      },
+      async () => {
+        const response = await axios.get("https://api.exchangerate.host/latest?base=USD&symbols=NGN", {
+          timeout: 5000,
+        });
+        const rate = response.data?.rates?.NGN;
+        if (!rate) throw new Error("exchangerate.host missing NGN");
+        return rate;
+      },
+    ];
+
+    for (const source of fxSources) {
+      try {
+        return await source();
+      } catch (error) {
+        console.warn(`[eth-price] USD/NGN source failed: ${error.message}`);
+      }
+    }
+
+    return 1600;
+  };
+
   const sources = [
     // Source 1: CoinGecko (primary)
     async () => {
@@ -236,14 +283,7 @@ async function fetchEthPriceFromSources() {
       });
       const usdPrice = parseFloat(response.data.price);
       if (!usdPrice) throw new Error("Invalid Binance response");
-      // Fetch USD to NGN rate for conversion
-      let ngnRate = 1600; // Default USD/NGN rate
-      try {
-        const ngnResponse = await axios.get("https://open.er-api.com/v6/latest/USD", { timeout: 5000 });
-        ngnRate = ngnResponse.data?.rates?.NGN || 1600;
-      } catch (e) {
-        console.warn("[eth-price] Failed to fetch NGN rate, using default");
-      }
+      const ngnRate = await fetchUsdToNgn();
       return { usd: usdPrice, ngn: usdPrice * ngnRate, change_24h: null, source: "binance" };
     },
     // Source 3: CryptoCompare (fallback)
@@ -255,6 +295,17 @@ async function fetchEthPriceFromSources() {
       const data = response.data;
       if (!data || !data.USD) throw new Error("Invalid CryptoCompare response");
       return { usd: data.USD, ngn: data.NGN, change_24h: null, source: "cryptocompare" };
+    },
+    // Source 4: Coinbase spot ETH-USD + external FX conversion
+    async () => {
+      const response = await axios.get("https://api.coinbase.com/v2/prices/ETH-USD/spot", {
+        timeout: 8000,
+        headers: { Accept: "application/json", "User-Agent": "Secxion-App/1.0" },
+      });
+      const usdPrice = parseFloat(response.data?.data?.amount);
+      if (!usdPrice) throw new Error("Invalid Coinbase spot response");
+      const ngnRate = await fetchUsdToNgn();
+      return { usd: usdPrice, ngn: usdPrice * ngnRate, change_24h: null, source: "coinbase-spot" };
     },
   ];
 
@@ -298,7 +349,7 @@ router.get("/eth-price", async (req, res) => {
     };
 
     // Cache the result for CACHE_TTL duration
-    cache[cacheKey] = { data: result, expiry: now + CACHE_TTL };
+    cache[cacheKey] = { data: result, expiry: now + ETH_PRICE_CACHE_TTL };
     res.json(result);
   } catch (error) {
     console.error("[eth-price] All sources failed:", error.message);
@@ -352,7 +403,7 @@ router.get("/eth-market", async (req, res) => {
     });
 
     const result = response.data[0];
-    cache[cacheKey] = { data: result, expiry: now + CACHE_TTL };
+    cache[cacheKey] = { data: result, expiry: now + ETH_MARKET_CACHE_TTL };
     res.json(result);
   } catch (error) {
     console.error("[eth-market] Error fetching ETH market data:", error.message);
@@ -394,7 +445,7 @@ router.get("/eth-chart", async (req, res) => {
     });
 
     const result = response.data;
-    cache[cacheKey] = { data: result, expiry: now + CACHE_TTL };
+    cache[cacheKey] = { data: result, expiry: now + ETH_CHART_CACHE_TTL };
     res.json(result);
   } catch (error) {
     console.error("[eth-chart] Error fetching ETH chart data:", error.message);
@@ -424,7 +475,7 @@ router.get("/usd-to-ngn", verifyApiKey, async (req, res) => {
     const rate = data?.rates?.NGN;
     if (!rate) throw new Error("NGN rate not found");
     const result = { rate };
-    cache[cacheKey] = { data: result, expiry: now + CACHE_TTL };
+    cache[cacheKey] = { data: result, expiry: now + USD_NGN_CACHE_TTL };
     res.json(result);
   } catch (error) {
     console.error("[usd-to-ngn] Fetch failed:", error.message);

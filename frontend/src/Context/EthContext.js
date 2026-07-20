@@ -28,7 +28,8 @@ export const EthProvider = ({ children }) => {
 
       if (!response.ok) throw new Error('Failed to fetch ETH rate');
       const data = await response.json();
-      const rate = data?.ethereum?.ngn || 0;
+      // Support both nested and flat API response shapes.
+      const rate = data?.ethereum?.ngn || data?.ngn || 0;
       setEthRate(rate);
       return rate;
     } catch (error) {
@@ -105,11 +106,14 @@ export const EthProvider = ({ children }) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-      const balanceRes = await fetch(SummaryApi.getWalletBalance.url, {
-        method: 'GET',
-        credentials: 'include',
-        signal: controller.signal,
-      });
+      const balanceRes = await fetch(
+        `${SummaryApi.getWalletBalance.url}/${userId}`,
+        {
+          method: 'GET',
+          credentials: 'include',
+          signal: controller.signal,
+        },
+      );
       clearTimeout(timeoutId);
 
       if (!balanceRes.ok) throw new Error('Failed to fetch wallet balance');

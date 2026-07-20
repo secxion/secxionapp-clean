@@ -29,6 +29,7 @@ const LOCAL_STORAGE_KEY = 'ethWithdrawalCountdownEnd';
 const LOCAL_STORAGE_STATUS_KEY = 'ethWithdrawalStatus';
 const LOCAL_STORAGE_MESSAGE_KEY = 'ethWithdrawalSuccessMessage';
 const MAX_ADDRESS_HISTORY = 3;
+const LIVE_REFRESH_INTERVAL_MS = 60000;
 
 const Notification = ({ type, message, onDismiss }) => {
   if (!message) return null;
@@ -299,8 +300,29 @@ const EthWallet = () => {
 
     checkInitialWithdrawalStatus();
 
-    const interval = setInterval(refreshWalletData, 900000); // 15m
-    return () => clearInterval(interval);
+    const walletInterval = setInterval(
+      refreshWalletData,
+      LIVE_REFRESH_INTERVAL_MS,
+    );
+    const gasInterval = setInterval(
+      refreshGasFeeData,
+      LIVE_REFRESH_INTERVAL_MS,
+    );
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        refreshWalletData();
+        refreshGasFeeData();
+      }
+    };
+
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      clearInterval(walletInterval);
+      clearInterval(gasInterval);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // run once
 
