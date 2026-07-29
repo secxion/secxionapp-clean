@@ -20,9 +20,32 @@ const userSchema = new mongoose.Schema(
     },
     tag: String,
     telegramNumber: String,
+    phoneNumber: {
+      type: String,
+      default: "",
+      trim: true,
+      maxlength: 25,
+    },
+    isPhoneVerified: {
+      type: Boolean,
+      default: false,
+    },
+    phoneVerifiedAt: {
+      type: Date,
+      default: null,
+    },
     isVerified: {
       type: Boolean,
       default: false,
+    },
+    kycStatus: {
+      type: String,
+      enum: ["unverified", "pending", "approved", "rejected"],
+      default: "unverified",
+    },
+    kycVerifiedAt: {
+      type: Date,
+      default: null,
     },
     signupIP: { type: String },
     emailToken: String,

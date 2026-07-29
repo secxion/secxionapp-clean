@@ -152,6 +152,17 @@ import {
   replyToLiveScriptRequest,
   adminReplyToLiveScriptRequest,
 } from "../controller/liveScriptController.js";
+import {
+  submitKyc,
+  getMyKyc,
+  getAllKycSubmissions,
+  reviewKycSubmission,
+  getKycStats,
+  sendKycPhoneVerificationCode,
+  verifyKycPhoneCode,
+  ingestKycFaceMatchResult,
+} from "../controller/kycController.js";
+import { getSmsHealthStatus } from "../utils/smsService.js";
 import { generateSliderVerification } from "../utils/sliderVerification.js";
 import getLastUserMarketStatusController from "../controller/product/getLastUserMarketStatusController.js";
 import noCache from "../middleware/noCache.js";
@@ -487,6 +498,20 @@ router.get("/ping", (req, res) => {
   res.json({ status: "ok", message: "pong" });
 });
 
+router.get("/health/sms", (req, res) => {
+  const health = getSmsHealthStatus();
+  const statusCode = health.configured ? 200 : 503;
+
+  return res.status(statusCode).json({
+    success: health.configured,
+    error: !health.configured,
+    data: health,
+    message: health.configured
+      ? "SMS provider is configured."
+      : "SMS provider is not configured.",
+  });
+});
+
 // Get CSRF token (required for POST requests) - No middleware, pure JSON response
 router.get("/csrf-token", (req, res) => {
   const csrfToken = crypto.randomBytes(32).toString("hex");
@@ -514,6 +539,11 @@ router.post("/confirm-reset", verifyReset);
 router.post("/resend-verification", resendVerificationEmailController);
 router.post("/send-bank-code", authToken, sendBankAddCode);
 router.post("/verify-add-bank", authToken, verifyAndAddBankAccount);
+router.post("/kyc/phone/send-code", authToken, noCache, sendKycPhoneVerificationCode);
+router.post("/kyc/phone/verify-code", authToken, noCache, verifyKycPhoneCode);
+router.post("/kyc/submit", authToken, noCache, submitKyc);
+router.get("/kyc/me", authToken, noCache, getMyKyc);
+router.post("/kyc/face-match/result", noCache, ingestKycFaceMatchResult);
 
 // Admin panel
 router.get("/all-user", authToken, noCache, allUsers);
@@ -795,5 +825,10 @@ router.put(
   rejectPostController,
 );
 router.get("/myposts", authToken, noCache, getUserPostsController);
+
+// KYC Admin
+router.get("/kyc/admin/submissions", authToken, noCache, getAllKycSubmissions);
+router.patch("/kyc/admin/submissions/:id", authToken, noCache, reviewKycSubmission);
+router.get("/kyc/admin/stats", authToken, noCache, getKycStats);
 
 export default router;

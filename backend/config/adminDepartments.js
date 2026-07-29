@@ -20,7 +20,7 @@ export const DEPARTMENTS = {
   USERS: {
     name: 'Users Management',
     envKey: 'ADMIN_KEY_USERS',
-    routes: ['dashboard', 'all-users'],
+    routes: ['dashboard', 'all-users', 'kyc-verification'],
     description: 'Manage platform users and roles'
   },
   PRODUCTS: {

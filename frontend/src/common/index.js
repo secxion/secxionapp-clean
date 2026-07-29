@@ -351,6 +351,22 @@ const SummaryApi = {
     url: `${backendDomain}/api/profile/edit`,
     method: 'PUT',
   },
+  submitKyc: {
+    url: `${backendDomain}/api/kyc/submit`,
+    method: 'POST',
+  },
+  sendKycPhoneCode: {
+    url: `${backendDomain}/api/kyc/phone/send-code`,
+    method: 'POST',
+  },
+  verifyKycPhoneCode: {
+    url: `${backendDomain}/api/kyc/phone/verify-code`,
+    method: 'POST',
+  },
+  getMyKyc: {
+    url: `${backendDomain}/api/kyc/me`,
+    method: 'GET',
+  },
   getApprovedPosts: {
     url: `${backendDomain}/api/posts/approved`,
     method: 'GET',

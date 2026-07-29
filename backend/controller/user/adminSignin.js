@@ -89,11 +89,12 @@ async function adminSignInController(req, res, next) {
     const token = jwt.sign(tokenData, process.env.TOKEN_SECRET_KEY, {
       expiresIn: 60 * 60 * 8, // 8 hours
     });
+    const isProduction = process.env.NODE_ENV === "production";
     
     const tokenOptions = {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/",
     };
 

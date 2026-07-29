@@ -4,6 +4,7 @@
  */
 
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY;
+const TURNSTILE_TEST_SECRET_KEY = "1x0000000000000000000000000000000AA";
 const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
 /**
@@ -13,11 +14,16 @@ const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/sit
  * @returns {Promise<{success: boolean, errorCodes?: string[]}>}
  */
 export const verifyTurnstileToken = async (token, remoteIp = null) => {
+  const secretKey =
+    process.env.NODE_ENV === "production"
+      ? TURNSTILE_SECRET_KEY
+      : process.env.TURNSTILE_SECRET_KEY_DEV || TURNSTILE_TEST_SECRET_KEY;
+
   if (!token) {
     return { success: false, errorCodes: ["missing-input-response"] };
   }
 
-  if (!TURNSTILE_SECRET_KEY) {
+  if (!secretKey) {
     console.warn("⚠️ TURNSTILE_SECRET_KEY not configured - allowing in development mode");
     // In development mode without secret key, allow all tokens
     if (process.env.NODE_ENV === "development" || process.env.NODE_ENV !== "production") {
@@ -29,7 +35,7 @@ export const verifyTurnstileToken = async (token, remoteIp = null) => {
 
   try {
     const formData = new URLSearchParams();
-    formData.append("secret", TURNSTILE_SECRET_KEY);
+    formData.append("secret", secretKey);
     formData.append("response", token);
     if (remoteIp) {
       formData.append("remoteip", remoteIp);

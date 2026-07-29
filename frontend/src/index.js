@@ -26,7 +26,10 @@ root.render(
             persistor={persistor}
           >
             <QueryClientProvider client={queryClient}>
-              <RouterProvider router={router} />
+              <RouterProvider
+                router={router}
+                future={{ v7_startTransition: true }}
+              />
             </QueryClientProvider>
           </PersistGate>
         </DarkModeProvider>
@@ -38,7 +41,7 @@ root.render(
 reportWebVitals();
 
 // Register service worker for PWA/TWA support
-if ('serviceWorker' in navigator) {
+if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/service-worker.js')

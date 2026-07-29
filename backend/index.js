@@ -14,7 +14,12 @@ import { fileURLToPath } from "url";
 import fs from "fs";
 import errorHandler from "./middleware/errorHandler.js";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({
+  path: path.resolve(__dirname, ".env"),
+});
 
 const validateEnvironment = () => {
   const requiredEnvVars = ["TOKEN_SECRET_KEY", "FRONTEND_URLS"];
@@ -134,9 +139,6 @@ app.use("/api", (req, res) => {
 });
 
 app.use(errorHandler);
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Serve static files only in production mode
 const buildPath = path.join(__dirname, "build");

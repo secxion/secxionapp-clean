@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import userModel from "../models/userModel.js";
 import Wallet from "../models/walletModel.js";
+import { getKycFinancialLimits } from "../utils/kycLimitPolicy.js";
 
 const userProfileController = async (req, res) => {
   try {
@@ -37,6 +38,7 @@ const userProfileController = async (req, res) => {
         ...user.toObject(), // Convert Mongoose document to plain object
         walletBalance,
         bankAccounts,
+        kycFinancialLimits: getKycFinancialLimits(user.kycStatus),
       },
       error: false,
       success: true,

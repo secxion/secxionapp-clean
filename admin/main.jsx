@@ -34,6 +34,7 @@ import AdminLiveScript from './pages/AdminLiveScript.jsx';
 import AdminEarnings from './pages/AdminEarnings.jsx';
 import AdminManagement from './pages/AdminManagement.jsx';
 import UsersMarket from './pages/UsersMarket.jsx';
+import AdminKycVerification from './pages/AdminKycVerification.jsx';
 import './index.css';
 
 
@@ -41,7 +42,12 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <Provider store={store}>
       <ContextProvider>
-        <BrowserRouter>
+        <BrowserRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
         <Routes>
           {/* Login Page - No sidebar/layout */}
           <Route path="/" element={<AdminLogin />} />
@@ -62,6 +68,7 @@ const App = () => (
             <Route path="livescript" element={<AdminLiveScript />} />
             <Route path="earnings" element={<AdminEarnings />} />
             <Route path="admin-management" element={<AdminManagement />} />
+            <Route path="kyc-verification" element={<AdminKycVerification />} />
           </Route>
           
           {/* Catch-all redirect */}

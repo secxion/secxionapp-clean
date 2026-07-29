@@ -14,6 +14,7 @@ import {
   FaUserShield,
   FaUserCheck,
   FaImage,
+  FaIdCard,
 } from 'react-icons/fa';
 import { PiUserSquare } from 'react-icons/pi';
 import moment from 'moment';
@@ -298,15 +299,26 @@ const Profile = () => {
 
           {/* Edit Button */}
           <div className="flex-shrink-0 flex justify-center lg:justify-end">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleEditProfile}
-              className="inline-flex items-center gap-3 px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
-            >
-              <FaEdit className="w-4 h-4" />
-              <span>Edit Profile</span>
-            </motion.button>
+            <div className="flex flex-wrap gap-3 justify-center lg:justify-end">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/kyc')}
+                className="inline-flex items-center gap-3 px-6 py-3 text-sm font-semibold text-slate-900 bg-gradient-to-r from-amber-300 to-yellow-500 hover:from-yellow-400 hover:to-yellow-600 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
+              >
+                <FaIdCard className="w-4 h-4" />
+                <span>KYC Verification</span>
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleEditProfile}
+                className="inline-flex items-center gap-3 px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
+              >
+                <FaEdit className="w-4 h-4" />
+                <span>Edit Profile</span>
+              </motion.button>
+            </div>
           </div>
         </div>
       </div>

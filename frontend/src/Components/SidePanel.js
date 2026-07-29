@@ -11,6 +11,7 @@ import {
   ChatBubbleBottomCenterTextIcon,
   ShoppingBagIcon,
   ClockIcon,
+  ShieldCheckIcon,
   ChevronDownIcon,
   CheckIcon,
   CodeBracketIcon,
@@ -48,6 +49,7 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
   const hideProfile = location.pathname === '/profile';
   const hideConnect = location.pathname === '/report';
   const hideMarketplace = location.pathname === '/section';
+  const hideKyc = location.pathname === '/kyc';
 
   const navigationItems = [
     {
@@ -98,6 +100,13 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
       label: 'Marketplace',
       gradient: 'from-purple-500 to-pink-400',
       hide: hideMarketplace,
+    },
+    {
+      path: '/kyc',
+      icon: ShieldCheckIcon,
+      label: 'KYC Verification',
+      gradient: 'from-amber-500 to-yellow-400',
+      hide: hideKyc,
     },
   ];
 

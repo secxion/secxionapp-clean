@@ -8,6 +8,16 @@
 import { store } from '../store/store';
 import { logout, setUserDetails } from '../store/userSlice';
 
+const getStoredToken = () => {
+  const token = localStorage.getItem('token');
+
+  if (!token || token === 'null' || token === 'undefined') {
+    return null;
+  }
+
+  return token;
+};
+
 /**
  * Enhanced fetch wrapper with automatic 401 handling
  * @param {string} url - API endpoint URL
@@ -16,12 +26,14 @@ import { logout, setUserDetails } from '../store/userSlice';
  */
 export const apiFetch = async (url, options = {}) => {
   try {
+    const token = getStoredToken();
+
     const response = await fetch(url, {
       ...options,
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...options.headers,
       },
     });
@@ -133,9 +145,8 @@ export const getErrorMessage = (status, defaultMessage) => {
  * @returns {Promise<object>} - parsed response or error object
  */
 export const handleApiResponse = async (response) => {
-  // Handle 401 first - don't parse body, just log out
+  // 401 is already handled in apiFetch to avoid duplicate logout flows
   if (isUnauthorized(response)) {
-    handleUnauthorized();
     return { success: false, error: 'Unauthorized' };
   }
 

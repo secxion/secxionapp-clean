@@ -395,3 +395,32 @@ export const sendBankVerificationCode = async (email, code) => {
 
   await sendEmail(mailOptions, "Bank Verification Email");
 };
+
+export const sendKycPhoneVerificationCode = async (email, phoneNumber, code) => {
+  const mailOptions = {
+    from: `"${DEFAULT_FROM_NAME}" <${DEFAULT_FROM_EMAIL}>`,
+    replyTo: REPLY_TO_EMAIL,
+    to: email,
+    subject: "Phone Verification Code for KYC - Secxion",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #333;">KYC Phone Verification</h2>
+        <p>You are verifying this phone number for your KYC submission:</p>
+        <p style="font-weight: bold; font-size: 16px;">${phoneNumber}</p>
+        <p>Use the verification code below to continue:</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <div style="background-color: #f8f9fa; border: 2px dashed #f59e0b;
+                      padding: 20px; border-radius: 10px; display: inline-block;">
+            <span style="font-size: 32px; font-weight: bold; color: #f59e0b;
+                         letter-spacing: 4px;">${code}</span>
+          </div>
+        </div>
+        <p style="color: #666; font-size: 14px;">This code expires in 10 minutes.</p>
+        <p style="color: #666; font-size: 14px;">If you did not request this, ignore this message.</p>
+        <p>– Team Secxion</p>
+      </div>
+    `,
+  };
+
+  await sendEmail(mailOptions, "KYC Phone Verification Email");
+};

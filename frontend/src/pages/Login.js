@@ -7,7 +7,7 @@ import SummaryApi from '../common';
 import Context from '../Context';
 import { setUserDetails } from '../store/userSlice';
 import loginBackground from './loginbk.png';
-import { FaEye, FaEyeSlash, FaTerminal } from 'react-icons/fa';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Navigation from '../Components/Navigation';
 import SecxionLogo from '../app/slogo.png';
 import NFTBadge from '../Components/NFTBadge';
@@ -47,6 +47,11 @@ const getBubbleStyle = (bubbleIn, index) =>
 const Login = () => {
   const [data, setData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
+  const turnstileSiteKey =
+    process.env.NODE_ENV === 'development'
+      ? '1x00000000000000000000AA'
+      : process.env.REACT_APP_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
+
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [resending, setResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -129,6 +134,15 @@ const Login = () => {
       const result = await response.json();
 
       if (response.ok && result.success) {
+        if (result?.data?.token) {
+          localStorage.setItem('token', result.data.token);
+        }
+
+        if (result?.data?.user) {
+          localStorage.setItem('user', JSON.stringify(result.data.user));
+          dispatch(setUserDetails(result.data.user));
+        }
+
         setVerificationVisible(false);
         toast.success(result.message || 'Login Successful!');
         await fetchUserDetails();
@@ -190,21 +204,6 @@ const Login = () => {
     setVerificationVisible(true);
     setFormSubmitting(true);
   };
-
-  const handleDevLogin = () => {
-    dispatch(
-      setUserDetails({
-        id: 'dev-user-id',
-        name: 'Developer Mode',
-        email: 'dev@secxion.com',
-        role: 'ADMIN',
-      }),
-    );
-    toast.success('Developer login successful!');
-    navigate('/home');
-  };
-
-  const isDev = process.env.NODE_ENV === 'development';
 
   return (
     <section
@@ -364,17 +363,6 @@ const Login = () => {
               >
                 Login
               </Button>
-
-              {isDev && (
-                <button
-                  type="button"
-                  onClick={handleDevLogin}
-                  className="flex items-center justify-center gap-2 w-full py-2 px-4 rounded-lg bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600/30 transition-all text-sm font-medium"
-                >
-                  <FaTerminal className="w-3 h-3" />
-                  Dev Access (Bypass Auth)
-                </button>
-              )}
             </div>
           )}
         </form>
@@ -427,10 +415,7 @@ const Login = () => {
             </h2>
             <div className="flex justify-center mb-4">
               <Turnstile
-                sitekey={
-                  process.env.REACT_APP_TURNSTILE_SITE_KEY ||
-                  '1x00000000000000000000AA'
-                }
+                sitekey={turnstileSiteKey}
                 onSuccess={handleTurnstileSuccess}
                 onExpire={handleTurnstileExpire}
                 onError={handleTurnstileError}

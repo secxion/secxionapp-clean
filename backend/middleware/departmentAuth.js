@@ -54,6 +54,9 @@ const API_TO_DEPARTMENT_ROUTES = {
   // Payment/RPR Management APIs
   '/pr/getall': 'admin-rpr',
   '/pr/update': 'admin-rpr',
+
+  // KYC Management APIs
+  '/kyc/admin': 'kyc-verification',
 };
 
 /**
@@ -83,6 +86,7 @@ const isAdminRoute = (path) => {
     '/livescript/admin',
     '/pr/getall',
     '/pr/update',
+    '/kyc/admin',
   ];
   
   return adminOnlyPatterns.some(pattern => path.includes(pattern));

@@ -3,17 +3,42 @@ import axios from "axios";
 import { updateWalletBalance } from "./wallet/walletController.js";
 import { createTransactionNotification } from "./notifications/notificationsController.js";
 import Wallet from "../models/walletModel.js";
+import userModel from "../models/userModel.js";
+import {
+  getKycFinancialLimits,
+  UNVERIFIED_WITHDRAWAL_LIMIT_NGN,
+} from "../utils/kycLimitPolicy.js";
 
 export const createEthWithdrawalRequest = async (req, res) => {
   try {
     const { ethRecipientAddress, nairaRequestedAmount, ethNetAmountToSend } =
       req.body;
     const userId = req.userId;
+    const requestedNaira = Number(nairaRequestedAmount);
 
     if (!ethRecipientAddress || !nairaRequestedAmount || !ethNetAmountToSend) {
       return res
         .status(400)
         .json({ success: false, message: "All fields are required." });
+    }
+
+    if (!Number.isFinite(requestedNaira) || requestedNaira <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter a valid withdrawal amount.",
+      });
+    }
+
+    const user = await userModel.findById(userId).select("kycStatus");
+    const limits = getKycFinancialLimits(user?.kycStatus);
+
+    if (limits.isRestricted && requestedNaira > UNVERIFIED_WITHDRAWAL_LIMIT_NGN) {
+      return res.status(403).json({
+        success: false,
+        message: `Unverified accounts can withdraw up to ₦${UNVERIFIED_WITHDRAWAL_LIMIT_NGN.toLocaleString()} per request.`,
+        code: "UNVERIFIED_WITHDRAWAL_LIMIT_EXCEEDED",
+        limit: UNVERIFIED_WITHDRAWAL_LIMIT_NGN,
+      });
     }
 
     const wallet = await Wallet.findOne({ userId });
@@ -23,7 +48,7 @@ export const createEthWithdrawalRequest = async (req, res) => {
         .json({ success: false, message: "Wallet not found." });
     }
 
-    if (nairaRequestedAmount > wallet.balance) {
+    if (requestedNaira > wallet.balance) {
       return res.status(400).json({
         success: false,
         message: "Withdrawal amount exceeds wallet balance.",
@@ -43,12 +68,12 @@ export const createEthWithdrawalRequest = async (req, res) => {
         .json({ success: false, message: "Unable to fetch ETH rate." });
     }
 
-    const ethCalculatedAmount = parseFloat(nairaRequestedAmount) / ethRate;
+    const ethCalculatedAmount = requestedNaira / ethRate;
 
     const newRequest = new EthWithdrawalRequest({
       userId,
       ethRecipientAddress,
-      nairaRequestedAmount,
+      nairaRequestedAmount: requestedNaira,
       ethCalculatedAmount,
       ethNetAmountToSend,
       status: "Pending",
@@ -58,7 +83,7 @@ export const createEthWithdrawalRequest = async (req, res) => {
 
     const walletUpdate = await updateWalletBalance(
       userId,
-      -nairaRequestedAmount,
+      -requestedNaira,
       "debit",
       "ETH withdrawal initiated",
       newRequest._id,
@@ -70,7 +95,7 @@ export const createEthWithdrawalRequest = async (req, res) => {
     } else {
       await createTransactionNotification(
         userId,
-        nairaRequestedAmount,
+        requestedNaira,
         "debit",
         `${ethNetAmountToSend} ETH to ${ethRecipientAddress} initiated.`,
         `/eth-withdrawals`,

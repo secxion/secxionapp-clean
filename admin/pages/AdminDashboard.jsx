@@ -10,6 +10,7 @@ import {
   FaStore,
   FaComments,
   FaTerminal,
+  FaIdCard,
   FaArrowRight,
   FaLock,
   FaCoins,
@@ -101,6 +102,7 @@ const AdminDashboard = () => {
     { to: '/admin-report', route: 'admin-report', label: 'Reports', icon: FaFlag, color: 'bg-red-500' },
     { to: '/community-feeds', route: 'community-feeds', label: 'Community', icon: FaComments, color: 'bg-indigo-500' },
     { to: '/livescript', route: 'livescript', label: 'Live Script', icon: FaTerminal, color: 'bg-cyan-500' },
+    { to: '/kyc-verification', route: 'kyc-verification', label: 'KYC Verification', icon: FaIdCard, color: 'bg-amber-500' },
   ];
 
   // Filter quick links based on department permissions

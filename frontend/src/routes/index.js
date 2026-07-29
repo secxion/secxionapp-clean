@@ -43,6 +43,7 @@ import NotFound from '../pages/NotFound';
 import DataPad from '../pages/DataPad';
 import Landing from '../pages/Landing';
 import EthWallet from '../pages/EthWallet';
+import KycVerification from '../pages/KycVerification';
 // import AdminEthWithdrawals from '../pages/AdminEthWithdrawals';
 // import AdminLiveScript from '../pages/AdminLiveScript';
 import HiRateSlider from '../Components/HiRateSlider';
@@ -50,19 +51,11 @@ import HiRateSlider from '../Components/HiRateSlider';
 const publicRoutes = [
   {
     path: 'login',
-    element: (
-      <RedirectIfLoggedIn>
-        <Login />
-      </RedirectIfLoggedIn>
-    ),
+    element: <Login />,
   },
   {
     path: 'sign-up',
-    element: (
-      <RedirectIfLoggedIn>
-        <SignUp />
-      </RedirectIfLoggedIn>
-    ),
+    element: <SignUp />,
   },
   { path: 'reset', element: <Reset /> },
 ];
@@ -124,6 +117,7 @@ const protectedRoutes = [
   { path: 'chat/:reportId', element: <ReportCard /> },
   { path: 'community-feed', element: <Buzz /> },
   { path: 'eth', element: <EthWallet /> },
+  { path: 'kyc', element: <KycVerification /> },
 ];
 
 // Admin routes - DEACTIVATED: Admin moved to standalone app at /admin
@@ -141,38 +135,45 @@ const protectedRoutes = [
 //   { path: 'livescript', element: <AdminLiveScript /> },
 // ];
 
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      path: '',
+      element: <App />,
+      children: [
+        // Admin Panel - DEACTIVATED: Admin moved to standalone app
+        // Users trying to access /admin-panel will be redirected to home
+        {
+          path: 'admin-panel/*',
+          element: <Navigate to="/home" replace />,
+        },
+        // Auth routes - should redirect logged-in users to home
+        ...publicRoutes.map((route) => ({
+          path: route.path,
+          element: <RedirectIfLoggedIn>{route.element}</RedirectIfLoggedIn>,
+        })),
+        // Public info routes - accessible to everyone (logged in or not)
+        ...publicInfoRoutes.map((route) => ({
+          path: route.path,
+          element: route.element,
+        })),
+        // Protected routes
+        ...protectedRoutes.map((route) => ({
+          path: route.path,
+          element: <ProtectedRoute>{route.element}</ProtectedRoute>,
+        })),
+      ],
+    },
+    {
+      path: '*',
+      element: <NotFound />,
+    },
+  ],
   {
-    path: '',
-    element: <App />,
-    children: [
-      // Admin Panel - DEACTIVATED: Admin moved to standalone app
-      // Users trying to access /admin-panel will be redirected to home
-      {
-        path: 'admin-panel/*',
-        element: <Navigate to="/home" replace />,
-      },
-      // Auth routes - should redirect logged-in users to home
-      ...publicRoutes.map((route) => ({
-        path: route.path,
-        element: <RedirectIfLoggedIn>{route.element}</RedirectIfLoggedIn>,
-      })),
-      // Public info routes - accessible to everyone (logged in or not)
-      ...publicInfoRoutes.map((route) => ({
-        path: route.path,
-        element: route.element,
-      })),
-      // Protected routes
-      ...protectedRoutes.map((route) => ({
-        path: route.path,
-        element: <ProtectedRoute>{route.element}</ProtectedRoute>,
-      })),
-    ],
+    future: {
+      v7_startTransition: true,
+    },
   },
-  {
-    path: '*',
-    element: <NotFound />,
-  },
-]);
+);
 
 export default router;

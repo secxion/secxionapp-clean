@@ -29,27 +29,6 @@ function Loader() {
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
-  const isDevAuthBypass =
-    process.env.REACT_APP_DEV_AUTH_BYPASS === 'true' &&
-    process.env.NODE_ENV !== 'production';
-
-  useEffect(() => {
-    if (!isDevAuthBypass || user) {
-      return;
-    }
-
-    dispatch(
-      setUserDetails({
-        _id: 'dev-local-user',
-        id: 'dev-local-user',
-        name: 'Dev Local User',
-        email: 'dev@local.test',
-        role: 'admin',
-        isVerified: true,
-      }),
-    );
-    dispatch(setLoading(false));
-  }, [dispatch, isDevAuthBypass, user]);
 
   // Admin panel has been moved to standalone app - no longer check isAdminRoute
 
@@ -65,10 +44,6 @@ function App() {
   const { refetch: fetchUserDetails, isLoading: isUserLoading } = useQuery({
     queryKey: ['user'],
     queryFn: async () => {
-      if (isDevAuthBypass) {
-        return user;
-      }
-
       dispatch(setLoading(true));
       const res = await fetchUserDetailsAPI();
       dispatch(setLoading(false));
@@ -82,7 +57,7 @@ function App() {
       }
     },
     staleTime: 5 * 60 * 1000,
-    enabled: !!user && !isDevAuthBypass,
+    enabled: !!user,
   });
 
   const {
@@ -93,7 +68,7 @@ function App() {
     queryKey: ['marketData'],
     queryFn: fetchMarketDataAPI,
     staleTime: 5 * 60 * 1000,
-    enabled: !!user && !isDevAuthBypass,
+    enabled: !!user,
   });
 
   const {
@@ -104,7 +79,7 @@ function App() {
     queryKey: ['walletBalance'],
     queryFn: fetchWalletBalanceAPI,
     staleTime: 5 * 60 * 1000,
-    enabled: !!user && !isDevAuthBypass,
+    enabled: !!user,
   });
 
   const {
@@ -115,7 +90,7 @@ function App() {
     queryKey: ['blogs'],
     queryFn: fetchBlogsAPI,
     staleTime: 5 * 60 * 1000,
-    enabled: !!user && !isDevAuthBypass,
+    enabled: !!user,
   });
 
   if (isUserLoading || isMarketLoading || isBlogsLoading || isWalletLoading) {

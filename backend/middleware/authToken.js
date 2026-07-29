@@ -15,6 +15,11 @@ const authToken = async (req, res, next) => {
       }
     }
 
+    // Treat placeholder bearer values as missing tokens
+    if (token === 'null' || token === 'undefined' || token === '') {
+      token = null;
+    }
+
     if (!token) {
       return res.status(401).json({
         message: "Please login to continue.",
@@ -60,11 +65,14 @@ const authToken = async (req, res, next) => {
       err?.name === "JsonWebTokenError" || err?.name === "TokenExpiredError";
 
     if (isJwtIssue) {
+      const isProduction = process.env.NODE_ENV === "production";
+
       // Clear bad token cookie so client can re-auth cleanly.
       res.clearCookie("token", {
         httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
+        sameSite: isProduction ? "none" : "lax",
+        secure: isProduction,
+        path: "/",
       });
 
       console.warn("[AUTH] Invalid token:", err.message, "after", authDuration, "ms");

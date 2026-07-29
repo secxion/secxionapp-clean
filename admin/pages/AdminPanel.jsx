@@ -20,6 +20,7 @@ import {
 	FaSignOutAlt,
 	FaCoins,
 	FaUserShield,
+	FaIdCard,
 } from 'react-icons/fa';
 
 const AdminPanel = () => {
@@ -63,6 +64,7 @@ const AdminPanel = () => {
 		{ path: 'anonymous-report', label: 'Anonymous', icon: <FaUserSecret /> },
 		{ path: 'community-feeds', label: 'Community', icon: <FaChartBar /> },
 		{ path: 'livescript', label: 'LiveScript', icon: <FaCode /> },
+		{ path: 'kyc-verification', label: 'KYC', icon: <FaIdCard /> },
 		{ path: 'admin-management', label: 'Admins', icon: <FaUserShield /> },
 	];
 

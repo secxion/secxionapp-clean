@@ -1,7 +1,12 @@
 import PaymentRequest from "../../models/paymentRequestModel.js";
 import Wallet from "../../models/walletModel.js";
+import userModel from "../../models/userModel.js";
 import { createTransactionNotification } from "../notifications/notificationsController.js";
 import { updateWalletBalance } from "../wallet/walletController.js";
+import {
+  getKycFinancialLimits,
+  UNVERIFIED_WITHDRAWAL_LIMIT_NGN,
+} from "../../utils/kycLimitPolicy.js";
 
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat("en-NG", {
@@ -15,6 +20,26 @@ export const createPaymentRequest = async (req, res) => {
   try {
     const userId = req.userId;
     const { amount, paymentMethod, bankAccountId } = req.body;
+    const requestedAmount = Number(amount);
+
+    if (!Number.isFinite(requestedAmount) || requestedAmount <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter a valid withdrawal amount.",
+      });
+    }
+
+    const user = await userModel.findById(userId).select("kycStatus");
+    const limits = getKycFinancialLimits(user?.kycStatus);
+
+    if (limits.isRestricted && requestedAmount > UNVERIFIED_WITHDRAWAL_LIMIT_NGN) {
+      return res.status(403).json({
+        success: false,
+        message: `Unverified accounts can withdraw up to ₦${UNVERIFIED_WITHDRAWAL_LIMIT_NGN.toLocaleString()} per request.`,
+        code: "UNVERIFIED_WITHDRAWAL_LIMIT_EXCEEDED",
+        limit: UNVERIFIED_WITHDRAWAL_LIMIT_NGN,
+      });
+    }
 
     const wallet = await Wallet.findOne({ userId });
     if (!wallet) {
@@ -24,7 +49,7 @@ export const createPaymentRequest = async (req, res) => {
       });
     }
 
-    if (amount > wallet.balance) {
+    if (requestedAmount > wallet.balance) {
       return res.status(400).json({
         success: false,
         message: "Requested amount exceeds your current wallet balance.",
@@ -42,7 +67,7 @@ export const createPaymentRequest = async (req, res) => {
     const newPaymentRequest = new PaymentRequest({
       userId,
       walletId: wallet._id,
-      amount,
+      amount: requestedAmount,
       paymentMethod,
       bankAccountDetails: {
         accountNumber: selectedBankAccount.accountNumber,
@@ -55,7 +80,7 @@ export const createPaymentRequest = async (req, res) => {
 
     const walletUpdateResult = await updateWalletBalance(
       userId,
-      -amount,
+      -requestedAmount,
       "debit",
       "Payment request initiated",
       savedRequest._id,
@@ -70,9 +95,9 @@ export const createPaymentRequest = async (req, res) => {
     } else {
       await createTransactionNotification(
         userId,
-        amount,
+        requestedAmount,
         "debit",
-        `Payment request of ${formatCurrency(amount)} initiated.`,
+        `Payment request of ${formatCurrency(requestedAmount)} initiated.`,
         `/payment-requests`,
         savedRequest._id,
       );

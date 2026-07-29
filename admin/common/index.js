@@ -389,6 +389,18 @@ const SummaryApi = {
     url: `${backendDomain}/api/profile/edit`,
     method: 'PUT',
   },
+  adminKycSubmissions: {
+    url: `${backendDomain}/api/kyc/admin/submissions`,
+    method: 'GET',
+  },
+  reviewKycSubmission: {
+    url: `${backendDomain}/api/kyc/admin/submissions`,
+    method: 'PATCH',
+  },
+  adminKycStats: {
+    url: `${backendDomain}/api/kyc/admin/stats`,
+    method: 'GET',
+  },
   getApprovedPosts: {
     url: `${backendDomain}/api/posts/approved`,
     method: 'GET',

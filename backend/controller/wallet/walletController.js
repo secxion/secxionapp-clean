@@ -1,5 +1,16 @@
 import Wallet from "../../models/walletModel.js";
 import { createTransactionNotification } from "../notifications/notificationsController.js";
+import userModel from "../../models/userModel.js";
+import {
+  getKycFinancialLimits,
+  UNVERIFIED_MAX_WALLET_BALANCE_NGN,
+} from "../../utils/kycLimitPolicy.js";
+
+const KYC_BALANCE_CAPPED_REFERENCE_TYPES = new Set([
+  "User",
+  "userproduct",
+  "OtherType",
+]);
 
 // Ensure wallet exists for a user
 export const ensureWalletExists = async (userId) => {
@@ -103,6 +114,29 @@ export const updateWalletBalance = async (
 
     // Only immediately apply balance if transaction is approved/completed
     if (status === "completed" || status === "approved") {
+      if (
+        amount > 0 &&
+        type === "credit" &&
+        KYC_BALANCE_CAPPED_REFERENCE_TYPES.has(referenceType)
+      ) {
+        const user = await userModel.findById(userId).select("kycStatus");
+        const limits = getKycFinancialLimits(user?.kycStatus);
+
+        if (limits.isRestricted) {
+          const projectedBalance = wallet.balance + amount;
+          if (projectedBalance > UNVERIFIED_MAX_WALLET_BALANCE_NGN) {
+            return {
+              success: false,
+              message: `Unverified account wallet balance cannot exceed ₦${UNVERIFIED_MAX_WALLET_BALANCE_NGN.toLocaleString()}.`,
+              code: "UNVERIFIED_WALLET_CAP_EXCEEDED",
+              currentBalance: wallet.balance,
+              attemptedCredit: amount,
+              maxBalance: UNVERIFIED_MAX_WALLET_BALANCE_NGN,
+            };
+          }
+        }
+      }
+
       wallet.balance += amount;
     }
 
