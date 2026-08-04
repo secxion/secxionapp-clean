@@ -61,6 +61,38 @@ const menuItems = [
   },
 ];
 
+const LAST_MARKET_ACTIVITY_STORAGE_KEY = 'home:last-market-activity:visibility';
+
+const getLastMarketActivityPreference = (userId) => {
+  if (!userId) return null;
+
+  try {
+    const raw = localStorage.getItem(
+      `${LAST_MARKET_ACTIVITY_STORAGE_KEY}:${userId}`,
+    );
+
+    if (raw === 'hidden') return false;
+    if (raw === 'visible') return true;
+  } catch (err) {
+    console.warn('Unable to read Last Market Activity preference:', err);
+  }
+
+  return null;
+};
+
+const saveLastMarketActivityPreference = (userId, isVisible) => {
+  if (!userId) return;
+
+  try {
+    localStorage.setItem(
+      `${LAST_MARKET_ACTIVITY_STORAGE_KEY}:${userId}`,
+      isVisible ? 'visible' : 'hidden',
+    );
+  } catch (err) {
+    console.warn('Unable to save Last Market Activity preference:', err);
+  }
+};
+
 const Home = () => {
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
@@ -73,6 +105,7 @@ const Home = () => {
   // Removed unused: loadingTransactions, errorTransactions, setStatusFilter, setVisibleTransactions, setShowAll
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const userId = user?.id || user?._id;
 
   const handleNavigation = (path) => navigate(path);
 
@@ -124,6 +157,24 @@ const Home = () => {
       fetchTransactions();
     }
   }, [user, fetchWalletBalance, fetchTransactions]);
+
+  useEffect(() => {
+    const savedPreference = getLastMarketActivityPreference(userId);
+    if (savedPreference !== null) {
+      setShowLastMarketActivity(savedPreference);
+      return;
+    }
+
+    setShowLastMarketActivity(true);
+  }, [userId]);
+
+  const handleLastMarketActivityToggle = () => {
+    setShowLastMarketActivity((prev) => {
+      const next = !prev;
+      saveLastMarketActivityPreference(userId, next);
+      return next;
+    });
+  };
 
   const portfolioValue = walletBalance;
   // Removed unused portfolioGrowth
@@ -261,7 +312,7 @@ const Home = () => {
           </h2>
           <button
             type="button"
-            onClick={() => setShowLastMarketActivity((prev) => !prev)}
+            onClick={handleLastMarketActivityToggle}
             className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-all duration-300 hover:border-brand-gold/30 hover:bg-white/10 hover:text-white"
             aria-expanded={showLastMarketActivity}
             aria-controls="last-market-activity-content"

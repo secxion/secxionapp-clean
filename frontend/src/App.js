@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserDetails, setLoading } from './store/userSlice';
 import Context, { ContextProvider } from './Context';
@@ -29,6 +29,7 @@ function Loader() {
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
+  const location = useLocation();
 
   // Admin panel has been moved to standalone app - no longer check isAdminRoute
 
@@ -38,6 +39,28 @@ function App() {
 
     return () => {
       window.removeEventListener('resize', setViewportHeight);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Keep route transitions consistent by always starting at the top.
+    window.scrollTo(0, 0);
+
+    // Support layouts that may use an internal scroll container.
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+      mainContent.scrollTo(0, 0);
+    }
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    if (!('scrollRestoration' in window.history)) return;
+
+    const previousScrollRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = 'manual';
+
+    return () => {
+      window.history.scrollRestoration = previousScrollRestoration;
     };
   }, []);
 

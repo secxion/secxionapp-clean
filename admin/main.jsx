@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ContextProvider } from './Context/index.jsx';
 import { Provider } from 'react-redux';
@@ -37,6 +43,27 @@ import UsersMarket from './pages/UsersMarket.jsx';
 import AdminKycVerification from './pages/AdminKycVerification.jsx';
 import './index.css';
 
+const ScrollToTop = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    if (!('scrollRestoration' in window.history)) return;
+
+    const previousScrollRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = 'manual';
+
+    return () => {
+      window.history.scrollRestoration = previousScrollRestoration;
+    };
+  }, []);
+
+  return null;
+};
+
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -48,6 +75,7 @@ const App = () => (
             v7_relativeSplatPath: true,
           }}
         >
+        <ScrollToTop />
         <Routes>
           {/* Login Page - No sidebar/layout */}
           <Route path="/" element={<AdminLogin />} />
