@@ -153,10 +153,10 @@ const UserUploadMarket = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/85 px-4 pt-12 backdrop-blur-sm">
-      <div className="relative w-full max-w-3xl rounded-[28px] border border-white/10 bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black p-6 shadow-[0_0_48px_rgba(0,0,0,0.36)]">
+    <div className="fixed mt-10 inset-0 z-50 flex items-start justify-center overflow-hidden bg-black/85 backdrop-blur-sm">
+      <div className="relative flex h-screen w-screen flex-col overflow-hidden bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black p-6 shadow-[0_0_48px_rgba(0,0,0,0.36)]">
         {/* Header */}
-        <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4">
+        <div className="mb-5 flex items-center justify-between pb-2">
           <h2 className="font-spaceGrotesk text-xl font-black uppercase tracking-[0.1em] text-brand-gold md:text-2xl">
             Upload Product Details
           </h2>
@@ -185,11 +185,11 @@ const UserUploadMarket = ({
 
         {/* Product Overview */}
         {productDetails.productImage && (
-          <div className="mb-6 flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 shadow-sm">
+          <div className="mb-6 flex items-center gap-4 rounded-2xl bg-white/[0.03] p-4 shadow-sm">
             <img
               src={productDetails.productImage}
               alt="Preview"
-              className="h-24 w-24 rounded-xl border border-white/10 object-cover shadow-inner"
+              className="h-24 w-24 rounded-xl object-cover shadow-inner"
             />
             <div className="flex flex-col gap-1 text-sm text-gray-200">
               <p>
@@ -223,7 +223,7 @@ const UserUploadMarket = ({
 
         {/* Form */}
         <form
-          className="space-y-6 overflow-y-auto max-h-[60vh] pr-2"
+          className="min-h-0 flex-1 space-y-6 overflow-y-auto pr-2 pb-6"
           onSubmit={handleSubmit}
         >
           {/* Image Upload */}
@@ -233,7 +233,7 @@ const UserUploadMarket = ({
             </label>
             <label
               htmlFor="uploadInput"
-              className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-white/20 bg-black/20 p-5 transition hover:border-brand-gold/40 hover:bg-white/[0.03] ${uploading ? 'pointer-events-none opacity-50' : ''}`}
+              className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl bg-black/20 p-5 transition hover:bg-white/[0.03] ${uploading ? 'pointer-events-none opacity-50' : ''}`}
             >
               <FaCloudUploadAlt className="mb-1 text-4xl text-brand-gold" />
               <p className="text-gray-200">
@@ -256,13 +256,13 @@ const UserUploadMarket = ({
                       setFullScreenImage(img);
                       setOpenFullScreenImage(true);
                     }}
-                    className="h-20 w-20 cursor-pointer rounded-xl border border-white/15 object-cover transition hover:scale-105 hover:border-brand-gold/40"
-                    alt={`Uploaded product image ${idx + 1}`}
+                    className="h-20 w-20 cursor-pointer rounded-xl object-cover transition hover:scale-105"
+                    alt={`Uploaded product ${idx + 1}`}
                   />
                   <button
                     type="button"
                     onClick={() => handleDeleteImage(idx)}
-                    className="absolute right-1 top-1 hidden rounded-full border border-rose-300/30 bg-rose-500/20 p-1 text-rose-200 group-hover:block"
+                    className="absolute right-1 top-1 hidden rounded-full bg-rose-500/20 p-1 text-rose-200 group-hover:block"
                   >
                     <MdDelete size={16} />
                   </button>
@@ -282,7 +282,7 @@ const UserUploadMarket = ({
               value={data.totalAmount}
               onChange={handleOnChange}
               placeholder="Enter total face value"
-              className="w-full rounded-xl border border-white/10 bg-black/20 p-3 text-gray-200 shadow-sm focus:border-brand-gold/50 focus:outline-none focus:ring-1 focus:ring-brand-gold/50"
+              className="w-full rounded-xl bg-black/20 p-3 text-gray-200 shadow-sm focus:outline-none focus:ring-1 focus:ring-brand-gold/50"
               required
             />
           </div>
@@ -292,7 +292,7 @@ const UserUploadMarket = ({
             <label className="mb-2 block font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.2em] text-brand-gold">
               = Calculated Total Amount:
             </label>
-            <div className="rounded-xl border border-brand-gold/30 bg-brand-gold/10 p-3 font-spaceGrotesk text-brand-gold-light font-bold tracking-wide">
+            <div className="rounded-xl bg-brand-gold/10 p-3 font-spaceGrotesk text-brand-gold-light font-bold tracking-wide">
               ₦
               {parseFloat(data.calculatedTotalAmount || 0).toLocaleString(
                 'en-NG',
@@ -312,7 +312,7 @@ const UserUploadMarket = ({
               value={data.cardcode}
               onChange={handleOnChange}
               placeholder="Enter code / pin (e.g., card code)"
-              className="w-full rounded-xl border border-white/10 bg-black/20 p-3 text-gray-200 shadow-sm focus:border-brand-gold/50 focus:outline-none focus:ring-1 focus:ring-brand-gold/50"
+              className="w-full rounded-xl bg-black/20 p-3 text-gray-200 shadow-sm focus:outline-none focus:ring-1 focus:ring-brand-gold/50"
               required
             />
           </div>
@@ -328,7 +328,7 @@ const UserUploadMarket = ({
               placeholder="Code, notes, details..."
               value={data.userRemark}
               onChange={handleOnChange}
-              className="w-full rounded-xl border border-white/10 bg-black/20 p-3 text-gray-200 shadow-sm focus:border-brand-gold/50 focus:outline-none focus:ring-1 focus:ring-brand-gold/50"
+              className="w-full rounded-xl bg-black/20 p-3 text-gray-200 shadow-sm focus:outline-none focus:ring-1 focus:ring-brand-gold/50"
             />
           </div>
 
