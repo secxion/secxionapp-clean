@@ -273,23 +273,26 @@ const extractLocalNumber = (country, fullPhoneNumber) => {
 
 const statusConfig = {
   unverified: {
-    label: 'Not Submitted',
-    className: 'bg-slate-700/40 text-slate-200 border-slate-500/50',
+    label: 'Not Verified',
+    className: 'bg-white/5 text-gray-400 border-white/10',
     icon: FaClock,
   },
   pending: {
     label: 'Pending Review',
-    className: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40',
+    className:
+      'bg-brand-gold/10 text-brand-gold border-brand-gold/20 shadow-brand-gold',
     icon: FaClock,
   },
   approved: {
-    label: 'Approved',
-    className: 'bg-green-500/20 text-green-300 border-green-500/40',
+    label: 'Verified',
+    className:
+      'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]',
     icon: FaCheckCircle,
   },
   rejected: {
     label: 'Rejected',
-    className: 'bg-red-500/20 text-red-300 border-red-500/40',
+    className:
+      'bg-red-500/10 text-red-400 border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.1)]',
     icon: FaTimesCircle,
   },
 };
@@ -712,76 +715,80 @@ const KycVerification = () => {
   const StatusIcon = statusUI.icon;
 
   return (
-    <div className="mt-20 p-4 sm:p-6 max-w-4xl mx-auto">
-      <div className="bg-slate-900/70 border border-slate-700 rounded-2xl p-6 shadow-xl">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <div className="mt-24 p-4 sm:p-8 max-w-5xl mx-auto">
+      <div className="premium-bg border border-white/10 rounded-3xl p-8 shadow-2xl">
+        <div className="flex flex-wrap items-center justify-between gap-6 mb-10">
           <div>
-            <h1 className="text-2xl font-bold text-white">KYC Verification</h1>
-            <p className="text-slate-400 text-sm mt-1">
-              Submit your identity details for account verification.
+            <h1 className="text-2xl sm:text-3xl font-black text-white font-spaceGrotesk uppercase tracking-tighter">
+              Identity Verification
+            </h1>
+            <p className="text-gray-500 text-xs font-bold mt-2 uppercase tracking-[0.2em]">
+              Complete verification to access all features
             </p>
           </div>
           <button
             onClick={() => navigate('/profile')}
-            className="px-4 py-2 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 transition-colors"
+            className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-red-500/10 px-6 py-2.5 font-black font-spaceGrotesk text-[10px] uppercase tracking-widest text-red-300 shadow-[0_0_20px_rgba(239,68,68,0.12)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-red-500/20 hover:text-white"
           >
             Back to Profile
           </button>
         </div>
 
         <div
-          className={`mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full border ${statusUI.className}`}
+          className={`mb-10 inline-flex items-center gap-3 px-6 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-[0.2em] font-spaceGrotesk ${statusUI.className}`}
         >
-          <StatusIcon />
-          <span className="font-medium">Status: {statusUI.label}</span>
+          <StatusIcon className="w-3.5 h-3.5" />
+          <span>STATUS: {statusUI.label}</span>
         </div>
 
         {kycData?.faceMatch && (
-          <div className="mb-6 p-4 rounded-xl border border-slate-700 bg-slate-800/40">
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
-              Face Match Verification
+          <div className="mb-10 p-6 rounded-2xl border border-white/5 bg-black/20">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 font-spaceGrotesk mb-4">
+              Face Match
             </p>
-            <p className="mt-1 text-sm text-slate-200">
-              Status:{' '}
-              {faceMatchLabel[kycData.faceMatch.status] ||
-                faceMatchLabel.not_started}
-              {Number.isFinite(kycData.faceMatch.score)
-                ? ` (${kycData.faceMatch.score.toFixed(2)}%)`
-                : ''}
-            </p>
-            {kycData.faceMatch.checkedAt && (
-              <p className="text-xs text-slate-400 mt-1">
-                Last checked:{' '}
-                {new Date(kycData.faceMatch.checkedAt).toLocaleString()}
+            <div className="flex items-baseline gap-2">
+              <p className="text-lg font-bold text-white font-spaceGrotesk">
+                {faceMatchLabel[kycData.faceMatch.status] ||
+                  faceMatchLabel.not_started}
               </p>
-            )}
-            {kycData.faceMatch.notes && (
-              <p className="text-xs text-slate-300 mt-2">
-                Notes: {kycData.faceMatch.notes}
+              {Number.isFinite(kycData.faceMatch.score) && (
+                <span className="text-brand-gold text-xs font-black font-spaceGrotesk">
+                  {kycData.faceMatch.score.toFixed(2)}% MATCH
+                </span>
+              )}
+            </div>
+            {kycData.faceMatch.checkedAt && (
+              <p className="text-[10px] text-gray-600 mt-2 font-bold uppercase tracking-widest">
+                VERIFIED:{' '}
+                {new Date(kycData.faceMatch.checkedAt)
+                  .toLocaleString()
+                  .toUpperCase()}
               </p>
             )}
           </div>
         )}
 
         {kycData?.status === 'rejected' && (
-          <div className="mb-6 p-4 rounded-xl border border-red-500/40 bg-red-500/10 text-red-200">
-            <p className="font-semibold">Rejection Reason</p>
-            <p className="mt-1 text-sm">
+          <div className="mb-10 p-6 rounded-2xl border border-red-500/20 bg-red-500/5 text-red-300">
+            <p className="text-[10px] font-black uppercase tracking-widest mb-3">
+              Rejection Reason
+            </p>
+            <p className="text-sm font-bold font-spaceGrotesk">
               {kycData.rejectionReason || 'No reason provided.'}
             </p>
             {kycData.adminNotes && (
-              <p className="mt-2 text-sm text-red-100">
-                Admin Notes: {kycData.adminNotes}
+              <p className="mt-3 text-xs text-red-400/60 font-medium">
+                Note: {kycData.adminNotes}
               </p>
             )}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <label className="block md:col-span-2">
-              <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300">
-                Full Name
+        <form onSubmit={handleSubmit} className="space-y-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <label className="block md:col-span-2 group">
+              <span className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 font-spaceGrotesk group-focus-within:text-brand-gold transition-colors">
+                Full Legal Name
               </span>
               <input
                 id="kyc-full-name"
@@ -789,15 +796,15 @@ const KycVerification = () => {
                 name="fullName"
                 value={form.fullName}
                 onChange={handleChange}
-                placeholder="Enter your full legal name"
+                placeholder="Full Name"
                 required
                 disabled={!canSubmit || loading}
-                className="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 text-white focus:border-yellow-500 outline-none"
+                className="w-full px-5 py-4 rounded-2xl bg-black/20 border border-white/10 text-white placeholder-gray-700 focus:border-brand-gold/50 outline-none transition-all font-medium"
               />
             </label>
 
-            <label className="block">
-              <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300">
+            <label className="block group">
+              <span className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 font-spaceGrotesk group-focus-within:text-brand-gold transition-colors">
                 Date of Birth
               </span>
               <input
@@ -808,12 +815,12 @@ const KycVerification = () => {
                 onChange={handleChange}
                 required
                 disabled={!canSubmit || loading}
-                className="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 text-white focus:border-yellow-500 outline-none"
+                className="w-full px-5 py-4 rounded-2xl bg-black/20 border border-white/10 text-white focus:border-brand-gold/50 outline-none transition-all font-medium"
               />
             </label>
 
-            <label className="block">
-              <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300">
+            <label className="block group">
+              <span className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 font-spaceGrotesk group-focus-within:text-brand-gold transition-colors">
                 Country
               </span>
               <select
@@ -823,25 +830,31 @@ const KycVerification = () => {
                 onChange={handleChange}
                 required
                 disabled={!canSubmit || loading}
-                className="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 text-white focus:border-yellow-500 outline-none"
+                className="w-full px-5 py-4 rounded-2xl bg-black/20 border border-white/10 text-white focus:border-brand-gold/50 outline-none transition-all font-medium appearance-none"
               >
-                <option value="">Select Country</option>
+                <option value="" className="bg-brand-dark-base">
+                  Select Country
+                </option>
                 {COUNTRY_OPTIONS.map((country) => (
-                  <option key={country} value={country}>
+                  <option
+                    key={country}
+                    value={country}
+                    className="bg-brand-dark-base"
+                  >
                     {country}
                   </option>
                 ))}
               </select>
             </label>
 
-            <div className="md:col-span-2 rounded-lg border border-slate-700 bg-slate-800/30 p-4">
-              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-300">
-                Phone Number Verification
+            <div className="md:col-span-2 rounded-3xl border border-white/5 bg-black/10 p-8">
+              <p className="mb-8 text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold/60 font-spaceGrotesk">
+                Phone Verification
               </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <label className="block">
-                  <span className="mb-1 block text-xs text-slate-400">
+                  <span className="mb-2 block text-[10px] font-bold text-gray-600 uppercase tracking-widest">
                     Country Code
                   </span>
                   <input
@@ -852,12 +865,12 @@ const KycVerification = () => {
                         : ''
                     }
                     disabled
-                    className="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 outline-none"
+                    className="w-full px-5 py-4 rounded-2xl bg-black/40 border border-white/5 text-gray-500 outline-none font-mono"
                   />
                 </label>
 
-                <label className="block md:col-span-2">
-                  <span className="mb-1 block text-xs text-slate-400">
+                <label className="block md:col-span-2 group">
+                  <span className="mb-2 block text-[10px] font-bold text-gray-600 uppercase tracking-widest group-focus-within:text-brand-gold transition-colors">
                     Phone Number
                   </span>
                   <input
@@ -866,14 +879,10 @@ const KycVerification = () => {
                     name="phoneNumber"
                     value={form.phoneNumber}
                     onChange={handleChange}
-                    placeholder={
-                      form.country && COUNTRY_DIAL_CODES[form.country]
-                        ? 'Enter number without country code'
-                        : 'Select country first'
-                    }
+                    placeholder="Enter Phone Number"
                     required
                     disabled={!canSubmit || loading || !form.country}
-                    className="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 text-white focus:border-yellow-500 outline-none"
+                    className="w-full px-5 py-4 rounded-2xl bg-black/20 border border-white/10 text-white focus:border-brand-gold/50 outline-none transition-all font-medium"
                   />
                 </label>
                 <button
@@ -886,13 +895,13 @@ const KycVerification = () => {
                     !form.phoneNumber.trim()
                   }
                   onClick={sendPhoneCode}
-                  className="self-end px-4 py-3 rounded-lg bg-yellow-500 text-slate-900 font-semibold hover:bg-yellow-400 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="self-end px-6 py-4 rounded-2xl bg-brand-gold text-brand-dark-base font-black font-spaceGrotesk text-[10px] uppercase tracking-widest hover:bg-brand-gold-light disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-brand-gold"
                 >
                   {phoneVerification.sending ? 'Sending...' : 'Send Code'}
                 </button>
 
-                <label className="block md:col-span-2">
-                  <span className="mb-1 block text-xs text-slate-400">
+                <label className="block md:col-span-2 group">
+                  <span className="mb-2 block text-[10px] font-bold text-gray-600 uppercase tracking-widest group-focus-within:text-emerald-400 transition-colors">
                     Verification Code
                   </span>
                   <input
@@ -900,11 +909,11 @@ const KycVerification = () => {
                     type="text"
                     value={phoneOtp}
                     onChange={(event) => setPhoneOtp(event.target.value)}
-                    placeholder="Enter 6-digit code"
+                    placeholder="Enter Code"
                     disabled={
                       !canSubmit || loading || phoneVerification.isVerified
                     }
-                    className="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 text-white focus:border-yellow-500 outline-none"
+                    className="w-full px-5 py-4 rounded-2xl bg-black/20 border border-white/10 text-white focus:border-emerald-400/50 outline-none transition-all font-mono tracking-[0.5em] text-center"
                   />
                 </label>
                 <button
@@ -917,24 +926,27 @@ const KycVerification = () => {
                     !phoneOtp.trim()
                   }
                   onClick={verifyPhoneCode}
-                  className="self-end px-4 py-3 rounded-lg bg-emerald-500 text-white font-semibold hover:bg-emerald-400 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="self-end px-6 py-4 rounded-2xl bg-emerald-500 text-white font-black font-spaceGrotesk text-[10px] uppercase tracking-widest hover:bg-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)]"
                 >
-                  {phoneVerification.verifying
-                    ? 'Verifying...'
-                    : 'Verify Phone'}
+                  {phoneVerification.verifying ? 'Verifying...' : 'Verify Code'}
                 </button>
               </div>
 
-              <p className="mt-3 text-xs text-slate-400">
-                {phoneVerification.isVerified
-                  ? `Phone verified${phoneVerification.verifiedAt ? ` on ${new Date(phoneVerification.verifiedAt).toLocaleString()}` : ''}.`
-                  : 'A live SMS OTP verification is required before KYC submission.'}
-              </p>
+              <div className="mt-6 flex items-center gap-3">
+                <div
+                  className={`w-2 h-2 rounded-full ${phoneVerification.isVerified ? 'bg-emerald-400 shadow-[0_0_8px_#4ade80]' : 'bg-gray-700'}`}
+                ></div>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                  {phoneVerification.isVerified
+                    ? `Verified on: ${new Date(phoneVerification.verifiedAt).toLocaleString()}`
+                    : 'OTP Verification Required'}
+                </p>
+              </div>
             </div>
 
-            <label className="block md:col-span-2">
-              <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300">
-                Street Address Line 1
+            <label className="block md:col-span-2 group">
+              <span className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 font-spaceGrotesk group-focus-within:text-brand-gold transition-colors">
+                Physical Address
               </span>
               <input
                 id="kyc-address-line-1"
@@ -942,16 +954,16 @@ const KycVerification = () => {
                 name="addressLine1"
                 value={form.addressLine1}
                 onChange={handleChange}
-                placeholder="House number and street"
+                placeholder="Street Address"
                 required
                 disabled={!canSubmit || loading}
-                className="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 text-white focus:border-yellow-500 outline-none"
+                className="w-full px-5 py-4 rounded-2xl bg-black/20 border border-white/10 text-white placeholder-gray-700 focus:border-brand-gold/50 outline-none transition-all font-medium"
               />
             </label>
 
-            <label className="block md:col-span-2">
-              <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300">
-                Street Address Line 2
+            <label className="block md:col-span-2 group">
+              <span className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 font-spaceGrotesk group-focus-within:text-brand-gold transition-colors">
+                Address Line 2 (Optional)
               </span>
               <input
                 id="kyc-address-line-2"
@@ -959,14 +971,14 @@ const KycVerification = () => {
                 name="addressLine2"
                 value={form.addressLine2}
                 onChange={handleChange}
-                placeholder="Apartment, suite, unit, building (optional)"
+                placeholder="Apartment, suite, etc."
                 disabled={!canSubmit || loading}
-                className="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 text-white focus:border-yellow-500 outline-none"
+                className="w-full px-5 py-4 rounded-2xl bg-black/20 border border-white/10 text-white placeholder-gray-700 focus:border-brand-gold/50 outline-none transition-all font-medium"
               />
             </label>
 
-            <label className="block">
-              <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300">
+            <label className="block group">
+              <span className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 font-spaceGrotesk group-focus-within:text-brand-gold transition-colors">
                 City
               </span>
               <input
@@ -975,15 +987,15 @@ const KycVerification = () => {
                 name="city"
                 value={form.city}
                 onChange={handleChange}
-                placeholder="Enter city"
+                placeholder="City"
                 required
                 disabled={!canSubmit || loading}
-                className="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 text-white focus:border-yellow-500 outline-none"
+                className="w-full px-5 py-4 rounded-2xl bg-black/20 border border-white/10 text-white placeholder-gray-700 focus:border-brand-gold/50 outline-none transition-all font-medium"
               />
             </label>
 
-            <label className="block">
-              <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300">
+            <label className="block group">
+              <span className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 font-spaceGrotesk group-focus-within:text-brand-gold transition-colors">
                 State / Province
               </span>
               <input
@@ -992,15 +1004,15 @@ const KycVerification = () => {
                 name="stateProvince"
                 value={form.stateProvince}
                 onChange={handleChange}
-                placeholder="Enter state or province"
+                placeholder="State"
                 required
                 disabled={!canSubmit || loading}
-                className="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 text-white focus:border-yellow-500 outline-none"
+                className="w-full px-5 py-4 rounded-2xl bg-black/20 border border-white/10 text-white placeholder-gray-700 focus:border-brand-gold/50 outline-none transition-all font-medium"
               />
             </label>
 
-            <label className="block">
-              <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300">
+            <label className="block group">
+              <span className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 font-spaceGrotesk group-focus-within:text-brand-gold transition-colors">
                 Postal Code
               </span>
               <input
@@ -1009,16 +1021,16 @@ const KycVerification = () => {
                 name="postalCode"
                 value={form.postalCode}
                 onChange={handleChange}
-                placeholder="Enter postal code"
+                placeholder="Postal Code"
                 required
                 disabled={!canSubmit || loading}
-                className="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 text-white focus:border-yellow-500 outline-none"
+                className="w-full px-5 py-4 rounded-2xl bg-black/20 border border-white/10 text-white placeholder-gray-700 focus:border-brand-gold/50 outline-none transition-all font-medium"
               />
             </label>
 
-            <label className="block">
-              <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300">
-                ID Type
+            <label className="block group">
+              <span className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 font-spaceGrotesk group-focus-within:text-brand-gold transition-colors">
+                Document Type
               </span>
               <select
                 id="kyc-id-type"
@@ -1026,19 +1038,29 @@ const KycVerification = () => {
                 value={form.idType}
                 onChange={handleChange}
                 disabled={!canSubmit || loading}
-                className="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 text-white focus:border-yellow-500 outline-none"
+                className="w-full px-5 py-4 rounded-2xl bg-black/20 border border-white/10 text-white focus:border-brand-gold/50 outline-none transition-all font-medium appearance-none"
               >
-                <option value="national_id">National ID</option>
-                <option value="passport">Passport</option>
-                <option value="drivers_license">Driver's License</option>
-                <option value="voters_card">Voter's Card</option>
-                <option value="other">Other</option>
+                <option value="national_id" className="bg-brand-dark-base">
+                  National ID
+                </option>
+                <option value="passport" className="bg-brand-dark-base">
+                  Passport
+                </option>
+                <option value="drivers_license" className="bg-brand-dark-base">
+                  Driver's License
+                </option>
+                <option value="voters_card" className="bg-brand-dark-base">
+                  Voter's Card
+                </option>
+                <option value="other" className="bg-brand-dark-base">
+                  Other
+                </option>
               </select>
             </label>
 
-            <label className="block md:col-span-2">
-              <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300">
-                ID Number
+            <label className="block md:col-span-2 group">
+              <span className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 font-spaceGrotesk group-focus-within:text-brand-gold transition-colors">
+                Document Number
               </span>
               <input
                 id="kyc-id-number"
@@ -1046,28 +1068,30 @@ const KycVerification = () => {
                 name="idNumber"
                 value={form.idNumber}
                 onChange={handleChange}
-                placeholder="Enter your ID number"
+                placeholder="Serial Number"
                 required
                 disabled={!canSubmit || loading}
-                className="w-full px-4 py-3 rounded-lg bg-slate-800 border border-slate-600 text-white focus:border-yellow-500 outline-none"
+                className="w-full px-5 py-4 rounded-2xl bg-black/20 border border-white/10 text-white placeholder-gray-700 focus:border-brand-gold/50 outline-none transition-all font-medium"
               />
             </label>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
                 key: 'front',
-                label: 'ID Front (Required)',
+                label: 'Document Front',
                 value: form.frontUrl,
               },
-              { key: 'back', label: 'ID Back (Optional)', value: form.backUrl },
+              { key: 'back', label: 'Document Back', value: form.backUrl },
             ].map((item) => (
-              <label
+              <div
                 key={item.key}
-                className="block border border-dashed border-slate-600 rounded-xl p-4 bg-slate-800/50"
+                className="block border border-white/5 rounded-3xl p-6 bg-black/10 group transition-all hover:bg-black/20"
               >
-                <p className="text-sm text-slate-300 mb-3">{item.label}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 font-spaceGrotesk mb-6">
+                  {item.label}
+                </p>
                 <input
                   type="file"
                   accept="image/*"
@@ -1076,72 +1100,51 @@ const KycVerification = () => {
                   className="hidden"
                   id={`kyc-${item.key}`}
                 />
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-xs text-slate-400 truncate">
-                    {item.value ? 'Uploaded' : 'No file selected'}
-                  </span>
+                <div className="flex flex-col gap-4">
                   <label
                     htmlFor={`kyc-${item.key}`}
-                    className="cursor-pointer px-3 py-2 text-xs rounded-lg bg-yellow-500 text-slate-900 font-semibold hover:bg-yellow-400 transition-colors"
+                    className="cursor-pointer w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/5 text-gray-400 font-black font-spaceGrotesk text-[10px] uppercase tracking-widest border border-white/5 hover:text-white hover:border-white/10 transition-all active:scale-95"
                   >
                     {uploading[item.key] ? (
                       'Uploading...'
                     ) : (
-                      <span className="inline-flex items-center gap-1">
-                        <FaUpload /> Upload
-                      </span>
+                      <>
+                        <FaUpload className="text-brand-gold" /> Select File
+                      </>
                     )}
                   </label>
-                </div>
-                {item.value && (
-                  <a
-                    href={item.value}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-2 inline-block text-xs text-yellow-400 hover:underline"
+                  <div
+                    className={`text-[10px] font-bold uppercase tracking-widest text-center ${item.value ? 'text-emerald-400' : 'text-gray-700'}`}
                   >
-                    View uploaded file
-                  </a>
-                )}
-              </label>
+                    {item.value ? 'Status: Uploaded' : 'Status: Empty'}
+                  </div>
+                </div>
+              </div>
             ))}
 
-            <div className="block border border-dashed border-slate-600 rounded-xl p-4 bg-slate-800/50">
-              <p className="text-sm text-slate-300 mb-3">
-                Selfie with ID (Required)
+            <div className="block border border-white/5 rounded-3xl p-6 bg-black/10 group transition-all hover:bg-black/20">
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 font-spaceGrotesk mb-6">
+                Selfie Verification
               </p>
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-xs text-slate-400 truncate">
-                  {form.selfieUrl
-                    ? 'Captured and uploaded'
-                    : 'No selfie captured'}
-                </span>
+              <div className="flex flex-col gap-4">
                 <button
                   type="button"
                   disabled={!canSubmit || loading || uploading.selfie}
                   onClick={openCamera}
-                  className="px-3 py-2 text-xs rounded-lg bg-yellow-500 text-slate-900 font-semibold hover:bg-yellow-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-1"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-brand-gold text-brand-dark-base font-black font-spaceGrotesk text-[10px] uppercase tracking-widest shadow-brand-gold transition-all active:scale-95"
                 >
                   <FaCamera /> {form.selfieUrl ? 'Retake' : 'Open Camera'}
                 </button>
-              </div>
-              {form.selfieUrl && (
-                <a
-                  href={form.selfieUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-2 inline-block text-xs text-yellow-400 hover:underline"
+                <div
+                  className={`text-[10px] font-bold uppercase tracking-widest text-center ${form.selfieUrl ? 'text-emerald-400' : 'text-gray-700'}`}
                 >
-                  View captured selfie
-                </a>
-              )}
-              <p className="mt-2 text-xs text-slate-500">
-                Live camera capture is required for selfie verification.
-              </p>
+                  {form.selfieUrl ? 'Status: Captured' : 'Status: Required'}
+                </div>
+              </div>
             </div>
           </div>
 
-          <label className="flex items-start gap-3 rounded-xl border border-slate-700 bg-slate-800/30 p-4">
+          <label className="flex items-start gap-4 rounded-3xl border border-white/5 bg-black/10 p-6 transition-all hover:bg-black/20 cursor-pointer">
             <input
               id="kyc-consent"
               type="checkbox"
@@ -1149,41 +1152,44 @@ const KycVerification = () => {
               checked={Boolean(form.consentAccepted)}
               onChange={handleChange}
               disabled={!canSubmit || loading}
-              className="mt-1 h-4 w-4 rounded border-slate-500 bg-slate-800 text-yellow-500 focus:ring-yellow-500"
+              className="mt-1 h-5 w-5 rounded-lg border-white/10 bg-black/20 text-brand-gold focus:ring-brand-gold transition-all"
             />
-            <span className="text-sm text-slate-200 leading-6">
-              I confirm that all KYC details and uploaded documents are accurate
-              and belong to me, and I agree to verification checks for
-              compliance and fraud prevention.
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed">
+              I certify that all information provided is accurate and belongs to
+              me, and I authorize verification checks for compliance purposes.
             </span>
           </label>
 
-          <button
-            type="submit"
-            disabled={
-              !canSubmit ||
-              submitting ||
-              loading ||
-              !phoneVerification.isVerified ||
-              !form.consentAccepted ||
-              !form.frontUrl ||
-              !form.selfieUrl
-            }
-            className="w-full md:w-auto px-6 py-3 rounded-lg bg-yellow-500 text-slate-900 font-bold hover:bg-yellow-400 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-          >
-            {submitting
-              ? 'Submitting...'
-              : kycData?.status === 'rejected'
-                ? 'Resubmit KYC'
-                : 'Submit KYC'}
-          </button>
+          <div className="flex flex-col sm:flex-row gap-6 items-center">
+            <button
+              type="submit"
+              disabled={
+                !canSubmit ||
+                submitting ||
+                loading ||
+                !phoneVerification.isVerified ||
+                !form.consentAccepted ||
+                !form.frontUrl ||
+                !form.selfieUrl
+              }
+              className="w-full sm:w-auto px-12 py-5 rounded-2xl bg-brand-gold text-brand-dark-base font-black font-spaceGrotesk text-sm uppercase tracking-wider shadow-[0_10px_30px_rgba(212,175,55,0.2)] hover:bg-brand-gold-light transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              {submitting
+                ? 'Submitting...'
+                : kycData?.status === 'rejected'
+                  ? 'Resubmit Verification'
+                  : 'Submit Verification'}
+            </button>
 
-          {!canSubmit && (
-            <p className="text-sm text-slate-400">
-              KYC editing is disabled while your status is{' '}
-              {statusUI.label.toLowerCase()}.
-            </p>
-          )}
+            {!canSubmit && (
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-brand-gold shadow-brand-gold"></div>
+                <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] font-spaceGrotesk">
+                  Interface Locked During {statusUI.label}
+                </p>
+              </div>
+            )}
+          </div>
         </form>
 
         {isCameraOpen && (
@@ -1217,7 +1223,7 @@ const KycVerification = () => {
                 <button
                   type="button"
                   onClick={closeCamera}
-                  className="px-4 py-2 rounded-lg bg-slate-700 text-white hover:bg-slate-600"
+                  className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-red-500/10 px-4 py-2 font-black font-spaceGrotesk text-[10px] uppercase tracking-[0.2em] text-red-300 shadow-[0_0_20px_rgba(239,68,68,0.12)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-red-500/20 hover:text-white"
                 >
                   Cancel
                 </button>

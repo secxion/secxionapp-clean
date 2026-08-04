@@ -210,63 +210,67 @@ const DataPad = () => {
 
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 flex flex-col"
+      className="min-h-screen premium-bg flex flex-col"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-900 via-purple-800 to-purple-900 shadow-xl border-b border-purple-700/50 mt-20 lg:mt-24 md:mt-24 sm:mt-20 sticky top-16 lg:top-20 z-30">
+      <div className="bg-brand-dark-base/80 backdrop-blur-xl shadow-2xl border-b border-white/5 mt-20 lg:mt-28 md:mt-28 sticky top-16 lg:top-20 z-30 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
+          <div className="flex items-center justify-between h-20">
+            <div className="flex items-center space-x-6">
               <motion.h1
-                className="text-3xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 bg-clip-text text-transparent drop-shadow-lg"
+                className="text-2xl sm:text-3xl font-black neon-gold-text font-spaceGrotesk uppercase tracking-tighter"
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
                 DataPad
               </motion.h1>
-              <motion.span
-                className="bg-yellow-400/20 text-yellow-300 px-3 py-1 rounded-full text-sm font-medium border border-yellow-400/30 backdrop-blur-sm"
+              <motion.div
+                className="hidden sm:flex items-center gap-2 bg-brand-gold/10 px-4 py-1 rounded-full border border-brand-gold/20 backdrop-blur-sm shadow-brand-gold"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.3, delay: 0.2 }}
               >
-                {dataPads.length}
-              </motion.span>
+                <div className="w-1.5 h-1.5 bg-brand-gold rounded-full"></div>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-gold font-spaceGrotesk">
+                  {dataPads.length} Items
+                </span>
+              </motion.div>
             </div>
 
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-4">
               <button
                 onClick={handleRefresh}
                 disabled={isLoading}
-                className="p-2 text-yellow-400 hover:text-yellow-300 transition-colors duration-200 disabled:opacity-50 bg-gray-800/50 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                title="Refresh"
-                aria-label="Refresh notes"
+                className="p-3 text-gray-500 hover:text-brand-gold transition-all duration-300 disabled:opacity-30 bg-white/5 rounded-xl border border-white/5 active:scale-95"
+                title="Synchronize"
               >
                 <MdRefresh
                   className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`}
                 />
               </button>
+
               <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => setIsLiveScriptOpen(true)}
-                className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-4 py-2 rounded-lg font-semibold shadow-lg transition-colors duration-200 flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                aria-label="LiveScript - Custom Development"
-                title="Custom Development Requests"
+                className="hidden sm:flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-6 py-3 rounded-2xl font-black font-spaceGrotesk text-[10px] uppercase tracking-widest shadow-lg transition-all"
               >
                 <FaCode className="w-4 h-4" />
-                <span className="hidden sm:inline">LiveScript</span>
+                <span>LiveScript</span>
               </motion.button>
+
               <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => handleOpenEditor()}
-                className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 px-4 py-2 rounded-lg font-semibold shadow-lg transition-colors duration-200 flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                aria-label="Create new note"
-                title="Create new note"
+                className="bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base px-6 py-3 rounded-2xl font-black font-spaceGrotesk text-[10px] uppercase tracking-widest shadow-brand-gold transition-all flex items-center space-x-2"
               >
-                <FaPlus className="w-4 h-4" />
-                <span className="hidden sm:inline">New Note</span>
+                <FaPlus className="w-3.5 h-3.5" />
+                <span>New Record</span>
               </motion.button>
             </div>
           </div>
@@ -275,7 +279,7 @@ const DataPad = () => {
 
       {/* Search and Filter */}
       {dataPads.length > 0 && (
-        <div className="sticky top-32 lg:top-36 z-20 bg-gray-900/95 backdrop-blur-sm border-b border-gray-700/50 shadow-sm">
+        <div className="sticky top-[144px] lg:top-[160px] z-20 bg-brand-dark-base/90 backdrop-blur-md border-b border-white/5 shadow-xl transition-all duration-300">
           <SearchAndFilter
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -316,24 +320,25 @@ const DataPad = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="flex flex-col items-center justify-center py-12 bg-gradient-to-br from-gray-900/50 to-gray-800/50 rounded-2xl border border-purple-600/30"
+                className="flex flex-col items-center justify-center py-20 glass-card rounded-3xl border-white/5"
               >
-                <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  No notes found
+                <div className="text-6xl mb-6 opacity-20 filter grayscale">
+                  🔍
+                </div>
+                <h3 className="text-xl font-black text-white font-spaceGrotesk uppercase tracking-widest mb-2">
+                  No records found
                 </h3>
-                <p className="text-gray-400 text-center max-w-md mb-4">
-                  Try adjusting your search terms or filters to find what you're
-                  looking for.
+                <p className="text-gray-500 text-xs font-bold uppercase tracking-[0.2em] mb-8">
+                  Adjust parameters or clear filters.
                 </p>
                 <button
                   onClick={() => {
                     setSearchQuery('');
                     setSelectedTags([]);
                   }}
-                  className="text-yellow-400 hover:text-yellow-300 font-medium transition-colors duration-200"
+                  className="text-brand-gold hover:text-white font-black font-spaceGrotesk text-[10px] uppercase tracking-[0.4em] transition-all"
                 >
-                  Clear filters
+                  [ Clear Filters ]
                 </button>
               </motion.div>
             ) : (
@@ -376,7 +381,7 @@ const DataPad = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={() => handleOpenEditor()}
-          className="fixed bottom-6 right-6 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 p-4 rounded-full shadow-xl lg:hidden transition-colors duration-200 z-40 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          className="fixed bottom-24 right-6 bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base p-5 rounded-2xl shadow-brand-gold lg:hidden transition-all duration-300 z-40 active:scale-90"
           aria-label="Create new note"
           title="Create new note"
         >

@@ -2,7 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Press+Start+2P&display=swap');
+@import './styles/brand.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --net-height: 36px;
+  --header-height: 48px;
+  --slider-height: 44px;
+  --total-nav-offset: calc(var(--net-height) + var(--header-height));
+  --total-content-offset: calc(var(--total-nav-offset) + var(--slider-height));
+  --glass-bg: rgba(15, 23, 42, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --net-height: 44px;
+  }
+}
 
 html,
 body,
@@ -12,9 +30,13 @@ body,
   width: 100%;
   min-height: 100vh;
   min-height: 100dvh; /* Dynamic viewport height for mobile */
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
   font-size: medium;
-  background-color: #0f172a; /* Dark slate to prevent white flash */
+  background-color: #0b0f19; /* Darker brand-dark-base */
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -41,7 +63,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  background-color: #0f172a;
+  background-color: #0b0f19;
 }
 
 .main-content {

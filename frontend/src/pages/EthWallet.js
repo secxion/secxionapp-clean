@@ -437,9 +437,11 @@ const EthWallet = () => {
 
       setExactEthEquivalent(ethAmount);
       setExactEthToSend(ethAfterFee > 0 ? ethAfterFee : 0);
-      // Full precision display - no artificial rounding
-      setDisplayEthEquivalent(ethAmount.toPrecision(10));
-      setDisplayEthToSend(ethAfterFee > 0 ? ethAfterFee.toPrecision(10) : '0');
+      // Fixed precision for consistent layout
+      setDisplayEthEquivalent(ethAmount.toFixed(8));
+      setDisplayEthToSend(
+        ethAfterFee > 0 ? ethAfterFee.toFixed(8) : '0.00000000',
+      );
     } else {
       setDisplayEthEquivalent('0');
       setDisplayEthToSend('0');
@@ -582,28 +584,38 @@ const EthWallet = () => {
   const dismissSuccess = () => setSuccessMessage('');
 
   // derived values to display safely - full precision, no rounding
-  const gasFeeFloat = parseFloat(gasFee) || 0;
-  const gasFeeDisplay = gasFee || '0'; // Use raw string value from context
+  const gasFeeDisplay = gasFee ? parseFloat(gasFee).toFixed(8) : '0.00000000';
   const svcPercent = parseFloat(serviceFeePercent) || SERVICE_FEE_PERCENT;
   const svcAmountDisplay = exactEthEquivalent
-    ? (exactEthEquivalent * (svcPercent / 100)).toPrecision(10)
-    : '0';
+    ? (exactEthEquivalent * (svcPercent / 100)).toFixed(8)
+    : '0.00000000';
 
   return (
-    <div className="p-10 max-w-full mt-16 mx-auto sm:p-6 md:p-8 max-w-2xl sm:mt-16 text-gray-200 bg-gray-800 shadow-2xl border border-gray-700">
-      <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-700">
-        <h2 className="text-2xl sm:text-3xl font-semibold text-white">
-          Ethereum Wallet
-        </h2>
+    <div className="mt-28 p-4 sm:p-8 max-w-max mx-auto">
+      {/* Static Background only */}
+      <div className="fixed inset-0 pointer-events-none opacity-20">
+        <div className="absolute inset-0 bg-grid-slate-100/[0.02] bg-grid-16"></div>
+      </div>
+      {/* Header Section */}
+      <div className="border-b border-white/10 pb-8 mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+        <div>
+          <h2 className="text-3xl sm:text-4xl font-black text-white font-spaceGrotesk uppercase tracking-tighter">
+            Ethereum Wallet
+          </h2>
+          <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em] mt-2">
+            Secure Asset Liquidation & Transfer
+          </p>
+        </div>
         <button
           onClick={() => refreshWalletData(true)}
-          className="p-2 text-gray-400 hover:text-blue-400 transition-colors rounded-full hover:bg-gray-700"
+          className="inline-flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all duration-300 font-spaceGrotesk"
           disabled={isRefreshing || withdrawLoading}
-          title="Refresh Wallet Data"
+          title="Refresh Data"
         >
           <ArrowPathIcon
-            className={`h-6 w-6 ${isRefreshing ? 'animate-spin' : ''}`}
+            className={`h-4 w-4 text-brand-gold ${isRefreshing ? 'animate-spin' : ''}`}
           />
+          <span>Refresh</span>
         </button>
       </div>
 
@@ -628,22 +640,24 @@ const EthWallet = () => {
         />
       )}
 
-      {/* Wallet Info Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-6 p-4 bg-gray-900/50 rounded-lg border border-gray-700">
+      {/* Wallet Info Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         {[
           {
             Icon: CurrencyDollarIcon,
-            label: 'ETH Rate (NGN)',
+            label: 'Exchange Rate',
             value: ethRate
               ? `₦${parseFloat(ethRate).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
               : '...',
-            color: 'text-green-400',
+            color: 'text-emerald-400',
+            iconColor: 'bg-emerald-500/10 text-emerald-400',
           },
           {
             Icon: FireIcon,
-            label: 'Est. Gas Fee (ETH)',
+            label: 'Network Fee',
             value: `${gasFeeDisplay} ETH`,
             color: 'text-red-400',
+            iconColor: 'bg-red-500/10 text-red-400',
           },
           {
             Icon: CreditCardIcon,
@@ -652,25 +666,40 @@ const EthWallet = () => {
               nairaBalance !== null && nairaBalance !== undefined
                 ? `₦${parseFloat(nairaBalance).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                 : '...',
-            color: 'text-yellow-300',
+            color: 'text-brand-gold',
+            iconColor: 'bg-brand-gold/10 text-brand-gold',
           },
           {
             Icon: CubeTransparentIcon,
             label: 'ETH Balance',
             value:
               ethBalance !== null && ethBalance !== undefined
-                ? `${parseFloat(ethBalance).toFixed(6)} ETH`
+                ? `${parseFloat(ethBalance).toFixed(8)} ETH`
                 : '...',
-            color: 'text-blue-400',
+            color: 'text-sky-400',
+            iconColor: 'bg-sky-500/10 text-sky-400',
           },
-        ].map(({ Icon, label, value, color }) => (
-          <div key={label} className="flex items-start space-x-3">
-            <Icon className={`h-6 w-6 ${color} mt-1 flex-shrink-0`} />
-            <div>
-              <p className="text-xs text-gray-400">{label}</p>
-              <p className={`font-semibold ${color}`}>
-                {isInitialLoading ? 'Loading...' : value}
-              </p>
+        ].map(({ Icon, label, value, color, iconColor }) => (
+          <div
+            key={label}
+            className="glass-card rounded-2xl p-6 border-white/5 group hover:border-brand-gold/20 transition-all duration-300 overflow-hidden"
+          >
+            <div className="flex items-center space-x-5">
+              <div
+                className={`p-3.5 rounded-xl ${iconColor} border border-white/5 transition-colors`}
+              >
+                <Icon className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-spaceGrotesk">
+                  {label}
+                </p>
+                <p
+                  className={`text-lg font-black font-spaceGrotesk tracking-tighter ${color} mt-1 truncate`}
+                >
+                  {isInitialLoading ? '...' : value}
+                </p>
+              </div>
             </div>
           </div>
         ))}
@@ -678,190 +707,217 @@ const EthWallet = () => {
 
       {renderCountdown()}
 
-      {/* Withdrawal Form */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleWithdrawRequest();
-        }}
-        className="space-y-6"
-      >
-        {/* ETH Address Input */}
-        <div>
-          <label
-            htmlFor="ethAddress"
-            className="block mb-1.5 text-sm font-medium text-gray-300"
-          >
-            Recipient ETH Address
-          </label>
-          <div className="relative flex items-center">
-            <input
-              id="ethAddress"
-              type="text"
-              value={ethAddress}
-              onChange={(e) => setEthAddress(e.target.value)}
-              placeholder="Enter or scan 0x..."
-              className="w-full pl-4 pr-12 py-2.5 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-gray-500"
-              disabled={
-                countdown > 0 ||
-                withdrawLoading ||
-                withdrawalStatus === 'pending'
-              }
-              aria-label="Recipient ETH Address"
-            />
-            <button
-              type="button"
-              onClick={() => setScannerVisible((prev) => !prev)}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1.5 text-gray-400 hover:text-blue-400 rounded-md hover:bg-gray-600 transition-colors"
-              title={scannerVisible ? 'Hide QR Scanner' : 'Scan QR Code'}
-              disabled={
-                countdown > 0 ||
-                withdrawLoading ||
-                withdrawalStatus === 'pending'
-              }
-              aria-label={
-                scannerVisible
-                  ? 'Hide QR Scanner'
-                  : 'Scan QR Code for ETH Address'
-              }
-            >
-              {scannerVisible ? (
-                <EyeSlashIcon className="h-5 w-5" />
-              ) : (
-                <QrCodeIcon className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-
-          {addressHistory.length > 0 && (
-            <div className="mt-2 space-y-1">
-              <span className="text-xs text-gray-400">Recent:</span>
-              {addressHistory.map((addr, index) => (
-                <button
-                  type="button"
-                  key={index}
-                  className="ml-2 text-xs text-blue-400 hover:text-blue-300 hover:underline focus:outline-none disabled:text-gray-500 disabled:no-underline"
-                  onClick={() => setEthAddress(addr)}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mt-12 items-start">
+        {/* Withdrawal Form */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleWithdrawRequest();
+          }}
+          className="lg:col-span-2 space-y-10"
+        >
+          <div className="space-y-8">
+            <div className="group">
+              <label
+                htmlFor="ethAddress"
+                className="block mb-4 text-[10px] font-black font-spaceGrotesk text-brand-gold uppercase tracking-[0.3em] group-focus-within:text-white transition-colors"
+              >
+                Recipient Wallet Address
+              </label>
+              <div className="relative flex items-center">
+                <input
+                  id="ethAddress"
+                  type="text"
+                  value={ethAddress}
+                  onChange={(e) => setEthAddress(e.target.value)}
+                  placeholder="0x..."
+                  className="w-full pl-6 pr-14 py-5 rounded-2xl bg-black/20 text-white border border-white/10 focus:border-brand-gold/50 outline-none transition-all font-mono text-sm placeholder-gray-800"
                   disabled={
                     countdown > 0 ||
                     withdrawLoading ||
                     withdrawalStatus === 'pending'
                   }
-                  title={`Use address: ${addr}`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setScannerVisible((prev) => !prev)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2.5 text-gray-500 hover:text-brand-gold transition-all active:scale-90"
+                  disabled={
+                    countdown > 0 ||
+                    withdrawLoading ||
+                    withdrawalStatus === 'pending'
+                  }
                 >
-                  {`${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`}
+                  {scannerVisible ? (
+                    <EyeSlashIcon className="h-5 w-5" />
+                  ) : (
+                    <QrCodeIcon className="h-5 w-5" />
+                  )}
                 </button>
-              ))}
-            </div>
-          )}
-        </div>
+              </div>
 
-        {/* QR Scanner */}
-        {scannerVisible &&
-          !withdrawLoading &&
-          countdown <= 0 &&
-          withdrawalStatus !== 'pending' && (
-            <div className="my-4 p-3 bg-gray-700 rounded-lg shadow-md">
-              <QrScanner
-                delay={300}
-                constraints={{ video: { facingMode: 'environment' } }}
-                style={{ width: '100%', borderRadius: 8, maxHeight: 300 }}
-                onScan={handleScanSuccess}
-                onError={handleScanError}
+              {addressHistory.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest py-1">
+                    Recent:
+                  </span>
+                  {addressHistory.map((addr, index) => (
+                    <button
+                      type="button"
+                      key={index}
+                      className="px-3 py-1 bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg text-[10px] font-bold text-gray-400 hover:text-brand-gold transition-all"
+                      onClick={() => setEthAddress(addr)}
+                      disabled={
+                        countdown > 0 ||
+                        withdrawLoading ||
+                        withdrawalStatus === 'pending'
+                      }
+                    >
+                      {`${addr.substring(0, 8)}...${addr.substring(addr.length - 4)}`}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* QR Scanner */}
+            {scannerVisible &&
+              !withdrawLoading &&
+              countdown <= 0 &&
+              withdrawalStatus !== 'pending' && (
+                <div className="my-8 overflow-hidden rounded-3xl border border-brand-gold/20 shadow-brand-gold">
+                  <QrScanner
+                    delay={300}
+                    constraints={{ video: { facingMode: 'environment' } }}
+                    style={{ width: '100%', maxHeight: 300 }}
+                    onScan={handleScanSuccess}
+                    onError={handleScanError}
+                  />
+                  <p className="p-4 bg-brand-gold/5 text-center text-[10px] font-black text-brand-gold uppercase tracking-widest border-t border-brand-gold/10">
+                    Scanning for active address...
+                  </p>
+                </div>
+              )}
+
+            <div className="group">
+              <label
+                htmlFor="nairaAmount"
+                className="block mb-4 text-[10px] font-black font-spaceGrotesk text-brand-gold uppercase tracking-[0.3em] group-focus-within:text-white transition-colors"
+              >
+                Withdrawal Amount (NGN)
+              </label>
+              <input
+                id="nairaAmount"
+                type="number"
+                value={nairaWithdrawAmount}
+                onChange={(e) => setNairaWithdrawAmount(e.target.value)}
+                placeholder="0.00"
+                min="1"
+                step="any"
+                className="w-full px-6 py-5 rounded-2xl bg-black/20 text-white border border-white/10 focus:border-brand-gold/50 outline-none transition-all font-mono text-xl placeholder-gray-800"
+                disabled={
+                  countdown > 0 ||
+                  withdrawLoading ||
+                  withdrawalStatus === 'pending'
+                }
               />
-              <p className="text-xs text-center text-gray-400 mt-2">
-                Point your camera at an ETH address QR code.
-              </p>
             </div>
-          )}
+          </div>
 
-        {/* Naira amount */}
-        <div>
-          <label
-            htmlFor="nairaAmount"
-            className="block mb-1.5 text-sm font-medium text-gray-300"
-          >
-            Amount to Withdraw (NGN)
-          </label>
-          <input
-            id="nairaAmount"
-            type="number"
-            value={nairaWithdrawAmount}
-            onChange={(e) => setNairaWithdrawAmount(e.target.value)}
-            placeholder="e.g., 50000"
-            min="1"
-            step="any"
-            className="w-full px-4 py-2.5 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-gray-500"
+          <button
+            type="submit"
+            className="w-full bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base font-black font-spaceGrotesk text-sm uppercase tracking-[0.3em] py-6 rounded-2xl shadow-[0_10px_40px_rgba(212,175,55,0.2)] transition-all duration-500 transform active:scale-95 disabled:opacity-20 disabled:cursor-not-allowed group relative overflow-hidden"
             disabled={
-              countdown > 0 || withdrawLoading || withdrawalStatus === 'pending'
+              withdrawLoading ||
+              countdown > 0 ||
+              withdrawalStatus === 'pending' ||
+              isInitialLoading ||
+              !nairaWithdrawAmount ||
+              parseFloat(nairaWithdrawAmount) <= 0 ||
+              !ethAddress ||
+              (exactEthToSend !== null && exactEthToSend <= 0)
             }
-            aria-label="Amount to Withdraw in Naira"
-          />
+          >
+            <div className="relative z-10 flex items-center justify-center gap-3">
+              {withdrawLoading ? (
+                <ArrowPathIcon className="h-5 w-5 animate-spin" />
+              ) : (
+                <>
+                  <CubeTransparentIcon className="h-5 w-5" />
+                  <span>Request Transfer</span>
+                </>
+              )}
+            </div>
+          </button>
+        </form>
+
+        {/* Summary Sidebar */}
+        <div className="space-y-8">
+          <div className="bg-black/20 rounded-3xl p-8 border border-white/5">
+            <h3 className="text-[10px] font-black text-brand-gold uppercase tracking-[0.4em] font-spaceGrotesk mb-10 text-center">
+              Transaction Summary
+            </h3>
+            <div className="space-y-6">
+              <div className="flex justify-between items-start gap-4">
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                  Gross Equivalent
+                </span>
+                <span className="text-white font-mono text-xs text-right">
+                  {displayEthEquivalent} ETH
+                </span>
+              </div>
+              <div className="flex justify-between items-start gap-4">
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                  Network Fee
+                </span>
+                <span className="text-red-400 font-mono text-xs text-right">
+                  -{gasFeeDisplay} ETH
+                </span>
+              </div>
+              <div className="flex justify-between items-start gap-4">
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                  Service Fee ({svcPercent}%)
+                </span>
+                <span className="text-brand-gold font-mono text-xs text-right">
+                  -{svcAmountDisplay} ETH
+                </span>
+              </div>
+              <div className="h-px bg-white/5 my-4"></div>
+              <div className="flex flex-col gap-2 pt-2">
+                <span className="text-[10px] font-black text-white uppercase tracking-[0.2em] font-spaceGrotesk">
+                  Net Withdrawal Amount
+                </span>
+                <span
+                  className="text-emerald-400 text-2xl font-black font-spaceGrotesk tracking-tighter truncate"
+                  title={exactEthToSend?.toString()}
+                >
+                  {displayEthToSend} <span className="text-sm">ETH</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 border border-white/5 rounded-2xl bg-white/5">
+            <div className="flex items-center gap-3 mb-3">
+              <InformationCircleIcon className="w-4 h-4 text-brand-gold opacity-50" />
+              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                Withdrawal Policy
+              </span>
+            </div>
+            <p className="text-[10px] text-gray-600 font-bold leading-relaxed uppercase tracking-tight">
+              Transfers are processed within the blockchain sequence. Ensure
+              recipient address is accurate before submission.
+            </p>
+          </div>
         </div>
+      </div>
 
-        {/* Fee breakdown */}
-        <div className="p-4 bg-gray-900/50 rounded-lg space-y-3 text-sm border border-gray-700">
-          <p className="flex justify-between items-center text-gray-300">
-            <span>Est. ETH Equivalent:</span>
-            <span className="font-medium text-blue-300">
-              {displayEthEquivalent} ETH
-            </span>
-          </p>
-          <p className="flex justify-between items-center text-gray-300">
-            <span>Network Gas Fee:</span>
-            <span className="font-medium text-red-300">
-              {gasFeeDisplay} ETH
-            </span>
-          </p>
-          <p className="flex justify-between items-center text-gray-300">
-            <span>Service Fee ({svcPercent}%):</span>
-            <span className="font-medium text-yellow-300">
-              {svcAmountDisplay} ETH
-            </span>
-          </p>
-          <p className="flex justify-between items-center text-gray-300">
-            <span>Net ETH to Send:</span>
-            <span className="font-medium text-green-300">
-              {displayEthToSend} ETH
-            </span>
-          </p>
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-500 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-all flex items-center justify-center space-x-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
-          disabled={
-            withdrawLoading ||
-            countdown > 0 ||
-            withdrawalStatus === 'pending' ||
-            isInitialLoading ||
-            !nairaWithdrawAmount ||
-            parseFloat(nairaWithdrawAmount) <= 0 ||
-            !ethAddress ||
-            (exactEthToSend !== null && exactEthToSend <= 0)
-          }
-        >
-          {withdrawLoading ? (
-            <ArrowPathIcon className="h-5 w-5 animate-spin" />
-          ) : (
-            <CreditCardIcon className="h-5 w-5" />
-          )}
-          <span>
-            {withdrawLoading
-              ? 'Processing...'
-              : countdown > 0 || withdrawalStatus === 'pending'
-                ? 'Request Pending'
-                : 'Request ETH Withdrawal'}
-          </span>
-        </button>
-      </form>
-
-      {lastUpdated && (
-        <p className="mt-8 text-xs text-gray-500 text-center">
-          <ClockIcon className="h-3.5 w-3.5 inline mr-1 align-middle" /> Wallet
-          data last updated: {lastUpdated}
+      <div className="mt-16 flex items-center justify-center gap-3 border-t border-white/5 pt-8">
+        <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full shadow-[0_0_8px_#4ade80]"></div>
+        <p className="text-[10px] text-gray-600 font-black uppercase tracking-[0.2em] font-spaceGrotesk">
+          Last Registry Sync: {lastUpdated}
         </p>
-      )}
+      </div>
     </div>
   );
 };

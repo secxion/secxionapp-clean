@@ -43,12 +43,12 @@ const URGENCY = [
 ];
 
 const STATUS_COLORS = {
-  pending: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-  in_review: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  accepted: 'bg-green-500/20 text-green-400 border-green-500/30',
-  in_progress: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+  pending: 'bg-brand-gold/15 text-brand-gold border-brand-gold/30',
+  in_review: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
+  accepted: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+  in_progress: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
   completed: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-  rejected: 'bg-red-500/20 text-red-400 border-red-500/30',
+  rejected: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
 };
 
 const STATUS_ICONS = {
@@ -292,7 +292,7 @@ const LiveScript = ({ isOpen, onClose }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 flex items-center justify-center bg-black/95"
+        className="fixed inset-0 flex items-center justify-center bg-black/90 backdrop-blur-md"
         style={{
           zIndex: 99999,
           position: 'fixed',
@@ -307,28 +307,28 @@ const LiveScript = ({ isOpen, onClose }) => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 w-full h-full sm:w-auto sm:h-auto sm:max-w-2xl sm:max-h-[90vh] sm:rounded-2xl border-0 sm:border border-purple-500/30 shadow-2xl sm:m-4 flex flex-col"
+          className="bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black w-full h-full sm:w-auto sm:h-auto sm:max-w-2xl sm:max-h-[90vh] md:w-full md:h-full md:max-w-none md:max-h-none lg:w-full lg:h-full lg:max-w-none lg:max-h-none sm:rounded-2xl md:rounded-none lg:rounded-none shadow-[0_0_45px_rgba(212,175,55,0.12)] sm:m-4 md:m-0 lg:m-0 flex flex-col"
           style={{ position: 'relative', zIndex: 99999 }}
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-purple-900 via-purple-800 to-purple-900 p-4 border-b border-purple-500/30 flex-shrink-0">
+          <div className="bg-gradient-to-r from-brand-dark-elevated via-brand-dark-base to-brand-dark-elevated p-4 flex-shrink-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="bg-yellow-500/20 p-2 rounded-lg">
-                  <FaCode className="text-yellow-400 text-xl" />
+                <div className="bg-brand-gold/15 border border-brand-gold/30 p-2 rounded-lg">
+                  <FaCode className="text-brand-gold text-xl" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-yellow-400">
+                  <h2 className="text-xl font-black font-spaceGrotesk uppercase tracking-tight text-brand-gold">
                     LiveScript
                   </h2>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">
                     Custom Development Requests
                   </p>
                 </div>
               </div>
               <motion.button
                 onClick={onClose}
-                className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500/50 border-2 border-white/20"
+                className="bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-rose-400/50 border border-rose-300/30"
                 whileHover={{ rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
                 aria-label="Close LiveScript"
@@ -345,7 +345,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                     setActiveView('requests');
                     setSelectedRequest(null);
                   }}
-                  className="flex items-center py-2 px-4 rounded-lg font-medium bg-gray-700/50 text-gray-300 hover:bg-gray-700 transition-all duration-200"
+                  className="flex items-center py-2 px-4 rounded-lg font-spaceGrotesk text-xs font-black uppercase tracking-wider bg-white/5 text-gray-300 hover:bg-white/10 transition-all duration-200"
                 >
                   ← Back to Requests
                 </button>
@@ -354,10 +354,10 @@ const LiveScript = ({ isOpen, onClose }) => {
               <div className="flex mt-4 space-x-2">
                 <button
                   onClick={() => setActiveView('form')}
-                  className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all duration-200 ${
+                  className={`flex-1 py-2 px-4 rounded-lg font-spaceGrotesk text-[10px] font-black uppercase tracking-wider transition-all duration-200 ${
                     activeView === 'form'
-                      ? 'bg-yellow-500 text-gray-900'
-                      : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700'
+                      ? 'bg-brand-gold text-brand-dark-base'
+                      : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   <FaPaperPlane className="inline mr-2" />
@@ -365,10 +365,10 @@ const LiveScript = ({ isOpen, onClose }) => {
                 </button>
                 <button
                   onClick={() => setActiveView('requests')}
-                  className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all duration-200 ${
+                  className={`flex-1 py-2 px-4 rounded-lg font-spaceGrotesk text-[10px] font-black uppercase tracking-wider transition-all duration-200 ${
                     activeView === 'requests'
-                      ? 'bg-yellow-500 text-gray-900'
-                      : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700'
+                      ? 'bg-brand-gold text-brand-dark-base'
+                      : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   <FaRocket className="inline mr-2" />
@@ -387,7 +387,7 @@ const LiveScript = ({ isOpen, onClose }) => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Title */}
                 <div>
-                  <label className="block text-yellow-300 font-medium mb-1">
+                  <label className="mb-1 block text-[10px] font-black uppercase tracking-widest text-brand-gold">
                     Project Title *
                   </label>
                   <input
@@ -397,7 +397,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                     onChange={handleInputChange}
                     placeholder="e.g., Discord Bot for Server Management"
                     maxLength={200}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white placeholder-gray-500 focus:border-yellow-500 focus:outline-none focus:ring-1 focus:ring-yellow-500"
+                    className="w-full rounded-lg border border-white/10 bg-black/20 p-3 text-white placeholder-gray-600 focus:border-brand-gold/50 focus:outline-none focus:ring-1 focus:ring-brand-gold/50"
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     {formData.title.length}/200
@@ -406,7 +406,7 @@ const LiveScript = ({ isOpen, onClose }) => {
 
                 {/* Description */}
                 <div>
-                  <label className="block text-yellow-300 font-medium mb-1">
+                  <label className="mb-1 block text-[10px] font-black uppercase tracking-widest text-brand-gold">
                     Description *
                   </label>
                   <textarea
@@ -416,7 +416,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                     placeholder="Describe your project in detail. Include features, functionality, and any specific requirements..."
                     rows={5}
                     maxLength={5000}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white placeholder-gray-500 focus:border-yellow-500 focus:outline-none focus:ring-1 focus:ring-yellow-500 resize-none"
+                    className="w-full resize-none rounded-lg border border-white/10 bg-black/20 p-3 text-white placeholder-gray-600 focus:border-brand-gold/50 focus:outline-none focus:ring-1 focus:ring-brand-gold/50"
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     {formData.description.length}/5000
@@ -426,14 +426,14 @@ const LiveScript = ({ isOpen, onClose }) => {
                 {/* Category & Budget Row */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-yellow-300 font-medium mb-1">
+                    <label className="mb-1 block text-[10px] font-black uppercase tracking-widest text-brand-gold">
                       Category
                     </label>
                     <select
                       name="category"
                       value={formData.category}
                       onChange={handleInputChange}
-                      className="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:border-yellow-500 focus:outline-none"
+                      className="w-full rounded-lg border border-white/10 bg-black/20 p-3 text-white focus:border-brand-gold/50 focus:outline-none"
                     >
                       {CATEGORIES.map((cat) => (
                         <option key={cat.value} value={cat.value}>
@@ -444,14 +444,14 @@ const LiveScript = ({ isOpen, onClose }) => {
                   </div>
 
                   <div>
-                    <label className="block text-yellow-300 font-medium mb-1">
+                    <label className="mb-1 block text-[10px] font-black uppercase tracking-widest text-brand-gold">
                       Budget
                     </label>
                     <select
                       name="budget"
                       value={formData.budget}
                       onChange={handleInputChange}
-                      className="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:border-yellow-500 focus:outline-none"
+                      className="w-full rounded-lg border border-white/10 bg-black/20 p-3 text-white focus:border-brand-gold/50 focus:outline-none"
                     >
                       {BUDGETS.map((b) => (
                         <option key={b.value} value={b.value}>
@@ -464,7 +464,7 @@ const LiveScript = ({ isOpen, onClose }) => {
 
                 {/* Urgency */}
                 <div>
-                  <label className="block text-yellow-300 font-medium mb-2">
+                  <label className="mb-2 block text-[10px] font-black uppercase tracking-widest text-brand-gold">
                     Urgency
                   </label>
                   <div className="flex space-x-2">
@@ -477,8 +477,8 @@ const LiveScript = ({ isOpen, onClose }) => {
                         }
                         className={`flex-1 py-2 px-3 rounded-lg border transition-all duration-200 ${
                           formData.urgency === u.value
-                            ? `bg-gray-700 border-yellow-500 ${u.color}`
-                            : 'bg-gray-800 border-gray-600 text-gray-400 hover:border-gray-500'
+                            ? `bg-white/10 border-brand-gold/40 ${u.color}`
+                            : 'bg-black/20 border-white/10 text-gray-400 hover:border-brand-gold/30 hover:text-white'
                         }`}
                       >
                         {u.label}
@@ -491,7 +491,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 font-bold py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-gradient-to-r from-brand-gold to-yellow-500 hover:from-yellow-400 hover:to-brand-gold text-brand-dark-base font-bold py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submitting ? (
                     <>
@@ -517,7 +517,7 @@ const LiveScript = ({ isOpen, onClose }) => {
               <div className="space-y-3">
                 {loading ? (
                   <div className="flex items-center justify-center py-12">
-                    <FaSpinner className="animate-spin text-yellow-400 text-2xl" />
+                    <FaSpinner className="animate-spin text-brand-gold text-2xl" />
                   </div>
                 ) : requests.length === 0 ? (
                   <div className="text-center py-12">
@@ -525,7 +525,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                     <p className="text-gray-400">No requests yet.</p>
                     <button
                       onClick={() => setActiveView('form')}
-                      className="mt-3 text-yellow-400 hover:text-yellow-300 font-medium"
+                      className="mt-3 font-spaceGrotesk text-xs font-black uppercase tracking-wider text-brand-gold hover:text-brand-gold-light"
                     >
                       Submit your first request →
                     </button>
@@ -541,7 +541,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         onClick={() => openRequestDetail(request)}
-                        className="bg-gray-800/50 rounded-xl p-4 border border-gray-700 cursor-pointer hover:border-purple-500/50 hover:bg-gray-800/70 transition-all"
+                        className="bg-white/[0.03] rounded-xl p-4 border border-white/10 cursor-pointer hover:border-brand-gold/30 hover:bg-white/[0.05] transition-all"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -566,7 +566,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                           )}
                         </div>
 
-                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-700">
+                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
                           <div className="flex items-center space-x-3 text-xs text-gray-500">
                             <span>
                               {
@@ -600,8 +600,8 @@ const LiveScript = ({ isOpen, onClose }) => {
                         </div>
 
                         {(request.adminNotes || hasMessages) && (
-                          <div className="mt-3 p-2 bg-purple-900/30 rounded-lg border border-purple-500/30">
-                            <p className="text-xs text-purple-300">
+                          <div className="mt-3 p-2 bg-brand-gold/10 rounded-lg border border-brand-gold/20">
+                            <p className="text-xs text-brand-gold-light">
                               {hasMessages ? (
                                 <span>
                                   💬 {request.messages.length} message
@@ -631,7 +631,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                     style={{ WebkitOverflowScrolling: 'touch' }}
                   >
                     {/* Request Info */}
-                    <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700 mb-4">
+                    <div className="bg-white/[0.03] rounded-xl p-4 border border-white/10 mb-4">
                       <h3 className="text-white font-semibold text-lg mb-2">
                         {selectedRequest.title}
                       </h3>
@@ -662,8 +662,8 @@ const LiveScript = ({ isOpen, onClose }) => {
                         </span>
                       </div>
                       {selectedRequest.adminNotes && (
-                        <div className="mt-3 p-2 bg-purple-900/30 rounded-lg border border-purple-500/30">
-                          <p className="text-xs text-purple-300">
+                        <div className="mt-3 p-2 bg-brand-gold/10 rounded-lg border border-brand-gold/20">
+                          <p className="text-xs text-brand-gold-light">
                             <strong>Admin Notes:</strong>{' '}
                             {selectedRequest.adminNotes}
                           </p>
@@ -683,8 +683,8 @@ const LiveScript = ({ isOpen, onClose }) => {
                             <div
                               className={`max-w-[80%] rounded-xl px-4 py-2 ${
                                 msg.sender === 'user'
-                                  ? 'bg-yellow-500/20 border border-yellow-500/30 text-yellow-100'
-                                  : 'bg-purple-900/40 border border-purple-500/30 text-purple-100'
+                                  ? 'bg-brand-gold/15 border border-brand-gold/30 text-brand-gold-light'
+                                  : 'bg-white/[0.04] border border-white/15 text-gray-200'
                               }`}
                             >
                               <p className="text-xs font-medium mb-1 opacity-70">
@@ -728,7 +728,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                   </div>
 
                   {/* Reply Input */}
-                  <div className="border-t border-gray-700/50 pt-3 flex-shrink-0 mt-auto">
+                  <div className="border-t border-white/10 pt-3 flex-shrink-0 mt-auto">
                     {/* Pending Attachments Preview */}
                     {pendingAttachments.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-3">
@@ -737,7 +737,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                             <img
                               src={att.url}
                               alt={att.name}
-                              className="w-16 h-16 object-cover rounded-lg border border-gray-600"
+                              className="w-16 h-16 object-cover rounded-lg border border-white/15"
                             />
                             <button
                               onClick={() => removeAttachment(idx)}
@@ -760,7 +760,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                       <button
                         onClick={() => fileInputRef.current?.click()}
                         disabled={uploadingImage}
-                        className="bg-gray-700/50 hover:bg-gray-600 text-gray-300 px-3 py-2 rounded-lg transition-colors disabled:opacity-50"
+                        className="bg-white/5 hover:bg-white/10 text-gray-300 px-3 py-2 rounded-lg transition-colors border border-white/10 disabled:opacity-50"
                         title="Attach image"
                       >
                         {uploadingImage ? (
@@ -777,7 +777,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                           e.key === 'Enter' && handleSendReply()
                         }
                         placeholder="Type your message..."
-                        className="flex-1 bg-transparent border border-gray-600/50 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none"
+                        className="flex-1 bg-transparent border border-white/15 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:border-brand-gold/40 focus:outline-none"
                       />
                       <button
                         onClick={handleSendReply}
@@ -786,7 +786,7 @@ const LiveScript = ({ isOpen, onClose }) => {
                           (!replyMessage.trim() &&
                             pendingAttachments.length === 0)
                         }
-                        className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                        className="bg-gradient-to-r from-brand-gold to-yellow-500 hover:from-yellow-400 hover:to-brand-gold text-brand-dark-base px-4 py-2 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
                       >
                         {sendingReply ? (
                           <FaSpinner className="animate-spin" />

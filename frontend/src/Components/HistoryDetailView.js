@@ -58,18 +58,23 @@ const HistoryDetailView = ({
   };
 
   return (
-    <div className="fixed inset-0 flex items-start justify-center bg-black bg-opacity-70 p-4 z-50">
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 p-4">
       <div
-        className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 p-6 rounded-2xl w-full max-w-2xl shadow-2xl mt-10"
+        className="glass-card mt-10 w-full max-w-2xl rounded-[28px] border border-white/10 p-6 shadow-2xl"
         style={{ maxHeight: '85vh', overflowY: 'auto' }}
       >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="font-extrabold text-2xl text-yellow-400">
-            Transaction Details
-          </h2>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <p className="font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.35em] text-brand-gold/70">
+              Trade Detail
+            </p>
+            <h2 className="mt-2 text-2xl font-black text-white font-spaceGrotesk tracking-wide">
+              Transaction Details
+            </h2>
+          </div>
           <motion.button
             onClick={onClose}
-            className="fixed top-14 right-6 z-[10000] bg-red-600 hover:bg-red-700 text-white p-3 rounded-full shadow-2xl transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-red-500/50 border-2 border-white/20"
+            className="fixed right-6 top-14 z-[10000] rounded-full border-2 border-white/20 bg-red-600/90 p-3 text-white shadow-2xl transition-colors duration-200 hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500/50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -82,10 +87,13 @@ const HistoryDetailView = ({
 
         {productDetails && (
           <>
-            <h1 className="text-yellow-400 p-4 font-semibold -mt-6 gap-3 space-y-4">
-              {productDetails._id}
-            </h1>
-            <div className="border overflow-x-hidden rounded-lg p-4 bg-gray-950 shadow-inner mb-6">
+            <div className="-mt-6 space-y-4 rounded-2xl border border-white/10 bg-brand-dark-elevated/70 p-4 text-sm text-gray-300 shadow-inner">
+              <p className="font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold/80">
+                Record ID
+              </p>
+              <p className="break-all text-gray-100">{productDetails._id}</p>
+            </div>
+            <div className="mb-6 overflow-x-hidden rounded-2xl border border-white/10 bg-brand-dark-base/70 p-4 shadow-inner">
               <div className="flex items-center gap-4">
                 {productDetails?.productImage?.[0] && (
                   <img
@@ -98,7 +106,7 @@ const HistoryDetailView = ({
                   />
                 )}
                 <div>
-                  <h3 className="font-bold text-yellow-400 text-lg">
+                  <h3 className="text-lg font-bold font-spaceGrotesk text-white">
                     {productDetails.productName}
                   </h3>
                   <p className="text-gray-300">
@@ -127,8 +135,8 @@ const HistoryDetailView = ({
 
         <form className="space-y-6">
           <div>
-            <label className="block font-medium text-yellow-400 mb-2">
-              Images:
+            <label className="mb-2 block font-spaceGrotesk text-xs font-black uppercase tracking-[0.3em] text-brand-gold">
+              Images
             </label>
             <div className="flex gap-2 mt-4 flex-wrap">
               {data?.Image.length > 0 ? (
@@ -143,7 +151,7 @@ const HistoryDetailView = ({
                   </div>
                 ))
               ) : (
-                <p className="text-red-400 text-sm">*No images uploaded</p>
+                <p className="text-sm text-red-300">*No images uploaded</p>
               )}
             </div>
           </div>
@@ -151,41 +159,41 @@ const HistoryDetailView = ({
           <div>
             <label
               htmlFor="totalAmount"
-              className="block font-medium text-yellow-400 mb-2"
+              className="mb-2 block font-spaceGrotesk text-xs font-black uppercase tracking-[0.3em] text-brand-gold"
             >
-              Total FaceValue:
+              Total FaceValue
             </label>
-            <div className="text-gray-200 bg-gray-800 p-3 rounded-lg">
+            <div className="rounded-2xl border border-white/10 bg-brand-dark-elevated/70 p-3 text-gray-200">
               {productDetails.totalAmount}
             </div>
           </div>
           <div>
             <label
               htmlFor="calculatedTotalAmount"
-              className="block font-medium text-yellow-400 mb-2"
+              className="mb-2 block font-spaceGrotesk text-xs font-black uppercase tracking-[0.3em] text-brand-gold"
             >
-              Total Amount:
+              Total Amount
             </label>
-            <div className="text-gray-200 bg-gray-800 p-3 rounded-lg">
+            <div className="rounded-2xl border border-white/10 bg-brand-dark-elevated/70 p-3 text-gray-200">
               {productDetails.calculatedTotalAmount}
             </div>
           </div>
           <div>
             <label
               htmlFor="userRemark"
-              className="block font-medium text-yellow-400 mb-2"
+              className="mb-2 block font-spaceGrotesk text-xs font-black uppercase tracking-[0.3em] text-brand-gold"
             >
-              Remarks:
+              Remarks
             </label>
-            <div className="text-gray-200 bg-gray-800 p-3 rounded-lg">
+            <div className="rounded-2xl border border-white/10 bg-brand-dark-elevated/70 p-3 text-gray-200">
               {productDetails.userRemark}
             </div>
           </div>
 
           {productDetails.crImage && (
             <div>
-              <label className="block font-medium text-yellow-400 mb-2">
-                Cancel Reason Image:
+              <label className="mb-2 block font-spaceGrotesk text-xs font-black uppercase tracking-[0.3em] text-brand-gold">
+                Cancel Reason Image
               </label>
               <img
                 src={productDetails.crImage}
@@ -201,10 +209,10 @@ const HistoryDetailView = ({
 
           {data.status === 'CANCEL' && (
             <div>
-              <label className="block font-medium text-red-400 mb-2">
-                Cancel Reason:
+              <label className="mb-2 block font-spaceGrotesk text-xs font-black uppercase tracking-[0.3em] text-red-400">
+                Cancel Reason
               </label>
-              <div className="text-red-200 bg-red-900/20 border border-red-500/30 p-3 rounded-lg">
+              <div className="rounded-2xl border border-red-500/30 bg-red-900/20 p-3 text-red-200">
                 {data.cancelReason || 'N/A'}
               </div>
             </div>

@@ -13,7 +13,7 @@ import ProductDetails from '../Components/ProductDetails';
 import SearchProduct from '../pages/SearchProduct';
 import Section from '../pages/Section';
 import Profile from '../Components/Profile';
-import Settings from '../Components/Settings';
+import Settings from '../pages/Settings';
 import RedirectIfLoggedIn from '../Components/RedirectIfLoggedIn';
 import ProtectedRoute from '../Components/ProtectedRoute';
 import UserUploadMarket from '../Components/UserUploadMarket';

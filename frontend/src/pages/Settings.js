@@ -13,7 +13,6 @@ import {
   FaEyeSlash,
   FaArrowLeft,
   FaUpload,
-  FaTrash,
   FaLock,
 } from 'react-icons/fa';
 import { PiUserSquare } from 'react-icons/pi';
@@ -53,16 +52,17 @@ const Settings = () => {
   const [hasChanges, setHasChanges] = useState(false);
   const [originalData, setOriginalData] = useState({});
   const [validationErrors, setValidationErrors] = useState({});
+  const [saveSuccessMessage, setSaveSuccessMessage] = useState('');
 
   // Load initial data
   useEffect(() => {
     const stateData = location.state;
     const initialData = {
-      name: stateData?.name || user?.name || '',
-      tag: stateData?.tag || user?.tag || '',
-      telegramNumber: stateData?.telegramNumber || user?.telegramNumber || '',
-      email: stateData?.email || user?.email || '',
-      profilePic: stateData?.profilePic || user?.profilePic || '',
+      name: user?.name ?? stateData?.name ?? '',
+      tag: user?.tag ?? stateData?.tag ?? '',
+      telegramNumber: user?.telegramNumber ?? stateData?.telegramNumber ?? '',
+      email: user?.email ?? stateData?.email ?? '',
+      profilePic: user?.profilePic ?? stateData?.profilePic ?? '',
       currentPassword: '',
       newPassword: '',
       confirmPassword: '',
@@ -171,23 +171,24 @@ const Settings = () => {
       return;
     }
 
+    setSaveSuccessMessage('');
     setIsLoading(true);
     try {
       const updateData = {
         name: formData.name.trim(),
-        tag: formData.tag.trim() || undefined,
-        telegramNumber: formData.telegramNumber.trim() || undefined,
-        profilePic: formData.profilePic || undefined,
+        tag: formData.tag.trim(),
+        telegramNumber: formData.telegramNumber.trim(),
+        profilePic: formData.profilePic ?? '',
       };
 
       // Add password data if changing password
       if (formData.newPassword) {
-        updateData.currentPassword = formData.currentPassword;
+        updateData.password = formData.currentPassword;
         updateData.newPassword = formData.newPassword;
       }
 
-      const response = await fetch(SummaryApi.updateUser.url, {
-        method: SummaryApi.updateUser.method,
+      const response = await fetch(SummaryApi.profileEdit.url, {
+        method: SummaryApi.profileEdit.method,
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
@@ -198,10 +199,15 @@ const Settings = () => {
       const data = await response.json();
 
       if (data.success) {
-        // Update Redux store
-        dispatch(setUserDetails({ ...user, ...updateData }));
+        const persistedProfile = {
+          name: updateData.name,
+          tag: updateData.tag,
+          telegramNumber: updateData.telegramNumber,
+          profilePic: updateData.profilePic,
+        };
 
-        // Reset password fields
+        dispatch(setUserDetails({ ...user, ...persistedProfile }));
+
         setFormData((prev) => ({
           ...prev,
           currentPassword: '',
@@ -209,11 +215,23 @@ const Settings = () => {
           confirmPassword: '',
         }));
 
-        // Update original data
-        setOriginalData((prev) => ({ ...prev, ...updateData }));
+        setOriginalData((prev) => ({ ...prev, ...persistedProfile }));
+        setSaveSuccessMessage(
+          data.message || 'Your profile changes were saved successfully.',
+        );
+        // Clear stale route state so freshly saved values stay in sync.
+        navigate('/settings', { replace: true, state: null });
+        notifyUser.success(
+          data.message || 'Your profile changes were saved successfully.',
+          'Profile Updated',
+        );
       } else {
+        setSaveSuccessMessage('');
+        notifyUser.error(data.message || 'Unable to update profile');
       }
     } catch (error) {
+      setSaveSuccessMessage('');
+      notifyUser.error('Unable to update profile. Please try again.');
       console.error('Update error:', error);
     } finally {
       setIsLoading(false);
@@ -245,7 +263,7 @@ const Settings = () => {
 
   if (isLoading && !formData.name) {
     return (
-      <div className="mt-20 p-4 sm:p-6 max-w-4xl mx-auto">
+      <div className="mx-auto mt-28 w-full max-w-6xl px-4 py-4 sm:px-6 sm:py-6">
         <SecxionShimmer type="profile" count={1} />
       </div>
     );
@@ -256,51 +274,61 @@ const Settings = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="mt-20 p-4 sm:p-6 max-w-4xl mx-auto bg-gradient-to-br from-gray-900 to-gray-800 shadow-2xl border border-gray-700 rounded-2xl"
+      className="mx-auto mt-28 w-full max-w-6xl px-4 py-4 sm:px-6 sm:py-6"
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-600">
-        <div className="flex items-center space-x-4">
+      <div className="mb-8 flex items-center justify-between border-b border-white/10 pb-6 sm:mb-10 sm:pb-8">
+        <div className="flex items-center space-x-6">
           <button
             onClick={handleCancel}
-            className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-200"
+            className="inline-flex items-center justify-center rounded-full border border-white/10 bg-red-500/10 p-3 text-red-300 shadow-[0_0_20px_rgba(239,68,68,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-red-500/20 hover:text-white"
           >
-            <FaArrowLeft className="w-5 h-5" />
+            <FaArrowLeft className="w-4 h-4" />
           </button>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">
-              Edit Profile
+            <h1 className="text-2xl sm:text-3xl font-black text-white font-spaceGrotesk uppercase tracking-tighter">
+              Profile Settings
             </h1>
-            <p className="text-gray-400 mt-1">
-              Update your account information and settings
+            <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-1">
+              Update your account details
             </p>
           </div>
         </div>
         {hasChanges && (
-          <div className="flex items-center space-x-2 text-yellow-400">
-            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium">Unsaved changes</span>
+          <div className="hidden sm:flex items-center space-x-3 text-brand-gold bg-brand-gold/10 px-4 py-2 rounded-full border border-brand-gold/20 shadow-brand-gold">
+            <div className="w-1.5 h-1.5 bg-brand-gold rounded-full shadow-[0_0_8px_#D4AF37]"></div>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] font-spaceGrotesk">
+              Modified
+            </span>
           </div>
         )}
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-1 mb-8 bg-gray-800 p-1 rounded-xl">
+      <div className="mb-8 flex space-x-2 rounded-2xl border border-white/5 bg-black/20 p-1.5 sm:mb-10">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+            className={`flex-1 flex items-center justify-center space-x-3 py-3.5 px-4 rounded-xl font-black font-spaceGrotesk uppercase text-[10px] tracking-[0.2em] transition-all duration-300 ${
               activeTab === tab.id
-                ? 'bg-yellow-500 text-gray-900 shadow-sm'
-                : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                ? 'bg-brand-gold text-brand-dark-base shadow-brand-gold'
+                : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
             }`}
           >
-            <tab.icon className="w-4 h-4" />
+            <tab.icon className="w-3.5 h-3.5" />
             <span>{tab.label}</span>
           </button>
         ))}
       </div>
+
+      {saveSuccessMessage && (
+        <div className="mb-6 rounded-2xl border border-emerald-300/30 bg-emerald-500/10 px-4 py-3 text-center sm:text-left">
+          <p className="text-xs font-black uppercase tracking-widest text-emerald-300">
+            {saveSuccessMessage}
+          </p>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
         <AnimatePresence mode="wait">
@@ -313,38 +341,38 @@ const Settings = () => {
               className="space-y-8"
             >
               {/* Profile Picture Section */}
-              <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
-                <div className="flex-shrink-0">
-                  <div className="relative w-24 h-24 sm:w-32 sm:h-32">
-                    <div className="w-full h-full rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center overflow-hidden shadow-xl ring-4 ring-yellow-500/30">
+              <div className="flex flex-col space-y-6 rounded-3xl border border-white/5 bg-white/5 p-6 sm:flex-row sm:items-center sm:space-x-8 sm:space-y-0">
+                <div className="flex-shrink-0 mx-auto sm:mx-0">
+                  <div className="relative w-28 h-28 sm:w-32 sm:h-32">
+                    <div className="w-full h-full rounded-2xl bg-brand-dark-elevated flex items-center justify-center overflow-hidden shadow-2xl ring-4 ring-brand-gold/10">
                       {formData.profilePic ? (
                         <img
                           src={formData.profilePic}
                           alt="Profile"
-                          className="w-full h-full object-cover rounded-full"
+                          className="w-full h-full object-cover"
                         />
                       ) : (
-                        <PiUserSquare size={48} className="text-gray-900" />
+                        <PiUserSquare size={56} className="text-brand-gold" />
                       )}
                     </div>
                     {isUploading && (
-                      <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
-                        <div className="animate-spin w-6 h-6 border-2 border-white border-t-transparent rounded-full"></div>
+                      <div className="absolute inset-0 bg-brand-dark-base/80 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                        <div className="animate-spin w-6 h-6 border-2 border-brand-gold border-t-transparent rounded-full shadow-brand-gold"></div>
                       </div>
                     )}
                   </div>
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-white mb-2">
-                    Profile Picture
+                <div className="flex-1 text-center sm:text-left">
+                  <h3 className="mb-2 text-sm font-black uppercase tracking-wider text-white font-spaceGrotesk">
+                    Profile Photo
                   </h3>
-                  <p className="text-gray-400 text-sm mb-4">
-                    Upload a new profile picture. JPG, PNG or GIF (max 5MB)
+                  <p className="mb-6 text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                    PNG, JPG, or GIF up to 5MB
                   </p>
-                  <div className="flex flex-wrap gap-3">
-                    <label className="inline-flex items-center px-4 py-2 bg-yellow-500 text-gray-900 rounded-lg hover:bg-yellow-400 transition-colors duration-200 cursor-pointer font-medium">
-                      <FaUpload className="w-4 h-4 mr-2" />
-                      {isUploading ? 'Uploading...' : 'Upload Photo'}
+                  <div className="flex flex-wrap gap-4 justify-center sm:justify-start">
+                    <label className="inline-flex items-center px-6 py-2.5 bg-brand-gold text-brand-dark-base rounded-xl hover:bg-brand-gold-light transition-all duration-300 cursor-pointer font-black font-spaceGrotesk text-[10px] uppercase tracking-widest shadow-brand-gold active:scale-95">
+                      <FaUpload className="w-3.5 h-3.5 mr-2" />
+                      {isUploading ? 'Uploading...' : 'Change Photo'}
                       <input
                         type="file"
                         accept="image/*"
@@ -353,122 +381,105 @@ const Settings = () => {
                         disabled={isUploading}
                       />
                     </label>
-                    {formData.profilePic && (
-                      <button
-                        type="button"
-                        onClick={() => handleInputChange('profilePic', '')}
-                        className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
-                      >
-                        <FaTrash className="w-4 h-4 mr-2" />
-                        Remove
-                      </button>
-                    )}
                   </div>
                 </div>
               </div>
 
               {/* Form Fields */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Name */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Full Name *
+                <div className="group">
+                  <label className="block text-[10px] font-black font-spaceGrotesk text-brand-gold uppercase tracking-[0.2em] mb-3 group-focus-within:text-white transition-colors">
+                    Full Name
                   </label>
                   <div className="relative">
-                    <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <FaUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-3.5 h-3.5" />
                     <input
                       type="text"
                       value={formData.name}
                       onChange={(e) =>
                         handleInputChange('name', e.target.value)
                       }
-                      className={`w-full pl-10 pr-4 py-3 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors duration-200 text-white placeholder-gray-400 ${
+                      className={`w-full pl-11 pr-4 py-4 bg-black/20 border rounded-2xl focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold/50 transition-all duration-300 text-sm font-medium text-white placeholder-gray-600 ${
                         validationErrors.name
-                          ? 'border-red-500'
-                          : 'border-gray-600'
+                          ? 'border-red-500/50'
+                          : 'border-white/10'
                       }`}
-                      placeholder="Enter your full name"
+                      placeholder="Node Designation"
                     />
                   </div>
                   {validationErrors.name && (
-                    <p className="text-red-400 text-sm mt-1">
+                    <p className="text-red-400 text-[10px] font-bold uppercase tracking-widest mt-2 px-1">
                       {validationErrors.name}
                     </p>
                   )}
                 </div>
 
                 {/* Email (readonly) */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                <div className="group opacity-70">
+                  <label className="block text-[10px] font-black font-spaceGrotesk text-brand-gold uppercase tracking-[0.2em] mb-3">
                     Email Address
                   </label>
                   <div className="relative">
-                    <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <FaEnvelope className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-3.5 h-3.5" />
                     <input
                       type="email"
                       value={formData.email}
                       readOnly
-                      className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-400 cursor-not-allowed"
-                      placeholder="Email cannot be changed"
+                      className="w-full pl-11 pr-4 py-4 bg-white/5 border border-white/5 rounded-2xl text-sm font-medium text-gray-400 cursor-not-allowed"
                     />
                   </div>
-                  <p className="text-gray-500 text-xs mt-1">
-                    Contact support to change your email
-                  </p>
                 </div>
 
                 {/* Tag */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Username/Tag
+                <div className="group">
+                  <label className="block text-[10px] font-black font-spaceGrotesk text-brand-gold uppercase tracking-[0.2em] mb-3 group-focus-within:text-white transition-colors">
+                    System Identifier (Tag)
                   </label>
                   <div className="relative">
-                    <FaTag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <FaTag className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-3.5 h-3.5" />
                     <input
                       type="text"
                       value={formData.tag}
                       onChange={(e) => handleInputChange('tag', e.target.value)}
-                      className={`w-full pl-10 pr-4 py-3 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors duration-200 text-white placeholder-gray-400 ${
+                      className={`w-full pl-11 pr-4 py-4 bg-black/20 border rounded-2xl focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold/50 transition-all duration-300 text-sm font-medium text-white placeholder-gray-600 ${
                         validationErrors.tag
-                          ? 'border-red-500'
-                          : 'border-gray-600'
+                          ? 'border-red-500/50'
+                          : 'border-white/10'
                       }`}
-                      placeholder="@username"
+                      placeholder="@handle"
                     />
                   </div>
                   {validationErrors.tag && (
-                    <p className="text-red-400 text-sm mt-1">
+                    <p className="text-red-400 text-[10px] font-bold uppercase tracking-widest mt-2 px-1">
                       {validationErrors.tag}
                     </p>
                   )}
-                  <p className="text-gray-500 text-xs mt-1">
-                    Letters, numbers, and underscores only
-                  </p>
                 </div>
 
                 {/* Telegram */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Telegram Number
+                <div className="group">
+                  <label className="block text-[10px] font-black font-spaceGrotesk text-brand-gold uppercase tracking-[0.2em] mb-3 group-focus-within:text-white transition-colors">
+                    Telegram Uplink
                   </label>
                   <div className="relative">
-                    <FaTelegram className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <FaTelegram className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-3.5 h-3.5" />
                     <input
                       type="tel"
                       value={formData.telegramNumber}
                       onChange={(e) =>
                         handleInputChange('telegramNumber', e.target.value)
                       }
-                      className={`w-full pl-10 pr-4 py-3 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors duration-200 text-white placeholder-gray-400 ${
+                      className={`w-full pl-11 pr-4 py-4 bg-black/20 border rounded-2xl focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold/50 transition-all duration-300 text-sm font-medium text-white placeholder-gray-600 ${
                         validationErrors.telegramNumber
-                          ? 'border-red-500'
-                          : 'border-gray-600'
+                          ? 'border-red-500/50'
+                          : 'border-white/10'
                       }`}
-                      placeholder="+1234567890"
+                      placeholder="+XXXXXXXXXXX"
                     />
                   </div>
                   {validationErrors.telegramNumber && (
-                    <p className="text-red-400 text-sm mt-1">
+                    <p className="text-red-400 text-[10px] font-bold uppercase tracking-widest mt-2 px-1">
                       {validationErrors.telegramNumber}
                     </p>
                   )}
@@ -483,22 +494,21 @@ const Settings = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="space-y-6"
+              className="space-y-8"
             >
-              <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4 mb-6">
-                <h3 className="text-yellow-400 font-medium mb-2">
-                  Change Password
+              <div className="bg-brand-gold/5 border border-brand-gold/20 rounded-2xl p-6">
+                <h3 className="text-xs font-black text-brand-gold mb-2 uppercase tracking-[0.2em] font-spaceGrotesk">
+                  Update Password
                 </h3>
-                <p className="text-yellow-300/80 text-sm">
-                  Leave password fields empty if you don't want to change your
-                  password.
+                <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest leading-relaxed">
+                  Leave fields blank to maintain current password.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 gap-6 max-w-md">
+              <div className="grid grid-cols-1 gap-8 max-w-md">
                 {/* Current Password */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                <div className="group">
+                  <label className="block text-[10px] font-black font-spaceGrotesk text-brand-gold uppercase tracking-[0.2em] mb-3 group-focus-within:text-white transition-colors">
                     Current Password
                   </label>
                   <div className="relative">
@@ -508,17 +518,17 @@ const Settings = () => {
                       onChange={(e) =>
                         handleInputChange('currentPassword', e.target.value)
                       }
-                      className={`w-full pl-4 pr-12 py-3 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors duration-200 text-white placeholder-gray-400 ${
+                      className={`w-full pl-4 pr-12 py-4 bg-black/20 border rounded-2xl focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold/50 transition-all duration-300 text-sm font-medium text-white placeholder-gray-600 ${
                         validationErrors.currentPassword
-                          ? 'border-red-500'
-                          : 'border-gray-600'
+                          ? 'border-red-500/50'
+                          : 'border-white/10'
                       }`}
-                      placeholder="Enter current password"
+                      placeholder="Verify Current Password"
                     />
                     <button
                       type="button"
                       onClick={() => togglePasswordVisibility('current')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-brand-gold transition-colors"
                     >
                       {showPasswords.current ? (
                         <FaEyeSlash className="w-4 h-4" />
@@ -528,15 +538,15 @@ const Settings = () => {
                     </button>
                   </div>
                   {validationErrors.currentPassword && (
-                    <p className="text-red-400 text-sm mt-1">
+                    <p className="text-red-400 text-[10px] font-bold uppercase tracking-widest mt-2 px-1">
                       {validationErrors.currentPassword}
                     </p>
                   )}
                 </div>
 
                 {/* New Password */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                <div className="group">
+                  <label className="block text-[10px] font-black font-spaceGrotesk text-brand-gold uppercase tracking-[0.2em] mb-3 group-focus-within:text-white transition-colors">
                     New Password
                   </label>
                   <div className="relative">
@@ -546,17 +556,17 @@ const Settings = () => {
                       onChange={(e) =>
                         handleInputChange('newPassword', e.target.value)
                       }
-                      className={`w-full pl-4 pr-12 py-3 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors duration-200 text-white placeholder-gray-400 ${
+                      className={`w-full pl-4 pr-12 py-4 bg-black/20 border rounded-2xl focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold/50 transition-all duration-300 text-sm font-medium text-white placeholder-gray-600 ${
                         validationErrors.newPassword
-                          ? 'border-red-500'
-                          : 'border-gray-600'
+                          ? 'border-red-500/50'
+                          : 'border-white/10'
                       }`}
-                      placeholder="Enter new password"
+                      placeholder="Enter New Password"
                     />
                     <button
                       type="button"
                       onClick={() => togglePasswordVisibility('new')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-brand-gold transition-colors"
                     >
                       {showPasswords.new ? (
                         <FaEyeSlash className="w-4 h-4" />
@@ -566,16 +576,16 @@ const Settings = () => {
                     </button>
                   </div>
                   {validationErrors.newPassword && (
-                    <p className="text-red-400 text-sm mt-1">
+                    <p className="text-red-400 text-[10px] font-bold uppercase tracking-widest mt-2 px-1">
                       {validationErrors.newPassword}
                     </p>
                   )}
                 </div>
 
                 {/* Confirm Password */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Confirm New Password
+                <div className="group">
+                  <label className="block text-[10px] font-black font-spaceGrotesk text-brand-gold uppercase tracking-[0.2em] mb-3 group-focus-within:text-white transition-colors">
+                    Confirm Password
                   </label>
                   <div className="relative">
                     <input
@@ -584,17 +594,17 @@ const Settings = () => {
                       onChange={(e) =>
                         handleInputChange('confirmPassword', e.target.value)
                       }
-                      className={`w-full pl-4 pr-12 py-3 bg-gray-800 border rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors duration-200 text-white placeholder-gray-400 ${
+                      className={`w-full pl-4 pr-12 py-4 bg-black/20 border rounded-2xl focus:ring-1 focus:ring-brand-gold/50 focus:border-brand-gold/50 transition-all duration-300 text-sm font-medium text-white placeholder-gray-600 ${
                         validationErrors.confirmPassword
-                          ? 'border-red-500'
-                          : 'border-gray-600'
+                          ? 'border-red-500/50'
+                          : 'border-white/10'
                       }`}
-                      placeholder="Confirm new password"
+                      placeholder="Re-enter New Password"
                     />
                     <button
                       type="button"
                       onClick={() => togglePasswordVisibility('confirm')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-brand-gold transition-colors"
                     >
                       {showPasswords.confirm ? (
                         <FaEyeSlash className="w-4 h-4" />
@@ -604,7 +614,7 @@ const Settings = () => {
                     </button>
                   </div>
                   {validationErrors.confirmPassword && (
-                    <p className="text-red-400 text-sm mt-1">
+                    <p className="text-red-400 text-[10px] font-bold uppercase tracking-widest mt-2 px-1">
                       {validationErrors.confirmPassword}
                     </p>
                   )}
@@ -615,24 +625,23 @@ const Settings = () => {
         </AnimatePresence>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 pt-8 mt-8 border-t border-gray-600">
+        <div className="flex flex-col sm:flex-row gap-6 pt-10 mt-12 border-t border-white/10">
           <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={isLoading || !hasChanges}
-            className={`flex-1 sm:flex-none inline-flex items-center justify-center px-8 py-3 rounded-xl font-semibold transition-colors duration-200 ${
+            className={`flex-1 sm:flex-none inline-flex items-center justify-center px-10 py-4 rounded-2xl font-black font-spaceGrotesk text-xs uppercase tracking-widest transition-all duration-300 ${
               hasChanges && !isLoading
-                ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 shadow-lg hover:shadow-xl'
-                : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                ? 'bg-brand-gold text-brand-dark-base shadow-[0_10px_30px_rgba(212,175,55,0.2)]'
+                : 'bg-white/5 text-gray-600 cursor-not-allowed border border-white/5'
             }`}
           >
             {isLoading ? (
-              <>
-                <div className="animate-spin w-4 h-4 border-2 border-gray-900 border-t-transparent rounded-full mr-2"></div>
-                Saving...
-              </>
+              <div className="animate-spin w-4 h-4 border-2 border-brand-dark-base border-t-transparent rounded-full"></div>
             ) : (
               <>
-                <FaSave className="w-4 h-4 mr-2" />
+                <FaSave className="w-3.5 h-3.5 mr-2" />
                 Save Changes
               </>
             )}
@@ -641,9 +650,8 @@ const Settings = () => {
           <button
             type="button"
             onClick={handleCancel}
-            className="flex-1 sm:flex-none inline-flex items-center justify-center px-8 py-3 border-2 border-gray-600 text-gray-300 rounded-xl font-semibold hover:bg-gray-700 hover:border-gray-500 transition-colors duration-200"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center px-10 py-4 rounded-2xl border border-white/10 bg-white/5 text-gray-400 font-black font-spaceGrotesk text-xs uppercase tracking-widest hover:bg-white/10 hover:text-white transition-all duration-300 active:scale-95"
           >
-            <FaTimes className="w-4 h-4 mr-2" />
             Cancel
           </button>
         </div>

@@ -137,7 +137,7 @@ const Profile = () => {
       setIsLoading(false);
     }
     fetchUserDetails();
-  }, [fetchUserProfile, fetchUserDetails, user?.name]);
+  }, [fetchUserProfile, fetchUserDetails, user]);
 
   if (isLoading) {
     return (
@@ -176,7 +176,7 @@ const Profile = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mt-20 p-6 max-w-4xl mx-auto bg-gray-50 border border-gray-200 text-gray-600 rounded-xl shadow-lg"
+        className="mt-24 p-6 max-w-4xl mx-auto bg-gray-50 border border-gray-200 text-gray-600 rounded-xl shadow-lg"
       >
         <div className="flex items-center justify-center">
           <div className="text-center">
@@ -193,102 +193,105 @@ const Profile = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="mt-20 p-4 sm:p-6 max-w-5xl mx-auto bg-gradient-to-br from-white to-gray-50 shadow-2xl border border-gray-100 rounded-2xl"
+      className="mt-28 p-4 sm:p-8 max-w-5xl mx-auto"
     >
       {/* Header Section */}
-      <div className="border-b border-gray-200 pb-8 mb-8">
+      <div className="border-b border-white/10 pb-8 mb-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
-          <div className="flex flex-col sm:flex-row sm:items-center space-y-6 sm:space-y-0 sm:space-x-8">
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-6 sm:space-y-0 sm:space-x-10">
             {/* Profile Picture */}
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="flex-shrink-0 mx-auto sm:mx-0"
             >
-              <div className="relative w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32">
-                <div className="w-full h-full rounded-full bg-gradient-to-br from-yellow-100 to-yellow-200 flex items-center justify-center overflow-hidden shadow-xl ring-4 ring-yellow-300/30">
+              <div className="relative w-28 h-28 sm:w-32 sm:h-32 lg:w-40 lg:h-40">
+                <div className="w-full h-full rounded-2xl bg-brand-dark-elevated flex items-center justify-center overflow-hidden shadow-2xl ring-4 ring-brand-gold/20">
                   {profileData?.profilePic ? (
                     <img
                       src={profileData.profilePic}
                       alt="Profile"
-                      className="w-full h-full object-cover rounded-full"
+                      className="w-full h-full object-cover"
                     />
                   ) : (
-                    <PiUserSquare size={56} className="text-yellow-700" />
+                    <PiUserSquare size={64} className="text-brand-gold" />
                   )}
                 </div>
                 {/* Status indicator */}
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full flex items-center justify-center">
-                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-brand-dark-base border-4 border-brand-dark-base rounded-full flex items-center justify-center">
+                  <div className="w-3 h-3 bg-emerald-400 rounded-full shadow-[0_0_10px_#4ade80]"></div>
                 </div>
               </div>
             </motion.div>
 
             {/* Profile Info */}
             <div className="flex-grow min-w-0 text-center sm:text-left">
-              <div className="space-y-3">
-                <div className="flex items-center justify-center sm:justify-start space-x-3">
+              <div className="space-y-4">
+                <div className="flex items-center justify-center sm:justify-start space-x-4">
                   <h1
-                    className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 break-words leading-tight"
+                    className="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-spaceGrotesk uppercase tracking-tight break-words leading-tight"
                     title={profileData.name || 'No Name'}
                   >
                     {profileData.name || 'Unnamed User'}
                   </h1>
                   {hasCompletedProfile() && (
-                    <FaUserCheck
-                      className="text-blue-500 text-xl"
-                      title="Profile Complete"
-                    />
+                    <div className="p-1.5 bg-brand-gold/10 rounded-lg">
+                      <FaUserCheck
+                        className="text-brand-gold text-lg"
+                        title="Profile Complete"
+                      />
+                    </div>
                   )}
                 </div>
 
                 {/* User Details Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                   {profileData.email && (
-                    <div className="flex items-center justify-center sm:justify-start space-x-2">
-                      <FaEnvelope className="text-gray-500 flex-shrink-0" />
+                    <div className="flex items-center justify-center sm:justify-start space-x-3 group">
+                      <FaEnvelope className="text-gray-500 flex-shrink-0 group-hover:text-brand-gold transition-colors" />
                       <span
-                        className="text-gray-600 break-all"
+                        className="text-gray-400 font-medium break-all"
                         title={profileData.email}
                       >
                         {truncateText(profileData.email, 25)}
                       </span>
                       {isEmailVerified() ? (
                         <FaCheckCircle
-                          className="text-green-500 flex-shrink-0"
-                          title="Email Verified"
+                          className="text-emerald-500 flex-shrink-0 text-xs"
+                          title="Verified"
                         />
                       ) : (
                         <FaTimesCircle
-                          className="text-red-500 flex-shrink-0"
-                          title="Email Not Verified"
+                          className="text-red-500 flex-shrink-0 text-xs"
+                          title="Unverified"
                         />
                       )}
                     </div>
                   )}
 
                   {profileData.tag && (
-                    <div className="flex items-center justify-center sm:justify-start space-x-2">
+                    <div className="flex items-center justify-center sm:justify-start space-x-3">
                       <FaUser className="text-gray-500 flex-shrink-0" />
-                      <span className="bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 px-3 py-1 rounded-full text-xs font-semibold border border-yellow-300">
+                      <span className="bg-brand-gold/10 text-brand-gold px-4 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-brand-gold/20 font-spaceGrotesk">
                         @{profileData.tag}
                       </span>
                     </div>
                   )}
 
                   {profileData.telegramNumber && (
-                    <div className="flex items-center justify-center sm:justify-start space-x-2">
-                      <FaTelegram className="text-blue-500 flex-shrink-0" />
-                      <span className="text-gray-700 font-medium">
+                    <div className="flex items-center justify-center sm:justify-start space-x-3">
+                      <FaTelegram className="text-sky-500 flex-shrink-0" />
+                      <span className="text-gray-300 font-bold font-spaceGrotesk tracking-wide">
                         {profileData.telegramNumber}
                       </span>
                     </div>
                   )}
 
                   {profileData.createdAt && (
-                    <div className="flex items-center justify-center sm:justify-start space-x-2">
+                    <div className="flex items-center justify-center sm:justify-start space-x-3">
                       <FaCalendarAlt className="text-gray-500 flex-shrink-0" />
-                      <span className="text-gray-600">
-                        Member for {getAccountAge()}
+                      <span className="text-gray-400 font-medium">
+                        Active for{' '}
+                        <span className="text-white">{getAccountAge()}</span>
                       </span>
                     </div>
                   )}
@@ -299,171 +302,79 @@ const Profile = () => {
 
           {/* Edit Button */}
           <div className="flex-shrink-0 flex justify-center lg:justify-end">
-            <div className="flex flex-wrap gap-3 justify-center lg:justify-end">
+            <div className="flex flex-wrap gap-4 justify-center lg:justify-end">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/kyc')}
-                className="inline-flex items-center gap-3 px-6 py-3 text-sm font-semibold text-slate-900 bg-gradient-to-r from-amber-300 to-yellow-500 hover:from-yellow-400 hover:to-yellow-600 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
+                className="inline-flex items-center gap-3 px-8 py-3.5 text-xs font-black uppercase tracking-widest text-brand-dark-base bg-brand-gold hover:bg-brand-gold-light rounded-xl transition-all duration-300 shadow-brand-gold font-spaceGrotesk"
               >
                 <FaIdCard className="w-4 h-4" />
-                <span>KYC Verification</span>
+                <span>Identification</span>
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleEditProfile}
-                className="inline-flex items-center gap-3 px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
+                className="inline-flex items-center gap-3 px-8 py-3.5 text-xs font-black uppercase tracking-widest text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all duration-300 font-spaceGrotesk"
               >
-                <FaEdit className="w-4 h-4" />
-                <span>Edit Profile</span>
+                <FaEdit className="w-4 h-4 text-brand-gold" />
+                <span>Control Panel</span>
               </motion.button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stats Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-6 shadow-md border border-yellow-200 hover:shadow-lg transition-all duration-200"
-        >
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-yellow-500 rounded-lg">
-              <FaCalendarAlt className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-yellow-800">
-                {getDaysActive()}
-              </div>
-              <div className="text-sm font-medium text-yellow-700 uppercase tracking-wide">
-                Days Active
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 shadow-md border border-green-200 hover:shadow-lg transition-all duration-200"
-        >
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-green-500 rounded-lg">
-              <FaUserShield className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-green-800">
-                {isEmailVerified() ? (
-                  <FaCheckCircle className="inline text-green-600" />
-                ) : (
-                  <FaTimesCircle className="inline text-red-500" />
-                )}
-              </div>
-              <div className="text-sm font-medium text-green-700 uppercase tracking-wide">
-                Email Status
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 shadow-md border border-blue-200 hover:shadow-lg transition-all duration-200"
-        >
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-blue-500 rounded-lg">
-              <FaImage className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-blue-800">
-                {profileData.profilePic ? (
-                  <FaCheckCircle className="inline text-green-600" />
-                ) : (
-                  <FaTimesCircle className="inline text-red-500" />
-                )}
-              </div>
-              <div className="text-sm font-medium text-blue-700 uppercase tracking-wide">
-                Profile Picture
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 shadow-md border border-purple-200 hover:shadow-lg transition-all duration-200"
-        >
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-purple-500 rounded-lg">
-              <FaUserCheck className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-purple-800">
-                {hasCompletedProfile() ? (
-                  <FaCheckCircle className="inline text-green-600" />
-                ) : (
-                  <span className="text-orange-500">
-                    {Math.round(
-                      (Object.values(profileData || {}).filter(Boolean).length /
-                        5) *
-                        100,
-                    )}
-                    %
-                  </span>
-                )}
-              </div>
-              <div className="text-sm font-medium text-purple-700 uppercase tracking-wide">
-                Profile Complete
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-
       {/* Additional Info Section */}
-      <div className="mt-8 pt-8 border-t border-gray-200">
-        <div className="bg-gray-50 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <FaUser className="mr-2 text-gray-600" />
-            Account Information
+      <div className="mt-4 pt-10 border-t border-white/10">
+        <div className="bg-black/20 rounded-2xl p-8 border border-white/5">
+          <h3 className="text-[10px] font-black text-brand-gold mb-8 flex items-center uppercase tracking-[0.4em] font-spaceGrotesk">
+            <FaUser className="mr-3 opacity-50" />
+            Account Details
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="font-medium text-gray-600">
-                Account Created:
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-12 text-sm">
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-spaceGrotesk">
+                Joined On
               </span>
-              <span className="ml-2 text-gray-800">
+              <span className="text-gray-300 font-bold tracking-tight">
                 {profileData.createdAt
                   ? moment(profileData.createdAt).format(
-                      'MMMM D, YYYY [at] h:mm A',
+                      'MMMM D, YYYY [AT] HH:mm',
                     )
                   : 'Unknown'}
               </span>
             </div>
-            <div>
-              <span className="font-medium text-gray-600">Last Updated:</span>
-              <span className="ml-2 text-gray-800">
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-spaceGrotesk">
+                Last Active
+              </span>
+              <span className="text-gray-300 font-bold tracking-tight">
                 {profileData.updatedAt
-                  ? moment(profileData.updatedAt).fromNow()
+                  ? moment(profileData.updatedAt).fromNow().toUpperCase()
                   : 'Unknown'}
               </span>
             </div>
-            <div>
-              <span className="font-medium text-gray-600">User ID:</span>
-              <span className="ml-2 text-gray-800 font-mono text-xs">
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-spaceGrotesk">
+                User ID
+              </span>
+              <span className="text-brand-gold/60 font-mono text-xs font-black tracking-widest">
                 {profileData._id
-                  ? `${profileData._id.slice(0, 8)}...${profileData._id.slice(-8)}`
+                  ? `${profileData._id.toUpperCase()}`
                   : 'Unknown'}
               </span>
             </div>
-            <div>
-              <span className="font-medium text-gray-600">Account Type:</span>
-              <span className="ml-2">
-                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-spaceGrotesk">
+                Account Type
+              </span>
+              <div>
+                <span className="bg-brand-gold/10 text-brand-gold px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-brand-gold/20">
                   {profileData.role || 'Standard User'}
                 </span>
-              </span>
+              </div>
             </div>
           </div>
         </div>

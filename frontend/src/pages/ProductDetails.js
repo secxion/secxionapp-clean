@@ -94,22 +94,26 @@ const ProductDetails = () => {
   }
 
   return (
-    <div className="container mx-auto px-2 py-4 sm:px-4">
-      <div className="min-h-[200px] flex flex-col lg:flex-row gap-4">
-        <div className="h-96 flex flex-col lg:flex-row-reverse gap-3 sm:gap-4">
-          <div className="h-[260px] w-[260px] sm:h-[300px] sm:w-[300px] lg:h-96 lg:w-96 bg-slate-200 relative p-2 rounded-xl shadow">
+    <div className="min-h-screen premium-bg px-4 py-8 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-10">
+        <div className="flex flex-col lg:flex-row-reverse gap-4 sm:gap-6">
+          <div className="h-[300px] w-[300px] sm:h-[400px] sm:w-[400px] lg:h-[480px] lg:w-[480px] bg-white rounded-3xl relative p-4 shadow-2xl overflow-hidden group/zoom">
             <img
               src={activeImage}
               alt={data?.productName || 'Product image'}
-              className="h-full w-full object-scale-down mix-blend-multiply rounded-lg"
+              className="h-full w-full object-contain mix-blend-multiply rounded-2xl"
               onMouseMove={handleZoomImage}
               onMouseLeave={handleLeaveImageZoom}
             />
 
             {zoomImage && (
-              <div className="hidden lg:block absolute min-w-[500px] overflow-hidden min-h-[400px] bg-slate-200 p-1 -right-[510px] top-0">
+              <div className="hidden lg:block absolute inset-0 pointer-events-none border-4 border-brand-gold/30 rounded-3xl z-20"></div>
+            )}
+
+            {zoomImage && (
+              <div className="hidden lg:block absolute min-w-[500px] overflow-hidden min-h-[500px] bg-white p-2 -right-[520px] top-0 shadow-2xl rounded-3xl border border-brand-gold/20 z-50">
                 <div
-                  className="w-full h-full min-h-[400px] min-w-[500px] mix-blend-multiply scale-150"
+                  className="w-full h-full min-h-[500px] min-w-[500px] mix-blend-multiply scale-[2.5]"
                   style={{
                     background: `url(${activeImage})`,
                     backgroundRepeat: 'no-repeat',
@@ -121,37 +125,24 @@ const ProductDetails = () => {
           </div>
 
           <div className="h-full">
-            {loading ? (
-              <div className="flex gap-2 lg:flex-col overflow-x-auto lg:overflow-y-auto scrollbar-thin scrollbar-thumb-blue-400 h-full">
-                {productImageListLoading.map((el, index) => (
-                  <div
-                    className="h-16 w-16 sm:h-20 sm:w-20 bg-slate-200 rounded animate-pulse"
-                    key={'loadingImage' + index}
-                  ></div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex gap-2 lg:flex-col overflow-x-auto lg:overflow-y-auto scrollbar-thin scrollbar-thumb-blue-400 h-full">
-                {data?.productImage?.map((imgURL, index) => (
-                  <div
-                    className="h-16 w-16 sm:h-20 sm:w-20 bg-slate-200 rounded p-1 flex-shrink-0"
-                    key={imgURL}
-                  >
-                    <img
-                      src={imgURL}
-                      alt={
-                        data?.productName
-                          ? `${data.productName} thumbnail`
-                          : 'Product thumbnail'
-                      }
-                      className="w-full h-full object-scale-down mix-blend-multiply cursor-pointer rounded"
-                      onMouseEnter={() => handleMouseEnterProduct(imgURL)}
-                      onClick={() => handleMouseEnterProduct(imgURL)}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className="flex gap-3 lg:flex-col overflow-x-auto lg:overflow-y-auto scrollbar-hide h-full pb-2">
+              {data?.productImage?.map((imgURL, index) => (
+                <div
+                  className={`h-16 w-16 sm:h-20 sm:w-20 rounded-xl p-1.5 flex-shrink-0 transition-all duration-300 border-2 cursor-pointer ${
+                    activeImage === imgURL ? 'border-brand-gold bg-brand-gold/10' : 'border-white/5 bg-white/5 hover:border-white/20'
+                  }`}
+                  key={imgURL}
+                  onMouseEnter={() => handleMouseEnterProduct(imgURL)}
+                  onClick={() => handleMouseEnterProduct(imgURL)}
+                >
+                  <img
+                    src={imgURL}
+                    alt={data?.productName ? `${data.productName} thumbnail` : 'Product thumbnail'}
+                    className="w-full h-full object-contain mix-blend-multiply rounded-lg"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -184,64 +175,79 @@ const ProductDetails = () => {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col gap-2 sm:gap-3 mt-2">
-            <p className="bg-red-200 text-red-600 px-2 py-1 rounded-full inline-block w-fit text-xs sm:text-sm">
-              {data?.brandName}
-            </p>
-            <h2 className="text-xl sm:text-2xl lg:text-4xl font-medium">
-              {data?.productName}
-            </h2>
-            <p className="capitalize text-slate-400 text-sm sm:text-base">
-              {data?.category}
-            </p>
+          <div className="flex flex-1 flex-col gap-6 mt-4 lg:mt-0">
+            <div className="space-y-4">
+              <span className="bg-brand-gold/10 text-brand-gold px-4 py-1.5 rounded-xl inline-block text-[10px] font-black uppercase tracking-[0.3em] border border-brand-gold/20 font-spaceGrotesk">
+                {data?.brandName || 'Verified Product'}
+              </span>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white font-spaceGrotesk uppercase tracking-tighter leading-none">
+                {data?.productName}
+              </h2>
+              <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 font-spaceGrotesk">
+                Category:{' '}
+                <span className="text-gray-300">{data?.category}</span>
+              </p>
 
-            <div className="text-red-600 flex items-center gap-1 text-base sm:text-lg">
-              <FaStar />
-              <FaStar />
-              <FaStar />
-              <FaStar />
-              <FaStarHalf />
+              <div className="flex items-center gap-1.5 text-brand-gold text-xs">
+                <FaStar />
+                <FaStar />
+                <FaStar />
+                <FaStar />
+                <FaStarHalf className="opacity-50" />
+                <span className="ml-2 text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                  Quality Verified
+                </span>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2 text-xl sm:text-2xl lg:text-3xl font-medium my-1">
-              <p className="text-red-600">
-                {displayINRCurrency(data.sellingPrice)}
+            <div className="p-8 bg-black/20 rounded-3xl border border-white/5 space-y-2">
+              <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-spaceGrotesk">
+                Current Market Value
               </p>
-              <p className="text-slate-400 line-through">
-                {displayINRCurrency(data.price)}
-              </p>
+              <div className="flex items-baseline gap-4">
+                <p className="text-4xl font-black text-white font-spaceGrotesk tracking-tighter">
+                  {displayINRCurrency(data.sellingPrice)}
+                </p>
+                <p className="text-lg font-bold text-gray-600 line-through font-spaceGrotesk opacity-50">
+                  {displayINRCurrency(data.price)}
+                </p>
+              </div>
             </div>
 
-            <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2 xs:gap-3 my-2">
+            <div className="flex flex-col sm:flex-row items-stretch gap-4">
               <button
-                className="border-2 border-red-600 rounded px-4 py-2 min-w-[120px] text-red-600 font-medium hover:bg-red-600 hover:text-white text-base sm:text-lg transition"
+                className="flex-1 bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base py-5 rounded-2xl font-black font-spaceGrotesk uppercase tracking-widest shadow-brand-gold transition-all duration-300 active:scale-95"
                 onClick={(e) => handleBuyProduct(e, data?._id)}
               >
-                Buy
+                Buy Now
               </button>
               <button
-                className="border-2 border-red-600 rounded px-4 py-2 min-w-[120px] font-medium text-white bg-red-600 hover:text-red-600 hover:bg-white text-base sm:text-lg transition"
+                className="flex-1 bg-white/5 hover:bg-white/10 text-brand-gold py-5 rounded-2xl font-black font-spaceGrotesk uppercase tracking-widest border border-brand-gold/30 transition-all duration-300 active:scale-95"
                 onClick={(e) => handleAddToCart(e, data?._id)}
               >
-                Add To Cart
+                Add to Cart
               </button>
             </div>
 
-            <div>
-              <p className="text-slate-600 font-medium my-1 text-sm sm:text-base">
-                Description :{' '}
+            <div className="mt-4">
+              <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] font-spaceGrotesk mb-4">
+                Product Description
+              </h3>
+              <p className="text-sm sm:text-base text-gray-400 leading-relaxed font-medium">
+                {data?.description}
               </p>
-              <p className="text-xs sm:text-base">{data?.description}</p>
             </div>
           </div>
         )}
       </div>
 
       {data.category && (
-        <CategroyWiseProductDisplay
-          category={data?.category}
-          heading={'Recommended Product'}
-        />
+        <div className="mt-20 border-t border-white/5 pt-16">
+          <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-gold/60 font-spaceGrotesk text-center mb-12">
+            You May Also Like
+          </h2>
+          <CategroyWiseProductDisplay category={data?.category} />
+        </div>
       )}
     </div>
   );

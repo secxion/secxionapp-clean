@@ -69,10 +69,11 @@ const editProfileController = async (req, res) => {
       req.body;
     const updateFields = {};
 
-    if (name) updateFields.name = name.trim();
-    if (tag) updateFields.tag = tag.trim();
-    if (telegramNumber) updateFields.telegramNumber = telegramNumber.trim();
-    if (profilePic) updateFields.profilePic = profilePic;
+    if (typeof name !== "undefined") updateFields.name = name.trim();
+    if (typeof tag !== "undefined") updateFields.tag = tag.trim();
+    if (typeof telegramNumber !== "undefined")
+      updateFields.telegramNumber = telegramNumber.trim();
+    if (typeof profilePic !== "undefined") updateFields.profilePic = profilePic;
 
     if (password && newPassword) {
       const user = await userModel.findById(req.userId).select("+password");

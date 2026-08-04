@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import SummaryApi from '../common';
 import { toast } from 'react-toastify';
 import AddBankAccountForm from './AddBankAccountForm';
-import { FaWallet, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaWallet, FaEye, FaEyeSlash, FaTimes } from 'react-icons/fa';
 
 const PaymentRequestForm = ({
   fetchWalletBalance,
@@ -176,21 +176,21 @@ const PaymentRequestForm = ({
         />
       ) : (
         <div
-          className={`${isDialog ? 'space-y-6' : 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 shadow-2xl rounded-2xl p-8 space-y-8 border border-yellow-600/30 backdrop-blur-sm'}`}
+          className={`${isDialog ? 'space-y-6' : 'glass-card rounded-[28px] border border-white/10 bg-brand-dark-elevated/70 p-8 shadow-2xl backdrop-blur-xl space-y-8'}`}
         >
-          {/* Enhanced Header - only show if not in dialog mode */}
+          {/* Header - only show if not in dialog mode */}
           {!isDialog && (
-            <div className="text-center border-b border-gray-700 pb-6">
-              <div className="flex items-center justify-center space-x-3 mb-4">
-                <div className="p-3 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-xl">
-                  <FaWallet className="w-6 h-6 text-yellow-400" />
+            <div className="text-center border-b border-white/10 pb-10">
+              <div className="flex items-center justify-center space-x-4 mb-6">
+                <div className="p-4 bg-brand-gold/10 rounded-2xl border border-brand-gold/20 shadow-brand-gold">
+                  <FaWallet className="w-6 h-6 text-brand-gold" />
                 </div>
-                <h2 className="text-2xl font-bold text-yellow-400">
-                  Withdraw Funds
+                <h2 className="text-3xl font-black text-white font-spaceGrotesk uppercase tracking-tighter">
+                  Naira Withdrawal
                 </h2>
               </div>
-              <p className="text-gray-400">
-                Request a withdrawal to your bank account
+              <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em]">
+                Secure Bank Transfer Request
               </p>
             </div>
           )}
@@ -208,42 +208,42 @@ const PaymentRequestForm = ({
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
+            <div className="group">
               <label
                 htmlFor="amount"
-                className="block font-medium text-yellow-400 mb-2"
+                className="block text-[10px] font-black text-brand-gold uppercase tracking-[0.2em] mb-4 group-focus-within:text-white transition-colors"
               >
-                Amount to Withdraw
+                Amount to Withdraw (NGN)
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 font-medium">
+                <span className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-500 font-black font-spaceGrotesk text-lg">
                   ₦
                 </span>
                 <input
                   id="amount"
                   type="text"
-                  className="w-full pl-10 pr-20 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 shadow-sm transition-all duration-200"
-                  placeholder="Enter amount"
+                  className="w-full pl-12 pr-24 py-5 bg-black/20 border border-white/10 rounded-2xl text-white font-mono text-xl placeholder-gray-800 focus:border-brand-gold/50 outline-none transition-all"
+                  placeholder="0.00"
                   value={amount}
                   onChange={handleAmountChange}
                 />
                 <button
                   type="button"
                   onClick={handleWithdrawAll}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-yellow-400 hover:text-yellow-300 text-sm font-medium transition-colors"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-brand-gold/10 hover:bg-brand-gold/20 text-brand-gold text-[10px] font-black uppercase tracking-widest rounded-xl border border-brand-gold/20 transition-all"
                 >
                   Max
                 </button>
               </div>
-              <p className="text-gray-400 text-xs mt-1">
-                Minimum: ₦{MIN_REQUEST_AMOUNT.toLocaleString()}
+              <p className="text-gray-600 text-[10px] font-bold uppercase tracking-widest mt-3 px-1">
+                Minimum Sequence: ₦{MIN_REQUEST_AMOUNT.toLocaleString()}
               </p>
             </div>
 
-            <div>
+            <div className="group">
               <label
                 htmlFor="paymentMethod"
-                className="block text-yellow-400 font-medium mb-2"
+                className="block text-[10px] font-black text-brand-gold uppercase tracking-[0.2em] mb-4 group-focus-within:text-white transition-colors"
               >
                 Payment Method
               </label>
@@ -251,17 +251,21 @@ const PaymentRequestForm = ({
                 id="paymentMethod"
                 value={paymentMethod}
                 onChange={handlePaymentMethodChange}
-                className="w-full p-3 border border-gray-600 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 shadow-sm transition-all duration-200"
+                className="w-full p-5 bg-black/20 border border-white/10 rounded-2xl text-white text-sm font-medium focus:border-brand-gold/50 outline-none appearance-none transition-all"
               >
-                <option value="Bank Transfer">Bank Transfer</option>
-                <option value="Ethereum">Ethereum</option>
+                <option value="Bank Transfer" className="bg-brand-dark-base">
+                  Bank Transfer
+                </option>
+                <option value="Ethereum" className="bg-brand-dark-base">
+                  Ethereum
+                </option>
               </select>
             </div>
 
-            <div>
+            <div className="group">
               <label
                 htmlFor="bankAccount"
-                className="block text-yellow-400 font-medium mb-2"
+                className="block text-[10px] font-black text-brand-gold uppercase tracking-[0.2em] mb-4 group-focus-within:text-white transition-colors"
               >
                 Bank Account
               </label>
@@ -269,9 +273,11 @@ const PaymentRequestForm = ({
                 id="bankAccount"
                 value={selectedBankAccount}
                 onChange={handleBankAccountChange}
-                className="w-full py-3 px-3 text-white bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 shadow-sm rounded-lg transition-all duration-200"
+                className="w-full p-5 bg-black/20 border border-white/10 rounded-2xl text-white text-sm font-medium focus:border-brand-gold/50 outline-none appearance-none transition-all"
               >
-                <option value="">Select a bank account</option>
+                <option value="" className="bg-brand-dark-base">
+                  Select a bank account
+                </option>
                 {isLoadingBankAccounts ? (
                   <option disabled>Loading...</option>
                 ) : errorBankAccounts ? (
@@ -279,56 +285,45 @@ const PaymentRequestForm = ({
                 ) : (
                   <>
                     {bankAccounts.map((account) => (
-                      <option key={account._id} value={account._id}>
+                      <option
+                        key={account._id}
+                        value={account._id}
+                        className="bg-brand-dark-base"
+                      >
                         {account.accountNumber} ({account.bankName}) -{' '}
                         {account.accountHolderName}
                       </option>
                     ))}
-                    <option value="add_new">+ Add New Bank Account</option>
+                    <option value="add_new" className="bg-brand-dark-base">
+                      + Add New Bank Account
+                    </option>
                   </>
                 )}
               </select>
             </div>
 
-            <div className={`flex gap-4 ${isDialog ? 'pt-4' : ''}`}>
+            <div className={`flex gap-6 ${isDialog ? 'pt-6' : ''}`}>
               {isDialog && (
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 py-3 px-6 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg font-medium transition-colors"
+                  className="inline-flex flex-1 items-center justify-center gap-3 px-8 py-5 border border-white/10 text-gray-400 rounded-2xl font-black font-spaceGrotesk text-[10px] uppercase tracking-widest hover:bg-white/5 hover:text-white transition-all active:scale-95"
                 >
+                  <FaTimes className="w-3.5 h-3.5" />
                   Cancel
                 </button>
               )}
               <button
                 type="submit"
                 disabled={loading || isLoadingBankAccounts}
-                className={`${isDialog ? 'flex-1' : 'w-full'} flex justify-center items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 py-3 rounded-lg shadow-lg font-semibold transition-all duration-200 ${
-                  loading ? 'opacity-60 cursor-not-allowed' : 'hover:shadow-xl'
+                className={`flex-1 flex justify-center items-center gap-3 bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base py-5 rounded-2xl font-black font-spaceGrotesk text-[10px] uppercase tracking-widest shadow-brand-gold transition-all duration-300 ${
+                  loading ? 'opacity-30 cursor-not-allowed' : 'active:scale-95'
                 }`}
               >
                 {loading ? (
-                  <svg
-                    className="animate-spin h-5 w-5 text-gray-900"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 0116 0h-2a6 6 0 00-12 0H4z"
-                    />
-                  </svg>
+                  <div className="animate-spin h-5 w-5 border-2 border-brand-dark-base border-t-transparent rounded-full" />
                 ) : (
-                  'Submit Request'
+                  'Confirm Withdrawal'
                 )}
               </button>
             </div>

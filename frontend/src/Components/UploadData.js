@@ -838,7 +838,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                   <h2 className="font-medium text-gray-200">Note Info</h2>
                   <motion.button
                     onClick={() => setShowSidebar(false)}
-                    className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500/50 border-2 border-white/20"
+                    className="rounded-full border-2 border-white/20 bg-red-600/90 p-2 text-white shadow-lg transition-all duration-200 hover:scale-110 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500/50"
                     whileHover={{ rotate: 90 }}
                     whileTap={{ scale: 0.9 }}
                     aria-label="Close note info"
@@ -1123,7 +1123,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
             onClick={closeImageReview}
           >
             <motion.button
-              className="absolute top-14 right-6 bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500/50 border-2 border-white/20 z-10 touch-manipulation"
+              className="absolute top-14 right-6 z-10 rounded-full border-2 border-white/20 bg-red-600/90 p-2 text-white shadow-lg transition-all duration-200 hover:scale-110 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500/50 touch-manipulation"
               onClick={closeImageReview}
               aria-label="Close image review"
               whileHover={{ rotate: 90 }}

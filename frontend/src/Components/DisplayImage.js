@@ -38,7 +38,7 @@ const DisplayImage = ({ imgUrl, onClose }) => {
           {/* Close Button - Fixed Position */}
           <motion.button
             onClick={onClose}
-            className="fixed top-14 right-6 z-[10000] bg-red-600 hover:bg-red-700 text-white p-3 rounded-full shadow-2xl transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-500/50 border-2 border-white/20"
+            className="fixed top-14 right-6 z-[10000] rounded-full border-2 border-white/20 bg-red-600/90 p-3 text-white shadow-2xl transition-all duration-200 hover:scale-110 hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500/50"
             initial={{ scale: 0, rotate: -180 }}
             animate={{ opacity: 1, rotate: 0 }}
             exit={{ opacity: 0, rotate: 0 }}

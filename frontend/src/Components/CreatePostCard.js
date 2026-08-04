@@ -193,7 +193,7 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
               <div className="relative">
                 <button
                   onClick={() => setShowEmojiPicker(false)}
-                  className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-md transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-500/50 border-2 border-white/20"
+                  className="absolute top-2 right-2 rounded-full border-2 border-white/20 bg-red-600/90 p-2 text-white shadow-md transition-all duration-200 hover:scale-110 hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500/50"
                   aria-label="Close emoji picker"
                 >
                   <FaTimes className="w-4 h-4" />

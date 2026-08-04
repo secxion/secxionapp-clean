@@ -137,30 +137,42 @@ const BankAccountList = ({ onBankAccountsUpdated, onBankAccountsUpdating }) => {
               {bankAccounts.map((account) => (
                 <div
                   key={account._id}
-                  className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-xl p-6 flex items-center justify-between border border-yellow-600/20 hover:border-yellow-600/40 transition-all duration-200 shadow-lg"
+                  className="bg-white/5 rounded-2xl p-6 flex items-center justify-between border border-white/5 hover:border-brand-gold/20 transition-all duration-300 group"
                 >
-                  <div>
-                    <h4 className="font-semibold text-yellow-400 flex items-center text-lg">
-                      <FaUniversity className="mr-3 text-yellow-400" />{' '}
-                      {account.accountNumber}
-                    </h4>
-                    <p className="text-sm text-gray-300 mt-1">
-                      {account.bankName}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Holder: {account.accountHolderName}
-                    </p>
+                  <div className="flex items-center space-x-6">
+                    <div className="p-3 bg-brand-gold/5 rounded-xl border border-brand-gold/10 group-hover:bg-brand-gold/10 transition-colors">
+                      <FaUniversity className="w-5 h-5 text-brand-gold" />
+                    </div>
+                    <div>
+                      <h4 className="font-black text-white font-spaceGrotesk text-lg tracking-tight">
+                        {account.accountNumber}
+                      </h4>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 mt-1">
+                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                          Bank:{' '}
+                          <span className="text-gray-300">
+                            {account.bankName}
+                          </span>
+                        </p>
+                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                          Holder:{' '}
+                          <span className="text-gray-300">
+                            {account.accountHolderName}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
                   </div>
                   <button
                     onClick={() => handleDeleteAccount(account._id)}
-                    className="text-red-400 hover:text-red-300 hover:bg-red-900/20 focus:outline-none ml-4 flex items-center px-3 py-2 rounded-lg transition-all duration-200"
+                    className="p-3 text-gray-600 hover:text-red-400 hover:bg-red-400/5 rounded-xl transition-all duration-300 active:scale-90"
                     disabled={deleteLoading === account._id}
-                    title="Delete account"
+                    title="Remove account"
                   >
                     {deleteLoading === account._id ? (
-                      <FaSpinner className="animate-spin" />
+                      <FaSpinner className="animate-spin w-4 h-4" />
                     ) : (
-                      <FaTrashAlt />
+                      <FaTrashAlt className="w-4 h-4" />
                     )}
                   </button>
                 </div>
@@ -185,11 +197,12 @@ const BankAccountList = ({ onBankAccountsUpdated, onBankAccountsUpdating }) => {
             </p>
           )}
           <button
-            className="w-full inline-flex items-center justify-center px-6 py-3 mt-6 border-2 border-dashed border-yellow-600/50 hover:border-yellow-600 rounded-xl shadow-sm text-sm font-medium text-yellow-400 bg-transparent hover:bg-yellow-600/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-all duration-200"
+            className="w-full inline-flex items-center justify-center px-8 py-5 mt-10 border-2 border-dashed border-white/5 hover:border-brand-gold/30 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-brand-gold bg-white/[0.02] hover:bg-brand-gold/5 transition-all duration-500 group"
             onClick={handleAddAccountClick}
             disabled={showAddAccountForm || bankAccounts.length >= 2}
           >
-            <FaPlusCircle className="mr-2" /> Add New Account
+            <FaPlusCircle className="mr-3 w-4 h-4 transition-transform group-hover:rotate-90 duration-500" />
+            Add New Account
           </button>
           {bankAccounts.length >= 2 && (
             <p className="text-sm text-gray-500 mt-2 text-center bg-gray-800/30 border border-gray-600 rounded-lg p-3">

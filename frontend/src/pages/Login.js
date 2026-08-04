@@ -1,13 +1,12 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { Turnstile } from 'react-turnstile';
 import SummaryApi from '../common';
 import Context from '../Context';
 import { setUserDetails } from '../store/userSlice';
 import loginBackground from './loginbk.png';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEye, FaEyeSlash, FaSyncAlt } from 'react-icons/fa';
 import Navigation from '../Components/Navigation';
 import SecxionLogo from '../app/slogo.png';
 import NFTBadge from '../Components/NFTBadge';
@@ -23,11 +22,11 @@ const Button = ({
     'inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-lg';
   const variantClasses = {
     default:
-      'bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600 hover:from-yellow-600 hover:to-yellow-800 text-gray-900 focus:ring-yellow-500 backdrop-blur-xl',
+      'bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base shadow-[0_0_20px_rgba(212,175,55,0.3)]',
     ghost:
-      'bg-white/10 hover:bg-yellow-700/10 text-yellow-400 border border-yellow-500 focus:ring-yellow-500 backdrop-blur-xl',
+      'bg-white/5 hover:bg-brand-gold/10 text-brand-gold border border-brand-gold/50 backdrop-blur-xl',
     secondary:
-      'bg-gray-800 hover:bg-gray-700 text-gray-100 focus:ring-yellow-500 backdrop-blur-xl',
+      'bg-brand-dark-elevated hover:bg-brand-dark-surface text-gray-100 border border-white/10 backdrop-blur-xl',
   };
 
   return (
@@ -44,13 +43,36 @@ const Button = ({
 const getBubbleStyle = (bubbleIn, index) =>
   bubbleIn ? { animationDelay: `${index * 0.05}s` } : {};
 
+const toRoman = (num) => {
+  const map = {
+    M: 1000,
+    CM: 900,
+    D: 500,
+    CD: 400,
+    C: 100,
+    XC: 90,
+    L: 50,
+    XL: 40,
+    X: 10,
+    IX: 9,
+    V: 5,
+    IV: 4,
+    I: 1,
+  };
+  let result = '';
+  for (let key in map) {
+    const repeat = Math.floor(num / map[key]);
+    if (repeat !== 0) {
+      result += key.repeat(repeat);
+      num %= map[key];
+    }
+  }
+  return result;
+};
+
 const Login = () => {
   const [data, setData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
-  const turnstileSiteKey =
-    process.env.NODE_ENV === 'development'
-      ? '1x00000000000000000000AA'
-      : process.env.REACT_APP_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
 
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [resending, setResending] = useState(false);
@@ -60,11 +82,20 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [verificationVisible, setVerificationVisible] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState(null);
-  const [isVerified, setIsVerified] = useState(false);
   const [verifying, setVerifying] = useState(false);
 
+  const [puzzle, setPuzzle] = useState({ q: '', a: 0 });
+  const [userAnswer, setUserAnswer] = useState('');
+  const [isVerified, setIsVerified] = useState(false);
+
   const [bubbleIn, setBubbleIn] = useState(false);
+
+  const generatePuzzle = useCallback(() => {
+    const num = Math.floor(Math.random() * 45) + 2;
+    setPuzzle({ q: toRoman(num), a: num });
+    setUserAnswer('');
+    setIsVerified(false);
+  }, []);
 
   useEffect(() => {
     fetchCsrfToken();
@@ -88,26 +119,18 @@ const Login = () => {
 
   useEffect(() => {
     if (verificationVisible) {
-      // Reset Turnstile state when modal opens
-      setTurnstileToken(null);
+      generatePuzzle();
+    }
+  }, [verificationVisible, generatePuzzle]);
+
+  const handleAnswerChange = (e) => {
+    const val = e.target.value;
+    setUserAnswer(val);
+    if (parseInt(val) === puzzle.a) {
+      setIsVerified(true);
+    } else {
       setIsVerified(false);
     }
-  }, [verificationVisible]);
-
-  const handleTurnstileSuccess = (token) => {
-    setTurnstileToken(token);
-    setIsVerified(true);
-  };
-
-  const handleTurnstileExpire = () => {
-    setTurnstileToken(null);
-    setIsVerified(false);
-  };
-
-  const handleTurnstileError = () => {
-    setTurnstileToken(null);
-    setIsVerified(false);
-    toast.error('Verification failed. Please try again.');
   };
 
   const handleVerificationComplete = async () => {
@@ -128,7 +151,7 @@ const Login = () => {
         },
         body: JSON.stringify({
           ...data,
-          turnstileToken,
+          puzzleSolved: true,
         }),
       });
       const result = await response.json();
@@ -214,7 +237,6 @@ const Login = () => {
 
       {/* Logo background overlay */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        {/* Fix: Use absolute positioning and z-index for logo */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 w-[500px] h-[500px] flex items-center justify-center">
           <img
             src={SecxionLogo}
@@ -226,17 +248,11 @@ const Login = () => {
             }}
           />
         </div>
-        {/* ...existing geometric backgrounds... */}
-        <div className="absolute top-10 left-10 w-32 h-32 border-4 border-yellow-700/20 rotate-45 animate-spin [animation-duration:20s]"></div>
-        <div className="absolute top-1/4 right-20 w-20 h-20 bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 rounded-full animate-pulse"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-40 h-40 border-4 border-yellow-700/20 rounded-full animate-bounce [animation-duration:3s]"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 border border-yellow-700/20 rounded-full"></div>
-        <div className="absolute bottom-20 right-10 w-24 h-24 bg-gradient-to-br from-yellow-800/30 to-yellow-700/30 transform rotate-12 animate-pulse"></div>
       </div>
 
       <div className="absolute inset-0 bg-black/70 z-0"></div>
 
-      <div className="shape-lines relative bg-gradient-to-br from-gray-900/80 to-gray-800/70 bg-opacity-95 p-6 sm:p-8 mt-10 w-full max-w-md rounded-2xl shadow-2xl z-10 backdrop-blur-xl border border-yellow-700/20">
+      <div className="relative p-6 sm:p-10 mt-10 w-full max-w-md z-10 bg-transparent shadow-none border-none">
         <div className="flex items-center justify-center mb-4">
           <a href="/" className="relative">
             <div className="flex py-1 flex-col justify-center">
@@ -260,12 +276,14 @@ const Login = () => {
 
         <div className="text-center mb-6">
           <h1
-            className={`text-2xl font-bold text-yellow-400 ${bubbleIn ? 'bubble-pop' : ''}`}
+            className={`text-2xl font-bold font-spaceGrotesk neon-gold-text tracking-wider ${bubbleIn ? 'bubble-pop' : ''}`}
             style={getBubbleStyle(bubbleIn, 6)}
           >
             Welcome Back!
           </h1>
-          <p className="text-sm text-gray-300 mt-1">Login to your account</p>
+          <p className="text-sm text-gray-400 mt-1 font-medium">
+            Login to your account
+          </p>
         </div>
 
         {errorMessage && (
@@ -289,19 +307,19 @@ const Login = () => {
           <div>
             <label
               htmlFor="email"
-              className="block text-yellow-200 font-extrabold mb-1"
+              className="block text-brand-gold font-bold font-spaceGrotesk text-xs uppercase tracking-widest mb-2"
             >
-              Email
+              Email Address
             </label>
-            <div className="relative flex items-center w-full rounded-lg border-2 border-yellow-600 bg-gray-800 focus-within:ring-2 focus-within:ring-yellow-500">
+            <div className="relative flex items-center w-full rounded-xl border border-white/10 bg-black/20 focus-within:border-brand-gold/50 transition-colors">
               <input
                 id="email"
                 name="email"
                 type="email"
                 value={data.email}
                 onChange={handleInputChange}
-                placeholder="you@example.com"
-                className="w-full p-3 pr-12 rounded-lg bg-gray-800 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-0"
+                placeholder="Enter your email"
+                className="w-full p-4 rounded-xl bg-transparent text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-0"
                 required
                 autoComplete="email"
               />
@@ -311,11 +329,11 @@ const Login = () => {
           <div>
             <label
               htmlFor="password"
-              className="block text-yellow-200 font-extrabold mb-1"
+              className="block text-brand-gold font-bold font-spaceGrotesk text-xs uppercase tracking-widest mb-2"
             >
-              Password
+              Security Password
             </label>
-            <div className="relative flex items-center w-full p-1 rounded-lg border-2 border-yellow-600 bg-gray-800 focus-within:ring-2 focus-within:ring-yellow-500">
+            <div className="relative flex items-center w-full rounded-xl border border-white/10 bg-black/20 focus-within:border-brand-gold/50 transition-colors">
               <input
                 id="password"
                 name="password"
@@ -323,14 +341,14 @@ const Login = () => {
                 value={data.password}
                 onChange={handleInputChange}
                 placeholder="••••••••"
-                className="flex-1 bg-transparent outline-none text-gray-100 placeholder-gray-400"
+                className="w-full p-4 pr-12 rounded-xl bg-transparent text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-0"
                 required
                 autoComplete="current-password"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className={`absolute right-3 top-3 text-yellow-500 hover:text-yellow-400 ${bubbleIn ? 'bubble-pop' : ''}`}
+                className={`absolute right-4 text-gray-500 hover:text-brand-gold transition-colors ${bubbleIn ? 'bubble-pop' : ''}`}
                 tabIndex={-1}
                 style={getBubbleStyle(bubbleIn, 7)}
               >
@@ -343,9 +361,9 @@ const Login = () => {
             </div>
             <Link
               to="/reset"
-              className="block text-right text-sm text-yellow-500 hover:underline mt-1"
+              className="block text-right text-xs text-gray-500 hover:text-brand-gold transition-colors mt-2 uppercase font-bold tracking-tighter"
             >
-              Forgot password?
+              Recover Access?
             </Link>
           </div>
 
@@ -405,92 +423,75 @@ const Login = () => {
 
       {/* Verification Modal */}
       {verificationVisible && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/70 p-6 rounded-xl border-2 border-yellow-700 shadow-lg w-full max-w-sm text-gray-100 backdrop-blur-xl">
-            <h2 className="text-lg font-bold mb-4 text-center">
-              <span className="bg-yellow-500 text-gray-900 px-2 py-1 rounded">
-                Human
-              </span>{' '}
-              <span className="text-yellow-400">Verification</span>
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-md">
+          <div className="glass-card p-10 rounded-3xl border-brand-gold/30 shadow-[0_0_50px_rgba(212,175,55,0.15)] w-full max-w-sm text-center">
+            <h2 className="text-xs font-black mb-8 text-brand-gold uppercase tracking-[0.4em] font-spaceGrotesk">
+              Human Verification
             </h2>
-            <div className="flex justify-center mb-4">
-              <Turnstile
-                sitekey={turnstileSiteKey}
-                onSuccess={handleTurnstileSuccess}
-                onExpire={handleTurnstileExpire}
-                onError={handleTurnstileError}
-                theme="dark"
-              />
+
+            <div className="mb-10 py-8 px-6 bg-black/60 rounded-3xl border border-white/5 shadow-inner">
+              <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-6 text-center">
+                Identify the numeric value
+              </p>
+              <div className="flex flex-col items-center justify-center gap-8">
+                <p className="text-5xl sm:text-6xl lg:text-7xl font-black text-white font-spaceGrotesk tracking-tighter leading-none text-center">
+                  {puzzle.q}
+                </p>
+                <button
+                  onClick={generatePuzzle}
+                  className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-gray-500 hover:text-brand-gold transition-all"
+                  title="Refresh"
+                >
+                  <FaSyncAlt className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
+
+            <div className="relative mb-20 group">
+              <input
+                type="number"
+                value={userAnswer}
+                onChange={handleAnswerChange}
+                placeholder="Result"
+                className="w-full px-5 py-5 rounded-2xl bg-black/20 border border-white/10 text-white text-center font-black text-2xl font-spaceGrotesk focus:border-brand-gold/50 outline-none transition-all placeholder-gray-800"
+                autoFocus
+              />
+              {isVerified && (
+                <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-2 whitespace-nowrap z-20">
+                  <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full shadow-[0_0_8px_#4ade80]"></div>
+                  <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest font-spaceGrotesk">
+                    Verification Successful
+                  </span>
+                </div>
+              )}
+            </div>
+
             <Button
               onClick={handleVerificationComplete}
               disabled={!isVerified || verifying}
-              className={`w-full py-2 rounded-md font-semibold transition shadow-md hover:shadow-lg ${
-                isVerified ? '' : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+              className={`w-full py-5 rounded-2xl font-black font-spaceGrotesk text-xs uppercase tracking-[0.2em] transition-all shadow-brand-gold ${
+                isVerified
+                  ? ''
+                  : 'bg-white/5 text-gray-600 cursor-not-allowed border border-white/5'
               } ${bubbleIn ? 'bubble-pop' : ''}`}
               style={getBubbleStyle(bubbleIn, 10)}
             >
               {verifying ? (
-                <>
-                  <svg
-                    className="animate-spin h-5 w-5 mr-2"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  Logging in...
-                </>
-              ) : !isVerified ? (
-                <>
-                  <svg
-                    className="animate-spin h-5 w-5 mr-2"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  Verifying...
-                </>
+                <div className="animate-spin h-5 w-5 border-2 border-brand-dark-base border-t-transparent rounded-full mx-auto" />
               ) : (
                 'Login'
               )}
             </Button>
-            <Button
+
+            <button
               onClick={() => {
                 setVerificationVisible(false);
                 setFormSubmitting(false);
               }}
-              variant="secondary"
-              className={`mt-3 w-full text-sm text-gray-400 hover:text-yellow-500 ${bubbleIn ? 'bubble-pop' : ''}`}
-              style={getBubbleStyle(bubbleIn, 11)}
+              className="mt-6 text-[10px] font-black text-gray-600 hover:text-red-400 uppercase tracking-widest transition-colors font-spaceGrotesk"
             >
-              Cancel
-            </Button>
+              [ Cancel ]
+            </button>
           </div>
         </div>
       )}

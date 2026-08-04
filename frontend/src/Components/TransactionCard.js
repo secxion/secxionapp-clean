@@ -19,73 +19,91 @@ const TransactionCard = ({ transaction }) => {
   const formattedDate = format(new Date(createdAt), 'MMM dd, yyyy h:mm a');
 
   let statusBadgeClass =
-    'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium';
+    'inline-flex items-center rounded-lg border px-3 py-1 text-[9px] font-black uppercase tracking-widest font-spaceGrotesk';
   let statusText = '';
   let statusIcon = null;
 
   switch (status?.toLowerCase()) {
     case 'pending':
-      statusBadgeClass += ' bg-yellow-100 text-yellow-800';
+      statusBadgeClass +=
+        ' border-brand-gold/20 bg-brand-gold/5 text-brand-gold';
       statusText = 'Pending';
-      statusIcon = <FaClock className="mr-1" />;
+      statusIcon = <FaClock className="mr-1.5" />;
       break;
     case 'approved-processing':
-      statusBadgeClass += ' bg-blue-100 text-blue-800';
+      statusBadgeClass += ' border-sky-500/20 bg-sky-500/5 text-sky-400';
       statusText = 'Processing';
-      statusIcon = <FaMoneyBillWave className="mr-1" />;
+      statusIcon = <FaMoneyBillWave className="mr-1.5" />;
       break;
     case 'rejected':
-      statusBadgeClass += ' bg-red-100 text-red-800';
+      statusBadgeClass += ' border-rose-500/20 bg-rose-500/5 text-rose-400';
       statusText = 'Rejected';
-      statusIcon = <FaTimesCircle className="mr-1" />;
+      statusIcon = <FaTimesCircle className="mr-1.5" />;
       break;
     case 'completed':
-      statusBadgeClass += ' bg-green-100 text-green-800';
+      statusBadgeClass +=
+        ' border-emerald-500/20 bg-emerald-500/5 text-emerald-400';
       statusText = 'Completed';
-      statusIcon = <FaCheckCircle className="mr-1" />;
+      statusIcon = <FaCheckCircle className="mr-1.5" />;
       break;
     default:
-      statusBadgeClass += ' bg-gray-100 text-gray-800';
+      statusBadgeClass += ' border-gray-500/20 bg-white/5 text-gray-400';
       statusText = 'Unknown';
-      statusIcon = <FaExclamationTriangle className="mr-1" />;
+      statusIcon = <FaExclamationTriangle className="mr-1.5" />;
       break;
   }
 
   let transactionIcon = null;
   if (isCredit) {
-    transactionIcon = <FaArrowUp className="mr-1 text-green-500" />;
+    transactionIcon = (
+      <FaArrowUp className="mr-3 text-emerald-500 w-3.5 h-3.5" />
+    );
   } else if (isDebit || isWithdrawal) {
-    transactionIcon = <FaArrowDown className="mr-1 text-red-500" />;
+    transactionIcon = (
+      <FaArrowDown className="mr-3 text-rose-500 w-3.5 h-3.5" />
+    );
   } else {
-    transactionIcon = <FaMoneyBillWave className="mr-1 text-gray-500" />;
+    transactionIcon = (
+      <FaMoneyBillWave className="mr-3 text-gray-500 w-3.5 h-3.5" />
+    );
   }
 
   return (
-    <div className="container bg-white rounded-md p-4 mb-3 border border-gray-200 shadow-sm">
-      <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center">
-          {transactionIcon}
-          <span className="font-semibold text-gray-800 line-clamp-1">
-            {description ||
-              (isCredit
-                ? 'Credit'
-                : isDebit
-                  ? 'Debit'
-                  : isWithdrawal
-                    ? 'Withdrawal'
-                    : 'Transaction')}
+    <div className="group relative border-b border-white/5 bg-white/5 px-6 py-6 transition-all duration-300 hover:bg-white/10">
+      <div className="mb-4 flex items-start justify-between gap-4">
+        <div className="flex min-w-0 items-center">
+          <div className="p-2.5 bg-black/20 rounded-xl mr-4 group-hover:bg-brand-gold/10 transition-colors">
+            {transactionIcon}
+          </div>
+          <div className="flex flex-col">
+            <span className="truncate font-black text-white font-spaceGrotesk text-sm tracking-wide uppercase">
+              {description ||
+                (isCredit
+                  ? 'Credit'
+                  : isDebit
+                    ? 'Debit'
+                    : isWithdrawal
+                      ? 'Withdrawal'
+                      : 'Transaction')}
+            </span>
+            <span className="mt-1 text-[10px] font-bold uppercase tracking-widest text-gray-500">
+              {formattedDate.toUpperCase()}
+            </span>
+          </div>
+        </div>
+        <div className="text-right">
+          <span
+            className={`shrink-0 font-black font-spaceGrotesk text-lg tracking-tighter ${transactionColor.replace('600', '400')}`}
+          >
+            {isCredit ? '+' : '-'}₦
+            {Math.abs(amount).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </span>
         </div>
-        <span className={`font-bold ${transactionColor}`}>
-          {isCredit ? '+' : '-'} ₦
-          {Math.abs(amount).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
-        </span>
       </div>
-      <div className="flex justify-between items-center text-xs text-gray-600">
-        <span>{formattedDate}</span>
+      <div className="flex items-center justify-end">
         {status && (
           <span className={statusBadgeClass}>
             {statusIcon}

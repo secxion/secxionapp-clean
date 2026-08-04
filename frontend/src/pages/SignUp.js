@@ -13,7 +13,6 @@ import SummaryApi from '../common';
 import { notifyUser } from '../utils/toastConfig';
 import { motion, AnimatePresence } from 'framer-motion';
 import signupBackground from './signupbk.png';
-import LogoShimmer from '../Components/LogoShimmer';
 import Navigation from '../Components/Navigation';
 import { ArrowLeft } from 'lucide-react';
 import SecxionLogo from '../app/slogo.png';
@@ -369,7 +368,7 @@ const SignUp = () => {
 
       <Navigation currentPage="dashboard" />
 
-      {/* Logo background overlay */}
+      {/* Static background elements */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 w-[500px] h-[500px] flex items-center justify-center">
           <img
@@ -382,26 +381,22 @@ const SignUp = () => {
             }}
           />
         </div>
-        {/* Existing geometric backgrounds */}
-        <div className="absolute top-10 left-10 w-32 h-32 border-4 border-yellow-700/20 rotate-45 animate-spin [animation-duration:20s]"></div>
-        <div className="absolute top-1/4 right-20 w-20 h-20 bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 rounded-full animate-pulse"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-40 h-40 border-4 border-yellow-700/20 rounded-full animate-bounce [animation-duration:3s]"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 border border-yellow-700/20 rounded-full"></div>
-        <div className="absolute bottom-20 right-10 w-24 h-24 bg-gradient-to-br from-yellow-800/30 to-yellow-700/30 transform rotate-12 animate-pulse"></div>
+        <div className="absolute top-10 left-10 w-32 h-32 border-4 border-yellow-700/10 rotate-45"></div>
+        <div className="absolute bottom-20 right-10 w-24 h-24 bg-gradient-to-br from-yellow-800/10 to-yellow-700/10 transform rotate-12"></div>
       </div>
 
       <div className="absolute inset-0 bg-black/70 z-0"></div>
 
       <div className="relative z-10 flex items-center justify-center mt-11 grow px-4 py-8">
-        <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/70 bg-opacity-95 w-full max-w-lg p-8 pt-4 py-2 shadow-2xl rounded-2xl backdrop-blur-xl border border-yellow-700/20">
+        <div className="w-full max-w-lg p-8 sm:p-10 shadow-2xl rounded-3xl border border-white/5 bg-black/40 backdrop-blur-2xl">
           {/* Back Button */}
           <button
             onClick={handleGoBack}
-            className="flex items-center gap-2 mb-4 text-yellow-400 hover:text-yellow-200 font-semibold transition-colors focus:outline-none"
+            className="flex items-center gap-2 mb-8 text-gray-500 hover:text-white font-black font-spaceGrotesk text-[10px] uppercase tracking-widest transition-colors focus:outline-none"
             aria-label="Go back"
             type="button"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back</span>
           </button>
           <div className="flex items-center justify-center mb-4">
@@ -422,15 +417,17 @@ const SignUp = () => {
             </a>
           </div>
 
-          <h2 className="text-xl font-bold mb-6 text-center text-gray-100">
-            Sign Up Wizard
+          <h2 className="text-xl font-bold font-spaceGrotesk mb-6 text-center text-white tracking-wider uppercase">
+            Register
           </h2>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-8">
             {[1, 2, 3, 4, 5].map((n) => (
               <div
                 key={n}
-                className={`h-2 flex-1 mx-1 rounded-full transition-all ${
-                  n <= step ? 'bg-yellow-600' : 'bg-gray-700'
+                className={`h-1.5 flex-1 mx-1 rounded-full transition-all duration-500 ${
+                  n <= step
+                    ? 'bg-brand-gold shadow-[0_0_10px_#D4AF37]'
+                    : 'bg-white/10'
                 }`}
               />
             ))}
@@ -467,7 +464,7 @@ const SignUp = () => {
                     <button
                       type="button"
                       onClick={() => goToStep(2)}
-                      className="btn-next bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-medium py-2 px-4 rounded transition"
+                      className="btn-next bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base font-black font-spaceGrotesk py-3 px-8 rounded-xl transition shadow-lg active:scale-95 text-xs uppercase tracking-widest"
                     >
                       Next →
                     </button>
@@ -484,26 +481,26 @@ const SignUp = () => {
                   className="space-y-4"
                 >
                   <InputField
-                    label="Email"
+                    label="Email Address"
                     name="email"
                     type="email"
                     value={data.email}
                     onChange={handleOnChange}
                     required
-                    placeholder="you@example.com"
+                    placeholder="example@mail.com"
                   />
                   <div className="flex justify-between mt-6">
                     <button
                       type="button"
                       onClick={() => goToStep(1)}
-                      className="btn-back bg-gray-700 hover:bg-gray-600 text-gray-100 font-medium py-2 px-4 rounded transition"
+                      className="btn-back bg-white/5 hover:bg-white/10 text-gray-500 border border-white/10 font-black font-spaceGrotesk py-3 px-8 rounded-xl transition active:scale-95 text-xs uppercase tracking-widest"
                     >
                       ← Back
                     </button>
                     <button
                       type="button"
                       onClick={() => goToStep(3)}
-                      className="btn-next bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-medium py-2 px-4 rounded transition"
+                      className="btn-next bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base font-black font-spaceGrotesk py-3 px-8 rounded-xl transition shadow-lg active:scale-95 text-xs uppercase tracking-widest"
                     >
                       Next →
                     </button>
@@ -520,24 +517,24 @@ const SignUp = () => {
                   className="space-y-4"
                 >
                   <InputField
-                    label="Telegram Number (Optional)"
+                    label="Telegram (Optional)"
                     name="telegramNumber"
                     value={data.telegramNumber}
                     onChange={handleOnChange}
-                    placeholder="+1234567890 (optional)"
+                    placeholder="+1XXXXXXXXXX"
                   />
                   <div className="flex justify-between mt-6">
                     <button
                       type="button"
                       onClick={() => goToStep(2)}
-                      className="btn-back bg-gray-700 hover:bg-gray-600 text-gray-100 font-medium py-2 px-4 rounded transition"
+                      className="btn-back bg-white/5 hover:bg-white/10 text-gray-500 border border-white/10 font-black font-spaceGrotesk py-3 px-8 rounded-xl transition active:scale-95 text-xs uppercase tracking-widest"
                     >
                       ← Back
                     </button>
                     <button
                       type="button"
                       onClick={() => goToStep(4)}
-                      className="btn-next bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-medium py-2 px-4 rounded transition"
+                      className="btn-next bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base font-black font-spaceGrotesk py-3 px-8 rounded-xl transition shadow-lg active:scale-95 text-xs uppercase tracking-widest"
                     >
                       Next →
                     </button>
@@ -573,14 +570,14 @@ const SignUp = () => {
                     <button
                       type="button"
                       onClick={() => goToStep(3)}
-                      className="btn-back bg-gray-700 hover:bg-gray-600 text-gray-100 font-medium py-2 px-4 rounded transition"
+                      className="btn-back bg-white/5 hover:bg-white/10 text-gray-500 border border-white/10 font-black font-spaceGrotesk py-3 px-8 rounded-xl transition active:scale-95 text-xs uppercase tracking-widest"
                     >
                       ← Back
                     </button>
                     <button
                       type="button"
                       onClick={() => goToStep(5)}
-                      className="btn-next bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-medium py-2 px-4 rounded transition"
+                      className="btn-next bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base font-black font-spaceGrotesk py-3 px-8 rounded-xl transition shadow-lg active:scale-95 text-xs uppercase tracking-widest"
                     >
                       Next →
                     </button>
@@ -597,62 +594,65 @@ const SignUp = () => {
                   className="space-y-4"
                 >
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Profile Picture
+                    <label className="block text-[10px] font-black font-spaceGrotesk text-brand-gold uppercase tracking-[0.2em] mb-4">
+                      Profile Photo
                     </label>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-4">
                       <input
                         type="file"
                         accept="image/*"
                         onChange={handleUploadPic}
-                        className="flex-1 p-2 border-2 border-yellow-600 bg-gray-800 text-sm rounded
+                        className="flex-1 p-3 border border-white/10 bg-black/20 text-xs rounded-xl
                                    text-gray-100
-                                   file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0
-                                   file:text-sm file:font-semibold file:bg-yellow-500 file:text-gray-900
-                                   hover:file:bg-yellow-600"
+                                   file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0
+                                   file:text-[10px] file:font-black file:bg-brand-gold file:text-brand-dark-base
+                                   file:uppercase file:tracking-widest
+                                   hover:file:bg-brand-gold-light transition-all"
                       />
                       {uploading && (
-                        <FaSpinner className="animate-spin text-yellow-500 text-2xl" />
+                        <FaSpinner className="animate-spin text-brand-gold text-xl" />
                       )}
                     </div>
                   </div>
                   {data.profilePic && (
-                    <div className="flex justify-center my-4">
-                      <img
-                        src={data.profilePic}
-                        alt="Profile Preview"
-                        className="h-24 w-24 rounded-full object-cover shadow-lg border-2 border-yellow-500"
-                      />
+                    <div className="flex justify-center my-6">
+                      <div className="p-1 rounded-full bg-brand-gold/20 border border-brand-gold/30">
+                        <img
+                          src={data.profilePic}
+                          alt="Profile Preview"
+                          className="h-24 w-24 rounded-full object-cover"
+                        />
+                      </div>
                     </div>
                   )}
-                  <div className="flex items-center space-x-2">
-                    <div className="flex items-center px-1 bg-gray-800 border-2 border-yellow-600 rounded focus-within:ring-yellow-500 focus-within:border-yellow-500">
+                  <div className="flex items-center space-x-4 p-4 bg-white/5 rounded-2xl border border-white/5 mt-6">
+                    <div className="flex items-center">
                       <input
                         type="checkbox"
                         id="terms"
                         checked={agreedToTerms}
                         onChange={(e) => setAgreedToTerms(e.target.checked)}
-                        className="w-4 h-4 text-yellow-600 border-gray-700 rounded focus:ring-yellow-500 bg-gray-800 checked:bg-yellow-500"
+                        className="w-5 h-5 text-brand-gold border-white/10 rounded-lg focus:ring-brand-gold bg-black/20 checked:bg-brand-gold transition-all"
                       />
                     </div>
                     <label
                       htmlFor="terms"
-                      className="text-sm text-gray-300 leading-snug"
+                      className="text-[10px] text-gray-500 leading-relaxed font-bold uppercase tracking-widest"
                     >
                       I agree to the{' '}
                       <Link
                         to="/terms"
-                        className="text-yellow-500 hover:underline"
+                        className="text-brand-gold hover:text-white transition-colors underline underline-offset-4"
                       >
-                        terms and conditions
+                        Terms of Service
                       </Link>
                     </label>
                   </div>
-                  <div className="flex justify-between mt-6">
+                  <div className="flex justify-between mt-10">
                     <button
                       type="button"
                       onClick={() => goToStep(4)}
-                      className="btn-back bg-gray-700 hover:bg-gray-600 text-gray-100 font-medium py-2 px-4 rounded transition"
+                      className="btn-back bg-white/5 hover:bg-white/10 text-gray-500 border border-white/10 font-black font-spaceGrotesk py-3 px-8 rounded-xl transition active:scale-95 text-xs uppercase tracking-widest"
                     >
                       ← Back
                     </button>
@@ -664,13 +664,13 @@ const SignUp = () => {
                         !data.profilePic ||
                         !agreedToTerms
                       }
-                      className="bg-yellow-600 hover:bg-yellow-700 text-gray-900 text-sm font-medium py-2 px-4 rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base font-black font-spaceGrotesk py-3 px-10 rounded-xl transition shadow-brand-gold disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 text-xs uppercase tracking-[0.2em]"
                     >
                       {loading
-                        ? 'Signing Up...'
+                        ? 'PROCESSING...'
                         : uploading
-                          ? 'Uploading...'
-                          : 'Sign Up 🚀'}
+                          ? 'UPLOADING...'
+                          : 'Complete Signup'}
                     </button>
                   </div>
                 </motion.div>
@@ -734,14 +734,14 @@ const InputField = ({
   placeholder = '',
   required = false,
 }) => (
-  <div>
+  <div className="group">
     <label
       htmlFor={name}
-      className="block text-sm font-medium text-gray-300 mb-1"
+      className="block text-xs font-bold font-spaceGrotesk text-brand-gold uppercase tracking-widest mb-2 transition-colors group-focus-within:text-white"
     >
       {label}
     </label>
-    <div className="flex items-center p-2 bg-gray-800 border-2 border-yellow-600 rounded focus-within:ring-yellow-500 focus-within:border-yellow-500">
+    <div className="flex items-center bg-black/20 border border-white/10 rounded-xl focus-within:border-brand-gold/50 transition-all duration-300">
       <input
         id={name}
         type={type}
@@ -750,35 +750,35 @@ const InputField = ({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className="w-full p-2 bg-transparent text-sm rounded focus:ring-0 focus:outline-none text-gray-100 placeholder-gray-400"
+        className="w-full p-4 bg-transparent text-sm rounded-xl focus:ring-0 focus:outline-none text-gray-100 placeholder-gray-500"
       />
     </div>
   </div>
 );
 
 const PasswordField = ({ label, name, value, onChange, show, toggle }) => (
-  <div>
+  <div className="group">
     <label
       htmlFor={name}
-      className="block text-sm font-medium text-gray-300 mb-1"
+      className="block text-xs font-bold font-spaceGrotesk text-brand-gold uppercase tracking-widest mb-2 transition-colors group-focus-within:text-white"
     >
       {label}
     </label>
-    <div className="relative flex items-center w-full p-1 rounded-lg border-2 border-yellow-600 bg-gray-800 focus-within:ring-2 focus-within:ring-yellow-500">
+    <div className="relative flex items-center w-full bg-black/20 border border-white/10 rounded-xl focus-within:border-brand-gold/50 transition-all duration-300">
       <input
         id={name}
         type={show ? 'text' : 'password'}
         name={name}
         value={value}
         onChange={onChange}
-        placeholder={`Enter ${label.toLowerCase()}`}
+        placeholder={`Enter security code`}
         required
-        className="flex-1 bg-transparent outline-none text-gray-100 placeholder-gray-400"
+        className="flex-1 p-4 bg-transparent outline-none text-gray-100 placeholder-gray-500 text-sm rounded-xl"
       />
       <button
         type="button"
         onClick={toggle}
-        className="absolute right-3 top-3 text-yellow-500 hover:text-yellow-400"
+        className="absolute right-4 text-gray-500 hover:text-brand-gold transition-colors"
       >
         {show ? (
           <FaEyeSlash className="h-5 w-5" />

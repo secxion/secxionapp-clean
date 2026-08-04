@@ -17,35 +17,34 @@ const SecxionLoader = ({ size = 'medium', message = '' }) => {
 
   return (
     <div
-      className={`${containerHeight} bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 flex flex-col items-center justify-center px-4`}
+      className={`${containerHeight} premium-bg flex flex-col items-center justify-center px-4`}
     >
       <div className="relative">
         {/* Logo container with subtle glow */}
-        <div className="relative mb-8">
+        <div className="relative mb-12">
           <img
             src={SecxionLogo}
             alt="Secxion Logo"
-            className={`${logoSize} object-contain relative z-10 animate-pulse`}
+            className={`${logoSize} object-contain relative z-10 animate-pulse shadow-brand-gold`}
           />
         </div>
 
         {/* Loading message */}
-        <p className="text-yellow-400 text-lg font-semibold text-center mb-8 animate-pulse">
-          {message}
+        <p className="text-brand-gold text-xs font-black uppercase tracking-[0.4em] text-center mb-10 animate-pulse font-spaceGrotesk">
+          {message || 'System Initializing'}
         </p>
 
         {/* Gradient progress bar */}
-        <div className="w-80 max-w-sm mx-auto">
-          <div className="h-2 bg-gray-800 rounded-full overflow-hidden shadow-inner">
-            <div className="h-full bg-gradient-to-r from-purple-500 via-yellow-400 to-purple-500 rounded-full animate-loading-bar"></div>
+        <div className="w-64 max-w-xs mx-auto">
+          <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-transparent via-brand-gold to-transparent rounded-full animate-loading-bar"></div>
           </div>
         </div>
 
         {/* Floating particles */}
-        <div className="absolute -top-10 -left-10 w-4 h-4 bg-yellow-400/30 rounded-full animate-float-1"></div>
-        <div className="absolute -top-5 -right-8 w-3 h-3 bg-purple-500/30 rounded-full animate-float-2"></div>
-        <div className="absolute -bottom-8 -left-6 w-2 h-2 bg-yellow-400/40 rounded-full animate-float-3"></div>
-        <div className="absolute -bottom-5 -right-10 w-5 h-5 bg-purple-500/20 rounded-full animate-float-4"></div>
+        <div className="absolute -top-12 -left-12 w-4 h-4 bg-brand-gold/10 rounded-full animate-float-1 blur-sm"></div>
+        <div className="absolute -top-6 -right-10 w-3 h-3 bg-white/5 rounded-full animate-float-2 blur-xs"></div>
+        <div className="absolute -bottom-10 -left-8 w-2 h-2 bg-brand-gold/20 rounded-full animate-float-3"></div>
       </div>
 
       <style>

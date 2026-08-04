@@ -220,15 +220,10 @@ const ProductDetails = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white py-6 flex flex-col justify-center sm:py-12 border-2 border-black">
-        {' '}
-        {/* Changed to white background and black border */}
-        <div className="relative py-3 sm:max-w-xl sm:mx-auto">
-          <div className="absolute inset-0 bg-red-400 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 rounded-3xl border-4 border-yellow-700"></div>{' '}
-          {/* Yellow border */}
-          <div className="relative px-4 py-10 bg-white shadow-lg rounded-3xl sm:p-20 text-center border-4 border-yellow-700">
-            {' '}
-            {/* White background and yellow border */}
+      <div className="flex min-h-screen flex-col justify-center border border-white/10 bg-slate-950 py-6 sm:py-12">
+        <div className="relative py-3 sm:mx-auto sm:max-w-xl">
+          <div className="absolute inset-0 -rotate-6 rounded-3xl border border-red-400/30 bg-red-500/10 shadow-[0_0_35px_rgba(239,68,68,0.15)] sm:skew-y-0"></div>
+          <div className="relative rounded-3xl border border-white/10 bg-slate-900/90 px-4 py-10 text-center shadow-[0_0_35px_rgba(0,0,0,0.25)] sm:p-20">
             <div className="mb-4">
               <svg
                 className="mx-auto h-12 w-12 text-red-500 "
@@ -244,17 +239,17 @@ const ProductDetails = () => {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            <h2 className="mb-4 text-2xl font-semibold text-white">
               Error Loading Product
             </h2>
-            <p className="text-gray-600 mb-6 " role="alert">
+            <p className="mb-6 text-slate-300" role="alert">
               {error}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={handleRetry}
                 disabled={isRetrying || retryCount >= MAX_RETRY_ATTEMPTS}
-                className="bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors border-4 border-yellow-700 " // Yellow border and glossy text
+                className="rounded border border-brand-gold/30 bg-brand-gold px-4 py-2 font-semibold text-slate-950 transition-colors hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-brand-gold/50 disabled:cursor-not-allowed disabled:bg-slate-600"
                 aria-label={
                   isRetrying ? 'Retrying...' : 'Retry loading product'
                 }
@@ -289,7 +284,7 @@ const ProductDetails = () => {
               </button>
               <button
                 onClick={handleGoBack}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors border-4 border-yellow-700 " // Yellow border and glossy text
+                className="rounded border border-white/10 bg-slate-800 px-4 py-2 font-semibold text-slate-200 transition-colors hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-white/20"
                 aria-label="Go back to previous page"
               >
                 Go Back
@@ -302,18 +297,26 @@ const ProductDetails = () => {
   }
 
   return (
-    <div className="w-screen overflow-x-hidden border-2 border-black">
-      {' '}
-      {/* Added black border to the main container */}
+    <div
+      className="w-screen overflow-x-auto bg-transparent"
+      style={{
+        scrollbarWidth: 'thin',
+        scrollbarColor: 'rgba(255,255,255,0.25) transparent',
+      }}
+    >
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 w-screen bg-white shadow-sm px-2 sm:px-4 lg:px-6 rounded-b-xl ">
-        {' '}
-        {/* Changed to white background and bold yellow border */}
+      <header className="fixed left-0 right-0 top-0 w-screen bg-gray-700 px-2 backdrop-blur-sm md:backdrop-blur-none lg:backdrop-blur-none sm:px-4 lg:px-6">
         <div className="max-w-7xl mx-auto">
           {/* Currency Selection */}
           {hasValidPricing && (
-            <div className="mt-24">
-              <div className="bg-white p-4 rounded-xl shadow-inner overflow-x-auto py-2 ">
+            <div className="mt-24 md:mt-28 lg:mt-32">
+              <div
+                className="overflow-x-auto bg-transparent p-4 py-2 md:py-3 lg:py-3"
+                style={{
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: 'rgba(255,255,255,0.25) transparent',
+                }}
+              >
                 {' '}
                 {/* Changed to white background and bold yellow border */}
                 <div
@@ -333,11 +336,11 @@ const ProductDetails = () => {
                         role="tab"
                         aria-selected={isActive}
                         aria-controls={`currency-panel-${currency.currency}`}
-                        className={`flex-shrink-0 py-2 px-3 rounded-xl text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 flex items-center ${
+                        className={`flex flex-shrink-0 items-center rounded-xl px-3 py-2 text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-gold/50 ${
                           isActive
-                            ? 'bg-emerald-500 text-white shadow-md transform scale-105 border-4 border-yellow-700' // Bold yellow border for active
-                            : 'bg-white text-gray-700 hover:bg-gray-200 hover:scale-105 border-4 border-yellow-500' // Lighter yellow border for inactive and hover
-                        } `} // Applied glossy text
+                            ? 'bg-brand-gold/15 text-brand-gold'
+                            : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                        }`}
                         onClick={() => handleCurrencyChange(currency.currency)}
                         aria-label={`Select ${fullCurrencyName} currency`}
                       >
@@ -361,26 +364,26 @@ const ProductDetails = () => {
         </div>
       </header>
       {/* Main Content */}
-      <main className="min-h-screen pt-36 mt-8 pb-24 px-4 sm:px-6 lg:px-8 bg-white">
+      <main className="min-h-screen premium-bg px-4 pb-24 pt-44 sm:px-6 md:pt-40 md:mt-10 lg:pt-44 lg:mt-10lg:px-8">
         {' '}
         {/* Changed to white background */}
         <div className="max-w-7xl mx-auto">
           {/* Product Description */}
-          <div className="border-4 border-yellow-700 rounded-xl p-4 bg-white shadow-sm mb-6">
+          <div className="mb-6 p-0">
             {' '}
             {/* White background and yellow border */}
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">
+            <h2 className="mb-3 antialiased font-spaceGrotesk text-xs font-black uppercase tracking-[0.18em] text-brand-gold md:text-sm lg:text-sm md:tracking-[0.14em] lg:tracking-[0.12em]">
               Product Description
             </h2>
             <div className="flex items-start gap-4">
               <div className="flex-1">
-                <p className="text-gray-700 leading-relaxed ">
+                <p className="text-sm leading-relaxed text-gray-300">
                   {' '}
                   {/* Applied glossy text */}
                   {data.description || 'No description available.'}
                 </p>
                 {data.brandName && (
-                  <span className="inline-block mt-2 px-3 py-1 bg-emerald-100 text-emerald-800 text-sm rounded-full ">
+                  <span className="mt-2 inline-flex items-center px-3 py-1 text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold/80 font-spaceGrotesk">
                     {' '}
                     {/* Applied glossy text */}
                     {data.brandName}
@@ -391,14 +394,14 @@ const ProductDetails = () => {
           </div>
 
           {/* Face Values */}
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden border-4 border-yellow-700">
+          <div className="overflow-hidden bg-transparent">
             {' '}
             {/* White background and yellow border */}
-            <div className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="p-0">
+              <h2 className="mb-4 antialiased font-spaceGrotesk text-xs font-black uppercase tracking-[0.18em] text-brand-gold md:text-sm lg:text-sm md:tracking-[0.14em] lg:tracking-[0.12em]">
                 Select Face Value
                 {selectedCurrencyInfo && (
-                  <span className="ml-2 text-sm font-normal text-gray-600 ">
+                  <span className="ml-2 font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.16em] text-gray-400 md:text-xs md:tracking-[0.12em]">
                     {' '}
                     {/* Applied glossy text */}({selectedCurrencyInfo.fullName})
                   </span>
@@ -412,10 +415,7 @@ const ProductDetails = () => {
                   id={`currency-panel-${activeCurrency.currency}`}
                 >
                   {currentFaceValues.map((fv, index) => (
-                    <div
-                      key={`${fv.faceValue}-${index}`}
-                      className="bg-white rounded-xl p-4 space-y-3 transition-colors border-2 border-transparent hover:border-4 hover:border-yellow-500 hover:shadow-lg"
-                    >
+                    <div key={`${fv.faceValue}-${index}`} className="">
                       {/* Top row: Face value info + Sell button */}
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div className="flex items-center space-x-4">
@@ -430,18 +430,18 @@ const ProductDetails = () => {
                           )}
                           <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0">
                             <div className="flex items-center space-x-2">
-                              <span className="text-sm font-medium text-gray-600 ">
+                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 font-spaceGrotesk">
                                 Face Value:
                               </span>
-                              <span className="font-semibold text-gray-900 ">
+                              <span className="font-semibold text-white">
                                 {fv.faceValue}
                               </span>
                             </div>
                             <div className="flex items-center space-x-2">
-                              <span className="text-sm font-medium text-gray-600 ">
+                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 font-spaceGrotesk">
                                 Rate:
                               </span>
-                              <span className="font-semibold text-emerald-600 ">
+                              <span className="font-semibold text-brand-gold">
                                 {fv.sellingPrice}
                               </span>
                             </div>
@@ -449,7 +449,7 @@ const ProductDetails = () => {
                         </div>
 
                         <button
-                          className="inline-flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 focus:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-2 px-6 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all duration-200 hover:shadow-md border-4 border-yellow-700  flex-shrink-0"
+                          className="inline-flex flex-shrink-0 items-center justify-center rounded-xl bg-brand-gold px-5 py-2.5 text-[10px] font-black uppercase tracking-[0.3em] text-brand-dark-base transition-all duration-200 hover:bg-yellow-500 focus:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-brand-gold/50 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
                           onClick={() => handleSell(fv)}
                           disabled={!user}
                           aria-label={`Sell ${fv.faceValue} ${selectedCurrencyInfo?.currency} at rate ${fv.sellingPrice}`}
@@ -474,7 +474,7 @@ const ProductDetails = () => {
                       {/* Requirement block - always full width below */}
                       {fv.requirement && (
                         <div
-                          className="text-sm text-gray-600 italic  bg-gray-50 rounded-lg p-3 border border-gray-200"
+                          className="mt-3 bg-white/[0.03] px-3 py-3 text-sm italic text-gray-400"
                           style={{ whiteSpace: 'pre-line' }}
                         >
                           {fv.requirement}
@@ -484,7 +484,7 @@ const ProductDetails = () => {
                   ))}
                 </div>
               ) : (
-                <div className="bg-white rounded-xl p-8 text-center border-4 border-yellow-500">
+                <div className="bg-transparent p-8 text-center">
                   {' '}
                   {/* White background and yellow border */}
                   <svg
@@ -500,10 +500,10 @@ const ProductDetails = () => {
                       d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
                     />
                   </svg>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <h3 className="mb-2 text-lg font-semibold text-white">
                     No Denominations Available
                   </h3>
-                  <p className="text-gray-600 ">
+                  <p className="text-sm text-gray-500">
                     {' '}
                     {/* Applied glossy text */}
                     {hasValidPricing
@@ -520,12 +520,12 @@ const ProductDetails = () => {
       {showUploadForm && selectedFaceValue && activeCurrency && (
         <div className="fixed z-50 inset-0 overflow-y-auto bg-black bg-opacity-50">
           <div className="flex items-center justify-center min-h-screen p-4">
-            <div className="relative bg-white w-full max-w-md rounded-xl shadow-xl border-4 border-yellow-700">
+            <div className="relative w-full max-w-md rounded-3xl bg-brand-dark-base/95 shadow-[0_0_40px_rgba(0,0,0,0.35)]">
               {' '}
               {/* White background and yellow border */}
               <button
                 onClick={() => setShowUploadForm(false)}
-                className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 focus:outline-none"
+                className="absolute right-3 top-3 rounded-full bg-white/5 p-2 text-gray-400 transition-colors hover:bg-white/10 hover:text-white focus:outline-none"
               >
                 <svg className="h-5 w-5 fill-current" viewBox="0 0 20 20">
                   <path
@@ -536,7 +536,7 @@ const ProductDetails = () => {
                 </svg>
               </button>
               <div className="py-6 px-6">
-                <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                <h2 className="mb-4 text-[10px] font-black uppercase tracking-[0.4em] text-brand-gold font-spaceGrotesk">
                   Upload Market Item ({activeCurrency?.currency}{' '}
                   {selectedFaceValue?.faceValue})
                 </h2>

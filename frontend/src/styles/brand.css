@@ -32,3 +32,48 @@
 .font-spaceGrotesk {
   font-family: 'Space Grotesk', Inter, sans-serif;
 }
+
+/* Glassmorphism Components */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(212, 175, 55, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Neon Accents */
+.neon-gold-text {
+  color: #d4af37;
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+}
+
+.neon-gold-border {
+  border-color: #d4af37;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+.brand-gradient-gold {
+  background: linear-gradient(135deg, #b8860b 0%, #d4af37 50%, #f5d17e 100%);
+}
+
+.premium-bg {
+  background:
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.05), transparent),
+    radial-gradient(circle at bottom left, rgba(15, 23, 42, 0.1), transparent),
+    #0b0f19;
+}

@@ -75,24 +75,24 @@ const CategoryProduct = () => {
   };
 
   return (
-    <div className="p-2 fixed top-[80px] left-0 right-0 bottom-0 rounded-2xl flex flex-col md:flex-row bg-white text-white">
+    <div className="p-2 fixed top-20 md:mt-6 lg:mt-6 left-0 right-0 bottom-0 flex flex-col md:flex-row bg-brand-dark-base text-white">
       {/* Mobile Top Bar Filter */}
-      <div className="md:hidden w-full bg-white px-2 py-1 flex overflow-x-auto gap-3 scrollbar-thin scrollbar-thumb-gray-400">
+      <div className="md:hidden w-full bg-brand-dark-base px-2 py-3 flex overflow-x-auto gap-3 scrollbar-hide border-b border-white/5">
         {productCategory.map((category) => (
           <label
             key={category.id}
-            className="flex items-center gap-1 bg-gray-900 px-2 py-2 rounded whitespace-nowrap text-xs border border-gray-700 hover:border-yellow-400 transition-all duration-200 focus-within:ring-2 focus-within:ring-yellow-400"
-            tabIndex={0}
-            aria-label={`Filter by ${category.label}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl whitespace-nowrap text-[10px] font-bold font-spaceGrotesk uppercase tracking-widest border transition-all duration-300 ${
+              selectCategory[category.value]
+                ? 'bg-brand-gold text-brand-dark-base border-brand-gold shadow-[0_0_15px_rgba(212,175,55,0.3)]'
+                : 'bg-white/5 text-gray-400 border-white/10 hover:border-brand-gold/50'
+            }`}
           >
             <input
               type="checkbox"
               value={category.value}
               checked={!!selectCategory[category.value]}
               onChange={handleSelectCategory}
-              className="accent-blue-500 h-5 w-5 text-gray-500 focus:ring-2 focus:ring-yellow-400"
-              aria-checked={!!selectCategory[category.value]}
-              aria-label={category.label}
+              className="hidden"
             />
             <span>{category.label}</span>
           </label>
@@ -100,17 +100,19 @@ const CategoryProduct = () => {
       </div>
 
       {/* Desktop Sidebar Filter */}
-      <aside className="hidden md:block md:w-[250px] bg-gray-900 p-4 shadow-lg overflow-y-auto border-r border-gray-800 border-4 border-yellow-500 rounded-bl-xl rounded-tl-xl">
-        <h4 className="text-xl font-bold mb-5 flex items-center tracking-tight text-white uppercase italic">
-          <FaFilter className="mr-2 text-yellow-500" /> Filter
+      <aside className="hidden md:block md:w-[280px] bg-brand-dark-elevated p-6 shadow-2xl overflow-y-auto border-r border-white/5">
+        <h4 className="text-xs font-black mb-8 flex items-center tracking-[0.3em] text-brand-gold uppercase font-spaceGrotesk">
+          <FaFilter className="mr-3 text-brand-gold/50" /> System Filters
         </h4>
         <form className="space-y-3">
           {productCategory.map((category) => (
             <label
               key={category.id}
-              className="group flex items-center gap-3 p-2.5 rounded-xl cursor-pointer bg-gray-800/40 hover:bg-gray-700/60 transition-all border border-gray-700/50 hover:border-yellow-500/50 focus-within:ring-2 focus-within:ring-yellow-500/30"
-              tabIndex={0}
-              aria-label={`Filter by ${category.label}`}
+              className={`group flex items-center gap-4 p-3.5 rounded-2xl cursor-pointer transition-all duration-300 border ${
+                selectCategory[category.value]
+                  ? 'bg-brand-gold/10 border-brand-gold/50 shadow-[inset_0_0_20px_rgba(212,175,55,0.1)]'
+                  : 'bg-white/5 border-white/5 hover:border-white/10'
+              }`}
             >
               <div className="relative flex items-center">
                 <input
@@ -118,50 +120,52 @@ const CategoryProduct = () => {
                   value={category.value}
                   checked={!!selectCategory[category.value]}
                   onChange={handleSelectCategory}
-                  className="peer h-5 w-5 rounded border-gray-600 bg-gray-700 text-yellow-500 focus:ring-yellow-500/50 focus:ring-offset-gray-900"
-                  aria-checked={!!selectCategory[category.value]}
-                  aria-label={category.label}
+                  className="peer h-5 w-5 rounded-lg border-white/10 bg-black/20 text-brand-gold focus:ring-brand-gold/50 focus:ring-offset-brand-dark-elevated transition-all"
                 />
               </div>
-              <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
+              <span
+                className={`text-sm font-bold font-spaceGrotesk tracking-wide transition-colors ${
+                  selectCategory[category.value]
+                    ? 'text-brand-gold'
+                    : 'text-gray-400 group-hover:text-gray-200'
+                }`}
+              >
                 {category.label}
               </span>
             </label>
           ))}
         </form>
-        <div className="mt-6 text-sm text-gray-400 border-t border-gray-800 pt-3 ">
-          Can't find it? <br />
+        <div className="mt-8 text-[10px] font-bold text-gray-500 border-t border-white/5 pt-6 uppercase tracking-[0.2em] font-spaceGrotesk">
+          Missing data point? <br />
           <Link
             to="/report"
-            className="text-green-400 underline hover:text-green-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded"
-            tabIndex={0}
-            aria-label="Report missing category"
+            className="text-brand-gold hover:text-white transition-colors underline underline-offset-8 mt-2 block"
           >
-            Report here
+            REPORT PROTOCOL
           </Link>
         </div>
       </aside>
       {/* Product List */}
-      <main className="flex-1 bg-gray-950 p-3 overflow-hidden border-2 border-black rounded-tr-xl rounded-br-xl">
+      <main className="flex-1 premium-bg p-6 overflow-hidden">
         <div className="h-full flex flex-col">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-4">
             {filterCategoryList.length > 0 && (
-              <p className="text-xs text-blue-400 ">
-                Showing:{' '}
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold/60 font-spaceGrotesk">
+                ACTIVE SECTORS:{' '}
                 {filterCategoryList.map((cat, i) => (
                   <span key={cat}>
-                    <span className="text-gray-400 font-semibold">
+                    <span className="text-white">
                       {productCategory.find((p) => p.value === cat)?.label ||
                         cat}
                     </span>
-                    {i < filterCategoryList.length - 1 ? ', ' : ''}
+                    {i < filterCategoryList.length - 1 ? ' | ' : ''}
                   </span>
                 ))}
               </p>
             )}
           </div>
 
-          <div className="flex-1 overflow-y-auto rounded-lg border border-blue-700 bg-gray-900 p-3 shadow-inner scrollbar-thin scrollbar-thumb-blue-500 border-4 border-yellow-500">
+          <div className="flex-1 overflow-y-auto rounded-3xl glass-panel p-6 shadow-2xl scrollbar-hide border-white/5">
             {loading ? (
               <div className="flex items-center justify-center h-full">
                 <SecxionSpinner size="large" message="Loading products..." />

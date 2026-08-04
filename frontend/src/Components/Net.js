@@ -260,9 +260,8 @@ const Net = ({ blogs }) => {
   }, [dispatch, navigate, token]);
 
   return (
-    <div className="net-container fixed top-0 left-0 w-full bg-yellow-400 h-9 shadow-sm md:h-11 px-2 md:px-4 lg:px-6 flex items-center font-mono text-gray-900 transition-all duration-300 z-50">
+    <div className="net-container fixed top-0 left-0 w-full bg-yellow-400 h-[var(--net-height)] shadow-sm px-2 md:px-4 lg:px-6 flex items-center font-mono text-gray-900 transition-all duration-300 z-50">
       {' '}
-      {/* Black border applied */}
       {/* User Profile Section */}
       {profilePic && name && (
         <div className="user-profile-section relative flex items-center mr-3 md:mr-6 lg:mr-8 shrink-0">
@@ -285,10 +284,10 @@ const Net = ({ blogs }) => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute top-full left-0 mt-2 w-52 bg-white rounded-xl shadow-lg py-2 z-50 border-4 border-yellow-500" // Added bold yellow border
+              className="absolute top-full left-0 mt-2 w-56 bg-brand-dark-elevated rounded-xl shadow-2xl py-2 z-50 border border-white/10 backdrop-blur-xl"
             >
-              <div className=" flex px-4 py-3 border-b border-gray-100">
-                <p className="text-sm font-bold text-gray-800 truncate ">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
+                <p className="text-sm font-bold text-brand-gold truncate font-spaceGrotesk tracking-wide">
                   {name}
                 </p>
                 {user?._id && (
@@ -299,9 +298,10 @@ const Net = ({ blogs }) => {
                       handleLogout();
                     }}
                     disabled={loading}
-                    className="px-1 py-1 -mt-1 text-xs ml-20 border-4 border-red-700 text-black rounded flex items-center  disabled:opacity-50"
+                    className="p-1.5 text-xs ml-4 border border-red-500/50 text-red-400 rounded-lg hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                    title="Logout"
                   >
-                    <FontAwesomeIcon icon={faSignOutAlt} className="mr-1" />
+                    <FontAwesomeIcon icon={faSignOutAlt} />
                   </button>
                 )}
               </div>
@@ -310,37 +310,23 @@ const Net = ({ blogs }) => {
               {currentRoute !== '/home' && (
                 <Link
                   to="/home"
-                  className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 transition-colors duration-150 group " // Applied
+                  className="flex items-center px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 transition-all duration-150 group font-spaceGrotesk"
                   onClick={() => setIsDropdownOpen(false)}
                 >
-                  <Home className="w-4 h-4 mr-3 text-gray-500 group-hover:text-blue-600" />
-                  <span className="group-hover:text-blue-600">Home</span>
+                  <Home className="w-4 h-4 mr-3 text-gray-500 group-hover:text-brand-gold transition-colors" />
+                  <span className="group-hover:text-white">Home</span>
                 </Link>
               )}
-
-              {/* Admin Panel link - DEACTIVATED: Admin moved to standalone app */}
-              {/* {user?.role === ROLE.ADMIN && currentRoute !== '/admin-panel' && (
-                <Link
-                  to="/admin-panel"
-                  className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 transition-colors duration-150 group "
-                  onClick={() => setIsDropdownOpen(false)}
-                >
-                  <Shield className="w-4 h-4 mr-3 text-gray-500 group-hover:text-purple-600" />
-                  <span className="group-hover:text-purple-600">
-                    Admin Panel
-                  </span>
-                </Link>
-              )} */}
 
               {/* Conditionally render Profile Settings link */}
               {currentRoute !== '/profile' && (
                 <Link
                   to="/profile"
-                  className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-green-50 transition-colors duration-150 group " // Applied
+                  className="flex items-center px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 transition-all duration-150 group font-spaceGrotesk"
                   onClick={() => setIsDropdownOpen(false)}
                 >
-                  <Settings className="w-4 h-4 mr-3 text-gray-500 group-hover:text-green-600" />
-                  <span className="group-hover:text-green-600">
+                  <Settings className="w-4 h-4 mr-3 text-gray-500 group-hover:text-brand-gold transition-colors" />
+                  <span className="group-hover:text-white">
                     Profile Settings
                   </span>
                 </Link>
@@ -391,7 +377,7 @@ const Net = ({ blogs }) => {
                   {/* Added yellow border */}
                   <div className="absolute inset-0 w-1.5 h-1.5 md:w-2 md:h-2 bg-yellow-400 rounded-full animate-ping"></div>
                 </div>
-                <span className="text-xs md:text-sm lg:text-base font-bold text-yellow-600  transition-colors duration-300 ">
+                <span className="text-xs md:text-sm lg:text-base font-bold text-gray-900 font-spaceGrotesk transition-colors duration-300">
                   {' '}
                   {/* Applied  */}
                   {getResponsiveText(
@@ -404,7 +390,7 @@ const Net = ({ blogs }) => {
               </div>
               <ArrowRight className="w-3 h-3 md:w-4 md:h-4 text-gray-400   flex-shrink-0 " />{' '}
               {/* Applied  */}
-              <span className="text-xs md:text-sm font-medium text-gray-800  truncate flex-grow ">
+              <span className="text-xs md:text-sm font-medium text-gray-800 truncate flex-grow font-spaceGrotesk">
                 {' '}
                 {/* Applied  */}
                 {getResponsiveText(

@@ -10,22 +10,22 @@ const Report = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br mt-16 from-gray-950 via-gray-900 to-gray-800 text-gray-100 py-10 px-4">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 p-6 rounded-2xl shadow-lg border border-gray-700">
-          <h1 className="text-2xl font-bold text-yellow-400 mb-4">
-            Submit a Report
+    <div className="min-h-screen premium-bg text-gray-100 py-10 px-4">
+      <div className="max-w-4xl mx-auto space-y-12">
+        <div className="glass-card p-8 rounded-3xl border-white/10 shadow-2xl">
+          <h1 className="text-2xl font-black neon-gold-text font-spaceGrotesk uppercase tracking-tighter mb-4">
+            Support & Feedback
           </h1>
-          <p className="text-gray-400 text-sm mb-6">
-            If you encounter any issues, bugs, or fraudulent activities, please
-            submit a report below. Our team will review it and get back to you
-            as soon as possible.
+          <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-10 leading-relaxed max-w-2xl">
+            Submit a ticket regarding bugs, transaction issues, or feedback. Our
+            support team will review your request shortly.
           </p>
           <ReportForm onReportSubmit={handleReportSubmit} />
         </div>
-        <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 p-6 rounded-2xl shadow-lg border border-gray-700">
-          <h2 className="text-xl font-bold text-yellow-400 mb-4">
-            Your Reports
+        <div className="glass-card p-8 rounded-3xl border-white/10 shadow-2xl">
+          <h2 className="text-lg font-black text-white font-spaceGrotesk uppercase tracking-widest mb-8 flex items-center">
+            <span className="w-2 h-2 bg-brand-gold rounded-full mr-3 shadow-brand-gold"></span>
+            Support History
           </h2>
           <ReportList newReport={newReport} />
         </div>

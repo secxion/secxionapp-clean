@@ -198,223 +198,162 @@ const LastMarketStatus = () => {
   const lastUpdateDate = new Date(lastMarket.timestamp).toLocaleString();
 
   return (
-    <section className="bg-white max-w-7xl mx-auto my-8 p-4 rounded-xl shadow-lg border-2 border-gray-400">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">
-        Last Market Activity
-      </h2>
-      <div className="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-100 mb-6 text-gray-700">
-        <div className=" sm:flex-row sm:items-center sm:justify-between gap-y-2 text-sm">
-          <div className="flex items-center gap-x-2">
-            <span className="font-semibold text-gray-600">ID:</span>
-            <span className="text-gray-800">{lastMarket._id || 'N/A'}</span>
-          </div>
-          <div className="flex items-center gap-x-2">
-            <span className="font-semibold text-gray-600">Status:</span>
-            <span
-              className={`font-semibold text-base flex items-center ${statusDisplay.color}`}
-            >
-              <span className="ml-1">{statusDisplay.text}</span>
+    <section className="max-w-7xl mx-auto my-12 p-8 bg-white/[0.02] border border-white/5 rounded-3xl transition-all duration-300 hover:bg-white/[0.04] hover:border-brand-gold/20">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10 border-b border-white/5 pb-8">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-black font-spaceGrotesk text-white uppercase tracking-tight">
+            Last Market Activity
+          </h2>
+          <p className="text-[10px] font-black text-gray-600 uppercase tracking-[0.4em] mt-2">
+            Status: {statusDisplay.text.toUpperCase()}
+          </p>
+        </div>
+        <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-widest text-gray-500">
+          <div className="flex items-center gap-3">
+            <span className="text-gray-700">ID:</span>
+            <span className="text-brand-gold font-mono">
+              {lastMarket._id?.toUpperCase().slice(-12)}
             </span>
           </div>
-          <div className="flex items-center gap-x-2">
-            <span className="font-semibold text-gray-600">Last Updated:</span>
-            <span className="text-gray-800">{lastUpdateDate}</span>
+          <div className="flex items-center gap-3">
+            <span className="text-gray-700">Updated:</span>
+            <span className="text-white">{lastUpdateDate.toUpperCase()}</span>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1">
-        <div className="bg-white p-3 shadow-md hover:shadow-lg">
+      <div className="space-y-8">
+        <div className="grid grid-cols-1 gap-8">
           {lastMarket.pricing && lastMarket.pricing.length > 0 ? (
             lastMarket.pricing.map((priceBlock, pbIndex) => (
-              <div
-                key={pbIndex}
-                className="mb-4 pb-4 border-b last:border-b-0 last:pb-0"
-              >
-                <p className="font-bold text-gray-700 text-base mb-2">
-                  {priceBlock.currency || 'N/A'}
-                </p>
-                {priceBlock.faceValues && priceBlock.faceValues.length > 0 ? (
-                  <>
-                    <ul className="list-disc list-inside text-sm text-gray-700">
-                      {priceBlock.faceValues.map((fv, fvIndex) => (
-                        <React.Fragment key={fvIndex}>
-                          <li className="mb-1">
-                            Face Value:{' '}
-                            <span className="font-medium">
-                              {fv.faceValue || 'N/A'}
-                            </span>
-                          </li>
-                          <span className="mb-1 ml-5">
-                            Rate:{' '}
-                            <span className="font-medium">
-                              {formatCurrency(fv.sellingPrice)}
-                            </span>
-                          </span>
-                        </React.Fragment>
-                      ))}
-                    </ul>
+              <div key={pbIndex} className="space-y-8">
+                <div className="bg-black/20 border border-white/10 rounded-3xl p-10 shadow-2xl relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-brand-gold/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-brand-gold/10 transition-colors" />
 
-                    <div className="bg-white border-4 border-yellow-500 rounded-xl p-6 shadow-md hover:shadow-lg">
-                      <h3 className="text-xl font-semibold text-gray-800 mb-3 flex items-center">
-                        {lastMarket.productName || 'N/A'}
-
-                        {lastMarket.productImage &&
-                          lastMarket.productImage.length > 0 && (
-                            <div className="ml-3 flex -space-x-2 overflow-hidden">
-                              {lastMarket.productImage.slice(0, 3).map(
-                                (
-                                  img,
-                                  idx, // Show max 3 thumbnails
-                                ) => (
-                                  <img
-                                    key={`product-thumb-${idx}`}
-                                    src={ensureHttpsUrl(img)}
-                                    alt={`${lastMarket.productName} thumbnail ${idx + 1}`}
-                                    className="inline-block h-8 w-8 rounded-full ring-2 object-cover cursor-pointer ring-blue-500 transition-all duration-200"
-                                  />
-                                ),
-                              )}
-                              {lastMarket.productImage.length > 3 && (
-                                <span
-                                  className="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-gray-200 text-gray-600 flex items-center justify-center text-xs font-bold cursor-pointer hover:bg-gray-300 transition-all duration-200"
-                                  onClick={() =>
-                                    handleImageClick(
-                                      ensureHttpsUrl(
-                                        lastMarket.productImage[0],
-                                      ),
-                                    )
-                                  }
-                                >
-                                  +{lastMarket.productImage.length - 3}
-                                </span>
-                              )}
-                            </div>
+                  <div className="relative z-10 flex flex-col lg:flex-row justify-between gap-12">
+                    <div className="space-y-8 flex-1">
+                      <div className="flex items-center gap-6">
+                        <div className="w-16 h-16 rounded-2xl bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center p-3 shadow-brand-gold">
+                          {lastMarket.productImage &&
+                          lastMarket.productImage.length > 0 ? (
+                            <img
+                              src={ensureHttpsUrl(lastMarket.productImage[0])}
+                              alt=""
+                              className="w-full h-full object-contain"
+                            />
+                          ) : (
+                            <Image className="w-6 h-6 text-brand-gold" />
                           )}
-                      </h3>
+                        </div>
+                        <div>
+                          <h3 className="text-2xl font-black text-white font-spaceGrotesk uppercase tracking-tight">
+                            {lastMarket.productName || 'Unnamed Asset'}
+                          </h3>
+                          <div className="flex items-center gap-3 mt-1">
+                            <div
+                              className={`w-1.5 h-1.5 rounded-full ${statusDisplay.color.replace('text-', 'bg-')}`}
+                            />
+                            <span
+                              className={`text-[10px] font-black uppercase tracking-widest ${statusDisplay.color}`}
+                            >
+                              {statusDisplay.text}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
 
-                      <div className="text-sm text-gray-600 space-y-2 mb-4">
-                        <p>
-                          <strong>Remark:</strong>{' '}
-                          {lastMarket.userRemark
-                            ? lastMarket.userRemark
-                            : 'N/A'}
-                        </p>
-                        {lastMarket.cardcode && (
-                          <p>
-                            <strong>Card Code:</strong> {lastMarket.cardcode}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 py-6 border-y border-white/5">
+                        <div className="space-y-4">
+                          <p className="text-[9px] font-black text-gray-600 uppercase tracking-[0.3em]">
+                            Pricing Structure
                           </p>
-                        )}
-                        <h3 className="text-xl font-semibold text-gray-800 mb-3 flex items-center">
-                          {/* Product Image Thumbnail */}
-                          {lastMarket.Image.length > 0 && (
-                            <div className="ml-3 flex -space-x-2 overflow-hidden">
-                              {lastMarket.Image.slice(0, 3).map(
-                                (
-                                  img,
-                                  idx, // Show max 3 thumbnails
-                                ) => (
-                                  <img
-                                    key={`market-thumb-${idx}`}
-                                    src={ensureHttpsUrl(img)}
-                                    alt={`${lastMarket._id} thumbnail ${idx + 1}`}
-                                    className="inline-block h-12 w-12 ring-2 ring-white object-cover cursor-pointer hover:ring-blue-500 transition-all duration-200"
-                                    onClick={() =>
-                                      handleImageClick(ensureHttpsUrl(img))
-                                    }
-                                  />
-                                ),
-                              )}
-                              {lastMarket.productImage.length > 3 && (
-                                <span
-                                  className="inline-block h-12 w-12 ring-2 ring-white bg-gray-200 text-gray-600 flex items-center justify-center text-xs font-bold cursor-pointer hover:bg-gray-300 transition-all duration-200"
-                                  onClick={() =>
-                                    handleImageClick(
-                                      ensureHttpsUrl(lastMarket.Image[0]),
-                                    )
-                                  }
-                                >
-                                  +{lastMarket.Image.length - 3}
-                                </span>
-                              )}
+                          {priceBlock.faceValues.map((fv, fvIndex) => (
+                            <div
+                              key={fvIndex}
+                              className="flex justify-between items-center bg-white/5 px-4 py-3 rounded-xl border border-white/5"
+                            >
+                              <span className="text-xs font-bold text-gray-400">
+                                {fv.faceValue}
+                              </span>
+                              <span className="text-brand-gold font-black font-mono text-xs">
+                                Rate: {formatCurrency(fv.sellingPrice)}
+                              </span>
                             </div>
-                          )}
-                        </h3>
-                      </div>
-
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center justify-between text-lg">
-                          <span className="text-gray-700">Total FV:</span>
-                          <span className="font-bold text-green-700">
-                            {priceBlock.currency}{' '}
-                            {formatCurrency(lastMarket.totalAmount)}
-                          </span>
+                          ))}
                         </div>
-                        <div className="flex items-center justify-between text-lg">
-                          <span className="text-gray-700">CTA:</span>
-                          <span className="font-bold text-blue-700">
-                            ₦{formatCurrency(lastMarket.calculatedTotalAmount)}
-                          </span>
+                        <div className="space-y-6">
+                          <div className="space-y-2">
+                            <p className="text-[9px] font-black text-gray-600 uppercase tracking-[0.3em]">
+                              Total Volume
+                            </p>
+                            <p className="text-2xl font-black text-white font-spaceGrotesk tracking-tighter">
+                              {priceBlock.currency}{' '}
+                              {formatCurrency(lastMarket.totalAmount)}
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <p className="text-[9px] font-black text-brand-gold uppercase tracking-[0.3em]">
+                              Estimated Value
+                            </p>
+                            <p className="text-3xl font-black text-emerald-400 font-spaceGrotesk tracking-tighter shadow-brand-gold">
+                              ₦
+                              {formatCurrency(lastMarket.calculatedTotalAmount)}
+                            </p>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="border-t pt-4 mt-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-gray-600 text-base">
-                            Status:
-                          </span>
-                          <span
-                            className={`font-semibold text-lg flex items-center ${statusDisplay.color}`}
-                          >
-                            {statusDisplay.icon}
-                          </span>
+                      {lastMarket.userRemark && (
+                        <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                          <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1">
+                            User Notes
+                          </p>
+                          <p className="text-xs font-medium text-gray-400 italic">
+                            "{lastMarket.userRemark}"
+                          </p>
                         </div>
-
-                        {lastMarket.status === 'CANCEL' &&
-                          lastMarket.cancelReason && (
-                            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm">
-                              <p className="font-medium flex items-center">
-                                <Info className="w-4 h-4 mr-2" />
-                                Cancel Reason:
-                              </p>
-                              <p className="ml-6">{lastMarket.cancelReason}</p>
-                            </div>
-                          )}
-                        {lastMarket.status === 'CANCEL' &&
-                          lastMarket.crImage &&
-                          lastMarket.crImage.length > 0 && (
-                            <div className="mt-4">
-                              <p className="font-medium flex items-center text-gray-700">
-                                <Image className="w-4 h-4 mr-2" />
-                                Cancellation Images:
-                              </p>
-                              <div className="grid grid-cols-3 gap-2 mt-2">
-                                {lastMarket.crImage.map((img, idx) => (
-                                  <img
-                                    key={`cancel-img-${idx}`}
-                                    src={img}
-                                    alt={`Cancellation Proof ${idx + 1}`}
-                                    className="w-full h-24 object-cover rounded-md shadow-sm border border-gray-200 cursor-pointer hover:border-blue-500 transition-all duration-200"
-                                    onClick={() => handleImageClick(img)}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                      </div>
+                      )}
                     </div>
-                  </>
-                ) : (
-                  <p className="text-gray-500 text-sm italic">
-                    No face values specified for this currency.
-                  </p>
-                )}
+
+                    <div className="lg:w-72 space-y-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        {lastMarket.Image.map((img, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => handleImageClick(img)}
+                            className="aspect-square rounded-2xl overflow-hidden border border-white/10 hover:border-brand-gold/50 transition-all group"
+                          >
+                            <img
+                              src={ensureHttpsUrl(img)}
+                              alt=""
+                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                            />
+                          </button>
+                        ))}
+                      </div>
+
+                      {lastMarket.status === 'CANCEL' &&
+                        lastMarket.cancelReason && (
+                          <div className="mt-6 p-5 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-rose-300">
+                            <p className="text-[9px] font-black uppercase tracking-widest mb-2 flex items-center gap-2">
+                              <CircleX className="w-3 h-3" /> Rejection Details
+                            </p>
+                            <p className="text-xs font-bold leading-relaxed">
+                              {lastMarket.cancelReason.toUpperCase()}
+                            </p>
+                          </div>
+                        )}
+                    </div>
+                  </div>
+                </div>
               </div>
             ))
           ) : (
-            <p className="text-gray-500 text-base">
-              No pricing information available.
-            </p>
+            <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/5">
+              <p className="text-gray-600 text-[10px] font-black uppercase tracking-widest">
+                NO RECENT RECORDS DETECTED.
+              </p>
+            </div>
           )}
         </div>
       </div>

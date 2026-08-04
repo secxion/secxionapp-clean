@@ -1,4 +1,4 @@
-import { FaCaretUp, FaNairaSign, FaEthereum } from 'react-icons/fa6';
+import { FaNairaSign, FaEthereum } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
@@ -25,38 +25,38 @@ const HomeFooter = () => {
   }, []);
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 py-2 shadow-lg w-full">
-      <div className="flex justify-around items-center text-gray-300 dark:text-gray-100 text-xl h-16">
+    <footer className="fixed bottom-0 left-0 right-0 z-50 bg-brand-dark-base/90 backdrop-blur-2xl py-3 border-t border-white/5 shadow-2xl w-full">
+      <div className="flex justify-around items-center h-16 max-w-lg mx-auto">
         <Link
           to="/profile"
-          className="flex flex-col bg-transparent items-center text-blue-400 outline-none ring-2 ring-blue-400 ring-offset-1 transition-colors duration-300 ease-in-out border-4 border-yellow-500 rounded-lg p-2  h-12 w-12"
+          className="flex flex-col items-center justify-center transition-all duration-300 transform active:scale-95 h-14 w-14 rounded-2xl border border-white/10 bg-white/5 group"
           aria-label="Profile"
         >
           <div className="relative">
             <img
               src={profilePic}
               alt="Profile"
-              className="w-8 h-8 object-cover rounded-full"
+              className="w-10 h-10 object-cover rounded-xl border-2 border-brand-dark-base group-hover:border-brand-gold transition-colors"
             />
-            <FaCaretUp className="absolute -top-2 -right-2 text-yellow-400 text-sm" />
+            <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-brand-dark-base shadow-emerald-400"></div>
           </div>
         </Link>
 
         {/* Naira Wallet */}
         <Link
           to="/mywallet"
-          className="flex flex-col items-center justify-center transition-colors duration-300 ease-in-out h-14 w-14 hover:scale-105 rounded-lg border-2 border-green-500 bg-gray-800"
+          className="flex flex-col items-center justify-center transition-all duration-300 transform active:scale-95 h-14 w-14 rounded-2xl border border-white/10 bg-white/5 hover:border-brand-gold/30"
           aria-label="Naira Wallet"
         >
           {imagesLoaded.naira ? (
             <img
               src={NairaButtonImg}
               alt="Naira Wallet"
-              className="h-12 w-12 object-contain"
+              className="h-10 w-10 object-contain"
               style={{ display: 'block' }}
             />
           ) : (
-            <FaNairaSign className="text-green-400 text-2xl" />
+            <FaNairaSign className="text-brand-gold text-2xl" />
           )}
           <img
             src={NairaButtonImg}
@@ -69,18 +69,18 @@ const HomeFooter = () => {
         {/* Ethereum */}
         <Link
           to="/eth"
-          className="flex flex-col items-center justify-center transition-colors duration-300 ease-in-out h-14 w-14 hover:scale-105 rounded-lg border-2 border-cyan-500 bg-gray-800"
+          className="flex flex-col items-center justify-center transition-all duration-300 transform active:scale-95 h-14 w-14 rounded-2xl border border-white/10 bg-white/5 hover:border-brand-gold/30"
           aria-label="Ethereum"
         >
           {imagesLoaded.eth ? (
             <img
               src={EthereumButtonImg}
               alt="Ethereum"
-              className="h-12 w-12 object-contain"
+              className="h-10 w-10 object-contain"
               style={{ display: 'block' }}
             />
           ) : (
-            <FaEthereum className="text-cyan-400 text-2xl" />
+            <FaEthereum className="text-brand-gold text-2xl" />
           )}
           <img
             src={EthereumButtonImg}

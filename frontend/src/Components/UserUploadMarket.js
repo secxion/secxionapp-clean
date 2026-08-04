@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { CgClose } from 'react-icons/cg';
 import { FaCloudUploadAlt } from 'react-icons/fa';
 import { MdDelete } from 'react-icons/md';
 import { toast } from 'react-toastify';
@@ -154,16 +153,16 @@ const UserUploadMarket = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-start z-50 overflow-y-auto pt-12 px-4">
-      <div className="w-full max-w-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 p-6 rounded-2xl shadow-2xl relative border-2 border-yellow-700">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/85 px-4 pt-12 backdrop-blur-sm">
+      <div className="relative w-full max-w-3xl rounded-[28px] border border-white/10 bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black p-6 shadow-[0_0_48px_rgba(0,0,0,0.36)]">
         {/* Header */}
-        <div className="flex justify-between items-center border-b pb-4 mb-4 border-gray-800">
-          <h2 className="text-xl md:text-2xl font-bold text-yellow-400">
-            📦 Upload Product Details
+        <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4">
+          <h2 className="font-spaceGrotesk text-xl font-black uppercase tracking-[0.1em] text-brand-gold md:text-2xl">
+            Upload Product Details
           </h2>
           <motion.button
             onClick={onClose}
-            className="fixed top-14 right-6 z-[10000] bg-red-600 hover:bg-red-700 text-white p-3 rounded-full shadow-2xl transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-500/50 border-2 border-white/20"
+            className="fixed top-14 right-6 z-[10000] rounded-full border border-rose-300/30 bg-rose-500/20 p-3 text-rose-300 shadow-2xl transition-all duration-200 hover:scale-110 hover:bg-rose-500/30 focus:outline-none focus:ring-4 focus:ring-rose-400/40"
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             exit={{ scale: 0, rotate: 180 }}
@@ -175,7 +174,7 @@ const UserUploadMarket = ({
             }}
             whileHover={{
               rotate: 90,
-              boxShadow: '0 0 30px rgba(239, 68, 68, 0.5)',
+              boxShadow: '0 0 30px rgba(251, 113, 133, 0.45)',
             }}
             whileTap={{ scale: 0.9 }}
             aria-label="Close upload market"
@@ -186,36 +185,36 @@ const UserUploadMarket = ({
 
         {/* Product Overview */}
         {productDetails.productImage && (
-          <div className="flex gap-4 items-center border border-yellow-700 rounded-lg p-4 bg-gray-950 mb-6 shadow-sm">
+          <div className="mb-6 flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 shadow-sm">
             <img
               src={productDetails.productImage}
               alt="Preview"
-              className="w-24 h-24 object-cover rounded-lg shadow-inner"
+              className="h-24 w-24 rounded-xl border border-white/10 object-cover shadow-inner"
             />
             <div className="flex flex-col gap-1 text-sm text-gray-200">
               <p>
-                <span className="font-semibold text-yellow-400">Name:</span>{' '}
+                <span className="font-semibold text-brand-gold">Name:</span>{' '}
                 {productDetails.productName}
               </p>
               <p>
-                <span className="font-semibold text-yellow-400">Currency:</span>
+                <span className="font-semibold text-brand-gold">Currency:</span>
                 {flagImageMap[productDetails.currency] && (
                   <img
                     src={flagImageMap[productDetails.currency]}
-                    className="w-5 h-5 inline-block ml-1"
+                    className="ml-1 inline-block h-5 w-5"
                     alt={productDetails.currency}
                   />
                 )}{' '}
                 {productDetails.currency}
               </p>
               <p>
-                <span className="font-semibold text-yellow-400">
+                <span className="font-semibold text-brand-gold">
                   Face Value:
                 </span>{' '}
                 {productDetails.faceValue}
               </p>
               <p>
-                <span className="font-semibold text-yellow-400">Rate:</span>{' '}
+                <span className="font-semibold text-brand-gold">Rate:</span>{' '}
                 {productDetails.rate}
               </p>
             </div>
@@ -229,14 +228,14 @@ const UserUploadMarket = ({
         >
           {/* Image Upload */}
           <div>
-            <label className="block font-semibold text-yellow-400 mb-2">
-              📸 Upload Additional Images
+            <label className="mb-2 block font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.2em] text-brand-gold">
+              Upload Additional Images
             </label>
             <label
               htmlFor="uploadInput"
-              className={`flex flex-col items-center justify-center border-2 border-yellow-700 rounded-lg p-5 bg-gray-950 cursor-pointer transition ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
+              className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-white/20 bg-black/20 p-5 transition hover:border-brand-gold/40 hover:bg-white/[0.03] ${uploading ? 'pointer-events-none opacity-50' : ''}`}
             >
-              <FaCloudUploadAlt className="text-4xl text-yellow-500 mb-1" />
+              <FaCloudUploadAlt className="mb-1 text-4xl text-brand-gold" />
               <p className="text-gray-200">
                 {uploading ? 'Uploading...' : 'Click or drag to upload'}
               </p>
@@ -257,13 +256,13 @@ const UserUploadMarket = ({
                       setFullScreenImage(img);
                       setOpenFullScreenImage(true);
                     }}
-                    className="w-20 h-20 rounded-md border border-yellow-700 object-cover cursor-pointer hover:scale-105 transition"
+                    className="h-20 w-20 cursor-pointer rounded-xl border border-white/15 object-cover transition hover:scale-105 hover:border-brand-gold/40"
                     alt={`Uploaded product image ${idx + 1}`}
                   />
                   <button
                     type="button"
                     onClick={() => handleDeleteImage(idx)}
-                    className="absolute top-1 right-1 text-white bg-red-500 rounded-full p-1 hidden group-hover:block"
+                    className="absolute right-1 top-1 hidden rounded-full border border-rose-300/30 bg-rose-500/20 p-1 text-rose-200 group-hover:block"
                   >
                     <MdDelete size={16} />
                   </button>
@@ -274,8 +273,8 @@ const UserUploadMarket = ({
 
           {/* Total Face Value Input */}
           <div>
-            <label className="block font-semibold text-yellow-400 mb-2">
-              💰 Total Face Value ({currencySymbol})
+            <label className="mb-2 block font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.2em] text-brand-gold">
+              Total Face Value ({currencySymbol})
             </label>
             <input
               type="number"
@@ -283,17 +282,17 @@ const UserUploadMarket = ({
               value={data.totalAmount}
               onChange={handleOnChange}
               placeholder="Enter total face value"
-              className="w-full border border-gray-700 p-3 rounded-lg shadow-sm text-gray-200 bg-gray-950"
+              className="w-full rounded-xl border border-white/10 bg-black/20 p-3 text-gray-200 shadow-sm focus:border-brand-gold/50 focus:outline-none focus:ring-1 focus:ring-brand-gold/50"
               required
             />
           </div>
 
           {/* Calculated Amount Display */}
           <div>
-            <label className="block font-semibold text-yellow-400 mb-2">
+            <label className="mb-2 block font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.2em] text-brand-gold">
               = Calculated Total Amount:
             </label>
-            <div className="p-3 bg-gray-900 rounded-lg border border-gray-700 text-yellow-400 font-bold tracking-wide">
+            <div className="rounded-xl border border-brand-gold/30 bg-brand-gold/10 p-3 font-spaceGrotesk text-brand-gold-light font-bold tracking-wide">
               ₦
               {parseFloat(data.calculatedTotalAmount || 0).toLocaleString(
                 'en-NG',
@@ -304,7 +303,7 @@ const UserUploadMarket = ({
 
           {/* New Code Input */}
           <div>
-            <label className="block font-semibold text-yellow-400 mb-2">
+            <label className="mb-2 block font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.2em] text-brand-gold">
               Code
             </label>
             <input
@@ -313,15 +312,15 @@ const UserUploadMarket = ({
               value={data.cardcode}
               onChange={handleOnChange}
               placeholder="Enter code / pin (e.g., card code)"
-              className="w-full border border-gray-700 p-3 rounded-lg shadow-sm text-gray-200 bg-gray-950"
+              className="w-full rounded-xl border border-white/10 bg-black/20 p-3 text-gray-200 shadow-sm focus:border-brand-gold/50 focus:outline-none focus:ring-1 focus:ring-brand-gold/50"
               required
             />
           </div>
 
           {/* Remarks */}
           <div>
-            <label className="block font-semibold text-yellow-400 mb-2">
-              📝 Additional Remarks
+            <label className="mb-2 block font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.2em] text-brand-gold">
+              Additional Remarks
             </label>
             <textarea
               name="userRemark"
@@ -329,14 +328,14 @@ const UserUploadMarket = ({
               placeholder="Code, notes, details..."
               value={data.userRemark}
               onChange={handleOnChange}
-              className="w-full border border-gray-700 p-3 rounded-lg shadow-sm text-gray-200 bg-gray-950"
+              className="w-full rounded-xl border border-white/10 bg-black/20 p-3 text-gray-200 shadow-sm focus:border-brand-gold/50 focus:outline-none focus:ring-1 focus:ring-brand-gold/50"
             />
           </div>
 
           {/* Submit */}
           <button
             type="submit"
-            className="w-full py-3 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold rounded-lg shadow-md hover:shadow-lg transition"
+            className="w-full rounded-xl bg-gradient-to-r from-brand-gold to-yellow-500 py-3 font-bold text-brand-dark-base shadow-md transition hover:from-yellow-400 hover:to-brand-gold hover:shadow-lg"
             disabled={uploading}
           >
             {uploading ? '⏳ Submitting...' : '✅ Submit Product'}

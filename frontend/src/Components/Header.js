@@ -22,6 +22,7 @@ import {
   faVolumeDown,
   faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons';
+import { Activity, Layout } from 'lucide-react';
 import notificationSound from '../Assets/notification.mp3';
 import SummaryApi from '../common';
 import { BiSearch } from 'react-icons/bi';
@@ -29,55 +30,6 @@ import SidePanel from './SidePanel';
 import LiveScript from './LiveScript';
 import Slogo from '../app/slogo.png';
 import SidePanelLogo from '../Assets/optimized/secxion-logo-112.png';
-import DataPadButtonImg from '../app/Buttons/datapadbutton.png';
-import TradeStatusButtonImg from '../app/Buttons/tradestatusbutton.png';
-
-const nftButton =
-  'nft-btn inline-flex items-center justify-center px-5 py-2 rounded-xl font-bold text-base transition-all duration-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] border-2 border-yellow-600 bg-gradient-to-br from-yellow-400 via-yellow-200 to-yellow-500 hover:from-yellow-500 hover:to-yellow-700 text-gray-900 hover:text-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2';
-
-const ghostButton =
-  'nft-btn inline-flex items-center justify-center px-4 py-1 rounded-xl font-bold text-base transition-all duration-200 border-2 border-yellow-600 bg-white/10 hover:bg-yellow-700/10 text-yellow-600 hover:text-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2';
-
-// Clean gradient search input style
-const searchInputStyle = `
-  w-full 
-  bg-gradient-to-r from-gray-50 to-white 
-  border-2 border-transparent 
-  bg-clip-padding
-  rounded-full 
-  py-3 px-4
-  text-gray-800 
-  placeholder-gray-500
-  shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)]
-  focus:outline-none 
-  focus:ring-2 
-  focus:ring-yellow-400/50
-  focus:border-yellow-400
-  focus:shadow-[inset_0_2px_4px_rgba(0,0,0,0.06),0_0_0_3px_rgba(251,191,36,0.1)]
-  transition-all 
-  duration-300 
-  ease-in-out
-  backdrop-blur-sm
-`;
-
-const mobileSearchInputStyle = `
-  w-full 
-  bg-gradient-to-r from-gray-50 to-white 
-  border border-gray-200
-  rounded-full 
-  py-2 px-3
-  text-gray-800 
-  placeholder-gray-500
-  shadow-sm
-  focus:outline-none 
-  focus:ring-2 
-  focus:ring-yellow-400/50
-  focus:border-yellow-400
-  transition-all 
-  duration-300 
-  ease-in-out
-  text-sm
-`;
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -293,10 +245,6 @@ const Header = () => {
   const goBack = () => navigate(-1);
   const toggleMobileMenu = () => setMobileMenuOpen((prev) => !prev);
   const closeMobileMenu = () => setMobileMenuOpen(false);
-  const truncatedMessage = useMemo(
-    () => truncateWords(popupMessage, 10),
-    [popupMessage],
-  );
 
   // Hide menu buttons based on current route
   const hideTradeStatus = location.pathname === '/record';
@@ -315,15 +263,15 @@ const Header = () => {
               <FontAwesomeIcon icon={faBars} className="h-6 w-6" />
             </button>
 
-            <div className="md:hidden flex-1 flex items-center mt-1 justify-center">
+            <div className="md:hidden flex-1 flex items-center justify-center">
               <div className="relative w-full max-w-[220px]">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                  <BiSearch className="text-yellow-400 h-4 w-4" />
+                  <BiSearch className="text-brand-gold h-4 w-4" />
                 </div>
                 <input
                   type="text"
                   placeholder="Search assets..."
-                  className="w-full bg-gray-800/70 border border-gray-600 rounded-full py-2 px-3 pl-10 pr-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400 transition-all duration-300 ease-in-out text-sm"
+                  className="w-full bg-brand-dark-elevated border border-white/10 rounded-full py-2 px-3 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all duration-300 ease-in-out text-sm"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -334,7 +282,7 @@ const Header = () => {
           {/* Logo block */}
           <Link
             to="/home"
-            className="relative hidden md:flex items-center font-bold text-yellow-400 tracking-wide"
+            className="relative hidden md:flex items-center font-bold text-brand-gold tracking-wide hover:opacity-80 transition-opacity"
           >
             <img
               src={Slogo}
@@ -348,7 +296,7 @@ const Header = () => {
             {location.pathname === '/search' && (
               <button
                 onClick={goBack}
-                className="inline-flex items-center justify-center px-4 py-1 rounded-xl font-bold text-base transition-all duration-200 border-2 border-yellow-600 bg-gray-800/50 hover:bg-yellow-700/20 text-yellow-400 hover:text-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+                className="inline-flex items-center justify-center px-4 py-1 rounded-xl font-bold text-base transition-all duration-200 border-2 border-brand-gold bg-brand-dark-elevated hover:bg-brand-gold/20 text-brand-gold hover:text-brand-gold-light focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2"
                 aria-label="Go back"
               >
                 <FontAwesomeIcon icon={faArrowLeft} className="h-5 w-5" />
@@ -362,80 +310,40 @@ const Header = () => {
               <input
                 type="text"
                 placeholder="Search gift cards, vc, cc..."
-                className="w-full bg-gray-800/70 border border-gray-600 rounded-full py-2 px-3 pl-10 pr-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400 transition-all duration-300 ease-in-out text-sm"
+                className="w-full bg-brand-dark-elevated border border-white/10 rounded-full py-2 px-3 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold transition-all duration-300 ease-in-out text-sm"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
 
-            <nav className="flex items-center justify-between mx-auto gap-3 text-xs">
+            <nav className="flex items-center justify-between mx-auto gap-4">
               {!hideTradeStatus && (
                 <Link
                   to="/record"
-                  className="group relative flex items-center transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50 rounded-lg"
-                  style={{
-                    padding: '4px',
-                    border: 'none',
-                    background: 'none',
-                    height: '52px',
-                    alignItems: 'center',
-                    overflow: 'hidden',
-                  }}
+                  className="group relative flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-300 hover:bg-white/5 active:scale-95"
+                  title="Trade Status"
                 >
-                  {/* Overlay to prevent flash */}
-                  <div className="absolute inset-0 bg-gray-800/0 group-hover:bg-gray-800/10 group-active:bg-gray-800/20 transition-all duration-200 rounded-lg"></div>
-
-                  <img
-                    src={TradeStatusButtonImg}
-                    alt="Trade Status"
-                    className="relative z-10 object-contain transition-all duration-300 ease-in-out group-hover:brightness-110 group-active:brightness-90 select-none"
-                    style={{
-                      height: '100px',
-                      width: 'auto',
-                      maxHeight: '110px',
-                      maxWidth: '120px',
-                      display: 'block',
-                      filter: 'brightness(1) contrast(1)',
-                      WebkitUserSelect: 'none',
-                      userSelect: 'none',
-                    }}
-                    draggable={false}
-                  />
+                  <div className="p-2 rounded-lg bg-brand-gold/10 text-brand-gold group-hover:bg-brand-gold group-hover:text-brand-dark-base transition-colors duration-300">
+                    <Activity className="w-5 h-5" />
+                  </div>
+                  <span className="text-[10px] mt-1 font-semibold tracking-wider uppercase opacity-60 group-hover:opacity-100">
+                    Trade
+                  </span>
                 </Link>
               )}
 
               {!hideDataPad && (
                 <Link
                   to="/datapad"
-                  className="group relative flex items-center transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50 rounded-lg"
-                  style={{
-                    padding: '4px',
-                    border: 'none',
-                    background: 'none',
-                    height: '52px',
-                    alignItems: 'center',
-                    overflow: 'hidden',
-                  }}
+                  className="group relative flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-300 hover:bg-white/5 active:scale-95"
+                  title="DataPad"
                 >
-                  {/* Overlay to prevent flash */}
-                  <div className="absolute inset-0 bg-gray-800/0 group-hover:bg-gray-800/10 group-active:bg-gray-800/20 transition-all duration-200 rounded-lg"></div>
-
-                  <img
-                    src={DataPadButtonImg}
-                    alt="DataPad"
-                    className="relative z-10 object-contain transition-all duration-300 ease-in-out group-hover:brightness-110 group-active:brightness-90 select-none"
-                    style={{
-                      height: '80px',
-                      width: 'auto',
-                      maxHeight: '80px',
-                      maxWidth: '120px',
-                      display: 'block',
-                      filter: 'brightness(1) contrast(1)',
-                      WebkitUserSelect: 'none',
-                      userSelect: 'none',
-                    }}
-                    draggable={false}
-                  />
+                  <div className="p-2 rounded-lg bg-brand-gold/10 text-brand-gold group-hover:bg-brand-gold group-hover:text-brand-dark-base transition-colors duration-300">
+                    <Layout className="w-5 h-5" />
+                  </div>
+                  <span className="text-[10px] mt-1 font-semibold tracking-wider uppercase opacity-60 group-hover:opacity-100">
+                    DataPad
+                  </span>
                 </Link>
               )}
 
@@ -450,11 +358,10 @@ const Header = () => {
             </nav>
           </div>
 
-          {/* Enhanced Sound Control with Volume */}
           <div className="relative" ref={volumeControlRef}>
             <button
               onClick={() => setShowVolumeControl(!showVolumeControl)}
-              className={`inline-flex items-center justify-center px-4 py-1 rounded-xl font-bold text-base transition-all duration-200 border-2 border-yellow-600 bg-gray-800/50 hover:bg-yellow-700/20 hover:text-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 shadow-md ml-4 ${getVolumeColor()}`}
+              className={`inline-flex items-center justify-center px-4 py-1 rounded-xl font-bold text-base transition-all duration-200 border-2 border-brand-gold bg-brand-dark-elevated hover:bg-brand-gold/20 hover:text-brand-gold-light focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 shadow-md ml-4 ${getVolumeColor()}`}
               aria-label="Sound control"
             >
               <FontAwesomeIcon icon={getVolumeIcon()} className="mr-1" />
@@ -507,7 +414,7 @@ const Header = () => {
                         }`}
                         style={{
                           background: soundEnabled
-                            ? `linear-gradient(to right, #eab308 0%, #eab308 ${volume * 100}%, #374151 ${volume * 100}%, #374151 100%)`
+                            ? `linear-gradient(to right, #D4AF37 0%, #D4AF37 ${volume * 100}%, #374151 ${volume * 100}%, #374151 100%)`
                             : '#374151',
                         }}
                       />
@@ -557,7 +464,7 @@ const Header = () => {
                     disabled={!soundEnabled}
                     className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
                       soundEnabled
-                        ? 'bg-yellow-600 hover:bg-yellow-700 text-gray-900'
+                        ? 'bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base'
                         : 'bg-gray-600 text-gray-400 cursor-not-allowed'
                     }`}
                   >
@@ -641,7 +548,7 @@ const Header = () => {
           height: 16px;
           width: 16px;
           border-radius: 50%;
-          background: #eab308;
+          background: #D4AF37;
           cursor: pointer;
           border: 2px solid #1f2937;
           transition: all 0.2s ease;
@@ -649,14 +556,14 @@ const Header = () => {
 
         .slider::-webkit-slider-thumb:hover {
           transform: scale(1.1);
-          box-shadow: 0 0 8px rgba(234, 179, 8, 0.5);
+          box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
         }
 
         .slider::-moz-range-thumb {
           height: 16px;
           width: 16px;
           border-radius: 50%;
-          background: #eab308;
+          background: #D4AF37;
           cursor: pointer;
           border: 2px solid #1f2937;
           transition: all 0.2s ease;
@@ -664,7 +571,7 @@ const Header = () => {
 
         .slider::-moz-range-thumb:hover {
           transform: scale(1.1);
-          box-shadow: 0 0 8px rgba(234, 179, 8, 0.5);
+          box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
         }
 
         /* Prevent unwanted highlights */

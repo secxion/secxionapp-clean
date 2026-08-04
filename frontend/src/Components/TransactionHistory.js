@@ -11,6 +11,7 @@ import {
   FaTimes,
   FaChevronUp,
   FaDownload,
+  FaSyncAlt,
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import SecxionSpinner from './SecxionSpinner';
@@ -179,56 +180,56 @@ const TransactionHistory = () => {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col premium-bg">
       {/* Fixed Header Section */}
-      <div className="flex-shrink-0 relative z-10 bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-2xl p-4 md:p-6 border border-slate-700/50 shadow-xl mb-6">
+      <div className="relative z-10 mb-6 flex-shrink-0 p-4 md:p-8">
+        <h2 className="text-[10px] font-black mb-8 text-brand-gold uppercase tracking-[0.4em] font-spaceGrotesk">
+          Transaction History
+        </h2>
         {/* Mobile-First Search Bar */}
-        <div className="mb-4">
+        <div className="mb-8">
           <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-              <FaSearch className="w-4 h-4" />
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
+              <FaSearch className="w-3.5 h-3.5" />
             </div>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by ID, amount, status, account..."
-              className="w-full bg-slate-700/60 border border-slate-600 rounded-xl pl-10 pr-10 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-400/30 transition-all text-sm"
+              placeholder="Search history..."
+              className="w-full rounded-2xl bg-black/20 border border-white/10 py-4 pl-11 pr-10 text-sm font-medium text-white placeholder-gray-700 transition-all focus:border-brand-gold/50 outline-none font-spaceGrotesk"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
                 title="Clear search"
               >
-                <FaTimes className="w-4 h-4" />
+                <FaTimes className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
-          <p className="text-xs text-slate-500 mt-2">
-            Searches: ID • Amount • Status • Account Number • Bank Name •
-            Description
-          </p>
         </div>
 
         {/* Mobile Filter Toggle */}
-        <div className="md:hidden mb-4">
+        <div className="md:hidden mb-6">
           <button
             onClick={toggleFilter}
-            className="w-full flex items-center justify-between px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-white transition-colors"
+            className="w-full flex items-center justify-between px-5 py-3.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl text-gray-300 transition-all active:scale-95"
           >
-            <span className="flex items-center">
-              <FaFilter className="mr-2 w-4 h-4" />
-              Filter by Status
+            <span className="flex items-center text-[10px] font-black uppercase tracking-widest font-spaceGrotesk">
+              <FaFilter className="mr-3 w-3.5 h-3.5 text-brand-gold" />
+              Filter
             </span>
-            <span className="text-sm text-yellow-400">
-              {menuItems.find((item) => item.value === statusFilter)?.label ||
-                'All'}
+            <span className="text-[10px] font-black text-brand-gold font-spaceGrotesk">
+              {menuItems
+                .find((item) => item.value === statusFilter)
+                ?.label.toUpperCase() || 'ALL'}
             </span>
           </button>
         </div>
 
-        {/* Enhanced Filter Tabs with More Obvious Horizontal Scroll */}
+        {/* Enhanced Filter Tabs */}
         <AnimatePresence>
           {(isFilterOpen || window.innerWidth >= 768) && (
             <motion.div
@@ -238,38 +239,23 @@ const TransactionHistory = () => {
               transition={{ duration: 0.15 }}
               className="overflow-hidden"
             >
-              {/* Enhanced Horizontal Scrollable Filter Container */}
               <div className="relative">
-                {/* Left scroll indicator */}
-                <div className="absolute left-0 top-0 bottom-2 w-8 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent pointer-events-none z-10 md:hidden flex items-center justify-start pl-1">
-                  <div className="w-2 h-2 bg-yellow-400/60 rounded-full animate-pulse"></div>
-                </div>
-
-                {/* Right scroll indicator */}
-                <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-slate-900 via-slate-900/80 to-transparent pointer-events-none z-10 md:hidden flex items-center justify-end pr-1">
-                  <div className="w-2 h-2 bg-yellow-400/60 rounded-full animate-pulse"></div>
-                </div>
-
-                {/* Scrollable container with enhanced styling */}
-                <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-yellow-600 scrollbar-track-slate-800 pb-2">
-                  <div className="flex gap-2 md:gap-3 min-w-max px-1">
-                    {menuItems.map((item, index) => {
+                <div className="overflow-x-auto scrollbar-hide pb-2">
+                  <div className="flex gap-3 min-w-max px-1">
+                    {menuItems.map((item) => {
                       const isActive = statusFilter === item.value;
                       return (
-                        <motion.button
+                        <button
                           key={item.value}
                           onClick={() => handleFilterChange(item.label)}
-                          className={`flex-shrink-0 px-4 py-2 md:px-4 md:py-2 rounded-xl font-medium text-xs md:text-sm transition-colors duration-200 whitespace-nowrap border-2 ${
+                          className={`flex-shrink-0 px-6 py-2.5 rounded-xl font-black font-spaceGrotesk text-[10px] uppercase tracking-widest transition-all duration-300 border ${
                             isActive
-                              ? 'bg-yellow-600 text-gray-900 shadow-lg border-yellow-500'
-                              : 'bg-slate-700/50 text-gray-300 hover:bg-slate-600/50 hover:text-white border-slate-600 hover:border-yellow-500/50'
+                              ? 'bg-brand-gold text-brand-dark-base border-brand-gold shadow-brand-gold'
+                              : 'bg-white/5 text-gray-500 hover:text-gray-200 border-white/5 hover:border-white/10'
                           }`}
-                          style={{
-                            minWidth: '80px',
-                          }}
                         >
                           <span>{item.label}</span>
-                        </motion.button>
+                        </button>
                       );
                     })}
                   </div>
@@ -280,26 +266,26 @@ const TransactionHistory = () => {
         </AnimatePresence>
 
         {/* Results Summary */}
-        <div className="mt-4 flex flex-col md:flex-row md:items-center justify-between text-xs md:text-sm text-gray-400 gap-2">
+        <div className="mt-8 flex flex-col gap-4 justify-between text-[10px] font-bold uppercase tracking-widest text-gray-600 md:flex-row md:items-center">
           <span>
             Showing {displayedTransactions.length} of{' '}
-            {filteredTransactions.length} transactions
-            {searchQuery && ` (filtered from ${transactions.length} total)`}
+            {filteredTransactions.length} results
           </span>
-          <div className="flex gap-3">
+          <div className="flex gap-6">
             <button
               onClick={() => exportTransactionsToCSV(filteredTransactions)}
-              className="flex items-center gap-2 text-yellow-400 hover:text-yellow-300 transition-colors text-sm"
-              title="Download transactions as CSV"
+              className="flex items-center gap-2 text-gray-500 hover:text-brand-gold transition-colors"
+              title="Download Data"
             >
-              <FaDownload className="w-4 h-4" />
-              <span className="hidden sm:inline">Export</span>
+              <FaDownload className="w-3.5 h-3.5" />
+              <span>Export CSV</span>
             </button>
             <button
               onClick={() => fetchTransactions(statusFilter)}
-              className="text-yellow-400 hover:text-yellow-300 transition-colors"
+              className="flex items-center gap-2 text-gray-500 hover:text-brand-gold transition-colors"
             >
-              Refresh
+              <FaSyncAlt className="w-3.5 h-3.5" />
+              <span>Refresh</span>
             </button>
           </div>
         </div>
@@ -309,95 +295,60 @@ const TransactionHistory = () => {
       <div className="flex-1 overflow-hidden">
         <div
           ref={scrollContainerRef}
-          className="h-full overflow-y-auto pr-2"
+          className="h-full overflow-y-auto pr-1 scrollbar-hide"
           style={{ scrollBehavior: 'smooth' }}
         >
-          {/* Transaction List - Mobile Optimized */}
+          {/* Transaction List */}
           <AnimatePresence mode="wait">
             {displayedTransactions.length > 0 ? (
               <motion.div
-                className="space-y-3 md:space-y-4 px-1 pb-20"
+                className="space-y-1 px-4 md:px-8 pb-32"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
                 {displayedTransactions.map((transaction) => (
-                  <motion.div
+                  <TransactionCard
                     key={transaction._id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.2 }}
-                    className="w-full"
-                  >
-                    <TransactionCard transaction={transaction} />
-                  </motion.div>
+                    transaction={transaction}
+                  />
                 ))}
 
-                {/* View More/Less Controls - Inside scrollable area */}
                 {filteredTransactions.length > visibleTransactions && (
-                  <div className="flex justify-center px-4 py-6">
-                    <AnimatePresence mode="wait">
-                      {!showAll ? (
-                        <motion.button
-                          key="view-more"
-                          onClick={handleViewMore}
-                          className="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 rounded-xl font-semibold shadow-lg transition-colors duration-200"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                        >
-                          <FaEye className="mr-2" />
-                          <span className="hidden md:inline">
-                            View All {filteredTransactions.length} Transactions
-                          </span>
-                          <span className="md:hidden">
-                            View All ({filteredTransactions.length})
-                          </span>
-                        </motion.button>
-                      ) : (
-                        <motion.button
-                          key="show-less"
-                          onClick={handleCloseViewMore}
-                          className="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 bg-slate-700 hover:bg-slate-600 text-gray-300 rounded-xl font-semibold shadow-lg transition-colors duration-200"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                        >
-                          <FaEyeSlash className="mr-2" />
-                          Show Less
-                        </motion.button>
-                      )}
-                    </AnimatePresence>
+                  <div className="flex justify-center py-12">
+                    {!showAll ? (
+                      <button
+                        onClick={handleViewMore}
+                        className="px-10 py-4 bg-white/5 hover:bg-white/10 text-brand-gold border border-brand-gold/20 rounded-2xl font-black font-spaceGrotesk text-[10px] uppercase tracking-[0.3em] transition-all active:scale-95"
+                      >
+                        View More ({filteredTransactions.length})
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleCloseViewMore}
+                        className="px-10 py-4 bg-white/5 hover:bg-white/10 text-gray-500 border border-white/10 rounded-2xl font-black font-spaceGrotesk text-[10px] uppercase tracking-[0.3em] transition-all active:scale-95"
+                      >
+                        Show Less
+                      </button>
+                    )}
                   </div>
                 )}
               </motion.div>
             ) : (
               <motion.div
-                className="flex flex-col items-center justify-center h-full px-4"
+                className="flex flex-col items-center justify-center py-20 h-full"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
-                <div className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-6 md:p-8 text-center max-w-md mx-auto">
-                  <FaHistory className="w-12 md:w-16 h-12 md:h-16 text-gray-500 mx-auto mb-4" />
-                  <h3 className="text-lg md:text-xl font-semibold text-gray-300 mb-2">
-                    {searchQuery
-                      ? 'No matching transactions'
-                      : 'No transactions found'}
-                  </h3>
-                  <p className="text-gray-400 mb-4 text-sm md:text-base">
-                    {searchQuery
-                      ? 'Try adjusting your search terms or filters'
-                      : 'Your transaction history will appear here once you make your first withdrawal request'}
-                  </p>
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-gray-900 rounded-lg transition-colors text-sm md:text-base"
-                    >
-                      Clear Search
-                    </button>
-                  )}
+                <div className="text-6xl mb-6 opacity-20 filter grayscale">
+                  📋
                 </div>
+                <h3 className="text-xl font-black text-white font-spaceGrotesk uppercase tracking-widest mb-2">
+                  No records found
+                </h3>
+                <p className="text-gray-600 text-[10px] font-bold uppercase tracking-widest">
+                  History is currently empty.
+                </p>
               </motion.div>
             )}
           </AnimatePresence>

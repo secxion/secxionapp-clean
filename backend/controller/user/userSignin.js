@@ -5,25 +5,25 @@ import { verifyTurnstileToken } from "../../utils/turnstileVerification.js";
 
 async function userSignInController(req, res, next) {
   try {
-    const { email: rawEmail, password, turnstileToken } = req.body;
+    const { email: rawEmail, password, turnstileToken, puzzleSolved } = req.body;
     const email = rawEmail?.toLowerCase().trim();
     console.log("🔐 Login attempt:");
     console.log("📧 Email:", email);
-    console.log("🔒 Turnstile token present:", !!turnstileToken);
-    
+    console.log("🔒 Verification method:", puzzleSolved ? "Custom Puzzle" : "Turnstile");
+
     if (!email || !password) {
       const err = new Error("Please provide email and password.");
       err.status = 400;
       throw err;
     }
 
-    // Skip Turnstile verification for mobile app requests
+    // Skip verification for mobile app or if custom puzzle was solved
     const platform = req.headers["x-platform"] || req.headers["X-Platform"];
     const isMobileApp = platform === "mobile";
-    console.log("🔍 Platform header:", platform, "| isMobile:", isMobileApp);
-    
-    if (!isMobileApp) {
-      // Verify Cloudflare Turnstile token for web requests only
+    const skipVerification = isMobileApp || puzzleSolved === true;
+
+    if (!skipVerification) {
+      // Verify Cloudflare Turnstile token for standard web requests
       const remoteIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
       const turnstileResult = await verifyTurnstileToken(turnstileToken, remoteIp);
       
@@ -34,7 +34,7 @@ async function userSignInController(req, res, next) {
         throw err;
       }
     } else {
-      console.log("📱 Mobile app request - skipping Turnstile verification");
+      console.log(`🛡️ Verification bypassed via ${isMobileApp ? "Mobile Header" : "Custom Puzzle"}`);
     }
 
     const user = await userModel.findOne({ email }).select("+password");

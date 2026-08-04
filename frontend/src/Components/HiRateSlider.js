@@ -6,12 +6,87 @@ import SecxionShimmer from './SecxionShimmer';
 
 const ethApiUrl =
   'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
+const HIRATE_CACHE_KEY = 'secxion_hirate_slider_cache_v1';
+const HIRATE_CACHE_TTL_MS = 5 * 60 * 1000;
+
+let hiRateSlidesMemoryCache = {
+  slides: null,
+  timestamp: 0,
+};
+
+const isFreshCache = (timestamp) =>
+  Date.now() - timestamp < HIRATE_CACHE_TTL_MS;
+
+const readHiRateCache = () => {
+  if (
+    hiRateSlidesMemoryCache.slides &&
+    isFreshCache(hiRateSlidesMemoryCache.timestamp)
+  ) {
+    return hiRateSlidesMemoryCache.slides;
+  }
+
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(HIRATE_CACHE_KEY);
+    if (!raw) {
+      return null;
+    }
+
+    const parsed = JSON.parse(raw);
+    if (!parsed?.slides || !Array.isArray(parsed.slides)) {
+      return null;
+    }
+
+    if (!isFreshCache(parsed.timestamp)) {
+      return null;
+    }
+
+    hiRateSlidesMemoryCache = {
+      slides: parsed.slides,
+      timestamp: parsed.timestamp,
+    };
+
+    return parsed.slides;
+  } catch (error) {
+    return null;
+  }
+};
+
+const writeHiRateCache = (slides) => {
+  const payload = {
+    slides,
+    timestamp: Date.now(),
+  };
+
+  hiRateSlidesMemoryCache = payload;
+
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(HIRATE_CACHE_KEY, JSON.stringify(payload));
+  } catch (error) {
+    // Ignore cache write failures (e.g. quota/private mode) and keep UI responsive.
+  }
+};
 
 const HiRateSlider = () => {
   const [slides, setSlides] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+
+    const cachedSlides = readHiRateCache();
+    if (cachedSlides?.length) {
+      setSlides(cachedSlides);
+      setLoading(false);
+    }
+
     const fetchData = async () => {
       try {
         const [productRes, ethRes] = await Promise.all([
@@ -127,21 +202,31 @@ const HiRateSlider = () => {
           finalSlides.push(ethSlide);
         }
 
-        if (finalSlides.length > 0) {
-          const repeatedSlides = [...finalSlides, ...finalSlides];
-          setSlides(repeatedSlides);
-        } else {
-          setSlides([]);
+        const nextSlides =
+          finalSlides.length > 0 ? [...finalSlides, ...finalSlides] : [];
+
+        if (!isMounted) {
+          return;
         }
 
+        setSlides(nextSlides);
+        if (nextSlides.length > 0) {
+          writeHiRateCache(nextSlides);
+        }
         setLoading(false);
       } catch (error) {
         console.error('Slider Fetch Error:', error);
-        setLoading(false);
+        if (isMounted && !cachedSlides?.length) {
+          setLoading(false);
+        }
       }
     };
 
     fetchData();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (loading) {
@@ -163,41 +248,55 @@ const HiRateSlider = () => {
 
   const animationDuration = slides.length * 5;
   return (
-    <div className="fixed top-20 py-1 mt-1 left-0 right-0 shadow-sm md:mt-3 lg:mt-3 z-30 w-full bg-white border-b border-gray-200 overflow-hidden">
+    <div className="fixed top-20 py-2.5 md:mt-9 lg:mt-9 left-0 right-0 z-30 w-full bg-brand-dark-base/60 backdrop-blur-xl border-b border-white/5 overflow-hidden shadow-2xl">
       <div
         className="hirate-slider-track"
         style={{ animationDuration: `${animationDuration}s` }}
       >
         {slides.map((slide, index) => (
-          <div key={index} className="hirate-slide">
+          <div
+            key={index}
+            className="hirate-slide px-8 border-r border-white/5 flex items-center gap-4"
+          >
             {slide.isEthereum ? (
-              <img
-                src={EthereumIcon}
-                alt="Ethereum"
-                className="slide-ethereum-icon w-5 h-5"
-              />
+              <div className="p-1.5 bg-brand-gold/10 rounded-lg">
+                <img
+                  src={EthereumIcon}
+                  alt="Ethereum"
+                  className="w-4 h-4 object-contain"
+                />
+              </div>
             ) : (
               slide.image && (
-                <img
-                  src={slide.image}
-                  alt={slide.productName}
-                  className="slide-image"
-                />
+                <div className="w-8 h-8 rounded-lg overflow-hidden border border-white/10 bg-black/40 p-1">
+                  <img
+                    src={slide.image}
+                    alt={slide.productName}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
               )
             )}
-            <p className="slide-text text-gray-800">
-              <span className="slide-product-name">
-                <img src={FireIcon} alt="Fire" className="fire-icon w-4 h-4" />
+            <div className="flex flex-col">
+              <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                <img
+                  src={FireIcon}
+                  alt="Fire"
+                  className="w-2.5 h-2.5 opacity-50"
+                />
                 {slide.productName}
               </span>
-              <span className="slide-price font-semibold text-purple-700">
+              <span className="text-xs font-black font-spaceGrotesk text-white tracking-tight mt-0.5">
                 1 {slide.currency === 'GBP' ? '£' : slide.currency} ={' '}
-                {Number(slide.sellingPrice).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
+                <span className="text-brand-gold">
+                  ₦
+                  {Number(slide.sellingPrice).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
               </span>
-            </p>
+            </div>
           </div>
         ))}
       </div>

@@ -38,6 +38,17 @@ module.exports = {
         'secxion-gold': '#FFD700', // Deep golden yellow
         'secxion-gold-light': '#FFDA60', // Lighter golden yellow
         'secxion-gold-dark': '#D4AF37', // Darker golden yellow
+        'brand-gold': {
+          DEFAULT: '#D4AF37',
+          light: '#F5D17E',
+          dark: '#B8860B',
+          glow: 'rgba(212, 175, 55, 0.4)',
+        },
+        'brand-dark': {
+          base: '#0B0F19',
+          elevated: '#161B28',
+          surface: '#1F2937',
+        },
         'secxion-black': '#000000', // Black
         'secxion-white': '#FFFFFF', // White
         'secxion-cream': '#F5F5DC', // Greenish cream
@@ -127,7 +138,8 @@ module.exports = {
 
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui'],
-        techno: ['Press Start 2P', 'cursive'],
+        techno: ['Space Grotesk', 'Inter', 'sans-serif'],
+        space: ['Space Grotesk', 'sans-serif'],
         body: ['Inter', 'sans-serif'],
       },
     },

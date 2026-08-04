@@ -114,85 +114,107 @@ const UserMarket = () => {
 
   return (
     <motion.div
-      className="marketplace-bg-lighter"
-      style={{ minHeight: '100vh', paddingTop: '6rem', paddingBottom: '4rem' }}
+      className="relative min-h-screen overflow-hidden px-4 py-4 pb-20 sm:px-6 lg:px-8 premium-bg"
+      style={{ minHeight: '60vh', paddingTop: '8rem', paddingBottom: '4rem' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="marketplace-container">
-        {/* Error State */}
-        {error && (
-          <ErrorState
-            title="Failed to load transactions"
-            message={error}
-            onRetry={handleRetry}
-            emoji="⚠️"
-          />
-        )}
-
-        {/* Loading State */}
-        {loading ? (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: '1.5rem',
-            }}
-          >
-            <LoadingCard count={6} variant="card" />
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-8 rounded-3xl border border-white/10 bg-brand-dark-elevated/75 p-6 shadow-2xl backdrop-blur-xl">
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-brand-gold/70 font-spaceGrotesk">
+                Trade Status
+              </p>
+              <h1 className="mt-2 text-2xl font-black text-white font-spaceGrotesk tracking-wide">
+                Transaction Record
+              </h1>
+              <p className="mt-2 max-w-2xl text-sm text-gray-400">
+                Monitor your active deals, settlement progress, and completed
+                transfers in one premium workspace.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-brand-gold/20 bg-brand-gold/10 px-4 py-3 text-sm text-brand-gold">
+              Live status overview
+            </div>
           </div>
-        ) : allProduct.length > 0 ? (
-          /* Products Grid */
-          <motion.div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: '1.5rem',
-              marginBottom: '2rem',
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            {allProduct.map((product) => (
-              <motion.div
-                key={product._id || `product-${product.name}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.2 }}
-              >
-                <HistoryCard
-                  data={{
-                    ...product,
-                    crImage:
-                      product.crImage ||
-                      product.cancelImage ||
-                      product.image ||
-                      null,
-                  }}
-                  isDetailViewOpen={
-                    selectedProductForDetail?._id === product._id
-                  }
-                  onCloseDetailView={handleCloseDetailView}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
-        ) : marketId ? (
-          /* Not Found State */
-          <EmptyState
-            title="Transaction Not Found"
-            message="The requested market record could not be found."
-            emoji="🔍"
-            onAction={() => window.history.back()}
-            actionLabel="← Go Back"
-          />
-        ) : (
-          /* Empty State */
-          <EmptyState title="No transactions yet" />
-        )}
+        </div>
+
+        <div className="space-y-6">
+          {/* Error State */}
+          {error && (
+            <ErrorState
+              title="Failed to load transactions"
+              message={error}
+              onRetry={handleRetry}
+              emoji="⚠️"
+            />
+          )}
+
+          {/* Loading State */}
+          {loading ? (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                gap: '1.5rem',
+              }}
+            >
+              <LoadingCard count={6} variant="card" />
+            </div>
+          ) : allProduct.length > 0 ? (
+            /* Products Grid */
+            <motion.div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                gap: '1.5rem',
+                marginBottom: '2rem',
+              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              {allProduct.map((product) => (
+                <motion.div
+                  key={product._id || `product-${product.name}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <HistoryCard
+                    data={{
+                      ...product,
+                      crImage:
+                        product.crImage ||
+                        product.cancelImage ||
+                        product.image ||
+                        null,
+                    }}
+                    isDetailViewOpen={
+                      selectedProductForDetail?._id === product._id
+                    }
+                    onCloseDetailView={handleCloseDetailView}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : marketId ? (
+            /* Not Found State */
+            <EmptyState
+              title="Transaction Not Found"
+              message="The requested market record could not be found."
+              emoji="🔍"
+              onAction={() => window.history.back()}
+              actionLabel="← Go Back"
+            />
+          ) : (
+            /* Empty State */
+            <EmptyState title="No transactions yet" />
+          )}
+        </div>
       </div>
 
       {/* Detail Modal */}

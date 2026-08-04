@@ -57,16 +57,16 @@ const BlogForm = ({ onClose, fetchBlogs, editingBlog }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-slate-900 border border-slate-700/50 rounded-2xl max-w-lg w-full shadow-2xl">
+      <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black shadow-[0_0_36px_rgba(0,0,0,0.35)]">
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-700/50">
-          <h3 className="text-lg font-bold text-white">
+        <div className="flex items-center justify-between border-b border-white/10 p-4">
+          <h3 className="font-spaceGrotesk text-lg font-bold uppercase tracking-wide text-white">
             {editingBlog ? 'Edit Blog' : 'Create Blog'}
           </h3>
           <button
             onClick={onClose}
             disabled={isSubmitting}
-            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-50"
+            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/5 hover:text-brand-gold disabled:opacity-50"
           >
             <FaTimes />
           </button>
@@ -75,7 +75,7 @@ const BlogForm = ({ onClose, fetchBlogs, editingBlog }) => {
         {/* Modal Body */}
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           {error && (
-            <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-3 py-2 rounded-lg text-sm">
+            <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-300">
               {error}
             </div>
           )}
@@ -83,7 +83,7 @@ const BlogForm = ({ onClose, fetchBlogs, editingBlog }) => {
           <div>
             <label
               htmlFor="title"
-              className="block text-xs text-slate-400 mb-2"
+              className="mb-2 block text-xs font-spaceGrotesk uppercase tracking-widest text-gray-400"
             >
               Title
             </label>
@@ -93,7 +93,7 @@ const BlogForm = ({ onClose, fetchBlogs, editingBlog }) => {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50"
+              className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-white placeholder-gray-600 focus:border-brand-gold/50 focus:outline-none"
               placeholder="Enter blog title"
               required
             />
@@ -102,7 +102,7 @@ const BlogForm = ({ onClose, fetchBlogs, editingBlog }) => {
           <div>
             <label
               htmlFor="content"
-              className="block text-xs text-slate-400 mb-2"
+              className="mb-2 block text-xs font-spaceGrotesk uppercase tracking-widest text-gray-400"
             >
               Content
             </label>
@@ -112,7 +112,7 @@ const BlogForm = ({ onClose, fetchBlogs, editingBlog }) => {
               value={formData.content}
               onChange={handleChange}
               rows="6"
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 resize-none"
+              className="w-full resize-none rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-white placeholder-gray-600 focus:border-brand-gold/50 focus:outline-none"
               placeholder="Write your blog content..."
               required
             />
@@ -123,14 +123,14 @@ const BlogForm = ({ onClose, fetchBlogs, editingBlog }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-slate-800 border border-slate-700 text-slate-300 rounded-lg hover:border-yellow-500/50 transition-colors disabled:opacity-50"
+              className="rounded-lg border border-white/10 bg-black/20 px-4 py-2 text-gray-300 transition-colors hover:border-brand-gold/40 hover:text-white disabled:opacity-50"
               disabled={isSubmitting}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-yellow-500 text-slate-900 font-medium rounded-lg hover:bg-yellow-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="rounded-lg bg-brand-gold px-4 py-2 font-medium text-brand-dark-base transition-colors hover:bg-brand-gold-light disabled:cursor-not-allowed disabled:opacity-50"
               disabled={isSubmitting}
             >
               {isSubmitting

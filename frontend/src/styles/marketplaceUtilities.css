@@ -9,17 +9,20 @@
    ============================================ */
 
 .marketplace-card {
-  background-color: #ffffff;
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  border-radius: 1rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.25rem;
+  box-shadow: 0 20px 45px rgba(3, 7, 18, 0.35);
   padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .marketplace-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-color: rgba(212, 175, 55, 0.3);
+  box-shadow: 0 24px 50px rgba(212, 175, 55, 0.12);
 }
 
 .marketplace-card--interactive {
@@ -47,23 +50,23 @@
 }
 
 .status-badge--success {
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: rgba(16, 185, 129, 0.14);
+  color: #6ee7b7;
 }
 
 .status-badge--warning {
-  background-color: #ffedd5;
-  color: #92400e;
+  background-color: rgba(212, 175, 55, 0.16);
+  color: #f5d17e;
 }
 
 .status-badge--danger {
-  background-color: #fee2e2;
-  color: #991b1b;
+  background-color: rgba(239, 68, 68, 0.16);
+  color: #fda4af;
 }
 
 .status-badge--info {
-  background-color: #dbeafe;
-  color: #0c2d6b;
+  background-color: rgba(96, 165, 250, 0.14);
+  color: #bfdbfe;
 }
 
 /* ============================================
@@ -91,48 +94,49 @@
 }
 
 .marketplace-btn--primary {
-  background-color: #6366f1;
-  color: white;
+  background: linear-gradient(135deg, #b8860b 0%, #d4af37 50%, #f5d17e 100%);
+  color: #0b0f19;
 }
 
 .marketplace-btn--primary:hover:not(:disabled) {
-  background-color: #4f46e5;
+  filter: brightness(1.06);
 }
 
 .marketplace-btn--secondary {
-  background-color: #e2e8f0;
-  color: #0f172a;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .marketplace-btn--secondary:hover:not(:disabled) {
-  background-color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .marketplace-btn--success {
-  background-color: #10b981;
-  color: white;
+  background: rgba(16, 185, 129, 0.16);
+  color: #bbf7d0;
 }
 
 .marketplace-btn--success:hover:not(:disabled) {
-  background-color: #059669;
+  background: rgba(16, 185, 129, 0.24);
 }
 
 .marketplace-btn--warning {
-  background-color: #f97316;
-  color: white;
+  background: rgba(212, 175, 55, 0.16);
+  color: #f5d17e;
 }
 
 .marketplace-btn--warning:hover:not(:disabled) {
-  background-color: #ea580c;
+  background: rgba(212, 175, 55, 0.24);
 }
 
 .marketplace-btn--danger {
-  background-color: #ef4444;
-  color: white;
+  background: rgba(239, 68, 68, 0.16);
+  color: #fecaca;
 }
 
 .marketplace-btn--danger:hover:not(:disabled) {
-  background-color: #dc2626;
+  background: rgba(239, 68, 68, 0.24);
 }
 
 .marketplace-btn--sm {
@@ -196,12 +200,13 @@
    ============================================ */
 
 .error-state {
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  border-radius: 1.25rem;
   padding: 1.5rem;
   text-align: center;
   margin: 1.5rem 0;
+  backdrop-filter: blur(10px);
 }
 
 .error-state__icon {
@@ -212,12 +217,12 @@
 .error-state__title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #991b1b;
+  color: #fda4af;
   margin-bottom: 0.5rem;
 }
 
 .error-state__message {
-  color: #7f1d1d;
+  color: #cbd5e1;
   margin-bottom: 1.5rem;
   line-height: 1.5;
 }

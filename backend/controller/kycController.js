@@ -61,7 +61,7 @@ const validateKycPayload = (payload) => {
   if (!payload.documents.selfieUrl) missing.push("documents.selfieUrl");
   if (!payload.documents.selfieCaptureMethod) {
     missing.push("documents.selfieCaptureMethod");
-  }
+  }v
 
   if (missing.length) {
     return `Missing required fields: ${missing.join(", ")}`;

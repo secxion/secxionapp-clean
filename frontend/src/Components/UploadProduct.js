@@ -180,31 +180,33 @@ const UploadProduct = ({ onClose, fetchData }) => {
   };
 
   return (
-    <div className="bg-slate-900 rounded-2xl border border-slate-700 w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+    <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-white/10 bg-brand-dark-base shadow-[0_0_50px_rgba(0,0,0,0.5)]">
       {/* Header */}
-      <div className="flex items-center justify-between p-5 border-b border-slate-700 flex-shrink-0">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-yellow-500/10 rounded-xl">
-            <FaCloudUploadAlt className="text-yellow-500 text-lg" />
+      <div className="flex flex-shrink-0 items-center justify-between border-b border-white/5 p-6 bg-white/[0.02]">
+        <div className="flex items-center space-x-4">
+          <div className="rounded-xl border border-brand-gold/20 bg-brand-gold/10 p-2.5 shadow-brand-gold">
+            <FaCloudUploadAlt className="text-xl text-brand-gold" />
           </div>
-          <h2 className="text-lg font-semibold text-white">Upload Product</h2>
+          <h2 className="text-xl font-black text-white font-spaceGrotesk uppercase tracking-[0.3em]">
+            Asset Registration
+          </h2>
         </div>
         <button
           onClick={onClose}
-          className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+          className="p-2.5 text-gray-500 hover:text-white transition-colors"
         >
-          <CgClose size={20} />
+          <CgClose size={24} />
         </button>
       </div>
 
       {/* Form */}
       <form
         onSubmit={handleSubmit}
-        className="flex-1 overflow-y-auto p-5 space-y-5"
+        className="flex-1 space-y-5 overflow-y-auto p-5"
       >
         {/* Product Name */}
-        <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2">
+        <div className="group">
+          <label className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 font-spaceGrotesk group-focus-within:text-brand-gold transition-colors">
             Product Name
           </label>
           <input
@@ -212,46 +214,50 @@ const UploadProduct = ({ onClose, fetchData }) => {
             name="productName"
             value={data.productName}
             onChange={handleOnChange}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors"
+            className="w-full rounded-2xl border border-white/10 bg-black/20 px-5 py-4 text-sm font-medium text-white placeholder-gray-700 transition-all focus:border-brand-gold/50 outline-none"
             required
-            placeholder="Enter product name"
+            placeholder="Enter product title..."
           />
         </div>
 
         {/* Brand Name */}
-        <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2">
-            Brand Name
+        <div className="group">
+          <label className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 font-spaceGrotesk group-focus-within:text-brand-gold transition-colors">
+            Brand Identity
           </label>
           <input
             type="text"
             name="brandName"
             value={data.brandName}
             onChange={handleOnChange}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors"
+            className="w-full rounded-2xl border border-white/10 bg-black/20 px-5 py-4 text-sm font-medium text-white placeholder-gray-700 transition-all focus:border-brand-gold/50 outline-none"
             required
-            placeholder="Enter brand name"
+            placeholder="Enter brand name..."
           />
         </div>
 
         {/* Category */}
-        <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2">
+        <div className="group">
+          <label className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 font-spaceGrotesk group-focus-within:text-brand-gold transition-colors">
             Category
           </label>
           <select
             name="category"
             value={data.category}
             onChange={handleOnChange}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+            className="w-full rounded-2xl border border-white/10 bg-black/20 px-5 py-4 text-sm font-medium text-white transition-all focus:border-brand-gold/50 outline-none appearance-none cursor-pointer"
             required
           >
-            <option value="" className="bg-slate-900">
-              Select Category
+            <option value="" className="bg-brand-dark-base">
+              SELECT_CATEGORY
             </option>
             {productCategory.map((el) => (
-              <option value={el.value} key={el.value} className="bg-slate-900">
-                {el.label}
+              <option
+                value={el.value}
+                key={el.value}
+                className="bg-brand-dark-base"
+              >
+                {el.label.toUpperCase()}
               </option>
             ))}
           </select>
@@ -259,14 +265,18 @@ const UploadProduct = ({ onClose, fetchData }) => {
 
         {/* Image Upload */}
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2">
-            Product Images
+          <label className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 font-spaceGrotesk">
+            Attach Visual Data
           </label>
-          <div className="border-2 border-dashed border-slate-700 rounded-xl p-6 text-center hover:border-yellow-500/50 transition-colors">
+          <div className="rounded-2xl border-2 border-dashed border-white/5 bg-white/[0.02] p-8 text-center transition-all hover:border-brand-gold/30 hover:bg-white/[0.04] cursor-pointer group">
             <label htmlFor="uploadImageInput" className="cursor-pointer">
-              <FaCloudUploadAlt className="mx-auto h-10 w-10 text-slate-500 mb-2" />
-              <p className="text-slate-400 text-sm">Click to upload images</p>
-              <p className="text-slate-500 text-xs mt-1">PNG, JPG up to 10MB</p>
+              <FaCloudUploadAlt className="mx-auto mb-4 h-12 w-12 text-gray-600 group-hover:text-brand-gold transition-colors" />
+              <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest group-hover:text-white transition-colors">
+                Select asset images
+              </p>
+              <p className="mt-2 text-[9px] font-bold text-gray-700 uppercase">
+                PNG, JPG up to 10MB
+              </p>
               <input
                 id="uploadImageInput"
                 type="file"
@@ -276,7 +286,7 @@ const UploadProduct = ({ onClose, fetchData }) => {
             </label>
           </div>
           {uploading && (
-            <p className="text-yellow-500 text-sm mt-2 flex items-center">
+            <p className="mt-2 flex items-center text-sm text-brand-gold">
               <span className="animate-spin rounded-full h-4 w-4 border-2 border-yellow-500 border-t-transparent mr-2"></span>
               Uploading...
             </p>
@@ -307,134 +317,138 @@ const UploadProduct = ({ onClose, fetchData }) => {
         </div>
 
         {/* Description */}
-        <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2">
-            Description
+        <div className="group">
+          <label className="mb-3 block text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 font-spaceGrotesk group-focus-within:text-brand-gold transition-colors">
+            Detailed Specification
           </label>
           <textarea
             name="description"
             value={data.description}
             onChange={handleOnChange}
-            rows={3}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors resize-none"
+            rows={4}
+            className="w-full resize-none rounded-2xl border border-white/10 bg-black/20 px-5 py-4 text-sm font-medium text-white placeholder-gray-700 transition-all focus:border-brand-gold/50 outline-none"
             required
-            placeholder="Enter product description"
+            placeholder="Describe the asset in detail..."
           />
         </div>
 
         {/* Pricing Section */}
-        <div className="border-t border-slate-700 pt-5">
-          <h3 className="text-white font-semibold mb-4">Pricing</h3>
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <div>
-              <label className="block text-xs text-slate-400 mb-1">
+        <div className="border-t border-white/5 pt-8">
+          <h3 className="mb-8 text-xs font-black text-brand-gold uppercase tracking-[0.4em] font-spaceGrotesk flex items-center gap-3">
+            <FaPlusCircle className="opacity-50" /> Define Value
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="group">
+              <label className="block text-[10px] font-black text-gray-600 uppercase tracking-widest mb-3">
                 Currency
               </label>
               <select
                 value={newCurrency}
                 onChange={(e) => setNewCurrency(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
+                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm font-medium text-white focus:border-brand-gold/50 outline-none appearance-none"
               >
-                <option value="" className="bg-slate-900">
-                  Select
+                <option value="" className="bg-brand-dark-base">
+                  SELECT
                 </option>
                 {currencyData.map((cur) => (
                   <option
                     value={cur.value}
                     key={cur.value}
-                    className="bg-slate-900"
+                    className="bg-brand-dark-base"
                   >
-                    {cur.label}
+                    {cur.label.toUpperCase()}
                   </option>
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block text-xs text-slate-400 mb-1">
+            <div className="group">
+              <label className="block text-[10px] font-black text-gray-600 uppercase tracking-widest mb-3">
                 Face Value
               </label>
               <input
                 type="text"
-                placeholder="e.g. $10"
+                placeholder="e.g. $100"
                 value={newFaceValue}
                 onChange={(e) => setNewFaceValue(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
+                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm font-medium text-white focus:border-brand-gold/50 outline-none"
               />
             </div>
-            <div>
-              <label className="block text-xs text-slate-400 mb-1">Rate</label>
+            <div className="group">
+              <label className="block text-[10px] font-black text-gray-600 uppercase tracking-widest mb-3">
+                Exchange Rate
+              </label>
               <input
                 type="number"
-                placeholder="Enter rate"
+                placeholder="NGN Rate"
                 value={newSellingPrice}
                 onChange={(e) => setNewSellingPrice(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
+                className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm font-medium text-white focus:border-brand-gold/50 outline-none"
               />
             </div>
-            <div className="col-span-2">
-              <label className="block text-xs text-slate-400 mb-1">
-                Requirement (click to expand)
+            <div className="group">
+              <label className="block text-[10px] font-black text-gray-600 uppercase tracking-widest mb-3">
+                Requirement Sequence
               </label>
               <RequirementInput
                 value={newRequirement}
                 onChange={(val) => setNewRequirement(val)}
-                placeholder="Click to add requirements..."
+                placeholder="Add requirements..."
               />
             </div>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-4">
             <button
               type="button"
               onClick={handleAddPricing}
-              className="inline-flex items-center px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg text-sm text-slate-300 hover:bg-slate-700 hover:border-yellow-500/50 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl bg-white/5 px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest border border-white/5 hover:bg-white/10 hover:text-white transition-all active:scale-95"
             >
-              <FaPlusCircle className="mr-2 text-yellow-500" /> Add Pricing
+              <FaPlusCircle className="text-brand-gold" /> Commit Value
             </button>
             <button
               type="button"
               onClick={() => setShowBulkImport(true)}
-              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-500/50 rounded-lg text-sm text-yellow-400 hover:from-yellow-500/30 hover:to-yellow-600/30 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl bg-brand-gold/10 px-6 py-3 text-[10px] font-black text-brand-gold uppercase tracking-widest border border-brand-gold/20 hover:bg-brand-gold/20 transition-all active:scale-95"
             >
-              <FaFileImport className="mr-2" /> Bulk Import
+              <FaFileImport /> Batch Data Entry
             </button>
           </div>
 
           {/* Pricing List */}
           {data.pricing.length > 0 && (
-            <div className="mt-4 space-y-3">
+            <div className="mt-10 space-y-4">
               {data.pricing.map((pricing, currencyIndex) => (
                 <div
                   key={currencyIndex}
-                  className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50"
+                  className="rounded-2xl border border-white/5 bg-white/[0.02] p-6"
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-white">
-                      {pricing.currency}
+                  <div className="flex items-center justify-between mb-6">
+                    <h4 className="text-xs font-black text-white uppercase tracking-[0.2em]">
+                      {pricing.currency} Sequence
                     </h4>
                     <button
                       type="button"
                       onClick={() => handleDeleteCurrency(currencyIndex)}
-                      className="text-red-400 text-xs hover:text-red-300"
+                      className="text-red-400 text-[10px] font-black uppercase tracking-widest hover:text-red-300"
                     >
-                      Remove
+                      [ Remove ]
                     </button>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {pricing.faceValues.map((fv, index) => (
                       <div
                         key={index}
-                        className="bg-slate-700/30 rounded-lg p-3"
+                        className="rounded-xl border border-white/5 bg-black/40 p-4"
                       >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-white font-medium">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-gray-400 uppercase">
                             {fv.faceValue}
                           </span>
-                          <span className="text-yellow-500 font-semibold">
-                            ₦{fv.sellingPrice}
+                          <span className="text-brand-gold font-black font-mono text-sm">
+                            ₦{fv.sellingPrice.toLocaleString()}
                           </span>
                         </div>
                         {fv.requirement && (
-                          <div className="text-slate-400 text-xs whitespace-pre-line border-t border-slate-600/50 pt-2 mt-2">
+                          <div className="mt-3 text-[9px] font-bold text-gray-600 uppercase tracking-widest border-t border-white/5 pt-3 leading-relaxed">
                             {fv.requirement}
                           </div>
                         )}
@@ -448,19 +462,19 @@ const UploadProduct = ({ onClose, fetchData }) => {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center space-x-3 pt-4 border-t border-slate-700">
+        <div className="flex flex-col sm:flex-row items-center gap-4 border-t border-white/5 pt-10 mt-10">
           <button
             type="submit"
-            className="flex-1 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 font-semibold rounded-xl hover:from-yellow-400 hover:to-yellow-500 transition-all"
+            className="w-full sm:flex-1 rounded-2xl bg-brand-gold hover:bg-brand-gold-dark py-5 font-black text-brand-dark-base uppercase tracking-[0.3em] text-sm shadow-[0_10px_30px_rgba(212,175,55,0.2)] transition-all active:scale-95"
           >
-            Upload Product
+            Submit Registration
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="px-6 py-3 bg-slate-800 text-slate-300 font-medium rounded-xl hover:bg-slate-700 transition-colors"
+            className="w-full sm:w-auto px-10 py-5 border border-white/10 text-gray-500 rounded-2xl font-black font-spaceGrotesk text-[10px] uppercase tracking-widest hover:bg-white/5 hover:text-white transition-all active:scale-95"
           >
-            Cancel
+            Abort
           </button>
         </div>
       </form>

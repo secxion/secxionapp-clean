@@ -68,6 +68,7 @@ const Home = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   // Removed unused: isLoadingBalance, errorBalance
   const [showBalance, setShowBalance] = useState(false);
+  const [showLastMarketActivity, setShowLastMarketActivity] = useState(true);
   const [transactions, setTransactions] = useState([]);
   // Removed unused: loadingTransactions, errorTransactions, setStatusFilter, setVisibleTransactions, setShowAll
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -151,23 +152,23 @@ const Home = () => {
 
   const getStatusColor = (status) =>
     ({
-      pending: 'bg-yellow-600/20 text-yellow-400',
-      'approved-processing': 'bg-yellow-600/30 text-yellow-300',
-      completed: 'bg-green-600/20 text-green-400',
-      rejected: 'bg-red-600/20 text-red-400',
-    })[status] || 'bg-gray-700 text-gray-300';
+      pending: 'border-brand-gold/20 bg-brand-gold/5 text-brand-gold',
+      'approved-processing': 'border-sky-500/20 bg-sky-500/5 text-sky-400',
+      completed: 'border-emerald-500/20 bg-emerald-500/5 text-emerald-400',
+      rejected: 'border-rose-500/20 bg-rose-500/5 text-rose-400',
+    })[status] || 'border-white/10 bg-white/5 text-gray-500';
 
   // Show up to 3 transactions by default (no showAll toggle)
   const displayedTransactions = transactions.slice(0, 3);
 
   return (
     <main
-      className="bg-gray-950 min-h-screen w-full pt-28 pb-20 relative overflow-x-hidden"
+      className="premium-bg relative min-h-screen w-full overflow-x-hidden pb-16 pt-[var(--total-content-offset)]"
       role="main"
       aria-label="Home Page Main Content"
     >
       {/* Hero */}
-      <Hero />
+      <Hero className="" />
 
       {/* Stats */}
       <section
@@ -177,59 +178,59 @@ const Home = () => {
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 sm:gap-6">
           <h2
             id="account-overview-heading"
-            className="text-2xl sm:text-3xl font-bold text-yellow-300"
+            className="text-2xl sm:text-3xl font-black font-spaceGrotesk text-white uppercase tracking-tighter"
           >
             Account Overview
           </h2>
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setShowBalance(!showBalance)}
-              className="p-3 sm:p-2 rounded-full bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-yellow-400 transition focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="p-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-brand-gold transition-all duration-300"
               aria-label={showBalance ? 'Hide balance' : 'Show balance'}
             >
               {showBalance ? (
-                <Eye className="w-6 h-6 sm:w-5 sm:h-5" aria-hidden="true" />
+                <Eye className="w-5 h-5" aria-hidden="true" />
               ) : (
-                <EyeOff className="w-6 h-6 sm:w-5 sm:h-5" aria-hidden="true" />
+                <EyeOff className="w-5 h-5" aria-hidden="true" />
               )}
             </button>
             <button
               onClick={refreshAllData}
               disabled={isRefreshing}
-              className="p-3 sm:p-2 rounded-full bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-yellow-400 transition focus:outline-none focus:ring-2 focus:ring-yellow-400 disabled:opacity-60"
+              className="p-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-brand-gold transition-all duration-300 disabled:opacity-30"
               aria-label="Refresh account data"
             >
               <RefreshCw
-                className={`w-6 h-6 sm:w-5 sm:h-5 ${isRefreshing ? 'animate-spin' : ''}`}
+                className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`}
                 aria-hidden="true"
               />
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {quickStats.map((stat, idx) => (
             <div
               key={idx}
-              className="bg-gray-900 border border-gray-700 rounded-xl p-5 sm:p-6 shadow hover:shadow-lg transition min-h-[110px] flex flex-col justify-center"
+              className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 flex flex-col justify-center transition-all duration-300 hover:bg-white/[0.04] hover:border-brand-gold/20"
             >
-              <p className="text-gray-400 text-base sm:text-sm mb-1">
+              <p className="text-gray-500 text-[10px] font-black tracking-[0.2em] uppercase mb-4">
                 {stat.label}
               </p>
-              <p className="text-3xl sm:text-4xl font-bold text-yellow-300 mb-1">
-                {showBalance ? stat.value : '••••••'}
+              <p className="text-4xl sm:text-5xl font-black font-spaceGrotesk text-white tracking-tighter mb-1">
+                {showBalance ? stat.value : '••••••••'}
               </p>
               {stat.change && (
-                <p
-                  className={`text-base sm:text-sm ${stat.positive ? 'text-green-400' : 'text-red-400'}`}
+                <div
+                  className={`mt-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest ${stat.positive ? 'text-emerald-400' : 'text-rose-400'}`}
                 >
                   {stat.positive ? (
-                    <TrendingUp className="inline w-5 h-5 sm:w-4 sm:h-4" />
+                    <TrendingUp className="w-3.5 h-3.5" />
                   ) : (
-                    <TrendingDown className="inline w-5 h-5 sm:w-4 sm:h-4" />
+                    <TrendingDown className="w-3.5 h-3.5" />
                   )}{' '}
-                  {stat.change}
-                </p>
+                  <span>{stat.change}</span>
+                </div>
               )}
             </div>
           ))}
@@ -254,42 +255,68 @@ const Home = () => {
         className="max-w-7xl mx-auto mb-8 px-2 sm:px-4"
         aria-label="Last Market Status"
       >
-        <LastMarketStatus />
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-xl sm:text-2xl font-black font-spaceGrotesk text-white uppercase tracking-tight">
+            Last Market Activity
+          </h2>
+          <button
+            type="button"
+            onClick={() => setShowLastMarketActivity((prev) => !prev)}
+            className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-all duration-300 hover:border-brand-gold/30 hover:bg-white/10 hover:text-white"
+            aria-expanded={showLastMarketActivity}
+            aria-controls="last-market-activity-content"
+          >
+            {showLastMarketActivity ? 'Hide' : 'Open'}
+          </button>
+        </div>
+
+        <div id="last-market-activity-content">
+          {showLastMarketActivity ? (
+            <LastMarketStatus />
+          ) : (
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-6 text-center">
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+                Last Market Activity is hidden.
+              </p>
+            </div>
+          )}
+        </div>
       </section>
 
       {/* Quick Access */}
       <section
-        className="max-w-7xl mx-auto mb-8 px-2 sm:px-4"
+        className="max-w-7xl mx-auto mb-12 px-2 sm:px-4"
         aria-labelledby="quick-access-heading"
       >
         <h2
           id="quick-access-heading"
-          className="text-xl sm:text-2xl font-semibold text-yellow-300 mb-4 sm:mb-6"
+          className="text-xl sm:text-2xl font-black font-spaceGrotesk text-white uppercase tracking-tight mb-8"
         >
           Quick Access
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {menuItems.map((item, i) => (
             <motion.button
               key={i}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => handleNavigation(item.path)}
-              className="bg-gray-900 border border-gray-700 rounded-xl p-5 sm:p-6 hover:border-yellow-400 active:bg-gray-800 transition cursor-pointer text-left min-h-[72px] focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="bg-white/5 border border-white/5 rounded-3xl p-8 text-left flex items-center gap-6 transition-all duration-300 hover:bg-white/10 hover:border-brand-gold/30 group"
               aria-label={item.label + ' - ' + item.description}
-              tabIndex={0}
             >
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div
-                  className="p-3 sm:p-4 rounded-lg bg-gray-800 text-yellow-400 flex items-center justify-center min-w-[44px] min-h-[44px]"
-                  aria-hidden="true"
-                >
-                  {item.icon}
-                </div>
-                <div>
-                  <h3 className="text-white font-medium text-base sm:text-lg">
-                    {item.label}
-                  </h3>
-                  <p className="text-sm text-gray-400">{item.description}</p>
-                </div>
+              <div
+                className="p-4 rounded-2xl bg-brand-gold/5 text-brand-gold border border-brand-gold/10 group-hover:bg-brand-gold group-hover:text-brand-dark-base transition-all duration-300"
+                aria-hidden="true"
+              >
+                {item.icon}
+              </div>
+              <div>
+                <h3 className="text-white font-black text-lg font-spaceGrotesk uppercase tracking-tight">
+                  {item.label}
+                </h3>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed mt-1">
+                  {item.description}
+                </p>
               </div>
             </motion.button>
           ))}
@@ -298,46 +325,64 @@ const Home = () => {
 
       {/* Transactions */}
       <section
-        className="max-w-7xl mx-auto mb-8 px-2 sm:px-4"
+        className="max-w-7xl mx-auto mb-12 px-2 sm:px-4"
         aria-labelledby="recent-transactions-heading"
       >
         <h2
           id="recent-transactions-heading"
-          className="text-xl sm:text-2xl font-semibold text-yellow-300 mb-3 sm:mb-4"
+          className="text-xl sm:text-2xl font-black font-spaceGrotesk text-white uppercase tracking-tight mb-8"
         >
           Recent Transactions
         </h2>
         {transactions.length === 0 ? (
-          <p className="text-gray-500">No transactions found.</p>
+          <p className="text-gray-600 italic uppercase text-[10px] font-black tracking-widest text-center py-10">
+            No recent activity detected.
+          </p>
         ) : (
-          <div className="space-y-2 sm:space-y-3">
+          <div className="space-y-3">
             {displayedTransactions.map((txn, i) => (
               <div
                 key={i}
-                className="flex items-center justify-between bg-gray-900 border border-gray-700 p-3 sm:p-4 rounded-lg min-h-[56px] focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="flex items-center justify-between bg-white/[0.02] border border-white/5 p-6 rounded-2xl transition-all duration-300 hover:bg-white/[0.04] hover:border-brand-gold/20"
                 tabIndex={0}
                 aria-label={`Transaction ${txn.type} ${txn._id?.slice(-6)}, amount ${txn.amount}, status ${txn.status}`}
               >
-                <div>
-                  <p className="text-white font-medium text-base sm:text-lg">
-                    {txn.type} #{txn._id?.slice(-6)}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {new Date(txn.createdAt).toLocaleDateString()}
-                  </p>
+                <div className="flex items-center gap-6">
+                  <div className="hidden sm:flex p-3 rounded-xl bg-brand-gold/5 text-brand-gold border border-brand-gold/10">
+                    <RefreshCw className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-white font-black font-spaceGrotesk uppercase tracking-tight">
+                      {txn.type}{' '}
+                      <span className="text-gray-600 text-xs font-mono">
+                        #{txn._id?.slice(-6).toUpperCase()}
+                      </span>
+                    </p>
+                    <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-1">
+                      {new Date(txn.createdAt)
+                        .toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })
+                        .toUpperCase()}
+                    </p>
+                  </div>
                 </div>
                 <div className="text-right">
                   <p
-                    className={`font-bold ${txn.amount > 0 ? 'text-green-400' : 'text-red-400'} text-base sm:text-lg`}
+                    className={`font-black font-spaceGrotesk ${txn.amount > 0 ? 'text-emerald-400' : 'text-rose-400'} text-xl tracking-tighter`}
                   >
                     {txn.amount > 0 ? '+' : '-'}₦
                     {Math.abs(txn.amount).toLocaleString()}
                   </p>
                   <span
-                    className={`text-xs px-2 py-1 rounded-full ${getStatusColor(txn.status)}`}
+                    className={`mt-2 inline-block text-[9px] px-3 py-1 rounded-lg font-black uppercase tracking-widest border ${getStatusColor(txn.status)}`}
                     aria-label={`Status: ${txn.status}`}
                   >
-                    {txn.status}
+                    {txn.status === 'approved-processing'
+                      ? 'PROCESSING'
+                      : txn.status.toUpperCase()}
                   </span>
                 </div>
               </div>

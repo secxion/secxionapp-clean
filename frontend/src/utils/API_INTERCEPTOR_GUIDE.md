@@ -1,6 +1,7 @@
 # Frontend Error Management & 401 Interceptor Guide
 
 ## Overview
+
 This guide explains the new global error handling system that automatically logs out users when their session expires (401 errors) instead of showing raw error messages.
 
 ---
@@ -8,6 +9,7 @@ This guide explains the new global error handling system that automatically logs
 ## What Was Changed
 
 ### 1. **New Global API Interceptor** (`src/utils/apiInterceptor.js`)
+
 - ✅ Wraps all API calls with centralized error handling
 - ✅ Detects 401 (Unauthorized) errors automatically
 - ✅ Automatically logs out users and clears tokens
@@ -15,6 +17,7 @@ This guide explains the new global error handling system that automatically logs
 - ✅ Prevents showing raw console errors to users
 
 ### 2. **Updated API Service** (`src/services/apiService.js`)
+
 - ✅ Uses new `apiFetch()` wrapper instead of raw `fetch()`
 - ✅ All API calls go through `handleApiResponse()` for centralized error handling
 
@@ -23,6 +26,7 @@ This guide explains the new global error handling system that automatically logs
 ## How It Works
 
 ### **When User Logs Out in Tab A:**
+
 1. Tab A makes logout request → server clears session
 2. User navigates to Tab B (still logged in locally)
 3. Tab B makes API call (e.g., fetch market data)
@@ -39,6 +43,7 @@ This guide explains the new global error handling system that automatically logs
 ## Usage in Components
 
 ### **Before (❌ Breaking):**
+
 ```javascript
 const response = await fetch(SummaryApi.getMarket.url, {
   method: 'GET',
@@ -51,6 +56,7 @@ const data = await response.json();
 ```
 
 ### **After (✅ Clean):**
+
 ```javascript
 import { apiFetch, handleApiResponse } from '../utils/apiInterceptor';
 
@@ -73,7 +79,9 @@ if (data.success) {
 ## API Interceptor Functions
 
 ### **`apiFetch(url, options)`**
+
 Enhanced fetch wrapper that:
+
 - Automatically adds `Authorization` header
 - Sets credentials to 'include'
 - Handles 401 errors globally
@@ -86,7 +94,9 @@ const response = await apiFetch('/api/endpoint', {
 ```
 
 ### **`handleApiResponse(response)`**
+
 Processes fetch response with error handling:
+
 - Checks for 401 → auto logout
 - Parses JSON
 - Returns standardized response object
@@ -97,7 +107,9 @@ const data = await handleApiResponse(response);
 ```
 
 ### **`handleUnauthorized()`**
+
 Called automatically on 401:
+
 - Clears Redux user state
 - Clears localStorage/sessionStorage
 - Redirects to login
@@ -109,6 +121,7 @@ handleUnauthorized();
 ```
 
 ### **`isUnauthorized(response)`**
+
 Check if response is 401
 
 ```javascript
@@ -118,6 +131,7 @@ if (isUnauthorized(response)) {
 ```
 
 ### **`getErrorMessage(status, defaultMessage)`**
+
 Returns user-friendly error message for HTTP status code
 
 ```javascript
@@ -129,15 +143,15 @@ const msg = getErrorMessage(429); // "Too many requests..."
 
 ## Common Error Messages
 
-| Status | Message |
-|--------|---------|
-| 400 | Invalid request. Please check your input. |
-| 401 | Your session has expired. Please log in again. |
-| 403 | You do not have permission to access this resource. |
-| 404 | Resource not found. |
-| 429 | Too many requests. Please wait a moment and try again. |
-| 500 | Server error. Please try again later. |
-| 503 | Service unavailable. Please try again later. |
+| Status | Message                                                |
+| ------ | ------------------------------------------------------ |
+| 400    | Invalid request. Please check your input.              |
+| 401    | Your session has expired. Please log in again.         |
+| 403    | You do not have permission to access this resource.    |
+| 404    | Resource not found.                                    |
+| 429    | Too many requests. Please wait a moment and try again. |
+| 500    | Server error. Please try again later.                  |
+| 503    | Service unavailable. Please try again later.           |
 
 ---
 
@@ -146,6 +160,7 @@ const msg = getErrorMessage(429); // "Too many requests..."
 ### **Step 1: Replace raw fetch calls**
 
 **Before:**
+
 ```javascript
 const response = await fetch(SummaryApi.myMarket.url, {
   headers: { Authorization: `Bearer ${token}` },
@@ -155,6 +170,7 @@ const data = await response.json();
 ```
 
 **After:**
+
 ```javascript
 import { apiFetch, handleApiResponse } from '../../../utils/apiInterceptor';
 
@@ -165,6 +181,7 @@ const data = await handleApiResponse(response);
 ### **Step 2: Remove manual error display for 401s**
 
 **Before:**
+
 ```javascript
 catch (error) {
   setError('Failed to fetch last market status: 401. Check server logs...');
@@ -172,6 +189,7 @@ catch (error) {
 ```
 
 **After:**
+
 ```javascript
 catch (error) {
   // Error handled automatically by interceptor
@@ -195,6 +213,7 @@ if (!data.success) {
 ## Error Logging
 
 All errors are logged to browser console with `[API]` prefix:
+
 ```
 [API] User unauthorized (401) - Logging out...
 [API] Error 500: Internal Server Error
@@ -208,6 +227,7 @@ All errors are logged to browser console with `[API]` prefix:
 ## Testing the System
 
 ### **Test Case 1: Session Expired**
+
 1. Open app, log in (Tab A)
 2. Open same URL in Tab B (automatically logged in)
 3. In Tab A, click logout
@@ -215,6 +235,7 @@ All errors are logged to browser console with `[API]` prefix:
 5. **Expected:** Tab B auto-redirects to `/login?session=expired`
 
 ### **Test Case 2: Multiple Tabs**
+
 1. Log in on Tab A
 2. Log in on Tab B
 3. Logout on Tab A
@@ -222,6 +243,7 @@ All errors are logged to browser console with `[API]` prefix:
 5. **Expected:** Tab B automatically redirects to login
 
 ### **Test Case 3: Error Messages**
+
 1. Make invalid API call (wrong endpoint)
 2. **Expected:** Only console shows error, not UI
 
@@ -240,10 +262,10 @@ All errors are logged to browser console with `[API]` prefix:
 
 ## Files Modified
 
-| File | Changes |
-|------|---------|
-| [`src/utils/apiInterceptor.js`](src/utils/apiInterceptor.js) | **NEW** - Global error handler |
-| [`src/services/apiService.js`](src/services/apiService.js) | Updated to use global interceptor |
+| File                                                         | Changes                           |
+| ------------------------------------------------------------ | --------------------------------- |
+| [`src/utils/apiInterceptor.js`](src/utils/apiInterceptor.js) | **NEW** - Global error handler    |
+| [`src/services/apiService.js`](src/services/apiService.js)   | Updated to use global interceptor |
 
 ---
 
@@ -260,6 +282,7 @@ All errors are logged to browser console with `[API]` prefix:
 ## Questions?
 
 When migrating components:
+
 1. Replace raw `fetch()` with `apiFetch()`
 2. Process response with `handleApiResponse()`
 3. Check `data.success` instead of `response.ok`

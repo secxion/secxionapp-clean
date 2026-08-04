@@ -53,18 +53,20 @@ const BlogManagement = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-yellow-500/10 rounded-xl">
-            <FaPenAlt className="text-yellow-500 text-xl" />
+          <div className="rounded-xl border border-brand-gold/20 bg-brand-gold/10 p-2 shadow-[0_0_14px_rgba(212,175,55,0.14)]">
+            <FaPenAlt className="text-brand-gold text-xl" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white">Blog Management</h1>
-            <p className="text-slate-400 text-sm">
+            <h1 className="text-xl font-spaceGrotesk font-bold uppercase tracking-wide text-white">
+              Blog Management
+            </h1>
+            <p className="text-sm text-gray-400">
               Create and manage system blog posts
             </p>
           </div>
         </div>
         <button
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-yellow-500 text-slate-900 font-medium rounded-lg hover:bg-yellow-400 transition-colors"
+          className="flex items-center justify-center gap-2 rounded-lg bg-brand-gold px-4 py-2 font-medium text-brand-dark-base transition-colors hover:bg-brand-gold-light"
           onClick={handleCreateBlog}
         >
           <FaPlus /> Create Blog
@@ -91,9 +93,11 @@ const BlogManagement = () => {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-12 text-slate-500">
+        <div className="flex flex-col items-center justify-center py-12 text-gray-500">
           <FaPenAlt className="text-4xl mb-3" />
-          <p>No Blogs Available.</p>
+          <p className="font-spaceGrotesk text-xs font-bold uppercase tracking-widest">
+            No Blogs Available.
+          </p>
         </div>
       )}
     </div>

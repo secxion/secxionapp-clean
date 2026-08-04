@@ -18,12 +18,14 @@ const ProductListView = React.memo(({ loading, data = [] }) => {
 
   if (loading) {
     return (
-      <div className="space-y-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {loadingList.map((_, index) => (
-          <div key={index} className="animate-pulse space-y-2">
-            <div className="h-4 bg-gray-800 rounded w-40"></div>
-            <div className="h-3 bg-gray-800 rounded w-64"></div>
-            <div className="h-3 bg-gray-800 rounded w-56"></div>
+          <div
+            key={index}
+            className="glass-card p-6 rounded-2xl animate-pulse space-y-4"
+          >
+            <div className="h-4 bg-white/10 rounded-full w-3/4"></div>
+            <div className="h-3 bg-white/5 rounded-full w-1/2"></div>
           </div>
         ))}
       </div>
@@ -31,27 +33,27 @@ const ProductListView = React.memo(({ loading, data = [] }) => {
   }
 
   return (
-    <div className="space-y-8 text-gray-200">
+    <div className="space-y-12">
       {groupedEntries.map(([category, products]) => (
         <section
           key={category}
           aria-label={`${category} products`}
           className="group"
         >
-          <h3 className="text-sm font-black uppercase tracking-[0.2em] text-yellow-500/90 mb-4 flex items-center gap-3">
-            <span className="h-px bg-gradient-to-r from-yellow-500/60 to-transparent flex-1"></span>
+          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-gold/80 mb-6 flex items-center gap-4 font-spaceGrotesk">
+            <span className="h-[1px] bg-gradient-to-r from-brand-gold/40 to-transparent flex-1"></span>
             {category}
-            <span className="h-px bg-gradient-to-l from-yellow-500/60 to-transparent flex-1"></span>
+            <span className="h-[1px] bg-gradient-to-l from-brand-gold/40 to-transparent flex-1"></span>
           </h3>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {products.map((product) => (
-              <li key={product._id} className="relative group/item">
+              <li key={product._id} className="relative">
                 <Link
                   to={`/product/${product._id}`}
                   onClick={scrollTop}
-                  className="block px-4 py-2.5 rounded-xl bg-gray-800/30 hover:bg-gray-800/60 border border-gray-700/30 hover:border-yellow-500/40 transition-all duration-200"
+                  className="block glass-card p-4 rounded-xl hover:border-brand-gold/30 group/item transition-all duration-300"
                 >
-                  <span className="text-[14px] font-bold tracking-tight text-gray-100 group-hover/item:text-yellow-400 transition-colors">
+                  <span className="text-sm font-bold font-spaceGrotesk tracking-wide text-gray-200 group-hover/item:text-brand-gold transition-colors uppercase">
                     {product.productName}
                   </span>
                 </Link>

@@ -74,16 +74,20 @@ const NetBlog = () => {
 
   if (errorBlogs) {
     return (
-      <div className="bg-gradient-to-br from-red-50 to-red-100 border border-red-300 rounded-xl p-6 text-center">
-        <p className="text-red-600 font-medium">{errorBlogs}</p>
+      <div className="rounded-xl border border-rose-400/30 bg-rose-500/10 p-6 text-center backdrop-blur-sm">
+        <p className="font-spaceGrotesk text-xs font-bold uppercase tracking-wider text-rose-300">
+          {errorBlogs}
+        </p>
       </div>
     );
   }
 
   if (blogs.length === 0) {
     return (
-      <div className="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-300 rounded-xl p-6 text-center">
-        <p className="text-gray-600">No blog posts available at the moment.</p>
+      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6 text-center backdrop-blur-sm">
+        <p className="font-spaceGrotesk text-xs font-bold uppercase tracking-wider text-gray-300">
+          No blog posts available at the moment.
+        </p>
       </div>
     );
   }
@@ -93,28 +97,29 @@ const NetBlog = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="container mx-auto mt-32 px-4 max-w-7xl"
+      className="container mx-auto px-4 max-w-7xl mt-20"
     >
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onMouseEnter={fetchCommunityFeedData}
-          onClick={handleCommunityFeedClick}
-          className="relative group px-5 py-2 text-white font-semibold items-center justify-center rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-xs bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:brightness-110 flex items-center gap-2 border-4 border-yellow-500 " // Applied
-        >
-          <span className="hidden sm:inline">Community</span> Feed
-          <FaExternalLinkAlt className="text-white text-[10px] hidden sm:inline" />
-          <span className="absolute bottom-full mb-1 hidden sm:group-hover:flex px-2 py-1 text-[10px] bg-black text-white rounded">
-            Opens in new tab
-          </span>
-        </motion.button>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-10 gap-6">
+        <h2 className="text-xl sm:text-2xl font-black font-spaceGrotesk text-white uppercase tracking-tight">
+          Latest Updates
+        </h2>
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-4">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onMouseEnter={fetchCommunityFeedData}
+            onClick={handleCommunityFeedClick}
+            className="flex items-center gap-3 rounded-xl border border-brand-gold/40 bg-brand-gold/10 px-6 py-2.5 font-spaceGrotesk text-[10px] font-black uppercase tracking-widest text-brand-gold-light shadow-[0_0_20px_rgba(212,175,55,0.12)] transition-all duration-300 hover:bg-brand-gold/20 hover:text-white"
+          >
+            <span>Community Feed</span>
+            <FaExternalLinkAlt className="text-brand-gold w-2.5 h-2.5" />
+          </motion.button>
+
           <button
             onClick={toggleBlogVisibility}
-            className="text-sm font-semibold text-gray-700 border-4 border-yellow-500 px-4 py-1 rounded-full transition " // Applied
+            className="rounded-xl border border-white/10 bg-white/[0.03] px-6 py-2.5 font-spaceGrotesk text-[10px] font-black uppercase tracking-widest text-gray-400 transition-all duration-300 hover:border-brand-gold/30 hover:bg-white/[0.06] hover:text-white"
           >
-            {showBlogs ? 'Hide Blogs' : 'Show Blogs'}
+            {showBlogs ? 'Hide Records' : 'Show Records'}
           </button>
         </div>
       </div>
@@ -131,91 +136,93 @@ const NetBlog = () => {
               <motion.div
                 key={blog._id}
                 variants={blogCardVariants}
-                className="rounded-2xl overflow-hidden shadow-lg bg-white  border-4 border-yellow-500 transition-all duration-300 hover:scale-[1.015] "
+                className="group rounded-3xl border border-white/10 bg-gradient-to-br from-brand-dark-elevated/70 via-brand-dark-base/70 to-black/20 p-8 shadow-[0_0_24px_rgba(0,0,0,0.22)] transition-all duration-500 hover:border-brand-gold/30 hover:shadow-[0_0_30px_rgba(212,175,55,0.15)]"
               >
-                <div className="p-6 minecraft-font text-xs">
-                  <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-sm font-semibold line-clamp-2 text-gray-800">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-start">
+                    <h3 className="text-sm font-black text-white uppercase tracking-tight leading-tight group-hover:text-brand-gold transition-colors line-clamp-2">
                       {blog.title}
                     </h3>
                     {blog.isActive && (
-                      <span className="flex items-center text-green-500 text-xs">
-                        <FaCircle className="mr-1 animate-pulse" />
-                      </span>
+                      <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full shadow-[0_0_8px_#4ade80]" />
                     )}
                   </div>
-                  <p className="text-gray-600 text-xs line-clamp-3 ">
-                    {blog.content || 'No content available.'}
+
+                  <p className="line-clamp-3 text-xs font-medium leading-relaxed text-gray-400">
+                    {blog.content || 'No description provided.'}
                   </p>
-                  <p className="text-[10px] text-gray-500 mt-3 ">
-                    {' '}
-                    {/* Applied  */}
-                    Published{' '}
-                    {formatDistanceToNow(new Date(blog.createdAt), {
-                      addSuffix: true,
-                    })}
-                  </p>
-                  <button
-                    onClick={() => setSelectedBlog(blog)}
-                    className="mt-3 text-xs font-medium text-pink-500 hover:text-pink-400 transition-colors focus:outline-none  border-2 border-black rounded-md px-2 py-1"
-                  >
-                    Read More →
-                  </button>
+
+                  <div className="pt-4 flex items-center justify-between">
+                    <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest">
+                      {formatDistanceToNow(new Date(blog.createdAt), {
+                        addSuffix: true,
+                      }).toUpperCase()}
+                    </span>
+
+                    <button
+                      onClick={() => setSelectedBlog(blog)}
+                      className="flex items-center gap-2 font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.2em] text-brand-gold transition-colors hover:text-white"
+                    >
+                      View Report <span className="text-xs">→</span>
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             ))}
           </motion.div>
 
           {blogs.length > 6 && (
-            <div className="flex justify-center mt-8">
+            <div className="flex justify-center mt-12">
               <button
                 onClick={toggleMoreBlogs}
-                className="px-4 py-2 text-xs font-semibold bg-pink-500 text-white rounded-full hover:bg-pink-600 transition border-4 border-yellow-500 " // Applied
+                className="rounded-2xl border border-brand-gold/30 bg-brand-gold/10 px-12 py-4 font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold-light transition-all hover:bg-brand-gold/20 hover:text-white active:scale-95"
               >
-                {visibleBlogs === 6 ? 'Show More' : 'Show Less'}
+                {visibleBlogs === 6 ? 'Expand Data' : 'Collapse Data'}
               </button>
             </div>
           )}
         </>
       ) : (
-        <p className="text-gray-500 dark:text-gray-400 text-center py-12 text-sm minecraft-font  border-2 border-black">
-          {' '}
-          {/* Applied  */}
-          No blog posts available yet.
-        </p>
+        <div className="text-center py-20 bg-white/[0.02] border border-white/5 rounded-3xl">
+          <p className="text-gray-600 text-[10px] font-black uppercase tracking-widest">
+            No system updates found.
+          </p>
+        </div>
       )}
 
       {selectedBlog && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-md flex items-center justify-center z-50">
-          <div className="relative bg-gray-900 bg-opacity-90 rounded-lg shadow-lg p-6 max-w-2xl w-full">
-            {/* Close Button - Brand Design */}
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50 p-4">
+          <div className="relative w-full max-w-2xl rounded-3xl border border-brand-gold/20 bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black p-10 shadow-[0_0_40px_rgba(212,175,55,0.12)]">
+            {/* Close Button */}
             <motion.button
               onClick={() => setSelectedBlog(null)}
-              className="fixed top-14 right-6 z-[10000] bg-red-600 hover:bg-red-700 text-white p-3 rounded-full shadow-2xl transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-500/50 border-2 border-white/20"
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              exit={{ scale: 0, rotate: 180 }}
-              transition={{
-                type: 'spring',
-                stiffness: 300,
-                damping: 20,
-                delay: 0.1,
-              }}
-              whileHover={{
-                rotate: 90,
-                boxShadow: '0 0 30px rgba(239, 68, 68, 0.5)',
-              }}
+              className="absolute -right-4 -top-4 rounded-2xl border border-white/15 bg-black/40 p-3 text-gray-400 shadow-2xl transition-all duration-200 hover:border-brand-gold/40 hover:text-brand-gold"
+              whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              aria-label="Close blog dialog"
+              aria-label="Close"
             >
-              <FaTimes className="w-6 h-6" />
+              <FaTimes className="w-5 h-5" />
             </motion.button>
 
             {/* Blog Content */}
-            <h2 className="text-2xl font-bold text-gray-100 mb-4">
-              {selectedBlog.title}
-            </h2>
-            <p className="text-gray-300">{selectedBlog.content}</p>
+            <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                <span className="font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.4em] text-brand-gold">
+                  Official Report
+                </span>
+                <span className="w-1 h-1 bg-white/20 rounded-full" />
+                <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
+                  ID: {selectedBlog._id.toUpperCase()}
+                </span>
+              </div>
+              <h2 className="text-3xl font-black text-white font-spaceGrotesk uppercase tracking-tighter leading-tight">
+                {selectedBlog.title}
+              </h2>
+              <div className="h-px bg-white/5" />
+              <p className="max-h-[50vh] overflow-y-auto pr-4 text-sm font-medium leading-relaxed text-gray-300 scrollbar-hide">
+                {selectedBlog.content}
+              </p>
+            </div>
           </div>
         </div>
       )}

@@ -102,54 +102,60 @@ const ReportForm = ({ onReportSubmit }) => {
   };
 
   return (
-    <div className="container bg-white p-6 rounded-lg shadow-md border border-secxion-gold">
-      <h2 className="text-2xl font-semibold mb-4 text-secxion-black">
-        Submit Report
+    <div className="glass-card bg-black/20 p-8 rounded-3xl border-white/5">
+      <h2 className="text-[10px] font-black mb-8 text-brand-gold uppercase tracking-[0.4em] font-spaceGrotesk">
+        New Support Ticket
       </h2>
-      <div className="mb-4">
-        <label className="block text-secxion-black text-sm font-bold mb-2">
-          Category:
-        </label>
-        <select
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-secxion-black leading-tight focus:outline-none focus:ring-2 focus:ring-secxion-gold"
-          value={selectedCategory.category}
-          onChange={(e) =>
-            setSelectedCategory({
-              category: e.target.value,
-              autoReply: selectedCategory.autoReply,
-            })
-          }
-        >
-          <option value="">Select</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div className="group">
+          <label className="block text-[10px] font-black font-spaceGrotesk text-gray-500 uppercase tracking-widest mb-3 group-focus-within:text-brand-gold transition-colors">
+            Category
+          </label>
+          <div className="relative">
+            <select
+              className="w-full px-5 py-4 rounded-2xl bg-black/40 border border-white/10 text-sm font-medium text-white focus:border-brand-gold/50 outline-none appearance-none transition-all"
+              value={selectedCategory.category}
+              onChange={(e) =>
+                setSelectedCategory({
+                  category: e.target.value,
+                  autoReply: selectedCategory.autoReply,
+                })
+              }
+            >
+              <option value="" className="bg-brand-dark-base">
+                Select Category
+              </option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat} className="bg-brand-dark-base">
+                  {cat.toUpperCase()}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="group">
+          <label className="block text-[10px] font-black font-spaceGrotesk text-gray-500 uppercase tracking-widest mb-3 group-focus-within:text-brand-gold transition-colors">
+            Message
+          </label>
+          <textarea
+            className="w-full px-5 py-4 rounded-2xl bg-black/40 border border-white/10 text-sm font-medium text-white placeholder-gray-700 focus:border-brand-gold/50 outline-none transition-all resize-none"
+            placeholder="Describe your issue..."
+            value={reportText}
+            onChange={(e) => setReportText(e.target.value)}
+            rows={4}
+          />
+        </div>
       </div>
 
-      <div className="mb-4">
-        <label className="block text-secxion-black text-sm font-bold mb-2">
-          Message:
+      <div className="mb-10">
+        <label className="block text-[10px] font-black font-spaceGrotesk text-gray-500 uppercase tracking-widest mb-4">
+          Attachment
         </label>
-        <textarea
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-secxion-black leading-tight focus:outline-none focus:ring-2 focus:ring-secxion-gold"
-          placeholder="Describe your issue..."
-          value={reportText}
-          onChange={(e) => setReportText(e.target.value)}
-          rows={4}
-        />
-      </div>
-
-      <div className="mb-6">
-        <label className="block text-secxion-black text-sm font-bold mb-2">
-          Attachment:
-        </label>
-        <div className="flex items-center mt-1">
-          <label className="cursor-pointer flex items-center gap-2 border border-gray-400 rounded-md shadow-sm px-4 py-2 bg-secxion-cream hover:bg-secxion-gold-light text-secxion-black">
-            <FaPaperclip className="text-secxion-black" />
-            <span className="text-sm">Upload</span>
+        <div className="flex items-center gap-6">
+          <label className="cursor-pointer flex items-center gap-3 px-6 py-3.5 rounded-2xl bg-white/5 text-gray-400 font-black font-spaceGrotesk text-[10px] uppercase tracking-widest border border-white/5 hover:text-white hover:border-white/10 transition-all active:scale-95">
+            <FaPaperclip className="text-brand-gold" />
+            <span>Upload File</span>
             <input
               type="file"
               className="hidden"
@@ -157,17 +163,17 @@ const ReportForm = ({ onReportSubmit }) => {
             />
           </label>
           {uploadedImage && (
-            <div className="relative ml-3">
+            <div className="relative group/img">
               <img
                 src={uploadedImage}
                 alt="Uploaded"
-                className="w-16 h-16 object-cover rounded-md border border-gray-400"
+                className="w-16 h-16 object-cover rounded-xl border border-brand-gold/30 shadow-brand-gold"
               />
               <button
-                className="absolute top-0 right-0 p-1 bg-red-700 text-white rounded-full hover:bg-red-900"
+                className="absolute -top-2 -right-2 p-1.5 bg-red-600 text-white rounded-full shadow-lg opacity-0 group-hover/img:opacity-100 transition-opacity"
                 onClick={() => setUploadedImage(null)}
               >
-                <MdDelete className="text-sm" />
+                <MdDelete className="text-xs" />
               </button>
             </div>
           )}
@@ -175,16 +181,16 @@ const ReportForm = ({ onReportSubmit }) => {
       </div>
 
       <button
-        className="w-full bg-secxion-gold text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline hover:bg-secxion-gold-dark disabled:bg-gray-500"
+        className="w-full sm:w-auto px-12 py-5 rounded-2xl bg-brand-gold text-brand-dark-base font-black font-spaceGrotesk text-sm uppercase tracking-wider shadow-[0_10px_30px_rgba(212,175,55,0.2)] hover:bg-brand-gold-light transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
         onClick={handleSubmitReport}
         disabled={loading}
       >
-        <MdSend className="inline-block mr-2" />
+        <MdSend className="inline-block mr-3 text-lg" />
         {loading && uploadedImage === null
-          ? 'Uploading Image...'
+          ? 'Synchronizing...'
           : loading
             ? 'Submitting...'
-            : 'Submit'}
+            : 'Submit Ticket'}
       </button>
     </div>
   );

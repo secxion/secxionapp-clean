@@ -20,34 +20,34 @@ const HistoryCard = ({ data, isDetailViewOpen, onCloseDetailView }) => {
   };
 
   const renderStatusIndicator = (status) => {
-    let colorClass = 'text-gray-500';
+    let colorClass = 'text-gray-400';
     let indicator = '⏳ WAIT';
 
     switch (status) {
       case 'PROCESSING':
-        colorClass = 'text-deep-golden-yellow-500';
+        colorClass = 'text-brand-gold';
         indicator = (
           <div className="flex items-center">
-            <div className="animate-spin h-5 w-5 border-4 border-deep-golden-yellow-500 rounded-full border-t-transparent mr-2"></div>
+            <div className="mr-2 h-5 w-5 animate-spin rounded-full border-4 border-brand-gold border-t-transparent"></div>
             <span>PROCESSING</span>
           </div>
         );
         break;
       case 'DONE':
-        colorClass = 'text-green-500';
+        colorClass = 'text-emerald-400';
         indicator = '👍✨ DONE';
         break;
       case 'CANCEL':
-        colorClass = 'text-red-500';
+        colorClass = 'text-red-400';
         indicator = '👎 CANCEL';
         break;
       case 'WAIT':
-        colorClass = 'text-gray-500';
+        colorClass = 'text-gray-400';
         indicator = (
           <div className="flex items-center">
-            <div className="animate-pulse h-5 w-5 mr-2">
+            <div className="mr-2 h-5 w-5 animate-pulse">
               <svg
-                className="h-full w-full text-gray-500"
+                className="h-full w-full text-gray-400"
                 viewBox="0 0 24 24"
                 fill="currentColor"
               >
@@ -68,32 +68,34 @@ const HistoryCard = ({ data, isDetailViewOpen, onCloseDetailView }) => {
   return (
     <>
       <motion.div
-        className="container mt-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 p-6 rounded-xl shadow-lg transition-shadow transform duration-300 cursor-pointer border border-yellow-700/30 hover:shadow-xl"
+        className="glass-card mt-4 cursor-pointer rounded-3xl border border-white/10 p-6 shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:border-brand-gold/40"
         onClick={onCloseDetailView}
       >
         <div className="w-full">
-          <p className="text-yellow-400 font-semibold">
-            Market ID:{' '}
-            <span className="truncate block text-gray-200">{data._id}</span>
+          <p className="font-spaceGrotesk text-sm font-black uppercase tracking-[0.28em] text-brand-gold/80">
+            Market ID
           </p>
-          <p className="text-gray-400 text-sm mt-1">
+          <span className="mt-2 block truncate text-sm text-gray-200">
+            {data._id}
+          </span>
+          <p className="mt-4 text-sm text-gray-400">
             Created At:{' '}
-            <span className="truncate block">
+            <span className="mt-1 block truncate text-gray-200">
               {data.timestamp
                 ? new Date(data.timestamp).toLocaleString()
                 : 'N/A'}
             </span>
           </p>
-          <p className="text-gray-400 text-sm mt-1">
+          <p className="mt-3 text-sm text-gray-400">
             Status:{' '}
-            <span className="truncate block">
+            <span className="mt-1 block">
               {renderStatusIndicator(initialStatus)}
             </span>
           </p>
           {initialStatus === 'CANCEL' && (
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="mt-3 text-sm text-gray-400">
               Cancel Reason:{' '}
-              <span className="truncate block">
+              <span className="mt-1 block truncate text-gray-200">
                 {data.cancelReason || 'N/A'}
               </span>
             </p>
@@ -105,7 +107,7 @@ const HistoryCard = ({ data, isDetailViewOpen, onCloseDetailView }) => {
                 key={`${data.image}-${data._id}`} // Ensure unique keys
                 src={data.image}
                 alt="Transaction"
-                className="w-full h-40 object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform"
+                className="h-40 w-full rounded-2xl border border-white/10 object-cover transition-transform duration-300 hover:scale-[1.02]"
                 onClick={() => {
                   setFullScreenImage(data.image);
                   setOpenFullScreenImage(true);
@@ -115,7 +117,7 @@ const HistoryCard = ({ data, isDetailViewOpen, onCloseDetailView }) => {
           )}
           <button
             onClick={handleViewMore}
-            className="mt-4 bg-yellow-500 text-gray-900 font-bold p-2 rounded-lg hover:bg-yellow-600 transition duration-200 w-full shadow"
+            className="mt-5 w-full rounded-2xl bg-brand-gold px-4 py-3 font-bold text-brand-dark-base shadow-[0_0_20px_rgba(212,175,55,0.2)] transition duration-200 hover:bg-brand-gold-dark"
           >
             View More
           </button>

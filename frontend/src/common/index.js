@@ -80,6 +80,10 @@ const SummaryApi = {
     url: `${backendDomain}/api/update-user`,
     method: 'post',
   },
+  profileEdit: {
+    url: `${backendDomain}/api/profile/edit`,
+    method: 'put',
+  },
   deleteUser: {
     url: `${backendDomain}/api/delete-user`,
     method: 'delete',
