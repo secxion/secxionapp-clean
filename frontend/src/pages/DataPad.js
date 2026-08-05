@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
-import { FaPlus, FaCode, FaTimes } from 'react-icons/fa';
-import { MdRefresh, MdClose } from 'react-icons/md';
+import { FaPlus, FaCode, FaTags } from 'react-icons/fa';
+import { MdClose } from 'react-icons/md';
 
 import UploadData from '../Components/UploadData';
 import DataPadList from '../Components/DataPadList';
@@ -11,6 +11,7 @@ import LiveScript from '../Components/LiveScript';
 
 import EmptyState from '../Components/EmptyState';
 import SearchAndFilter from '../Components/SearchAndFilter';
+import SecxionSpinner from '../Components/SecxionSpinner';
 import SecxionLoader from '../Components/SecxionLoader';
 import SummaryApi from '../common';
 
@@ -37,7 +38,6 @@ const DataPad = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState(SORT_OPTIONS.NEWEST);
   const [selectedTags, setSelectedTags] = useState([]);
-  const [showFilters, setShowFilters] = useState(false);
 
   const fetchDataPads = useCallback(
     async (showToast = false) => {
@@ -99,6 +99,62 @@ const DataPad = () => {
   useEffect(() => {
     fetchDataPads();
   }, [fetchDataPads]);
+
+  useEffect(() => {
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousBodyOverscroll = document.body.style.overscrollBehavior;
+    const previousBodyBackground = document.body.style.backgroundColor;
+    const previousHtmlOverscroll =
+      document.documentElement.style.overscrollBehavior;
+    const previousHtmlBackground =
+      document.documentElement.style.backgroundColor;
+
+    document.body.style.overflow = 'hidden';
+    document.body.style.overscrollBehavior = 'none';
+    document.body.style.backgroundColor = '#0b1019';
+    document.documentElement.style.overscrollBehavior = 'none';
+    document.documentElement.style.backgroundColor = '#0b1019';
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.body.style.overscrollBehavior = previousBodyOverscroll;
+      document.body.style.backgroundColor = previousBodyBackground;
+      document.documentElement.style.overscrollBehavior =
+        previousHtmlOverscroll;
+      document.documentElement.style.backgroundColor = previousHtmlBackground;
+    };
+  }, []);
+
+  useEffect(() => {
+    const shouldLockScroll =
+      isUploadOpen || isLiveScriptOpen || Boolean(selectedPreviewImage);
+
+    if (!shouldLockScroll) return undefined;
+
+    const scrollY = window.scrollY;
+    const previousOverflow = document.body.style.overflow;
+    const previousPosition = document.body.style.position;
+    const previousTop = document.body.style.top;
+    const previousWidth = document.body.style.width;
+    const previousOverscrollBehavior =
+      document.documentElement.style.overscrollBehavior;
+
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    document.documentElement.style.overscrollBehavior = 'none';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.position = previousPosition;
+      document.body.style.top = previousTop;
+      document.body.style.width = previousWidth;
+      document.documentElement.style.overscrollBehavior =
+        previousOverscrollBehavior;
+      window.scrollTo(0, scrollY);
+    };
+  }, [isUploadOpen, isLiveScriptOpen, selectedPreviewImage]);
 
   const filteredAndSortedDataPads = useMemo(() => {
     let filtered = dataPads;
@@ -200,113 +256,77 @@ const DataPad = () => {
     }
   }, []);
 
-  const handleRefresh = useCallback(() => {
-    fetchDataPads(true);
-  }, [fetchDataPads]);
-
   if (!user) {
     return <SecxionLoader size="large" message="Authenticating..." />;
   }
 
   return (
     <motion.div
-      className="min-h-screen premium-bg flex flex-col"
+      className="relative flex h-[100dvh] flex-col overflow-y-auto overscroll-none bg-brand-dark-base"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      {/* Header */}
-      <div className="bg-brand-dark-base/80 backdrop-blur-xl shadow-2xl border-b border-white/5 mt-20 lg:mt-28 md:mt-28 sticky top-16 lg:top-20 z-30 transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <div className="flex items-center space-x-6">
-              <motion.h1
-                className="text-2xl sm:text-3xl font-black neon-gold-text font-spaceGrotesk uppercase tracking-tighter"
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                DataPad
-              </motion.h1>
-              <motion.div
-                className="hidden sm:flex items-center gap-2 bg-brand-gold/10 px-4 py-1 rounded-full border border-brand-gold/20 backdrop-blur-sm shadow-brand-gold"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
-              >
-                <div className="w-1.5 h-1.5 bg-brand-gold rounded-full"></div>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-gold font-spaceGrotesk">
-                  {dataPads.length} Items
-                </span>
-              </motion.div>
+      {/* Header + Search Stack */}
+      <div className="sticky z-30 mt-24 md:mt-28 lg:mt-28 border-b border-white/8 bg-brand-dark-base/85 shadow-2xl backdrop-blur-2xl transition-all duration-300 lg:top-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-5">
+          <div className="flex flex-col gap-4">
+            <div className="space-y-4">
+              <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+                <div className="flex flex-wrap items-center gap-2">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setIsLiveScriptOpen(true)}
+                    className="inline-flex items-center gap-2 rounded-2xl border border-violet-500/20 bg-violet-500/10 px-3.5 py-2 text-[9px] font-black uppercase tracking-[0.24em] text-violet-200 transition-all duration-300 hover:bg-violet-500/20"
+                  >
+                    <FaCode className="h-4 w-4" />
+                    LiveScript
+                  </motion.button>
+
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleOpenEditor()}
+                    className="inline-flex items-center gap-2 rounded-2xl bg-brand-gold px-4 py-2 text-[9px] font-black uppercase tracking-[0.24em] text-brand-dark-base shadow-brand-gold transition-all hover:bg-brand-gold-dark"
+                  >
+                    <FaPlus className="h-3.5 w-3.5" />
+                    New Record
+                  </motion.button>
+                </div>
+              </div>
             </div>
 
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={handleRefresh}
-                disabled={isLoading}
-                className="p-3 text-gray-500 hover:text-brand-gold transition-all duration-300 disabled:opacity-30 bg-white/5 rounded-xl border border-white/5 active:scale-95"
-                title="Synchronize"
-              >
-                <MdRefresh
-                  className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`}
+            {dataPads.length > 0 && (
+              <div className="border-t border-white/8 pt-6 md:pt-10 lg:pt-10 mt-2">
+                <SearchAndFilter
+                  searchQuery={searchQuery}
+                  onSearchChange={setSearchQuery}
+                  sortBy={sortBy}
+                  selectedTags={selectedTags}
+                  onTagsChange={setSelectedTags}
+                  availableTags={availableTags}
+                  onSortByChange={setSortBy}
+                  resultCount={filteredAndSortedDataPads.length}
+                  totalCount={dataPads.length}
                 />
-              </button>
-
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setIsLiveScriptOpen(true)}
-                className="hidden sm:flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-6 py-3 rounded-2xl font-black font-spaceGrotesk text-[10px] uppercase tracking-widest shadow-lg transition-all"
-              >
-                <FaCode className="w-4 h-4" />
-                <span>LiveScript</span>
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleOpenEditor()}
-                className="bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base px-6 py-3 rounded-2xl font-black font-spaceGrotesk text-[10px] uppercase tracking-widest shadow-brand-gold transition-all flex items-center space-x-2"
-              >
-                <FaPlus className="w-3.5 h-3.5" />
-                <span>New Record</span>
-              </motion.button>
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Search and Filter */}
-      {dataPads.length > 0 && (
-        <div className="sticky top-[144px] lg:top-[160px] z-20 bg-brand-dark-base/90 backdrop-blur-md border-b border-white/5 shadow-xl transition-all duration-300">
-          <SearchAndFilter
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            sortBy={sortBy}
-            setSortBy={setSortBy}
-            selectedTags={selectedTags}
-            onTagsChange={setSelectedTags}
-            availableTags={availableTags}
-            showFilters={showFilters}
-            onSortByChange={setSortBy}
-            setShowFilters={setShowFilters}
-            resultCount={filteredAndSortedDataPads.length}
-            totalCount={dataPads.length}
-          />
-        </div>
-      )}
-
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 overflow-visible">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 mt-2 -mb-24">
           <AnimatePresence mode="wait">
             {isLoading && dataPads.length === 0 ? (
-              <SecxionLoader
+              <div
                 key="loading"
-                size="large"
-                message="Loading your data..."
-              />
+                className="flex min-h-[55vh] items-center justify-center"
+              >
+                <SecxionSpinner size="large" message="Loading your data..." />
+              </div>
             ) : dataPads.length === 0 ? (
               <EmptyState
                 onCreateNew={() => handleOpenEditor()}
@@ -320,15 +340,15 @@ const DataPad = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="flex flex-col items-center justify-center py-20 glass-card rounded-3xl border-white/5"
+                className="flex flex-col items-center justify-center py-20 rounded-[32px] border border-white/8 bg-black/20 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl"
               >
-                <div className="text-6xl mb-6 opacity-20 filter grayscale">
-                  🔍
+                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-[28px] border border-white/8 bg-white/5 text-3xl shadow-inner">
+                  <FaTags className="h-8 w-8 text-brand-gold/80" />
                 </div>
-                <h3 className="text-xl font-black text-white font-spaceGrotesk uppercase tracking-widest mb-2">
+                <h3 className="mb-2 text-xl font-black text-white font-spaceGrotesk uppercase tracking-widest">
                   No records found
                 </h3>
-                <p className="text-gray-500 text-xs font-bold uppercase tracking-[0.2em] mb-8">
+                <p className="mb-8 text-xs font-bold uppercase tracking-[0.2em] text-gray-500">
                   Adjust parameters or clear filters.
                 </p>
                 <button
@@ -336,9 +356,9 @@ const DataPad = () => {
                     setSearchQuery('');
                     setSelectedTags([]);
                   }}
-                  className="text-brand-gold hover:text-white font-black font-spaceGrotesk text-[10px] uppercase tracking-[0.4em] transition-all"
+                  className="rounded-2xl border border-brand-gold/20 bg-brand-gold/10 px-5 py-3 text-[10px] font-black uppercase tracking-[0.35em] text-brand-gold transition-all hover:bg-brand-gold/20 hover:text-white"
                 >
-                  [ Clear Filters ]
+                  Clear Filters
                 </button>
               </motion.div>
             ) : (
@@ -402,7 +422,7 @@ const DataPad = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/95 flex items-center justify-center z-[100] p-4 touch-manipulation"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-4 overscroll-none touch-manipulation"
             onClick={() => setSelectedPreviewImage(null)}
           >
             <button

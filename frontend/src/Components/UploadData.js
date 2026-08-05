@@ -12,7 +12,6 @@ import {
   FaFileAlt,
   FaBars,
   FaTimes,
-  FaEdit,
 } from 'react-icons/fa';
 import { MdSend, MdUpdate } from 'react-icons/md';
 import { toast } from 'react-toastify';
@@ -35,43 +34,13 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
   // UI state
   const [loading, setLoading] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState({});
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('content');
   const [showSidebar, setShowSidebar] = useState(false);
   const [wordCount, setWordCount] = useState(0);
   const [showWritingTips, setShowWritingTips] = useState(false);
-  const [savedNotes, setSavedNotes] = useState([]);
-  const [loadingNotes, setLoadingNotes] = useState(true);
   const [originalData, setOriginalData] = useState(null); // Track original data
-
-  // Fetch saved notes
-  const fetchSavedNotes = useCallback(async () => {
-    if (!user) return;
-
-    setLoadingNotes(true);
-    try {
-      const response = await fetch(SummaryApi.allData.url, {
-        method: SummaryApi.allData.method,
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          const userNotes = data.data.filter(
-            (item) => item.userId === user?.id || item.userId === user?._id,
-          );
-          setSavedNotes(userNotes.slice(0, 10)); // Show only first 10 notes
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching saved notes:', error);
-    } finally {
-      setLoadingNotes(false);
-    }
-  }, [user]);
 
   // Load existing note data when editing
   useEffect(() => {
@@ -121,11 +90,6 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
     setHasUnsavedChanges(false);
   }, [editingDataPad]);
 
-  // Fetch saved notes on component mount
-  useEffect(() => {
-    fetchSavedNotes();
-  }, [fetchSavedNotes]);
-
   // Track unsaved changes - Simplified logic
   useEffect(() => {
     if (!originalData) return;
@@ -144,6 +108,43 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
     const words = content.split(/\s+/).filter((word) => word.length > 0).length;
     setWordCount(words);
   }, [content]);
+
+  // Upload images to the server and sync the preview state when complete.
+  const uploadImages = useCallback(async (files) => {
+    try {
+      const uploadPromises = files.map(async (file) => {
+        try {
+          const uploadResponse = await uploadImage(file);
+          return uploadResponse.url;
+        } catch (error) {
+          console.error(`Failed to upload ${file.name}:`, error);
+          throw error;
+        }
+      });
+
+      const uploadedUrls = await Promise.all(uploadPromises);
+
+      setMedia((prev) => [...prev, ...uploadedUrls]);
+      setPreviewImages((prev) =>
+        prev.map((img) =>
+          img.isUploading ? { ...img, isUploading: false } : img,
+        ),
+      );
+
+      toast.success(`${uploadedUrls.length} image(s) uploaded successfully!`, {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+    } catch (error) {
+      console.error('Image upload failed:', error);
+      toast.error('Some images failed to upload. Please try again.', {
+        position: 'top-right',
+        autoClose: 5000,
+      });
+
+      setPreviewImages((prev) => prev.filter((img) => !img.isUploading));
+    }
+  }, []);
 
   // Handle image selection with validation
   const handleImageSelection = useCallback(
@@ -193,52 +194,8 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
       setPreviewImages((prev) => [...prev, ...previews]);
       uploadImages(validFiles);
     },
-    [previewImages.length],
+    [previewImages.length, uploadImages],
   );
-
-  // Upload images to the server with progress tracking
-  const uploadImages = useCallback(async (files) => {
-    try {
-      const uploadPromises = files.map(async (file, index) => {
-        const fileId = `${Date.now()}-${index}`;
-        setUploadProgress((prev) => ({ ...prev, [fileId]: 0 }));
-
-        try {
-          const uploadResponse = await uploadImage(file);
-          setUploadProgress((prev) => ({ ...prev, [fileId]: 100 }));
-          return uploadResponse.url;
-        } catch (error) {
-          console.error(`Failed to upload ${file.name}:`, error);
-          setUploadProgress((prev) => ({ ...prev, [fileId]: -1 }));
-          throw error;
-        }
-      });
-
-      const uploadedUrls = await Promise.all(uploadPromises);
-
-      setMedia((prev) => [...prev, ...uploadedUrls]);
-      setPreviewImages((prev) =>
-        prev.map((img) =>
-          img.isUploading ? { ...img, isUploading: false } : img,
-        ),
-      );
-
-      toast.success(`${uploadedUrls.length} image(s) uploaded successfully!`, {
-        position: 'top-right',
-        autoClose: 3000,
-      });
-    } catch (error) {
-      console.error('Image upload failed:', error);
-      toast.error('Some images failed to upload. Please try again.', {
-        position: 'top-right',
-        autoClose: 5000,
-      });
-
-      setPreviewImages((prev) => prev.filter((img) => !img.isUploading));
-    } finally {
-      setUploadProgress({});
-    }
-  }, []);
 
   // Remove an image from preview & media array
   const removeImage = useCallback(
@@ -457,75 +414,6 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
     }
   }, [title, content, media, tags, originalData, previewImages, closeUpload]);
 
-  // Handle opening a saved note - Simplified logic
-  const handleOpenSavedNote = useCallback(
-    (note) => {
-      if (!note || !user?._id) {
-        console.error('Note or user ID missing');
-        return;
-      }
-
-      try {
-        // Simple check - only show confirmation if actual changes exist
-        const currentHasChanges =
-          originalData &&
-          (title !== originalData.title ||
-            content !== originalData.content ||
-            JSON.stringify(media) !== JSON.stringify(originalData.media) ||
-            JSON.stringify(tags) !== JSON.stringify(originalData.tags));
-
-        if (currentHasChanges) {
-          const confirmLoad = window.confirm(
-            'You have unsaved changes. Loading this note will discard them. Continue?',
-          );
-          if (!confirmLoad) {
-            return;
-          }
-        }
-
-        // Load the note data
-        const newTitle = note.title || '';
-        const newContent = note.content || '';
-        const newMedia = note.media || [];
-        const newTags = note.tags || [];
-
-        setTitle(newTitle);
-        setContent(newContent);
-        setMedia(newMedia);
-        setTags(newTags);
-
-        // Update original data reference
-        setOriginalData({
-          title: newTitle,
-          content: newContent,
-          media: newMedia,
-          tags: newTags,
-        });
-
-        // Handle media if present
-        if (note.media && note.media.length > 0) {
-          setPreviewImages(
-            note.media.map((mediaItem) => ({
-              url: mediaItem.url || mediaItem,
-              file: null,
-              isUploading: false,
-            })),
-          );
-        } else {
-          setPreviewImages([]);
-        }
-
-        // Reset states
-        setHasUnsavedChanges(false);
-        setActiveTab('content');
-      } catch (error) {
-        console.error('Error loading saved note:', error);
-        toast.error('Failed to load note');
-      }
-    },
-    [title, content, media, tags, originalData, user?._id],
-  );
-
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -625,24 +513,24 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex flex-col bg-gray-900 text-white"
+      className="fixed inset-0 z-50 flex flex-col overflow-y-auto overscroll-none bg-brand-dark-base text-white"
     >
       {/* Header - Fixed dark theme */}
-      <div className="bg-gray-800 shadow-sm border-b mt-10 border-gray-700 sticky top-0 z-20">
+      <div className="sticky top-0 z-20 mt-10 border-b border-white/8 bg-brand-dark-elevated/95 shadow-[0_12px_30px_rgba(0,0,0,0.25)] backdrop-blur-xl">
         <div className="flex items-center justify-between px-4 py-4">
           <div className="flex items-center space-x-2">
             <button
               onClick={handleClose}
-              className="group bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-all duration-200 flex items-center gap-2"
+              className="group inline-flex items-center gap-2 rounded-2xl border border-brand-gold/20 bg-brand-gold px-3.5 py-2 text-[9px] font-black uppercase tracking-[0.24em] text-brand-dark-base shadow-brand-gold transition-all duration-200 hover:bg-brand-gold-light"
               title="Go back to your DataPad"
             >
-              <FaArrowLeft className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-              <span className="font-semibold">MyData</span>
+              <FaArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+              <span className="font-black">MyData</span>
             </button>
 
             <button
               onClick={toggleSidebar}
-              className="md:hidden p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-700 rounded-lg transition-colors duration-200"
+              className="rounded-2xl border border-white/8 bg-white/5 p-2 text-gray-400 transition-colors duration-200 hover:bg-white/10 hover:text-white md:hidden"
               title="Toggle menu"
             >
               {showSidebar ? (
@@ -653,12 +541,12 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
             </button>
           </div>
 
-          <div className="flex-1 text-center md:text-left md:ml-4 md:border-l md:border-gray-600 md:pl-4">
-            <h1 className="text-lg md:text-xl font-semibold text-white">
+          <div className="flex-1 text-center md:ml-4 md:border-l md:border-white/10 md:pl-4 md:text-left">
+            <h1 className="text-lg font-semibold text-white md:text-xl">
               {editingDataPad ? 'Edit Note' : 'New Note'}
             </h1>
             {hasUnsavedChanges && (
-              <p className="text-sm text-orange-400 mt-1">Unsaved changes</p>
+              <p className="mt-1 text-sm text-brand-gold">Unsaved changes</p>
             )}
           </div>
 
@@ -666,7 +554,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
             <button
               onClick={handleSubmitDataPad}
               disabled={loading || isSubmitting}
-              className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-all duration-200 flex items-center space-x-2 min-w-[80px] justify-center"
+              className="inline-flex min-w-[80px] items-center justify-center gap-2 rounded-2xl border border-brand-gold/20 bg-brand-gold px-3.5 py-2 text-[9px] font-black uppercase tracking-[0.24em] text-brand-dark-base shadow-brand-gold transition-all duration-200 hover:bg-brand-gold-light disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? (
                 <SecxionSpinner size="small" message="" />
@@ -686,50 +574,16 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
           </div>
         </div>
 
-        {/* Saved Notes Strip */}
-        <div className="px-4 py-2 border-t border-gray-700 bg-gray-800/50">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-sm font-medium text-gray-300 flex items-center gap-1">
-              <span>Quick Access:</span>
-              <span className="text-xs text-gray-500 bg-gray-700 px-2 py-0.5 rounded-full">
-                Recent Notes
-              </span>
-            </span>
-            {loadingNotes && (
-              <div className="text-xs text-gray-500">Loading notes...</div>
-            )}
-          </div>
-          <div className="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-600 pb-2">
-            {savedNotes.map((note) => (
-              <motion.button
-                key={note._id}
-                onClick={() => handleOpenSavedNote(note)}
-                className="flex-shrink-0 bg-gray-700 hover:bg-blue-900/50 border border-gray-600 hover:border-blue-500 rounded-full px-3 py-1 text-xs font-medium text-gray-300 hover:text-blue-300 transition-all duration-200 flex items-center gap-1 max-w-[150px]"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <FaEdit className="w-3 h-3 flex-shrink-0" />
-                <span className="truncate">{note.title || 'Untitled'}</span>
-              </motion.button>
-            ))}
-            {savedNotes.length === 0 && !loadingNotes && (
-              <div className="text-xs text-gray-500 italic">
-                No saved notes yet
-              </div>
-            )}
-          </div>
-        </div>
-
         {/* Mobile Tab Navigation */}
-        <div className="md:hidden border-t border-gray-700 bg-gray-800/50">
+        <div className="border-t border-white/8 bg-white/5 md:hidden">
           <div className="flex">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 text-sm font-medium transition-colors duration-200 ${
+                className={`flex flex-1 items-center justify-center gap-2 px-2 py-3 text-sm font-medium transition-colors duration-200 ${
                   activeTab === tab.id
-                    ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-700'
+                    ? 'border-b-2 border-brand-gold bg-brand-gold/10 text-brand-gold'
                     : 'text-gray-400 hover:text-gray-300'
                 }`}
               >
@@ -742,20 +596,20 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
       </div>
 
       {/* Main Content Area - Fixed dark theme */}
-      <div className="flex-1 flex overflow-hidden bg-gray-900">
+      <div className="flex flex-1 overflow-hidden bg-brand-dark-base">
         {/* Desktop Sidebar */}
-        <div className="hidden md:flex w-64 bg-gray-800 border-r border-gray-700 flex-col">
-          <div className="p-4 border-b border-gray-700">
-            <h2 className="font-medium text-gray-200 mb-3">Note Sections</h2>
+        <div className="hidden w-64 flex-col border-r border-white/8 bg-brand-dark-elevated md:flex">
+          <div className="border-b border-white/8 p-4">
+            <h2 className="mb-3 font-medium text-gray-200">Note Sections</h2>
             <nav className="space-y-1">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors duration-200 ${
+                  className={`flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left transition-colors duration-200 ${
                     activeTab === tab.id
-                      ? 'bg-blue-600 text-white border border-blue-500'
-                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                      ? 'border border-brand-gold/20 bg-brand-gold/10 text-brand-gold'
+                      : 'text-gray-300 hover:bg-white/5 hover:text-white'
                   }`}
                 >
                   {tab.icon}
@@ -766,7 +620,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
           </div>
 
           {/* Desktop Stats */}
-          <div className="p-4 space-y-3 text-sm text-gray-400">
+          <div className="space-y-3 p-4 text-sm text-gray-400">
             <div className="flex justify-between">
               <span>Characters:</span>
               <span className="font-medium text-gray-200">
@@ -786,10 +640,10 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
           </div>
 
           {/* Writing Tips */}
-          <div className="p-4 border-t border-gray-700">
+          <div className="border-t border-white/8 p-4">
             <button
               onClick={() => setShowWritingTips(!showWritingTips)}
-              className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2"
+              className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-300"
             >
               💡 Writing Tips
               <span
@@ -804,7 +658,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="space-y-1 text-xs text-gray-400 overflow-hidden"
+                  className="space-y-1 overflow-hidden text-xs text-gray-400"
                 >
                   {writingTips.map((tip, index) => (
                     <div key={index} className="py-1">
@@ -825,16 +679,16 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-10"
+                className="fixed inset-0 z-10 bg-black/50 md:hidden"
                 onClick={() => setShowSidebar(false)}
               />
               <motion.div
                 initial={{ x: -280 }}
                 animate={{ x: 0 }}
                 exit={{ x: -280 }}
-                className="md:hidden fixed left-0 top-0 bottom-0 w-70 py-10 bg-gray-800 z-20 shadow-xl"
+                className="fixed bottom-0 left-0 top-0 z-20 w-70 bg-brand-dark-elevated py-10 shadow-xl md:hidden"
               >
-                <div className="p-4 border-b border-gray-700 flex items-center justify-between">
+                <div className="flex items-center justify-between border-b border-white/8 p-4">
                   <h2 className="font-medium text-gray-200">Note Info</h2>
                   <motion.button
                     onClick={() => setShowSidebar(false)}
@@ -848,7 +702,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                 </div>
 
                 {/* Mobile Stats */}
-                <div className="p-4 space-y-3 text-sm text-gray-400">
+                <div className="space-y-3 p-4 text-sm text-gray-400">
                   <div className="flex justify-between">
                     <span>Characters:</span>
                     <span className="font-medium text-gray-200">
@@ -870,7 +724,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                 </div>
 
                 {/* Mobile Writing Tips */}
-                <div className="p-4 border-t border-gray-700">
+                <div className="border-t border-white/8 p-4">
                   <h3 className="text-sm font-medium text-gray-300 mb-2">
                     💡 Writing Tips
                   </h3>
@@ -888,25 +742,25 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
         </AnimatePresence>
 
         {/* Content Area */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-gray-900">
+        <div className="flex flex-1 flex-col overflow-hidden bg-brand-dark-base">
           {/* Title Section */}
-          <div className="border-b border-gray-700 bg-gray-800 px-4 md:px-6 py-4">
+          <div className="border-b border-white/8 bg-brand-dark-elevated px-4 py-4 md:px-6">
             <input
               type="text"
-              className="w-full text-xl md:text-2xl font-semibold text-white placeholder-gray-400 border-none outline-none bg-transparent"
+              className="w-full border-none bg-transparent text-xl font-semibold text-white outline-none placeholder-gray-500 md:text-2xl"
               placeholder="Untitled note..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               maxLength={200}
             />
-            <div className="flex items-center justify-between text-xs text-gray-500 mt-1">
+            <div className="mt-1 flex items-center justify-between text-xs text-gray-500">
               <span>{title.length}/200 characters</span>
               <span className="md:hidden">{wordCount} words</span>
             </div>
           </div>
 
           {/* Tab Content */}
-          <div className="flex-1 overflow-hidden bg-gray-900">
+          <div className="flex-1 overflow-hidden bg-brand-dark-base">
             <AnimatePresence mode="wait">
               {activeTab === 'content' && (
                 <motion.div
@@ -928,7 +782,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                         />
                       </div>
                     </div>
-                    <div className="px-4 md:px-6 py-3 border-t border-gray-700 bg-gray-800/50 flex items-center justify-between text-xs text-gray-500">
+                    <div className="flex items-center justify-between border-t border-white/8 bg-white/5 px-4 py-3 text-xs text-gray-500 md:px-6">
                       <span>{content.length}/10,000 characters</span>
                       <span className="hidden md:inline">
                         {wordCount} words
@@ -952,13 +806,13 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                     </label>
 
                     {/* Mobile-optimized upload area */}
-                    <label className="group relative block w-full border-2 border-dashed border-gray-600 rounded-xl p-6 md:p-8 text-center hover:border-blue-400 hover:bg-gray-800 transition-all duration-200 cursor-pointer touch-manipulation">
-                      <FaCloudUploadAlt className="mx-auto h-10 w-10 md:h-12 md:w-12 text-gray-500 group-hover:text-blue-400 transition-colors duration-200" />
+                    <label className="group relative block w-full cursor-pointer rounded-[28px] border-2 border-dashed border-white/10 bg-white/5 p-6 text-center transition-all duration-200 hover:border-brand-gold/40 hover:bg-white/10 md:p-8 touch-manipulation">
+                      <FaCloudUploadAlt className="mx-auto h-10 w-10 text-gray-500 transition-colors duration-200 group-hover:text-brand-gold md:h-12 md:w-12" />
                       <div className="mt-4">
-                        <p className="text-sm font-medium text-gray-300 group-hover:text-blue-400">
+                        <p className="text-sm font-medium text-gray-300 group-hover:text-brand-gold">
                           Tap to upload photos
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="mt-1 text-xs text-gray-500">
                           PNG, JPG, GIF up to 10MB each
                         </p>
                       </div>
@@ -975,10 +829,10 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
 
                   {previewImages.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-medium text-gray-300 mb-1">
+                      <h3 className="mb-1 text-sm font-medium text-gray-300">
                         Uploaded Images
                       </h3>
-                      <p className="text-xs text-gray-500 mb-3">
+                      <p className="mb-3 text-xs text-gray-500">
                         Tap image or use the preview button to review in full
                         size.
                       </p>
@@ -993,7 +847,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                               exit={{ opacity: 0, scale: 0.8 }}
                               className="relative group"
                             >
-                              <div className="aspect-square rounded-lg overflow-hidden bg-gray-700 border border-gray-600 touch-manipulation">
+                              <div className="aspect-square overflow-hidden rounded-2xl border border-white/8 bg-white/5 touch-manipulation">
                                 <img
                                   src={imageData.url || imageData}
                                   alt={`Upload ${index + 1}`}
@@ -1003,13 +857,13 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                               </div>
 
                               {imageData.isUploading && (
-                                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
+                                <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/50">
                                   <SecxionSpinner size="small" message="" />
                                 </div>
                               )}
 
                               <button
-                                className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg touch-manipulation"
+                                className="absolute right-2 top-2 rounded-full border border-red-400/20 bg-red-500 p-2 text-white opacity-100 shadow-lg transition-opacity duration-200 hover:bg-red-600 md:opacity-0 group-hover:opacity-100 touch-manipulation"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   removeImage(index);
@@ -1021,7 +875,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                               </button>
 
                               <button
-                                className="absolute bottom-2 right-2 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg touch-manipulation"
+                                className="absolute bottom-2 right-2 rounded-full border border-brand-gold/20 bg-brand-gold p-2 text-brand-dark-base opacity-100 shadow-lg transition-opacity duration-200 hover:bg-brand-gold-light md:opacity-0 group-hover:opacity-100 touch-manipulation"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   openImageReview(index);
@@ -1032,7 +886,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                                 <FaEye className="w-3 h-3" />
                               </button>
 
-                              <div className="absolute bottom-2 left-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded-full">
+                              <div className="absolute bottom-2 left-2 rounded-full bg-black/75 px-2 py-1 text-xs text-white">
                                 {index + 1}
                               </div>
                             </motion.div>
@@ -1053,7 +907,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                   className="h-full p-4 md:p-6 overflow-y-auto"
                 >
                   <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                    <label className="mb-3 block text-sm font-medium text-gray-300">
                       Add Tags
                     </label>
                     {/* Mobile-optimized tag input */}
@@ -1067,12 +921,12 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                             ? (e.preventDefault(), addTag())
                             : null
                         }
-                        className="flex-1 px-3 py-3 md:py-2 bg-gray-800 border border-gray-600 text-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors duration-200 touch-manipulation placeholder-gray-500"
+                        className="flex-1 rounded-2xl border border-white/10 bg-black/20 px-3 py-3 text-gray-200 outline-none transition-colors duration-200 placeholder-gray-500 focus:border-brand-gold/40 focus:ring-2 focus:ring-brand-gold/10 md:py-2 touch-manipulation"
                         placeholder="Enter a tag..."
                       />
                       <button
                         onClick={addTag}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 md:py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 touch-manipulation"
+                        className="inline-flex items-center gap-2 rounded-2xl border border-brand-gold/20 bg-brand-gold px-4 py-3 text-[9px] font-black uppercase tracking-[0.22em] text-brand-dark-base transition-colors duration-200 hover:bg-brand-gold-light md:py-2 touch-manipulation"
                       >
                         <FaTag className="w-4 h-4" />
                         <span className="hidden sm:inline">Add</span>
@@ -1082,7 +936,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
 
                   {tags.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-medium text-gray-300 mb-3">
+                      <h3 className="mb-3 text-sm font-medium text-gray-300">
                         Current Tags
                       </h3>
                       {/* Mobile-optimized tag display */}
@@ -1090,13 +944,13 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                         {tags.map((tag, index) => (
                           <span
                             key={index}
-                            className="inline-flex items-center gap-2 bg-blue-900/50 text-blue-300 px-3 py-2 rounded-full text-sm border border-blue-700 touch-manipulation"
+                            className="inline-flex items-center gap-2 rounded-full border border-brand-gold/20 bg-brand-gold/10 px-3 py-2 text-sm text-brand-gold touch-manipulation"
                           >
                             {tag}
                             <button
                               type="button"
                               onClick={() => removeTag(tag)}
-                              className="text-blue-400 hover:text-blue-200 transition-colors duration-200 p-1 touch-manipulation"
+                              className="p-1 text-brand-gold/80 transition-colors duration-200 hover:text-white touch-manipulation"
                             >
                               <FaTrash className="w-3 h-3" />
                             </button>
@@ -1119,11 +973,11 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/95 flex items-center justify-center z-[60] p-4 touch-manipulation"
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95 p-4 touch-manipulation"
             onClick={closeImageReview}
           >
             <motion.button
-              className="absolute top-14 right-6 z-10 rounded-full border-2 border-white/20 bg-red-600/90 p-2 text-white shadow-lg transition-all duration-200 hover:scale-110 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500/50 touch-manipulation"
+              className="absolute right-6 top-14 z-10 rounded-full border-2 border-white/20 bg-red-600/90 p-2 text-white shadow-lg transition-all duration-200 hover:scale-110 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500/50 touch-manipulation"
               onClick={closeImageReview}
               aria-label="Close image review"
               whileHover={{ rotate: 90 }}
@@ -1135,7 +989,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
             {previewImages.length > 1 && (
               <>
                 <button
-                  className="absolute left-4 md:left-8 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-200 z-10 touch-manipulation backdrop-blur-md"
+                  className="absolute left-4 z-10 rounded-full bg-white/20 p-3 text-white backdrop-blur-md transition-all duration-200 hover:bg-white/30 touch-manipulation md:left-8"
                   onClick={(e) => {
                     e.stopPropagation();
                     showPreviousImage();
@@ -1146,7 +1000,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
                 </button>
 
                 <button
-                  className="absolute right-4 md:right-8 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-200 z-10 touch-manipulation backdrop-blur-md"
+                  className="absolute right-4 z-10 rounded-full bg-white/20 p-3 text-white backdrop-blur-md transition-all duration-200 hover:bg-white/30 touch-manipulation md:right-8"
                   onClick={(e) => {
                     e.stopPropagation();
                     showNextImage();
@@ -1170,7 +1024,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
               exit={{ scale: 0.8, opacity: 0 }}
               src={selectedImage}
               alt={`Photo ${selectedImageIndex !== null ? selectedImageIndex + 1 : 1}`}
-              className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+              className="max-w-full max-h-full rounded-2xl object-contain shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />
           </motion.div>

@@ -15,23 +15,23 @@ const EmptyState = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
-          className="flex flex-col items-center justify-center py-16 px-4"
+          className="flex flex-col items-center justify-center rounded-[32px] border border-white/8 bg-black/20 px-6 py-16 shadow-[0_18px_55px_rgba(0,0,0,0.25)] backdrop-blur-xl"
         >
-          <div className="w-20 h-20 bg-gray-700 rounded-full flex items-center justify-center mb-6">
-            <FaSearch className="w-8 h-8 text-gray-400" />
+          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-[26px] border border-white/8 bg-white/5 text-brand-gold shadow-inner">
+            <FaSearch className="h-7 w-7" />
           </div>
 
-          <h3 className="text-xl font-semibold text-white mb-2">
+          <h3 className="mb-2 text-lg font-black text-white font-spaceGrotesk uppercase tracking-[0.18em]">
             No matching notes found
           </h3>
-          <p className="text-gray-400 text-center mb-6 max-w-md">
+          <p className="mb-6 max-w-md text-center text-sm leading-7 text-gray-400">
             No notes match your current search or filter criteria. Try adjusting
             your filters or search terms.
           </p>
 
           <button
             onClick={onClearFilters}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
+            className="rounded-2xl bg-brand-gold px-5 py-2.5 text-[9px] font-black uppercase tracking-[0.24em] text-brand-dark-base transition-all hover:bg-brand-gold-dark"
           >
             Clear Filters
           </button>
@@ -43,16 +43,16 @@ const EmptyState = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
-          className="flex flex-col items-center justify-center py-16 px-4"
+          className="flex flex-col items-center justify-center rounded-[32px] border border-white/8 bg-black/20 px-6 py-16 shadow-[0_18px_55px_rgba(0,0,0,0.25)] backdrop-blur-xl"
         >
-          <div className="w-20 h-20 bg-gray-700 rounded-full flex items-center justify-center mb-6">
-            <FaSearch className="w-8 h-8 text-gray-400" />
+          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-[26px] border border-white/8 bg-white/5 text-brand-gold shadow-inner">
+            <FaSearch className="h-7 w-7" />
           </div>
 
-          <h3 className="text-xl font-semibold text-white mb-2">
+          <h3 className="mb-2 text-lg font-black text-white font-spaceGrotesk uppercase tracking-[0.18em]">
             No results found
           </h3>
-          <p className="text-gray-400 text-center mb-6 max-w-md">
+          <p className="mb-6 max-w-md text-center text-sm leading-7 text-gray-400">
             Your search didn't match any notes. Try different keywords or clear
             your filters.
           </p>
@@ -60,13 +60,13 @@ const EmptyState = ({
           <div className="flex gap-3">
             <button
               onClick={onClearFilters}
-              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
+              className="rounded-2xl border border-white/8 bg-white/5 px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-white/10"
             >
               Clear Filters
             </button>
             <button
               onClick={onCreateNew}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
+              className="rounded-2xl bg-brand-gold px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] text-brand-dark-base transition-all hover:bg-brand-gold-dark"
             >
               Create New Note
             </button>
@@ -80,32 +80,14 @@ const EmptyState = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
-          className="flex flex-col items-center justify-center py-16 px-4"
+          className="flex flex-col items-center justify-center rounded-[36px] border border-white/8 bg-gradient-to-br from-white/[0.06] via-black/20 to-black/35 px-6 py-16 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl"
         >
-          <div className="relative mb-8">
-            <motion.div
-              animate={{ y: [-10, 10, -10] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute -top-4 -left-4 w-8 h-8 bg-yellow-400/20 rounded-full"
-            />
-            <motion.div
-              animate={{ y: [10, -10, 10] }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                delay: 1,
-              }}
-              className="absolute -bottom-4 -right-4 w-6 h-6 bg-purple-400/20 rounded-full"
-            />
-
-            <div className="w-24 h-24 bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl flex items-center justify-center shadow-2xl">
-              <FaEdit className="w-12 h-12 text-white" />
-            </div>
+          <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-[28px] border border-brand-gold/20 bg-gradient-to-br from-brand-gold/95 to-yellow-600 shadow-2xl">
+            <FaEdit className="h-10 w-10 text-brand-dark-base" />
           </div>
 
           <motion.h2
-            className="text-3xl font-bold text-white mb-4 text-center"
+            className="mb-4 text-center text-2xl font-black text-white font-spaceGrotesk uppercase tracking-[0.18em]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
@@ -114,13 +96,13 @@ const EmptyState = ({
           </motion.h2>
 
           <motion.p
-            className="text-gray-400 text-center max-w-md mb-8 leading-relaxed"
+            className="mb-8 max-w-md text-center text-sm leading-7 text-gray-300"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            Your personal knowledge vault. Store ideas, notes, and insights in a
-            secure, organized space. Start building your digital brain today.
+            Store ideas, notes, and working drafts in a structured archive built
+            for fast recall, calm editing, and clear review.
           </motion.p>
 
           <motion.div
@@ -131,19 +113,19 @@ const EmptyState = ({
           >
             <motion.button
               onClick={onCreateNew}
-              className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-gray-900 px-8 py-3 rounded-xl font-semibold shadow-lg transition-colors duration-200 flex items-center gap-3"
+              className="inline-flex items-center gap-3 rounded-2xl bg-brand-gold px-6 py-2.5 text-[9px] font-black uppercase tracking-[0.24em] text-brand-dark-base shadow-brand-gold transition-all hover:bg-brand-gold-dark"
             >
-              <FaPlus className="w-5 h-5" />
+              <FaPlus className="h-4 w-4" />
               Create Your First Note
             </motion.button>
 
             <motion.div
-              className="flex items-center gap-2 text-gray-500 text-sm"
+              className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
             >
-              <FaRocket className="w-4 h-4" />
+              <FaRocket className="h-3.5 w-3.5" />
               <span>Get started in seconds</span>
             </motion.div>
           </motion.div>

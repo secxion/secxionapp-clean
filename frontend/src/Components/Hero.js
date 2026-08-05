@@ -50,7 +50,7 @@ const Hero = () => {
   const currentImage = heroImages[imageIndex];
 
   return (
-    <header className="relative w-full lg:h-screen lg:mt-10 overflow-hidden bg-black/20 shadow-[0_0_30px_rgba(0,0,0,0.25)] md:h-full  md:mt-10 aspect-[21/9] sm:aspect-video lg:aspect-[21/7] mb-12">
+    <header className="relative w-full lg:h-screen lg:mt-10 overflow-hidden md:h-full md:mt-10 aspect-[21/9] sm:aspect-video lg:aspect-[21/7] mb-12">
       {/* Image Slider */}
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
@@ -87,7 +87,7 @@ const Hero = () => {
       </AnimatePresence>
 
       {/* Overlay */}
-      <div className="absolute inset-0 z-[2] bg-gradient-to-b from-black/35 via-black/20 to-black/50" />
+      <div className="absolute inset-0 z-[2]" />
 
       {/* Navigation Arrows */}
       <button
@@ -133,10 +133,10 @@ const Hero = () => {
             <img
               src={ExploreMarketButtonImg}
               alt="Explore Market"
-              className="h-24 w-auto object-contain drop-shadow-2xl transition-transform duration-200 hover:scale-110 sm:h-32 md:h-40 lg:h-44"
+              className="h-32 w-auto object-contain transition-transform duration-200 hover:scale-110 sm:h-32 md:h-40 lg:h-44"
             />
           </Link>
-          <div className="mt-3 inline-block rounded-full bg-black/35 px-3 py-1.5 text-base font-semibold text-white drop-shadow-lg sm:mt-5 sm:text-lg md:text-xl">
+          <div className="mt-3 inline-block px-3 py-1.5 text-base font-semibold text-white sm:mt-5 sm:text-lg md:text-xl">
             {currentImage.title}
           </div>
         </motion.div>

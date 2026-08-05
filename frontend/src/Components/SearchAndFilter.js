@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaSearch, FaFilter, FaTimes, FaTag } from 'react-icons/fa';
+import { motion } from 'framer-motion';
+import { FaSearch, FaTimes, FaTag, FaSortAmountDown } from 'react-icons/fa';
 
 const SearchAndFilter = ({
   searchQuery,
   onSearchChange,
+  sortBy,
+  onSortByChange,
   selectedTags,
   onTagsChange,
   availableTags,
   resultCount,
   totalCount,
 }) => {
-  const [showFilters, setShowFilters] = useState(false);
   const [tempTags, setTempTags] = useState(selectedTags || []);
 
   // Ensure tempTags stays in sync with selectedTags
@@ -36,31 +37,45 @@ const SearchAndFilter = ({
   };
 
   return (
-    <div className="space-y-4 p-4">
-      {/* Search Bar and Filter Button */}
-      <div className="flex items-center mt-2 gap-4">
+    <div className="space-y-3 px-4 py-3 sm:px-6">
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div className="relative flex-1">
-          <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <FaSearch className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
             placeholder="Search notes by title or content..."
-            className="w-full bg-gray-800 dark:bg-gray-800 border border-gray-600 dark:border-gray-600 rounded-lg pl-12 pr-4 py-3 text-white dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+            className="w-full rounded-2xl border border-white/8 bg-black/20 py-3 pl-12 pr-4 text-sm text-white placeholder-gray-500 outline-none transition-all duration-200 focus:border-brand-gold/40 focus:ring-2 focus:ring-brand-gold/10"
           />
+        </div>
+
+        <div className="inline-flex items-center gap-2 rounded-2xl border border-white/8 bg-white/5 px-3.5 py-2.5 text-[9px] font-black uppercase tracking-[0.24em] text-gray-300">
+          <FaSortAmountDown className="h-4 w-4 text-brand-gold" />
+          <select
+            value={sortBy || 'newest'}
+            onChange={(e) => onSortByChange && onSortByChange(e.target.value)}
+            className="bg-transparent text-white outline-none"
+          >
+            <option value="newest">Newest</option>
+            <option value="updated">Recently Updated</option>
+            <option value="oldest">Oldest</option>
+            <option value="title_az">Title A-Z</option>
+            <option value="title_za">Title Z-A</option>
+          </select>
         </div>
       </div>
 
       {/* Results Count */}
-      <div className="flex items-center pl-6 justify-between">
-        <div className="text-gray-400 dark:text-gray-400 text-sm">
+      <div className="flex items-center justify-between">
+        <div className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">
           {resultCount !== undefined && totalCount !== undefined && (
             <>
               Showing {resultCount} of {totalCount} notes
               {(searchQuery || (selectedTags && selectedTags.length > 0)) && (
                 <button
                   onClick={clearFilters}
-                  className="ml-2 text-blue-400 hover:text-blue-300 underline"
+                  className="ml-2 text-brand-gold transition-colors hover:text-white"
                 >
                   Clear filters
                 </button>
@@ -70,47 +85,38 @@ const SearchAndFilter = ({
         </div>
       </div>
 
-      {/* Filters Panel */}
-      <AnimatePresence>
-        {showFilters && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="bg-gray-800/50 dark:bg-gray-800/50 border border-gray-700 dark:border-gray-700 rounded-lg p-4"
-          >
-            {/* Tags Filter */}
-            {availableTags && availableTags.length > 0 && (
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <FaTag className="text-blue-500 w-4 h-4" />
-                  <span className="text-white dark:text-white font-medium">
-                    Filter by Tags
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {availableTags.map((tag) => (
-                    <button
-                      key={tag} // Ensure unique keys
-                      onClick={() => toggleTag(tag)}
-                      className={`px-3 py-1 rounded-full text-sm border transition-all duration-200 ${
-                        tempTags.includes(tag)
-                          ? 'bg-blue-500 text-white border-blue-500'
-                          : 'bg-gray-700 dark:bg-gray-700 text-gray-300 dark:text-gray-300 border-gray-600 dark:border-gray-600 hover:border-blue-400 hover:text-blue-400'
-                      }`}
-                    >
-                      {tag}
-                      {tempTags.includes(tag) && (
-                        <FaTimes className="inline ml-1 w-3 h-3" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {availableTags && availableTags.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-[28px] border border-white/8 bg-black/20 p-4 backdrop-blur-xl"
+        >
+          <div className="mb-3 flex items-center gap-2">
+            <FaTag className="h-4 w-4 text-brand-gold" />
+            <span className="text-[9px] font-black uppercase tracking-[0.25em] text-white/80">
+              Filter by tags
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {availableTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => toggleTag(tag)}
+                className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-200 ${
+                  tempTags.includes(tag)
+                    ? 'border-brand-gold bg-brand-gold text-brand-dark-base'
+                    : 'border-white/8 bg-white/5 text-gray-300 hover:border-brand-gold/40 hover:text-white'
+                }`}
+              >
+                {tag}
+                {tempTags.includes(tag) && (
+                  <FaTimes className="ml-1 inline h-3 w-3" />
+                )}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 };
