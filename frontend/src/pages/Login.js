@@ -10,6 +10,7 @@ import { FaEye, FaEyeSlash, FaSyncAlt } from 'react-icons/fa';
 import Navigation from '../Components/Navigation';
 import SecxionLogo from '../app/slogo.png';
 import NFTBadge from '../Components/NFTBadge';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 const Button = ({
   children,
@@ -174,16 +175,21 @@ const Login = () => {
         // Close slider and show error on the login form
         setVerificationVisible(false);
         setFormSubmitting(false);
-        const errorMsg = result.message || 'Login failed. Please try again.';
+        const errorMsg = toUserSafeMessage(
+          result.message,
+          'Login failed. Please try again.',
+        );
         setErrorMessage(errorMsg);
         toast.error(errorMsg);
       }
     } catch (error) {
       console.error('Login verification error:', error);
-      setErrorMessage(
+      const safeMessage = toUserSafeMessage(
+        error?.message,
         'An unexpected error occurred during login. Please try again.',
       );
-      toast.error('An unexpected error occurred. Please try again.');
+      setErrorMessage(safeMessage);
+      toast.error(safeMessage);
     } finally {
       setFormSubmitting(false);
       setVerifying(false);
@@ -203,10 +209,20 @@ const Login = () => {
         ? toast.success(
             'Verification email sent successfully! Please check your inbox.',
           )
-        : toast.error(result.message || 'Failed to resend verification email.');
+        : toast.error(
+            toUserSafeMessage(
+              result.message,
+              'Failed to resend verification email.',
+            ),
+          );
     } catch (error) {
       console.error('Resend email error:', error);
-      toast.error('Error resending verification email. Please try again.');
+      toast.error(
+        toUserSafeMessage(
+          error?.message,
+          'Error resending verification email. Please try again.',
+        ),
+      );
     } finally {
       setResending(false);
     }

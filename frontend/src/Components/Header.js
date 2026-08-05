@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { FcSearch } from 'react-icons/fc';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { setUserDetails } from '../store/userSlice';
 import Context from '../Context';
@@ -36,16 +36,11 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isLiveScriptOpen, setIsLiveScriptOpen] = useState(false);
-  const { user } = useSelector((state) => state.user);
   const { soundEnabled, toggleSound, volume, setVolume } = useSound();
   const { token } = useContext(Context);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupMessage, setPopupMessage] = useState('');
-  const [animateNotification, setAnimateNotification] = useState(false);
   const [showVolumeControl, setShowVolumeControl] = useState(false);
   const audioRef = useRef(null);
   const volumeControlRef = useRef(null);
@@ -87,69 +82,6 @@ const Header = () => {
     }
   }, []);
 
-  const triggerVibration = () => {
-    if (navigator.vibrate) {
-      navigator.vibrate([100, 50, 100]);
-    }
-  };
-
-  const truncateWords = (text, limit) => {
-    const words = text.split(/\s+/);
-    if (words.length > limit) {
-      return {
-        truncated: words.slice(0, limit).join(' ') + '...',
-        original: text,
-        isTruncated: true,
-      };
-    }
-    return { truncated: text, original: text, isTruncated: false };
-  };
-
-  const fetchUnreadCount = useCallback(async () => {
-    if (user?._id) {
-      try {
-        const response = await fetch(SummaryApi.notificationCount.url, {
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-        });
-        const data = await response.json();
-        if (data.success) {
-          setUnreadNotificationCount(data.count);
-        }
-      } catch (error) {
-        console.error('❌ Error fetching unread count:', error);
-      }
-    }
-  }, [user?._id]);
-
-  const fetchNewNotifications = useCallback(async () => {
-    if (user?._id) {
-      try {
-        const response = await fetch(SummaryApi.getNewNotifications.url, {
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-        });
-        const data = await response.json();
-        if (data.success && Array.isArray(data.newNotifications)) {
-          const latest = data.newNotifications[0];
-          const lastShownId = localStorage.getItem('lastNotifiedId');
-          if (latest && latest._id !== lastShownId) {
-            localStorage.setItem('lastNotifiedId', latest._id);
-            setPopupMessage(latest.message || 'New notification received!');
-            setShowPopup(true);
-            setAnimateNotification(true);
-            playNotificationSound(); // This now respects sound settings
-            triggerVibration();
-            setTimeout(() => setAnimateNotification(false), 2000);
-            setTimeout(() => setShowPopup(false), 4000);
-          }
-        }
-      } catch (error) {
-        console.error('❌ Error fetching new notifications:', error);
-      }
-    }
-  }, [user?._id, playNotificationSound]);
-
   useEffect(() => {
     if (debouncedSearch.trim()) {
       navigate(`/search?q=${encodeURIComponent(debouncedSearch)}`);
@@ -183,20 +115,6 @@ const Header = () => {
       setLoading(false);
     }
   }, [dispatch, navigate, token]);
-
-  useEffect(() => {
-    // Only poll for notifications if user is logged in
-    if (!user?._id) return;
-
-    fetchUnreadCount();
-    fetchNewNotifications();
-    const unreadInterval = setInterval(fetchUnreadCount, 5000);
-    const notifyInterval = setInterval(fetchNewNotifications, 5000);
-    return () => {
-      clearInterval(unreadInterval);
-      clearInterval(notifyInterval);
-    };
-  }, [user?._id, fetchUnreadCount, fetchNewNotifications]);
 
   // Close volume control when clicking outside
   useEffect(() => {

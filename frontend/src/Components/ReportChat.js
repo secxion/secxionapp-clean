@@ -175,17 +175,23 @@ const ReportChat = ({ category, newReport, setNewReport }) => {
   };
 
   return (
-    <div className="container flex flex-col h-screen">
-      <h2 className="text-2xl font-semibold mb-4">Chat with Moderator</h2>
+    <div className="flex h-screen flex-col rounded-3xl border border-white/10 bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black p-4">
+      <h2 className="mb-4 font-spaceGrotesk text-lg font-black uppercase tracking-[0.2em] text-brand-gold">
+        Chat with Moderator
+      </h2>
 
       <div
         ref={chatContainerRef}
-        className="overflow-y-auto flex-grow mb-4 p-3 bg-gray-100 rounded"
+        className="mb-4 flex-grow overflow-y-auto rounded-2xl border border-white/10 bg-black/20 p-4"
       >
         {fetchingMessages ? (
-          <p>Loading messages...</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+            Loading messages...
+          </p>
         ) : messages.length === 0 ? (
-          <p>No messages yet.</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+            No messages yet.
+          </p>
         ) : (
           messages.map((msg, index) => (
             <div
@@ -194,17 +200,21 @@ const ReportChat = ({ category, newReport, setNewReport }) => {
             >
               {msg.sender !== 'user' && getUserDisplay(msg.sender)}
               <div
-                className={`rounded-lg p-2 break-words ${msg.sender === 'user' ? 'bg-blue-200 text-blue-800' : 'bg-gray-300 text-gray-800'}`}
+                className={`rounded-xl border p-3 break-words ${
+                  msg.sender === 'user'
+                    ? 'border-brand-gold/25 bg-brand-gold/10 text-brand-gold-light'
+                    : 'border-white/10 bg-white/[0.04] text-gray-200'
+                }`}
               >
                 <p className="text-sm">{msg.message}</p>
                 {msg.image && (
                   <img
                     src={msg.image}
                     alt="Attachment"
-                    className="max-w-xs h-auto rounded-md mt-1"
+                    className="mt-1 h-auto max-w-xs rounded-md border border-white/10"
                   />
                 )}
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-gray-500">
                   {format(new Date(msg.createdAt), 'yyyy-MM-dd HH:mm:ss')}
                 </p>
               </div>
@@ -214,16 +224,16 @@ const ReportChat = ({ category, newReport, setNewReport }) => {
         )}
       </div>
 
-      <div className="p-3 border-t">
+      <div className="border-t border-white/10 p-3">
         <div className="flex items-center">
           <textarea
-            className="flex-grow p-2 border rounded-md mr-2"
+            className="mr-2 flex-grow rounded-xl border border-white/10 bg-black/20 p-3 text-white placeholder-gray-600"
             placeholder="Type your message..."
             value={messageText}
             onChange={handleMessageTextChange}
           />
           <label className="cursor-pointer mr-2">
-            <MdImage className="text-xl text-gray-500 hover:text-gray-700" />
+            <MdImage className="text-xl text-gray-500 transition-colors hover:text-brand-gold" />
             <input
               type="file"
               className="hidden"
@@ -231,7 +241,7 @@ const ReportChat = ({ category, newReport, setNewReport }) => {
             />
           </label>
           <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md disabled:bg-gray-500"
+            className="rounded-xl bg-brand-gold px-4 py-2 font-spaceGrotesk text-[10px] font-black uppercase tracking-widest text-brand-dark-base transition-colors hover:bg-brand-gold-light disabled:opacity-40"
             onClick={handleSendMessage}
             disabled={uploadingImage || (!messageText && !messageImage)}
           >
@@ -239,17 +249,19 @@ const ReportChat = ({ category, newReport, setNewReport }) => {
           </button>
         </div>
         {uploadingImage && (
-          <p className="text-gray-500 text-sm mt-1">Uploading image...</p>
+          <p className="mt-1 text-sm text-brand-gold-light">
+            Uploading image...
+          </p>
         )}
         {messageImage && (
           <div className="relative mt-2 inline-block">
             <img
               src={messageImage}
               alt="To Send"
-              className="w-20 h-20 object-cover rounded-md"
+              className="h-20 w-20 rounded-md border border-white/10 object-cover"
             />
             <button
-              className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full text-xs"
+              className="absolute right-0 top-0 rounded-full bg-rose-500 p-1 text-xs text-white"
               onClick={handleRemoveMessageImage}
             >
               <MdClose />

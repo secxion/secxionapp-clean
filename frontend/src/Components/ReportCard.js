@@ -7,6 +7,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Picker from 'emoji-picker-react';
 import SecxionLogo from '../app/slogo.png';
+import SecxionSpinner from './SecxionSpinner';
 
 const ReportCard = () => {
   const { reportId } = useParams();
@@ -189,8 +190,8 @@ const ReportCard = () => {
 
   if (isLoadingInitial) {
     return (
-      <div className="flex justify-center items-center h-screen text-gray-700">
-        Loading chat...
+      <div className="premium-bg flex h-screen items-center justify-center">
+        <SecxionSpinner size="large" message="Loading support chat..." />
       </div>
     );
   }
@@ -198,44 +199,44 @@ const ReportCard = () => {
   if (!report) return null;
 
   return (
-    <div className="fixed w-full h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 text-gray-100 z-50">
+    <div className="fixed z-50 flex h-screen w-full flex-col bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black text-gray-100">
       {/* Header */}
-      <div className="w-full px-6 py-4 mt-8 border-b border-gray-700 flex items-center justify-between bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500 shadow-md z-50">
+      <div className="z-50 mt-8 flex w-full items-center justify-between border-b border-white/10 bg-brand-dark-elevated/90 px-6 py-4 backdrop-blur-xl">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}
-            className="p-2 rounded-full hover:bg-yellow-600 transition-all duration-200"
+            className="rounded-full border border-white/10 bg-white/5 p-2 text-gray-300 transition-all duration-200 hover:border-brand-gold/30 hover:text-brand-gold"
           >
-            <MdArrowBack className="text-2xl text-gray-900" />
+            <MdArrowBack className="text-2xl" />
           </button>
           <div className="flex flex-col">
-            <h2 className="text-xl font-bold text-gray-900">
+            <h2 className="font-spaceGrotesk text-xl font-black uppercase tracking-tight text-white">
               {report.category}
             </h2>
-            <span className="text-sm text-gray-800">
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">
               Report ID: {report._id.slice(-6)}
             </span>
           </div>
         </div>
         <button
           onClick={() => navigate('/report')}
-          className="p-2 rounded-full hover:bg-yellow-600 transition-all duration-200"
+          className="rounded-full border border-white/10 bg-white/5 p-2 text-gray-300 transition-all duration-200 hover:border-brand-gold/30 hover:text-brand-gold"
         >
-          <MdClose className="text-2xl text-gray-900" />
+          <MdClose className="text-2xl" />
         </button>
       </div>
 
       {/* Chat history */}
       <div
         ref={chatHistoryRef}
-        className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950"
+        className="flex-1 space-y-4 overflow-y-auto bg-gradient-to-b from-brand-dark-base via-brand-dark-base to-black px-6 py-4"
         onScroll={handleScroll}
       >
         {/* Auto-reply */}
         {!hasReceivedReply && report.autoReply && (
-          <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg shadow-md animate-pulse">
+          <div className="rounded-xl border border-brand-gold/30 bg-brand-gold/10 px-4 py-3 text-brand-gold-light shadow-md animate-pulse">
             <p className="text-sm">{report.autoReply}</p>
-            <p className="text-xs text-right mt-2 text-gray-600">
+            <p className="mt-2 text-right text-[10px] font-black uppercase tracking-widest text-brand-gold/70">
               {format(new Date(), 'yyyy-MM-dd')}
             </p>
           </div>
@@ -247,8 +248,8 @@ const ReportCard = () => {
             key={i}
             className={`flex items-start max-w-2xl rounded-xl px-4 py-3 shadow-md text-sm transition-transform transform hover:scale-105 ${
               msg.sender === 'admin'
-                ? 'ml-auto bg-gradient-to-r from-blue-600 to-blue-500 text-white flex-row-reverse'
-                : 'mr-auto bg-gradient-to-r from-gray-800 to-gray-700 text-gray-200'
+                ? 'ml-auto flex-row-reverse border border-brand-gold/20 bg-brand-gold/10 text-brand-gold-light'
+                : 'mr-auto border border-white/10 bg-white/[0.04] text-gray-200'
             }`}
           >
             {/* Avatar */}
@@ -256,14 +257,14 @@ const ReportCard = () => {
               <img
                 src={user?.profilePic || 'https://via.placeholder.com/50'}
                 alt="User Avatar"
-                className="w-8 h-8 rounded-full mr-3"
+                className="mr-3 h-8 w-8 rounded-full border border-white/10"
               />
             )}
             {msg.sender === 'admin' && (
               <img
                 src={SecxionLogo}
                 alt="Admin Avatar"
-                className="w-8 h-8 rounded-full ml-3"
+                className="ml-3 h-8 w-8 rounded-full border border-brand-gold/30 bg-black/20"
               />
             )}
             <div>
@@ -282,13 +283,13 @@ const ReportCard = () => {
                             key={index}
                             src={img}
                             alt="attachment"
-                            className="rounded-lg max-w-[150px] max-h-[150px] object-cover hover:scale-110 transition-transform duration-200"
+                            className="max-h-[150px] max-w-[150px] rounded-lg border border-white/10 object-cover transition-transform duration-200 hover:scale-105"
                           />
                         ),
                     )}
                   </div>
                 )}
-              <p className="text-xs text-gray-400 text-right mt-1">
+              <p className="mt-1 text-right text-[10px] font-black uppercase tracking-widest text-gray-500">
                 {format(new Date(msg.createdAt), 'HH:mm')}
               </p>
             </div>
@@ -299,12 +300,12 @@ const ReportCard = () => {
         {pendingMessages.map((msg) => (
           <div
             key={msg.id}
-            className="flex items-start max-w-2xl rounded-xl px-4 py-3 shadow-md text-sm mr-auto bg-gray-700 text-gray-200 opacity-70 relative"
+            className="relative mr-auto flex max-w-2xl items-start rounded-xl border border-dashed border-brand-gold/25 bg-brand-dark-elevated/70 px-4 py-3 text-sm text-gray-200 opacity-80 shadow-md"
           >
             <img
               src={user?.profilePic || 'https://via.placeholder.com/50'} // Default avatar
               alt="User Avatar"
-              className="w-8 h-8 rounded-full mr-3"
+              className="mr-3 h-8 w-8 rounded-full border border-white/10"
             />
             <div>
               {msg.message && (
@@ -317,7 +318,7 @@ const ReportCard = () => {
                   className="mt-2 rounded-lg max-w-[150px] max-h-[150px] object-cover"
                 />
               )}
-              <p className="text-xs text-gray-400 text-right mt-1">
+              <p className="mt-1 text-right text-[10px] font-black uppercase tracking-widest text-gray-500">
                 {msg.status === 'pending' ? 'Sending...' : 'Sent'}
               </p>
             </div>
@@ -325,14 +326,14 @@ const ReportCard = () => {
               <div className="absolute top-2 right-2 flex gap-2">
                 <button
                   onClick={() => handleSendPendingImage(msg)}
-                  className="text-green-500 hover:text-green-700"
+                  className="text-emerald-400 transition-colors hover:text-emerald-300"
                   title="Send"
                 >
                   <MdSend className="text-lg" />
                 </button>
                 <button
                   onClick={() => handleCancelPendingImage(msg.id)}
-                  className="text-red-500 hover:text-red-700"
+                  className="text-rose-400 transition-colors hover:text-rose-300"
                   title="Cancel"
                 >
                   <MdClose className="text-lg" />
@@ -344,17 +345,17 @@ const ReportCard = () => {
 
         {/* Uploading indicator */}
         {uploadingReplyImage && (
-          <div className="flex items-center justify-center bg-gray-800 text-yellow-400 text-sm rounded-lg px-4 py-2 shadow-md">
+          <div className="flex items-center justify-center rounded-lg border border-brand-gold/20 bg-brand-gold/10 px-4 py-2 text-sm text-brand-gold-light shadow-md">
             Uploading image...
           </div>
         )}
       </div>
 
       {/* Input */}
-      <div className="border-t border-gray-700 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-950 px-6 py-4 space-y-2 z-50">
+      <div className="z-50 space-y-2 border-t border-white/10 bg-brand-dark-elevated/90 px-6 py-4 backdrop-blur-xl">
         <div className="relative">
           <textarea
-            className="w-full p-3 text-gray-200 bg-gray-800 border border-gray-700 rounded-lg pr-16 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            className="w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 pr-16 text-sm text-gray-200 focus:border-brand-gold/40 focus:outline-none"
             placeholder={
               uploadingReplyImage
                 ? 'Uploading images...'
@@ -366,7 +367,7 @@ const ReportCard = () => {
             onKeyDown={handleKeyDown}
             disabled={uploadingReplyImage}
           />
-          <label className="absolute right-12 top-3 cursor-pointer text-gray-400 hover:text-yellow-400">
+          <label className="absolute right-12 top-3 cursor-pointer text-gray-500 transition-colors hover:text-brand-gold">
             <MdAdd className="text-xl" />
             <input
               type="file"
@@ -377,7 +378,7 @@ const ReportCard = () => {
             />
           </label>
           <button
-            className="absolute right-3 top-3 text-yellow-400 hover:text-yellow-500 disabled:opacity-50"
+            className="absolute right-3 top-3 text-brand-gold transition-colors hover:text-brand-gold-light disabled:opacity-50"
             onClick={handleSendTextMessage}
             disabled={isSending || uploadingReplyImage || !userReplyText.trim()}
           >
@@ -385,14 +386,14 @@ const ReportCard = () => {
           </button>
           <button
             onClick={() => setShowEmojiPicker((prev) => !prev)}
-            className="absolute right-20 top-3 text-yellow-400 hover:text-yellow-500"
+            className="absolute right-20 top-3 text-brand-gold transition-colors hover:text-brand-gold-light"
           >
             😊
           </button>
           {showEmojiPicker && (
-            <div className="absolute bottom-14 right-3 z-50 bg-gray-800 rounded-lg shadow-lg p-2">
+            <div className="absolute bottom-14 right-3 z-50 rounded-lg border border-brand-gold/30 bg-brand-dark-base p-2 shadow-lg">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-300 text-sm">Select Emoji</span>
+                <span className="text-sm text-gray-300">Select Emoji</span>
                 <button
                   onClick={() => setShowEmojiPicker(false)}
                   className="text-white bg-red-500 hover:bg-red-600 rounded-full p-2 transition-all duration-200"

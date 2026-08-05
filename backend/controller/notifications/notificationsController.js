@@ -337,7 +337,13 @@ export const getUnreadNotificationCount = async (req, res) => {
 export const getNewNotifications = async (req, res) => {
   try {
     const userId = req.userId;
-    const cutoffTime = new Date(Date.now() - 60 * 1000);
+    const sinceParam = Number(req.query?.since);
+    const fallbackWindowMs = 10 * 60 * 1000;
+    const fallbackSince = Date.now() - fallbackWindowMs;
+    const sinceMs =
+      Number.isFinite(sinceParam) && sinceParam > 0 ? sinceParam : fallbackSince;
+    const cutoffTime = new Date(sinceMs);
+
     const newNotifications = await Notification.find({
       userId,
       createdAt: { $gt: cutoffTime },
@@ -345,20 +351,17 @@ export const getNewNotifications = async (req, res) => {
       type: {
         $in: [
           "report_reply",
-          "transaction:debit",
           "transaction:credit",
           "transaction:payment_completed",
-          "transaction:withdrawal",
           "transaction:rejected",
           "market_upload:DONE",
           "market_upload:CANCEL",
-          "market_upload:PROCESSING",
           "transaction:eth_processed",
         ],
       },
     })
       .sort({ createdAt: -1 })
-      .limit(5)
+      .limit(20)
       .lean();
 
     res.status(200).json({ success: true, newNotifications });

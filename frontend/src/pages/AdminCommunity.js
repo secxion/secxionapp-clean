@@ -4,6 +4,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'react-toastify';
 import { FaUsers, FaTimes } from 'react-icons/fa';
 import SummaryApi from '../common';
+import SecxionSpinner from '../Components/SecxionSpinner';
 
 const AdminCommunity = () => {
   const { user } = useSelector((state) => state.user);
@@ -103,8 +104,8 @@ const AdminCommunity = () => {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-yellow-500 border-t-transparent mr-3"></div>
+      <div className="flex flex-col items-center justify-center py-12">
+        <SecxionSpinner size="small" message="" />
         <span className="text-slate-400">Loading pending posts...</span>
       </div>
     );

@@ -106,7 +106,7 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
   return (
     <motion.form
       onSubmit={handlePostSubmit}
-      className="bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 shadow-lg p-4 rounded-lg relative text-white"
+      className="relative rounded-3xl border border-white/10 bg-gradient-to-br from-brand-dark-elevated/70 via-brand-dark-base/75 to-black/25 p-5 text-white shadow-[0_0_24px_rgba(0,0,0,0.25)]"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -125,13 +125,13 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
           value={newPostContent}
           onChange={(e) => setNewPostContent(e.target.value)}
           placeholder={`What's on your mind, ${user?.name || 'guest'}?`}
-          className="w-full p-3 border rounded bg-gray-800 text-white mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm break-words placeholder-gray-400"
+          className="mb-3 w-full rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-white placeholder-gray-600 break-words focus:border-brand-gold/40 focus:outline-none"
           rows={3}
         />
 
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <label className="cursor-pointer flex items-center gap-1 text-gray-400 hover:text-indigo-400 mr-3">
+            <label className="mr-3 flex cursor-pointer items-center gap-1 text-gray-500 transition-colors hover:text-brand-gold">
               <FaPaperclip className="mr-1" />
               <span>Attach</span>
               <input
@@ -144,7 +144,7 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
             <button
               type="button"
               onClick={() => setShowEmojiPicker((prev) => !prev)}
-              className="text-gray-400 hover:text-blue-400 focus:outline-none mr-3"
+              className="mr-3 text-gray-500 transition-colors hover:text-brand-gold focus:outline-none"
             >
               <FaSmile className="text-xl" />
             </button>
@@ -153,12 +153,12 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
                 <img
                   src={uploadedImage}
                   alt="Uploaded"
-                  className="w-12 h-12 object-cover rounded-md border border-gray-600"
+                  className="h-12 w-12 rounded-lg border border-white/10 object-cover"
                 />
                 <button
                   type="button"
                   onClick={handleRemoveUploadedImage}
-                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs -mt-1 -mr-1 focus:outline-none"
+                  className="absolute -mr-1 -mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-rose-500 text-xs text-white focus:outline-none top-0 right-0"
                 >
                   <FaTimes />
                 </button>
@@ -167,7 +167,7 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
           </div>
           <button
             type="submit"
-            className="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:bg-indigo-300 transition-colors duration-300"
+            className="rounded-xl bg-brand-gold px-5 py-2.5 font-spaceGrotesk text-[10px] font-black uppercase tracking-widest text-brand-dark-base transition-colors duration-300 hover:bg-brand-gold-light focus:outline-none disabled:opacity-40"
             disabled={isSubmitting || loading}
           >
             <MdSend className="inline-block mr-1" />{' '}
@@ -182,11 +182,10 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               transition={{ duration: 0.2 }}
-              className="absolute z-[1050] bg-gray-900 shadow-lg rounded-lg mt-2 p-4 border-2"
+              className="absolute z-[1050] mt-2 rounded-2xl border border-brand-gold/30 bg-brand-dark-base p-4 shadow-[0_0_24px_rgba(0,0,0,0.35)]"
               style={{
                 top: '100%', // Position below the input field
                 left: '0', // Align with the left edge of the input field
-                borderImage: 'linear-gradient(135deg, #8b5cf6, #3b82f6) 1', // Gradient border
               }}
             >
               {/* Branded Close Button */}
@@ -219,11 +218,11 @@ const CreatePostCard = ({ onPostCreated, loading, error }) => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="relative z-10 mt-3 bg-yellow-500/20 border border-yellow-500/40 rounded-lg p-3"
+            className="relative z-10 mt-3 rounded-xl border border-brand-gold/30 bg-brand-gold/10 p-3"
           >
             <div className="flex items-center space-x-2">
-              <FaClock className="text-yellow-400 animate-pulse" />
-              <p className="text-yellow-200 text-sm">
+              <FaClock className="animate-pulse text-brand-gold" />
+              <p className="text-sm text-brand-gold-light">
                 <span className="font-semibold">
                   {pendingPosts.length} post{pendingPosts.length > 1 ? 's' : ''}
                 </span>{' '}

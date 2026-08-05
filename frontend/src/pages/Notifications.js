@@ -12,6 +12,7 @@ import {
 import NotificationItem from '../Components/NotificationItems';
 import NotificationDetails from '../Components/NotificationDetails';
 import SummaryApi from '../common';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
@@ -77,11 +78,18 @@ const NotificationsPage = () => {
           [transactionData.message, reportData.message, marketData.message]
             .filter(Boolean)
             .join(' ') || 'Failed to fetch notifications.';
-        setError(errorMessage);
+        setError(
+          toUserSafeMessage(errorMessage, 'Failed to fetch notifications.'),
+        );
       }
     } catch (err) {
       console.error('[Fetch Notifications Error]', err);
-      setError('An unexpected error occurred while fetching notifications.');
+      setError(
+        toUserSafeMessage(
+          err?.message,
+          'An unexpected error occurred while fetching notifications.',
+        ),
+      );
     } finally {
       setLoading(false);
     }

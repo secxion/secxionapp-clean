@@ -336,7 +336,7 @@ const Net = ({ blogs }) => {
         </div>
       )}
       <div
-        className="relative ml-2 h-6 w-7 pr-8 mr-4"
+        className="relative ml-2 mr-2 flex h-7 w-7 flex-shrink-0 items-center justify-center"
         title="Notifications"
         aria-label="Notifications"
       >

@@ -1,4 +1,5 @@
 import EthWithdrawalRequest from "../models/ethWithdrawalRequestModel.js";
+import PaymentRequest from "../models/paymentRequestModel.js";
 import axios from "axios";
 import { updateWalletBalance } from "./wallet/walletController.js";
 import { createTransactionNotification } from "./notifications/notificationsController.js";
@@ -6,7 +7,7 @@ import Wallet from "../models/walletModel.js";
 import userModel from "../models/userModel.js";
 import {
   getKycFinancialLimits,
-  UNVERIFIED_WITHDRAWAL_LIMIT_NGN,
+  UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_NGN,
 } from "../utils/kycLimitPolicy.js";
 
 export const createEthWithdrawalRequest = async (req, res) => {
@@ -32,13 +33,52 @@ export const createEthWithdrawalRequest = async (req, res) => {
     const user = await userModel.findById(userId).select("kycStatus");
     const limits = getKycFinancialLimits(user?.kycStatus);
 
-    if (limits.isRestricted && requestedNaira > UNVERIFIED_WITHDRAWAL_LIMIT_NGN) {
-      return res.status(403).json({
-        success: false,
-        message: `Unverified accounts can withdraw up to ₦${UNVERIFIED_WITHDRAWAL_LIMIT_NGN.toLocaleString()} per request.`,
-        code: "UNVERIFIED_WITHDRAWAL_LIMIT_EXCEEDED",
-        limit: UNVERIFIED_WITHDRAWAL_LIMIT_NGN,
-      });
+    if (limits.isRestricted) {
+      const [paymentRequests, ethRequests] = await Promise.all([
+        PaymentRequest.find(
+          {
+            userId,
+            status: { $ne: "rejected" },
+          },
+          { amount: 1 },
+        ).lean(),
+        EthWithdrawalRequest.find(
+          {
+            userId,
+            status: { $ne: "Rejected" },
+          },
+          { nairaRequestedAmount: 1 },
+        ).lean(),
+      ]);
+
+      const paymentUsed = paymentRequests.reduce(
+        (sum, item) => sum + Number(item.amount || 0),
+        0,
+      );
+      const ethUsed = ethRequests.reduce(
+        (sum, item) => sum + Number(item.nairaRequestedAmount || 0),
+        0,
+      );
+
+      const usedWithoutKyc = paymentUsed + ethUsed;
+      const projectedUsed = usedWithoutKyc + requestedNaira;
+
+      if (projectedUsed > UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_NGN) {
+        const remainingAmount = Math.max(
+          0,
+          UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_NGN - usedWithoutKyc,
+        );
+
+        return res.status(403).json({
+          success: false,
+          message: `Unverified accounts can withdraw up to a total of ₦${UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_NGN.toLocaleString()}. Your non-KYC available withdrawal is ₦${remainingAmount.toLocaleString()}. Please complete KYC to continue withdrawing. Unlimited balance and withdrawals are available once KYC is verified.`,
+          code: "UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_REACHED",
+          totalLimit: UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_NGN,
+          usedAmount: usedWithoutKyc,
+          remainingAmount,
+          kycRedirectPath: "/kyc",
+        });
+      }
     }
 
     const wallet = await Wallet.findOne({ userId });

@@ -58,36 +58,42 @@ const ReportList = ({ newReport }) => {
   };
 
   return (
-    <div className="mt-6 bg-white p-6 rounded-lg shadow-md border border-secxion-gold">
-      <h3 className="text-lg font-semibold mb-4 text-secxion-black">
+    <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.02] p-6 shadow-2xl">
+      <h3 className="mb-6 font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold">
         Previous Reports
       </h3>
       {fetchingReports ? (
-        <p className="text-gray-700">Loading reports...</p>
+        <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+          Loading reports...
+        </p>
       ) : reports.length === 0 ? (
-        <p className="text-gray-700">No reports submitted yet.</p>
+        <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+          No reports submitted yet.
+        </p>
       ) : (
         reports.map((report, index) => (
           <div
             key={report._id || `report-${index}`}
-            className="mb-4 p-4 border border-secxion-gold rounded-lg hover:bg-secxion-cream transition-colors duration-200"
+            className="mb-4 rounded-2xl border border-white/10 bg-black/20 p-5 transition-all duration-300 hover:border-brand-gold/30 hover:bg-white/[0.03]"
           >
             <div className="flex justify-between items-center mb-2">
-              <p className="font-semibold text-secxion-black">
+              <p className="font-spaceGrotesk text-sm font-black uppercase tracking-wide text-white">
                 {report.category}
               </p>
               <button
                 onClick={() => handleOpenChat(report._id)}
-                className="bg-secxion-gold text-white py-2 px-4 rounded hover:bg-secxion-gold-dark focus:outline-none focus:ring-2 focus:ring-secxion-gold-light"
+                className="rounded-xl border border-brand-gold/30 bg-brand-gold/10 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-brand-gold transition-colors hover:bg-brand-gold/20 hover:text-white focus:outline-none"
               >
                 Open Chat
               </button>
             </div>
             {checkAdminReply(report.chatHistory) ? (
-              <p className="text-secxion-black">You have a message...</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-brand-gold-light">
+                You have a new response.
+              </p>
             ) : (
               report.autoReply && (
-                <p className="text-gray-700">{report.autoReply}</p>
+                <p className="text-sm text-gray-400">{report.autoReply}</p>
               )
             )}
           </div>

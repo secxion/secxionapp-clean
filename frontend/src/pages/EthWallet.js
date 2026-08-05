@@ -498,7 +498,22 @@ const EthWallet = () => {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Withdrawal failed.');
+      if (!res.ok) {
+        let displayMessage = data.message || 'Withdrawal failed.';
+
+        if (data.code === 'UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_REACHED') {
+          const remaining = Number(data.remainingAmount);
+          const remainingLine = Number.isFinite(remaining)
+            ? ` Your non-KYC available withdrawal is ₦${remaining.toLocaleString()}.`
+            : '';
+
+          if (!displayMessage.includes('Your non-KYC available withdrawal')) {
+            displayMessage = `${displayMessage}${remainingLine}`.trim();
+          }
+        }
+
+        throw new Error(displayMessage);
+      }
 
       setSuccessMessage('Withdrawal submitted and processing.');
       setWithdrawalStatus('pending');

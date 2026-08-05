@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
 import SummaryApi from '../common';
 import UserContext from '../Context';
-import { CircleCheck, CircleX, Loader, Clock, Info, Image } from 'lucide-react';
+import { CircleCheck, CircleX, Loader, Clock, Image } from 'lucide-react';
 import currencyData from '../helpers/currencyData';
 import SecxionShimmer from './SecxionShimmer';
 import { motion } from 'framer-motion';
@@ -124,9 +124,9 @@ const LastMarketStatus = () => {
         };
       case 'PROCESSING':
         return {
-          icon: <Loader className="w-5 h-5 text-blue-600 animate-spin" />,
+          icon: <Loader className="h-5 w-5 animate-spin text-brand-gold" />,
           text: 'Processing',
-          color: 'text-blue-600',
+          color: 'text-brand-gold',
         };
       case 'CANCEL':
         return {
@@ -159,12 +159,12 @@ const LastMarketStatus = () => {
 
   if (loading) {
     return (
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-950 via-purple-900 to-purple-800 shadow-xl border border-purple-700/30">
+      <div className="relative overflow-hidden rounded-2xl border border-brand-gold/20 bg-gradient-to-br from-black via-zinc-950 to-zinc-900 shadow-xl">
         <div
-          className="absolute inset-0 opacity-30 blur-md mix-blend-multiply"
+          className="absolute inset-0 opacity-40 blur-3xl"
           aria-hidden="true"
         >
-          {/* Background SVG or Image */}
+          <div className="absolute -top-20 right-10 h-40 w-40 rounded-full bg-brand-gold/15" />
         </div>
         <div className="relative z-10 p-6">
           <h2 className="text-2xl font-bold text-white mb-4">
@@ -178,18 +178,20 @@ const LastMarketStatus = () => {
 
   if (error) {
     return (
-      <div className="bg-white border-4 border-red-500 rounded-xl p-6 shadow hover:shadow-lg flex items-center justify-center h-48 my-8 text-red-600">
-        <CircleX className="w-6 h-6 mr-2" />
-        <p>{error}</p>
+      <div className="my-8 flex h-48 items-center justify-center rounded-2xl border border-red-500/40 bg-red-500/10 p-6 text-red-200 shadow-[0_0_24px_rgba(239,68,68,0.14)]">
+        <CircleX className="mr-2 h-6 w-6" />
+        <p className="text-sm font-semibold">{error}</p>
       </div>
     );
   }
 
   if (!lastMarket) {
     return (
-      <div className="bg-white border-4 border-gray-300 rounded-xl p-6 shadow hover:shadow-lg flex items-center justify-center h-48 my-8 text-gray-500">
-        <Clock className="w-6 h-6 mr-2" />
-        <p>No recent market activities found.</p>
+      <div className="my-8 flex h-48 items-center justify-center rounded-2xl border border-white/10 bg-black/25 p-6 text-gray-300 shadow-xl">
+        <Clock className="mr-2 h-6 w-6 text-brand-gold" />
+        <p className="text-sm font-semibold uppercase tracking-wide">
+          No recent market activities found.
+        </p>
       </div>
     );
   }

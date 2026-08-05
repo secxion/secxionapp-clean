@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import SummaryApi from '../common';
 import { toast } from 'react-toastify';
 import PostCard from './PostCard';
+import SecxionSpinner from './SecxionSpinner';
 
 const CommunityFeed = () => {
   const [posts, setPosts] = useState([]);
@@ -86,20 +87,25 @@ const CommunityFeed = () => {
 
   if (loading)
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
-        Loading feed...
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <SecxionSpinner size="large" message="" />
       </div>
     );
   if (error)
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center text-red-500">
-        Error loading community feed: {error}
+      <div className="mx-auto mt-8 max-w-4xl rounded-2xl border border-rose-500/20 bg-rose-500/5 px-6 py-8 text-center">
+        <p className="text-sm font-semibold text-rose-300">
+          We could not load the community feed right now.
+        </p>
+        <p className="mt-2 text-[10px] font-black uppercase tracking-widest text-rose-400/80">
+          {error}
+        </p>
       </div>
     );
 
   return (
     <motion.div
-      className=" w-full bg-gradient-to-white from-blue-50 to-indigo-100 dark:bg-gradient-to-br from-gray-800 to-gray-900 py-4 px-2 sm:px-2"
+      className="w-full px-2 py-4 sm:px-2"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -123,7 +129,7 @@ const CommunityFeed = () => {
 
         {posts.length === 0 && !loading && (
           <motion.p
-            className="text-gray-600 dark:text-gray-400 text-center mt-4"
+            className="mt-4 text-center text-[10px] font-black uppercase tracking-widest text-gray-500"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.3 }}

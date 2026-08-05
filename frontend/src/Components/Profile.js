@@ -20,6 +20,7 @@ import { PiUserSquare } from 'react-icons/pi';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 import SecxionShimmer from './SecxionShimmer';
+import SecxionSpinner from './SecxionSpinner';
 
 const Profile = () => {
   const { user } = useSelector((state) => state.user);
@@ -176,12 +177,11 @@ const Profile = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mt-24 p-6 max-w-4xl mx-auto bg-gray-50 border border-gray-200 text-gray-600 rounded-xl shadow-lg"
+        className="mx-auto mt-24 max-w-4xl rounded-2xl border border-white/10 bg-black/20 p-6 text-gray-600 shadow-lg"
       >
         <div className="flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin w-8 h-8 border-4 border-gray-300 border-t-blue-600 rounded-full mx-auto mb-3"></div>
-            <p className="font-semibold">Loading profile...</p>
+            <SecxionSpinner size="small" message="" />
           </div>
         </div>
       </motion.div>

@@ -3,7 +3,7 @@ import { createTransactionNotification } from "../notifications/notificationsCon
 import userModel from "../../models/userModel.js";
 import {
   getKycFinancialLimits,
-  UNVERIFIED_MAX_WALLET_BALANCE_NGN,
+  UNVERIFIED_MAX_CREDIT_TRANSACTION_VOLUME_NGN,
 } from "../../utils/kycLimitPolicy.js";
 
 const KYC_BALANCE_CAPPED_REFERENCE_TYPES = new Set([
@@ -11,6 +11,22 @@ const KYC_BALANCE_CAPPED_REFERENCE_TYPES = new Set([
   "userproduct",
   "OtherType",
 ]);
+
+const COUNTABLE_CREDIT_STATUSES = new Set(["completed", "approved"]);
+
+const getNonKycCreditTransactionVolume = (transactions = []) =>
+  transactions.reduce((sum, tx) => {
+    const txType = String(tx?.type || "").toLowerCase();
+    const txStatus = String(tx?.status || "completed").toLowerCase();
+    const txModel = String(tx?.onModel || "");
+    const txAmount = Number(tx?.amount || 0);
+
+    if (txType !== "credit" || txAmount <= 0) return sum;
+    if (!COUNTABLE_CREDIT_STATUSES.has(txStatus)) return sum;
+    if (!KYC_BALANCE_CAPPED_REFERENCE_TYPES.has(txModel)) return sum;
+
+    return sum + txAmount;
+  }, 0);
 
 // Ensure wallet exists for a user
 export const ensureWalletExists = async (userId) => {
@@ -123,15 +139,25 @@ export const updateWalletBalance = async (
         const limits = getKycFinancialLimits(user?.kycStatus);
 
         if (limits.isRestricted) {
-          const projectedBalance = wallet.balance + amount;
-          if (projectedBalance > UNVERIFIED_MAX_WALLET_BALANCE_NGN) {
+          const usedCreditVolume = getNonKycCreditTransactionVolume(
+            wallet.transactions,
+          );
+          const projectedCreditVolume = usedCreditVolume + amount;
+
+          if (
+            projectedCreditVolume >
+            UNVERIFIED_MAX_CREDIT_TRANSACTION_VOLUME_NGN
+          ) {
             return {
               success: false,
-              message: `Unverified account wallet balance cannot exceed ₦${UNVERIFIED_MAX_WALLET_BALANCE_NGN.toLocaleString()}.`,
-              code: "UNVERIFIED_WALLET_CAP_EXCEEDED",
+              message: `Unverified accounts can receive up to ₦${UNVERIFIED_MAX_CREDIT_TRANSACTION_VOLUME_NGN.toLocaleString()} in cumulative credited transactions. Complete KYC verification to continue.`,
+              code: "UNVERIFIED_CREDIT_TRANSACTION_LIMIT_EXCEEDED",
               currentBalance: wallet.balance,
+              usedCreditVolume,
               attemptedCredit: amount,
-              maxBalance: UNVERIFIED_MAX_WALLET_BALANCE_NGN,
+              projectedCreditVolume,
+              maxCreditVolume:
+                UNVERIFIED_MAX_CREDIT_TRANSACTION_VOLUME_NGN,
             };
           }
         }

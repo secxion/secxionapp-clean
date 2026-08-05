@@ -5,6 +5,7 @@ import { FaCloudUploadAlt, FaFlag, FaTimes } from 'react-icons/fa';
 import uploadImage from '../helpers/uploadImage';
 import { format } from 'date-fns';
 import { MdSend } from 'react-icons/md';
+import SecxionSpinner from '../Components/SecxionSpinner';
 
 const AdminReports = () => {
   const [reports, setReports] = useState([]);
@@ -139,8 +140,8 @@ const AdminReports = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-yellow-500 border-t-transparent mr-3"></div>
+      <div className="flex flex-col items-center justify-center py-12">
+        <SecxionSpinner size="small" message="" />
         <span className="text-slate-400">Loading reports...</span>
       </div>
     );

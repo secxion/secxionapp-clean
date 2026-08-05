@@ -17,6 +17,7 @@ import Navigation from '../Components/Navigation';
 import { ArrowLeft } from 'lucide-react';
 import SecxionLogo from '../app/slogo.png';
 import NFTBadge from '../Components/NFTBadge';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 const SignUp = () => {
   const [step, setStep] = useState(1);
@@ -258,7 +259,10 @@ const SignUp = () => {
         } else {
           // Generic error handling
           notifyUser.error(
-            responseData?.message || 'Signup failed. Please try again.',
+            toUserSafeMessage(
+              responseData?.message,
+              'Signup failed. Please try again.',
+            ),
             'Registration Error',
           );
         }
@@ -266,7 +270,10 @@ const SignUp = () => {
     } catch (error) {
       console.error('Network or API error:', error);
       notifyUser.error(
-        '🚫 Signup failed due to a network error. Please check your connection and try again.',
+        toUserSafeMessage(
+          error?.message,
+          'Signup failed due to a network error. Please check your connection and try again.',
+        ),
         'Network Error',
       );
     } finally {

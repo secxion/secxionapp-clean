@@ -4,6 +4,7 @@ import {
   useEffect,
   useCallback,
   useContext,
+  useRef,
 } from 'react';
 import { useDispatch } from 'react-redux';
 import { clearState, setUserDetails } from '../store/userSlice';
@@ -11,6 +12,7 @@ import SummaryApi from '../common';
 import { persistor } from '../store/store';
 
 const Context = createContext(null);
+const OFFLINE_LOGOUT_MS = 5 * 60 * 1000;
 
 export const ContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -18,6 +20,7 @@ export const ContextProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [walletBalance, setWalletBalance] = useState(null);
   const dispatch = useDispatch();
+  const offlineLogoutTimerRef = useRef(null);
 
   const isTokenExpired = useCallback((token) => {
     if (!token) return true;
@@ -69,6 +72,11 @@ export const ContextProvider = ({ children }) => {
   }, [token]);
 
   const logout = useCallback(async () => {
+    if (offlineLogoutTimerRef.current) {
+      clearTimeout(offlineLogoutTimerRef.current);
+      offlineLogoutTimerRef.current = null;
+    }
+
     // 1. Clear local storage
     localStorage.removeItem('user');
     localStorage.removeItem('token');
@@ -99,6 +107,51 @@ export const ContextProvider = ({ children }) => {
     // 6. Force a full page reload and replace history state
     window.location.replace('/login');
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!token || !user?._id) {
+      if (offlineLogoutTimerRef.current) {
+        clearTimeout(offlineLogoutTimerRef.current);
+        offlineLogoutTimerRef.current = null;
+      }
+      return;
+    }
+
+    const clearOfflineTimer = () => {
+      if (offlineLogoutTimerRef.current) {
+        clearTimeout(offlineLogoutTimerRef.current);
+        offlineLogoutTimerRef.current = null;
+      }
+    };
+
+    const startOfflineTimer = () => {
+      clearOfflineTimer();
+      offlineLogoutTimerRef.current = setTimeout(() => {
+        logout();
+      }, OFFLINE_LOGOUT_MS);
+    };
+
+    const handleOffline = () => {
+      startOfflineTimer();
+    };
+
+    const handleOnline = () => {
+      clearOfflineTimer();
+    };
+
+    if (!navigator.onLine) {
+      startOfflineTimer();
+    }
+
+    window.addEventListener('offline', handleOffline);
+    window.addEventListener('online', handleOnline);
+
+    return () => {
+      clearOfflineTimer();
+      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('online', handleOnline);
+    };
+  }, [token, user?._id, logout]);
 
   const makeAuthenticatedRequest = useCallback(
     async (url, options = {}) => {

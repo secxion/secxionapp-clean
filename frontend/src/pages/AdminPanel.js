@@ -19,6 +19,7 @@ import {
   FaArrowLeft,
   FaSignOutAlt,
 } from 'react-icons/fa';
+import SecxionSpinner from '../Components/SecxionSpinner';
 
 const AdminPanel = () => {
   const user = useSelector((state) => state?.user?.user);
@@ -34,7 +35,7 @@ const AdminPanel = () => {
   if (!user) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-yellow-500"></div>
+        <SecxionSpinner size="medium" message="" />
       </div>
     );
   }

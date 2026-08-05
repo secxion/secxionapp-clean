@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useEffect, useState } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -16,21 +16,20 @@ const NotificationStack = ({ notifications = [], onRemove = () => {} }) => {
 
   // Auto-close logic for each notification
   useEffect(() => {
+    const timeoutRegistry = closeTimeoutsRef.current;
+
     notifications.forEach((notification) => {
-      if (
-        notification.autoClose &&
-        !closeTimeoutsRef.current[notification.id]
-      ) {
+      if (notification.autoClose && !timeoutRegistry[notification.id]) {
         const metadata = getNotificationTypeMetadata(notification.type);
-        closeTimeoutsRef.current[notification.id] = setTimeout(() => {
+        timeoutRegistry[notification.id] = setTimeout(() => {
           onRemove(notification.id);
-          delete closeTimeoutsRef.current[notification.id];
+          delete timeoutRegistry[notification.id];
         }, metadata.displayTime);
       }
     });
 
     return () => {
-      Object.values(closeTimeoutsRef.current).forEach(clearTimeout);
+      Object.values(timeoutRegistry).forEach(clearTimeout);
     };
   }, [notifications, onRemove]);
 
@@ -66,7 +65,7 @@ const NotificationStack = ({ notifications = [], onRemove = () => {} }) => {
       aria-live="polite"
       aria-atomic="false"
     >
-      <div className="relative" style={{ perspective: '1000px' }}>
+      <div className="pop-alert-stack" style={{ perspective: '1000px' }}>
         {visibleNotifications.map((notification, index) => {
           const metadata = getNotificationTypeMetadata(notification.type);
           const shouldTruncate = notification.message.length > 120;
@@ -81,9 +80,9 @@ const NotificationStack = ({ notifications = [], onRemove = () => {} }) => {
             low: 'pop-alert-info',
           };
 
-          // Stagger effect: each notification is slightly offset
-          const offsetY = index * 12; // 3rem = 48px
-          const scale = 1 - index * 0.02;
+          // Stagger effect with subtle depth only (no intrusive overlay shifts)
+          const offsetY = index * 8;
+          const scale = 1 - index * 0.015;
 
           return (
             <div
@@ -92,10 +91,10 @@ const NotificationStack = ({ notifications = [], onRemove = () => {} }) => {
               role="alert"
               style={{
                 transform: `translateY(${offsetY}px) scale(${scale})`,
-                transformOrigin: 'top center',
+                transformOrigin: 'top right',
                 zIndex: visibleNotifications.length - index,
                 position: index === 0 ? 'relative' : 'absolute',
-                top: index === 0 ? 'auto' : `-${offsetY}px`,
+                top: index === 0 ? 'auto' : `${index * 10}px`,
                 left: 0,
                 right: 0,
                 transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
@@ -165,7 +164,7 @@ const NotificationStack = ({ notifications = [], onRemove = () => {} }) => {
 
                 {/* Notification count badge */}
                 {index === 0 && notifications.length > 1 && (
-                  <span className="text-xs text-gray-500 ml-auto">
+                  <span className="ml-auto rounded-full border border-white/15 bg-black/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-gray-300">
                     +{notifications.length - 1} more
                   </span>
                 )}

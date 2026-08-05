@@ -2,7 +2,6 @@ import userProduct from "../../models/userProduct.js";
 import userModel from "../../models/userModel.js";
 import { updateWalletBalance } from "../wallet/walletController.js";
 import { createMarketUploadNotification } from "../notifications/notificationsController.js";
-import { processMarketplaceCommission, getCommissionRate, calculateCommission } from "../../helpers/commissionHelper.js";
 
 const fetchUserDetails = async (userId) => {
   try {
@@ -91,34 +90,45 @@ export const updateMarketStatus = async (req, res) => {
       const userId = existingMarket.userId;
       const originalAmount = parseFloat(existingMarket.calculatedTotalAmount) || 0;
 
-      // Calculate and apply commission
-      const commissionRate = await getCommissionRate("marketplace");
-      const { commissionAmount, userReceivedAmount } = calculateCommission(originalAmount, commissionRate);
-
-      // Credit user with amount AFTER commission deduction
+      // Credit user with the full market upload amount.
       const walletUpdateResult = await updateWalletBalance(
         userId,
-        userReceivedAmount,
+        originalAmount,
         "credit",
-        `Product Approved (${commissionRate}% platform fee deducted)`,
+        "Product Approved",
         existingMarket._id,
         "userproduct",
       );
 
       if (!walletUpdateResult.success) {
-        console.error(
-          "Error updating wallet after marking market as DONE:",
-          walletUpdateResult.error,
-        );
+        console.error("Wallet update blocked DONE status:", {
+          marketId: String(existingMarket._id),
+          userId: String(userId),
+          reason: walletUpdateResult.message,
+          code: walletUpdateResult.code,
+          error: walletUpdateResult.error,
+        });
+
+        return res.status(409).json({
+          message:
+            walletUpdateResult.message ||
+            "Unable to credit user wallet. Market status remains unchanged.",
+          error: true,
+          success: false,
+          code: walletUpdateResult.code || "WALLET_UPDATE_FAILED",
+          details: {
+            marketId: String(existingMarket._id),
+            currentStatus: existingMarket.status,
+            attemptedStatus: status,
+            currentBalance: walletUpdateResult.currentBalance,
+            usedCreditVolume: walletUpdateResult.usedCreditVolume,
+            attemptedCredit: walletUpdateResult.attemptedCredit,
+            projectedCreditVolume: walletUpdateResult.projectedCreditVolume,
+            maxCreditVolume: walletUpdateResult.maxCreditVolume,
+          },
+        });
       }
 
-      // Record commission earning for admin
-      const commissionResult = await processMarketplaceCommission(existingMarket);
-      if (!commissionResult.success) {
-        console.error("Error recording commission:", commissionResult.error);
-      } else {
-        console.log(`Commission recorded: ₦${commissionAmount} from ₦${originalAmount} sale`);
-      }
     } else if (status === "PROCESSING") {
       updateData.cancelReason = null;
       updateData.crImage = null;

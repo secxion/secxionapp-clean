@@ -19,6 +19,8 @@ const UserUploadMarket = ({
 }) => {
   const navigate = useNavigate();
   const [uploading, setUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
   const [data, setData] = useState({
     Image: [],
     totalAmount: '',
@@ -80,6 +82,7 @@ const UserUploadMarket = ({
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
+    if (submitError) setSubmitError(null);
 
     setData((prev) => {
       const updated = { ...prev, [name]: value };
@@ -125,12 +128,24 @@ const UserUploadMarket = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError(null);
 
     if (!data.pricing || data.pricing.length === 0) {
       toast.error('💰 Please add at least one pricing entry.');
       return;
     }
 
+    if (
+      !Number.isFinite(Number(data.calculatedTotalAmount)) ||
+      Number(data.calculatedTotalAmount) <= 0
+    ) {
+      const message = 'Please enter a valid amount before submitting.';
+      setSubmitError({ message });
+      toast.error(`🚨 ${message}`);
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
       const res = await fetch(SummaryApi.userMarket.url, {
         method: SummaryApi.userMarket.method,
@@ -139,8 +154,19 @@ const UserUploadMarket = ({
         body: JSON.stringify(data),
       });
 
-      const result = await res.json();
-      if (result.success) {
+      let result = {};
+      const contentType = res.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        result = await res.json();
+      } else {
+        const fallbackText = await res.text();
+        result = {
+          success: false,
+          message: fallbackText || 'Unable to submit market upload.',
+        };
+      }
+
+      if (res.ok && result.success) {
         toast.success(`🎉 ${result.message}`);
         emitTransactionActivity({
           source: 'user-market-upload',
@@ -150,10 +176,26 @@ const UserUploadMarket = ({
         fetchData();
         navigate('/record');
       } else {
-        toast.error(`🚨 ${result.message}`);
+        const message =
+          result?.message || 'Submission was blocked. Please try again.';
+        if (result.code === 'UNVERIFIED_MARKET_SUBMISSION_BLOCKED') {
+          setSubmitError({
+            message,
+            kycRedirectPath: result.kycRedirectPath || '/kyc',
+          });
+          toast.error(`🚫 ${message}`, { autoClose: 8000 });
+        } else {
+          setSubmitError({ message });
+          toast.error(`🚨 ${message}`);
+        }
       }
     } catch (err) {
-      toast.error('❌ Submission failed. Try again.');
+      const message =
+        'Submission failed. Please check your connection and try again.';
+      setSubmitError({ message });
+      toast.error(`❌ ${message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -341,11 +383,47 @@ const UserUploadMarket = ({
           <button
             type="submit"
             className="w-full rounded-xl bg-gradient-to-r from-brand-gold to-yellow-500 py-3 font-bold text-brand-dark-base shadow-md transition hover:from-yellow-400 hover:to-brand-gold hover:shadow-lg"
-            disabled={uploading}
+            disabled={uploading || isSubmitting}
           >
-            {uploading ? '⏳ Submitting...' : '✅ Submit Product'}
+            {isSubmitting ? '⏳ Submitting...' : '✅ Submit Product'}
           </button>
         </form>
+
+        {submitError && (
+          <div className="absolute inset-0 z-[12000] flex items-center justify-center bg-black/70 px-4">
+            <div className="w-full max-w-md rounded-2xl border border-rose-300/30 bg-[#1a0d12] p-5 text-rose-100 shadow-2xl">
+              <h3 className="font-spaceGrotesk text-base font-bold uppercase tracking-[0.08em] text-rose-200">
+                SUBMISSION BLOCKED
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed">
+                {submitError.message}
+              </p>
+
+              <div className="mt-5 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  className="rounded-md border border-white/20 px-3 py-2 text-xs font-semibold text-white hover:bg-white/10"
+                  onClick={() => setSubmitError(null)}
+                >
+                  Close
+                </button>
+
+                {submitError.kycRedirectPath && (
+                  <button
+                    type="button"
+                    className="rounded-md bg-brand-gold px-3 py-2 text-xs font-semibold text-black"
+                    onClick={() => {
+                      setSubmitError(null);
+                      navigate(submitError.kycRedirectPath);
+                    }}
+                  >
+                    Complete KYC Verification
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Fullscreen Image Preview */}

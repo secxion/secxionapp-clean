@@ -160,8 +160,22 @@ const PaymentRequestForm = ({
           }, 2000);
         }
       } else {
-        setError(data.message || 'Payment request failed.');
-        toast.error(data.message);
+        const fallbackMessage = data.message || 'Payment request failed.';
+        let displayMessage = fallbackMessage;
+
+        if (data.code === 'UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_REACHED') {
+          const remaining = Number(data.remainingAmount);
+          const remainingLine = Number.isFinite(remaining)
+            ? ` Your non-KYC available withdrawal is ₦${remaining.toLocaleString()}.`
+            : '';
+
+          if (!displayMessage.includes('Your non-KYC available withdrawal')) {
+            displayMessage = `${displayMessage}${remainingLine}`.trim();
+          }
+        }
+
+        setError(displayMessage);
+        toast.error(displayMessage);
       }
     } catch (err) {
       setError('An unexpected error occurred.');

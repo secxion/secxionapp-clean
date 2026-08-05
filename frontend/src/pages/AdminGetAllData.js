@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import SummaryApi from '../common';
 import UserDatapadCard from '../Components/UserDatapadCard';
 import { FaMobileAlt } from 'react-icons/fa';
+import SecxionSpinner from '../Components/SecxionSpinner';
 
 const AdminGetAllData = () => {
   const [usersWithData, setUsersWithData] = useState([]);
@@ -33,8 +34,8 @@ const AdminGetAllData = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-yellow-500 border-t-transparent mr-3"></div>
+      <div className="flex flex-col items-center justify-center py-12">
+        <SecxionSpinner size="small" message="" />
         <span className="text-slate-400">Loading Datapad data...</span>
       </div>
     );

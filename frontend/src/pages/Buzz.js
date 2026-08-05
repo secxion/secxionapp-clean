@@ -4,13 +4,15 @@ import CreatePostCard from '../Components/CreatePostCard';
 
 const Buzz = () => {
   return (
-    <div className="fixed top-0 left-0 right-0 bottom-0 bg-white shadow border mt-8 border-gray-200 overflow-hidden flex flex-col z-40">
-      <div className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <CreatePostCard />
-      </div>
+    <div className="premium-bg relative min-h-screen w-full overflow-hidden pb-20 pt-[var(--total-content-offset)]">
+      <div className="mx-auto flex h-full max-w-7xl flex-col px-2 sm:px-4">
+        <div className="border-b border-white/10 bg-brand-dark-elevated/40 backdrop-blur-xl">
+          <CreatePostCard />
+        </div>
 
-      <div className="overflow-y-auto flex-grow">
-        <CommunityFeed />
+        <div className="flex-grow overflow-y-auto">
+          <CommunityFeed />
+        </div>
       </div>
     </div>
   );

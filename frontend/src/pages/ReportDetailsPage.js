@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import SummaryApi from '../common';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
+import SecxionSpinner from '../Components/SecxionSpinner';
 
 const ReportDetailsPage = () => {
   const { reportId } = useParams();
@@ -60,8 +61,8 @@ const ReportDetailsPage = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-60">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      <div className="premium-bg flex h-60 items-center justify-center">
+        <SecxionSpinner size="large" message="" />
       </div>
     );
   }

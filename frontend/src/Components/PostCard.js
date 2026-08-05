@@ -87,7 +87,7 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
   return (
     <motion.div
       key={post._id}
-      className="postcard-container mb-6 px-4 py-5 bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 shadow-lg rounded-lg border border-gray-700 transition-shadow duration-300 text-white hover:shadow-xl"
+      className="postcard-container mb-6 rounded-3xl border border-white/10 bg-gradient-to-br from-brand-dark-elevated/70 via-brand-dark-base/75 to-black/30 px-6 py-6 text-white shadow-[0_0_24px_rgba(0,0,0,0.25)] transition-all duration-300 hover:border-brand-gold/30"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 10 }}
@@ -100,10 +100,10 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
             <img
               src={post.userId.profilePic}
               alt={post.userId.name}
-              className="w-12 h-12 sm:w-10 sm:h-10 rounded-full object-cover"
+              className="h-12 w-12 rounded-full border border-white/10 object-cover sm:h-10 sm:w-10"
             />
           ) : (
-            <div className="w-12 h-12 sm:w-10 sm:h-10 rounded-full bg-gray-400 flex items-center justify-center text-white text-lg">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border border-brand-gold/30 bg-brand-gold/10 text-lg font-black text-brand-gold sm:h-10 sm:w-10">
               {post.userId?.name?.charAt(0)?.toUpperCase() || '?'}
             </div>
           )}
@@ -111,12 +111,12 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
 
         {/* Post Content */}
         <div className="flex-grow text-sm">
-          <p className="font-semibold text-gray-100">
+          <p className="font-spaceGrotesk text-sm font-black uppercase tracking-wide text-white">
             {post.userId?.name || 'Anonymous'}
           </p>
 
           <div
-            className="text-gray-300 mt-1 text-sm whitespace-pre-line break-words"
+            className="mt-1 whitespace-pre-line break-words text-sm text-gray-300"
             dangerouslySetInnerHTML={{
               __html: showFullPost ? formattedContent : truncatedContent,
             }}
@@ -126,7 +126,7 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
           {isLongPost && !showFullPost && (
             <button
               onClick={openFullPostDialog}
-              className="text-blue-600 hover:underline text-xs mt-1 focus:outline-none"
+              className="mt-1 text-[10px] font-black uppercase tracking-widest text-brand-gold hover:text-white focus:outline-none"
             >
               View More
             </button>
@@ -138,13 +138,13 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
               src={post.feedImage}
               alt="Post"
               onError={() => setImageError(true)}
-              className="mt-3 rounded-md max-w-full w-full sm:w-60 h-auto cursor-pointer object-cover"
+              className="mt-3 h-auto w-full max-w-full cursor-pointer rounded-xl border border-white/10 object-cover sm:w-60"
               onClick={openImageFullscreen}
             />
           )}
 
           {/* Time & Actions */}
-          <div className="mt-3 flex flex-wrap items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+          <div className="mt-3 flex flex-wrap items-center justify-between text-[10px] font-black uppercase tracking-widest text-gray-500">
             <p>
               {formatDistanceToNow(new Date(post.createdAt), {
                 addSuffix: true,
@@ -154,7 +154,7 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
             <div className="flex items-center gap-4 mt-2 sm:mt-0">
               <button
                 onClick={() => setShowComments((prev) => !prev)}
-                className="hover:text-indigo-600 focus:outline-none"
+                className="text-gray-400 transition-colors hover:text-brand-gold focus:outline-none"
               >
                 {post.comments?.length > 0
                   ? `${post.comments.length} Comments`
@@ -164,7 +164,7 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
               {user?.id === post.userId?._id && (
                 <button
                   onClick={() => handleDeletePost(post._id)}
-                  className="text-red-500 hover:text-red-700 flex items-center focus:outline-none"
+                  className="flex items-center text-rose-400 transition-colors hover:text-rose-300 focus:outline-none"
                 >
                   <MdDelete className="mr-1" /> Delete
                 </button>
@@ -182,14 +182,14 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <h6 className="text-xs font-semibold text-gray-800 dark:text-gray-300 mb-2">
+                <h6 className="mb-2 text-[10px] font-black uppercase tracking-widest text-gray-500">
                   Comments:
                 </h6>
                 <div className="space-y-3">
                   {post.comments?.map((comment) => (
                     <div
                       key={comment._id}
-                      className="flex items-start gap-2 p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-xs"
+                      className="flex items-start gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-3 text-xs"
                     >
                       {comment.userId?.profilePic ? (
                         <img
@@ -198,18 +198,16 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
                           className="w-6 h-6 rounded-full object-cover"
                         />
                       ) : (
-                        <div className="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center text-white text-xs">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full border border-white/10 bg-white/10 text-xs text-white">
                           {comment.userId?.name?.charAt(0)?.toUpperCase() ||
                             '?'}
                         </div>
                       )}
                       <div>
-                        <p className="font-semibold text-gray-900 dark:text-white">
+                        <p className="font-semibold text-white">
                           {comment.userId?.name || 'Anonymous'}
                         </p>
-                        <p className="text-gray-700 dark:text-gray-300">
-                          {comment.content}
-                        </p>
+                        <p className="text-gray-300">{comment.content}</p>
                         {comment.feedImage && (
                           <img
                             src={comment.feedImage}
@@ -217,7 +215,7 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
                             className="mt-1 rounded-md max-w-full h-auto"
                           />
                         )}
-                        <p className="text-gray-500 dark:text-gray-400 text-[10px] mt-1">
+                        <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-gray-500">
                           {formatDistanceToNow(new Date(comment.createdAt), {
                             addSuffix: true,
                           })}
@@ -233,13 +231,13 @@ const PostCard = ({ post, onDelete, onCommentAdded }) => {
                       value={commentContent}
                       onChange={(e) => setCommentContent(e.target.value)}
                       placeholder="Add a comment..."
-                      className="w-full p-2 border border-gray-300 rounded-md bg-white text-gray-900 dark:bg-gray-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-xl border border-white/10 bg-black/20 p-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-gold/40"
                       rows={2}
                     />
                     <button
                       onClick={handleAddComment}
                       disabled={isCommenting}
-                      className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-md text-sm mt-2 focus:outline-none transition-all duration-300 disabled:bg-blue-300"
+                      className="mt-2 rounded-xl bg-brand-gold px-4 py-2 text-[10px] font-black uppercase tracking-widest text-brand-dark-base transition-all duration-300 hover:bg-brand-gold-light focus:outline-none disabled:opacity-40"
                     >
                       {isCommenting ? 'Commenting...' : 'Comment'}
                     </button>
