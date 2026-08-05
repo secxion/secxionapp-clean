@@ -69,10 +69,10 @@ const TransactionCard = ({ transaction }) => {
   }
 
   return (
-    <div className="group relative border-b border-white/5 bg-white/5 px-6 py-6 transition-all duration-300 hover:bg-white/10">
+    <div className="group relative border-b border-white/5 bg-transparent px-6 py-6 transition-all duration-300">
       <div className="mb-4 flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-center">
-          <div className="p-2.5 bg-black/20 rounded-xl mr-4 group-hover:bg-brand-gold/10 transition-colors">
+          <div className="mr-4 rounded-xl border border-white/5 bg-transparent p-2.5 transition-colors">
             {transactionIcon}
           </div>
           <div className="flex flex-col">

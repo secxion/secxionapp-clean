@@ -8,6 +8,7 @@ const ethApiUrl =
   'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
 const HIRATE_CACHE_KEY = 'secxion_hirate_slider_cache_v1';
 const HIRATE_CACHE_TTL_MS = 5 * 60 * 1000;
+const HIRATE_FETCH_TIMEOUT_MS = 8000;
 
 let hiRateSlidesMemoryCache = {
   slides: null,
@@ -80,6 +81,10 @@ const HiRateSlider = () => {
 
   useEffect(() => {
     let isMounted = true;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, HIRATE_FETCH_TIMEOUT_MS);
 
     const cachedSlides = readHiRateCache();
     if (cachedSlides?.length) {
@@ -92,9 +97,14 @@ const HiRateSlider = () => {
         const [productRes, ethRes] = await Promise.all([
           fetch(SummaryApi.allProduct.url, {
             method: 'GET',
+            signal: controller.signal,
           }),
-          fetch(ethApiUrl),
+          fetch(ethApiUrl, { signal: controller.signal }),
         ]);
+
+        if (!productRes.ok || !ethRes.ok) {
+          throw new Error('Failed to fetch rate data');
+        }
 
         const productData = await productRes.json();
         const ethData = await ethRes.json();
@@ -215,10 +225,14 @@ const HiRateSlider = () => {
         }
         setLoading(false);
       } catch (error) {
-        console.error('Slider Fetch Error:', error);
-        if (isMounted && !cachedSlides?.length) {
+        if (error.name !== 'AbortError') {
+          console.error('Slider Fetch Error:', error);
+        }
+        if (isMounted) {
           setLoading(false);
         }
+      } finally {
+        clearTimeout(timeoutId);
       }
     };
 
@@ -226,14 +240,16 @@ const HiRateSlider = () => {
 
     return () => {
       isMounted = false;
+      clearTimeout(timeoutId);
+      controller.abort();
     };
   }, []);
 
   if (loading) {
     return (
-      <div className="relative overflow-hidden rounded-2xl bg-gray-100 p-6 shadow-inner border border-gray-200">
+      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black p-6 shadow-[0_0_24px_rgba(0,0,0,0.25)]">
         <div className="relative z-10">
-          <h2 className="text-gray-800 text-2xl font-semibold mb-4">
+          <h2 className="mb-4 font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold">
             Loading Rates...
           </h2>
           <SecxionShimmer type="grid" count={4} />

@@ -135,13 +135,13 @@ const CategoryProduct = () => {
             </label>
           ))}
         </form>
-        <div className="mt-8 text-[10px] font-bold text-gray-500 border-t border-white/5 pt-6 uppercase tracking-[0.2em] font-spaceGrotesk">
-          Missing data point? <br />
+        <div className="mt-8 border-t border-white/5 pt-6 text-[10px] font-bold tracking-[0.08em] text-gray-500 font-spaceGrotesk md:hidden">
+          Can't find what you're looking for?
           <Link
             to="/report"
-            className="text-brand-gold hover:text-white transition-colors underline underline-offset-8 mt-2 block"
+            className="mt-2 block text-brand-gold transition-colors hover:text-white underline underline-offset-8"
           >
-            REPORT PROTOCOL
+            Contact Support
           </Link>
         </div>
       </aside>

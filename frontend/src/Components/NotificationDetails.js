@@ -7,44 +7,45 @@ const NotificationDetails = ({ notification, onClose }) => {
 
   return (
     <div
-      className="fixed z-10 inset-0 overflow-y-auto"
+      className="fixed inset-0 z-50 overflow-y-auto"
       aria-labelledby="modal-title"
       role="dialog"
       aria-modal="true"
     >
-      <div className="flex items-end justify-center pt-44 px-4 text-center sm:block sm:p-0">
+      <div className="flex min-h-screen items-center justify-center px-4 py-16 text-center sm:p-6">
         <div
-          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+          className="fixed inset-0 bg-black/85 backdrop-blur-sm transition-opacity"
           aria-hidden="true"
-        ></div>
+        />
         <span
           className="hidden sm:inline-block sm:align-middle sm:h-screen"
           aria-hidden="true"
         >
           &#8203;
         </span>
-        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div className="relative inline-block w-full max-w-2xl transform overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black text-left shadow-[0_0_40px_rgba(0,0,0,0.35)] transition-all">
+          <div className="px-6 pb-6 pt-7 sm:px-8">
             <div className="sm:flex sm:items-start">
-              <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+              <div className="w-full">
                 <h3
-                  className="text-lg leading-6 font-medium text-gray-900"
+                  className="font-spaceGrotesk text-xl font-black uppercase tracking-tight text-white"
                   id="modal-title"
                 >
                   {notification.onModel === 'userproduct'
                     ? 'Market Record Details'
                     : 'Notification Details'}
                 </h3>
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500">
+                <div className="mt-5 h-px bg-white/5" />
+                <div className="mt-5 space-y-3">
+                  <p className="text-sm leading-relaxed text-gray-300">
                     <strong>Message:</strong> {notification.message}
                   </p>
                   {notification.rejectionReason && (
-                    <p className="text-sm text-red-600 font-semibold mt-1">
+                    <p className="text-sm font-semibold text-rose-400">
                       <strong>Reason:</strong> {notification.rejectionReason}
                     </p>
                   )}
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                     <strong>Created At:</strong>{' '}
                     {new Date(notification.createdAt).toLocaleString()}
                   </p>
@@ -52,10 +53,10 @@ const NotificationDetails = ({ notification, onClose }) => {
               </div>
             </div>
           </div>
-          <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse justify-between">
+          <div className="flex justify-end border-t border-white/5 px-6 py-4 sm:px-8">
             <button
               type="button"
-              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              className="inline-flex justify-center rounded-xl border border-white/10 bg-white/[0.03] px-5 py-2 text-[10px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:border-brand-gold/30 hover:text-brand-gold"
               onClick={onClose}
             >
               Close

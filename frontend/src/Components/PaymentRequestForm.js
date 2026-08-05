@@ -5,6 +5,7 @@ import SummaryApi from '../common';
 import { toast } from 'react-toastify';
 import AddBankAccountForm from './AddBankAccountForm';
 import { FaWallet, FaEye, FaEyeSlash, FaTimes } from 'react-icons/fa';
+import { emitTransactionActivity } from '../utils/transactionEvents';
 
 const PaymentRequestForm = ({
   fetchWalletBalance,
@@ -143,6 +144,11 @@ const PaymentRequestForm = ({
         setSuccessMessage(data.message);
         setAmount('');
         setSelectedBankAccount('');
+
+        emitTransactionActivity({
+          source: 'payment-request',
+          status: 'pending',
+        });
 
         if (fetchWalletBalance) {
           fetchWalletBalance();

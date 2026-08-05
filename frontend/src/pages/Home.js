@@ -21,6 +21,13 @@ import NetBlog from '../Components/NetBlog';
 import HiRateSlider from '../Components/HiRateSlider';
 import LastMarketStatus from '../Components/LastMarketStatus';
 import Hero from '../Components/Hero';
+import {
+  getCachedTransactionHistory,
+  setCachedTransactionHistory,
+  getCachedWalletBalance,
+  setCachedWalletBalance,
+} from '../utils/walletCache';
+import { TRANSACTION_ACTIVITY_EVENT } from '../utils/transactionEvents';
 
 const menuItems = [
   {
@@ -109,40 +116,74 @@ const Home = () => {
 
   const handleNavigation = (path) => navigate(path);
 
-  const fetchWalletBalance = useCallback(async () => {
-    if (!user?.id && !user?._id) return;
-    try {
-      const response = await fetch(SummaryApi.getWalletBalance.url, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      const data = await response.json();
-      if (data.success) setWalletBalance(data.balance || 0);
-    } catch (err) {
-      console.error(err);
-    }
-  }, [user]);
+  const fetchWalletBalance = useCallback(
+    async ({ force = false } = {}) => {
+      if (!userId) return;
 
-  const fetchTransactions = useCallback(async () => {
-    if (!user?.id && !user?._id) return;
-    try {
-      let url = `${SummaryApi.transactions.url}?userId=${user.id || user._id}`;
-      const response = await fetch(url, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      const data = await response.json();
-      if (data.success && data.transactions) setTransactions(data.transactions);
-    } catch (err) {
-      console.error(err);
-    }
-  }, [user]);
+      if (!force) {
+        const cachedBalance = getCachedWalletBalance(userId);
+        if (typeof cachedBalance === 'number') {
+          setWalletBalance(cachedBalance);
+          return;
+        }
+      }
+
+      try {
+        const response = await fetch(SummaryApi.getWalletBalance.url, {
+          method: 'GET',
+          credentials: 'include',
+        });
+        const data = await response.json();
+        if (data.success) {
+          const nextBalance = data.balance || 0;
+          setWalletBalance(nextBalance);
+          setCachedWalletBalance(userId, nextBalance);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    [userId],
+  );
+
+  const fetchTransactions = useCallback(
+    async ({ force = false } = {}) => {
+      if (!userId) return;
+
+      if (!force) {
+        const cachedTransactions = getCachedTransactionHistory(userId);
+        if (Array.isArray(cachedTransactions)) {
+          setTransactions(cachedTransactions);
+          return;
+        }
+      }
+
+      try {
+        let url = `${SummaryApi.transactions.url}?userId=${userId}`;
+        const response = await fetch(url, {
+          method: 'GET',
+          credentials: 'include',
+        });
+        const data = await response.json();
+        if (data.success && data.transactions) {
+          setTransactions(data.transactions);
+          setCachedTransactionHistory(userId, data.transactions);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    [userId],
+  );
 
   const refreshAllData = useCallback(async () => {
     setIsRefreshing(true);
     setLastUpdated(null);
     try {
-      await Promise.all([fetchWalletBalance(), fetchTransactions()]);
+      await Promise.all([
+        fetchWalletBalance({ force: true }),
+        fetchTransactions({ force: true }),
+      ]);
       setLastUpdated(new Date().toLocaleTimeString([], { hour12: false }));
     } catch (err) {
       console.error(err);
@@ -152,11 +193,35 @@ const Home = () => {
   }, [fetchWalletBalance, fetchTransactions]);
 
   useEffect(() => {
-    if (user) {
+    if (userId) {
       fetchWalletBalance();
       fetchTransactions();
     }
-  }, [user, fetchWalletBalance, fetchTransactions]);
+  }, [userId, fetchWalletBalance, fetchTransactions]);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const onTransactionActivity = async () => {
+      try {
+        await Promise.all([
+          fetchWalletBalance({ force: true }),
+          fetchTransactions({ force: true }),
+        ]);
+        setLastUpdated(new Date().toLocaleTimeString([], { hour12: false }));
+      } catch (err) {
+        console.error('Failed to sync Home after transaction activity:', err);
+      }
+    };
+
+    window.addEventListener(TRANSACTION_ACTIVITY_EVENT, onTransactionActivity);
+    return () => {
+      window.removeEventListener(
+        TRANSACTION_ACTIVITY_EVENT,
+        onTransactionActivity,
+      );
+    };
+  }, [userId, fetchWalletBalance, fetchTransactions]);
 
   useEffect(() => {
     const savedPreference = getLastMarketActivityPreference(userId);

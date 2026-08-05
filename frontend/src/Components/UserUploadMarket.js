@@ -10,6 +10,7 @@ import SummaryApi from '../common';
 import currencyData from '../helpers/currencyData';
 import flagImageMap from '../helpers/flagImageMap';
 import { FaTimes } from 'react-icons/fa';
+import { emitTransactionActivity } from '../utils/transactionEvents';
 
 const UserUploadMarket = ({
   onClose = () => {},
@@ -141,6 +142,10 @@ const UserUploadMarket = ({
       const result = await res.json();
       if (result.success) {
         toast.success(`🎉 ${result.message}`);
+        emitTransactionActivity({
+          source: 'user-market-upload',
+          status: 'submitted',
+        });
         onClose();
         fetchData();
         navigate('/record');

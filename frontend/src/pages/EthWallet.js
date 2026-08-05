@@ -23,6 +23,7 @@ import {
   EyeSlashIcon,
   ArrowPathIcon,
 } from '@heroicons/react/24/outline';
+import { emitTransactionActivity } from '../utils/transactionEvents';
 
 const COUNTDOWN_DURATION = 600;
 const LOCAL_STORAGE_KEY = 'ethWithdrawalCountdownEnd';
@@ -359,6 +360,10 @@ const EthWallet = () => {
                 setSuccessMessage(
                   `Transaction Successful! Your withdrawal is ${normalizedStatus}.`,
                 );
+                emitTransactionActivity({
+                  source: 'eth-withdrawal',
+                  status: 'paid',
+                });
                 localStorage.setItem(LOCAL_STORAGE_STATUS_KEY, 'paid');
                 localStorage.setItem(
                   LOCAL_STORAGE_MESSAGE_KEY,
@@ -386,6 +391,10 @@ const EthWallet = () => {
                 setRejectedNotice(
                   'Last pending transaction was rejected. Please try again or contact support.',
                 );
+                emitTransactionActivity({
+                  source: 'eth-withdrawal',
+                  status: 'rejected',
+                });
                 localStorage.setItem(LOCAL_STORAGE_STATUS_KEY, 'rejected');
                 localStorage.removeItem(LOCAL_STORAGE_MESSAGE_KEY);
                 setCountdown(0);
@@ -493,6 +502,10 @@ const EthWallet = () => {
 
       setSuccessMessage('Withdrawal submitted and processing.');
       setWithdrawalStatus('pending');
+      emitTransactionActivity({
+        source: 'eth-withdrawal',
+        status: 'pending',
+      });
 
       const countdownEnd = Date.now() + COUNTDOWN_DURATION * 1000;
       localStorage.setItem(LOCAL_STORAGE_KEY, countdownEnd.toString());

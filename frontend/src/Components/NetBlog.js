@@ -3,8 +3,54 @@ import { motion } from 'framer-motion';
 import SummaryApi from '../common';
 import SecxionLoader from './SecxionLoader';
 import { formatDistanceToNow } from 'date-fns';
-import { FaCircle, FaExternalLinkAlt, FaTimes } from 'react-icons/fa';
+import { FaExternalLinkAlt, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+
+const BLOG_CACHE_KEY = 'home:latest-updates:blogs';
+const BLOG_CACHE_TTL_MS = 10 * 60 * 1000;
+const BLOG_FETCH_TIMEOUT_MS = 8000;
+
+const readBlogsCache = () => {
+  try {
+    const raw = localStorage.getItem(BLOG_CACHE_KEY);
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    const isExpired = Date.now() - parsed.timestamp > BLOG_CACHE_TTL_MS;
+
+    if (isExpired) {
+      localStorage.removeItem(BLOG_CACHE_KEY);
+      return [];
+    }
+
+    return Array.isArray(parsed.data) ? parsed.data : [];
+  } catch (err) {
+    localStorage.removeItem(BLOG_CACHE_KEY);
+    return [];
+  }
+};
+
+const writeBlogsCache = (blogs) => {
+  if (!Array.isArray(blogs)) return;
+
+  try {
+    localStorage.setItem(
+      BLOG_CACHE_KEY,
+      JSON.stringify({
+        timestamp: Date.now(),
+        data: blogs,
+      }),
+    );
+  } catch (err) {
+    // Ignore cache write errors (quota/private mode).
+  }
+};
+
+const normalizeBlogsPayload = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  return [];
+};
 
 const blogCardVariants = {
   hidden: { opacity: 0, y: 30 },
@@ -12,31 +58,58 @@ const blogCardVariants = {
 };
 
 const NetBlog = () => {
-  const [blogs, setBlogs] = useState([]);
+  const [blogs, setBlogs] = useState(() => readBlogsCache());
   const [visibleBlogs, setVisibleBlogs] = useState(6);
   const [showBlogs, setShowBlogs] = useState(true);
-  const [loadingBlogs, setLoadingBlogs] = useState(true);
+  const [loadingBlogs, setLoadingBlogs] = useState(() => blogs.length === 0);
   const [errorBlogs, setErrorBlogs] = useState(null);
   const [selectedBlog, setSelectedBlog] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+    const cachedBeforeFetch = readBlogsCache();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, BLOG_FETCH_TIMEOUT_MS);
+
     const fetchBlogs = async () => {
-      setLoadingBlogs(true);
+      if (cachedBeforeFetch.length === 0) {
+        setLoadingBlogs(true);
+      }
       setErrorBlogs(null);
+
       try {
-        const response = await fetch(SummaryApi.getBlogs.url);
+        const response = await fetch(SummaryApi.getBlogs.url, {
+          signal: controller.signal,
+          credentials: 'include',
+        });
+
         if (!response.ok)
           throw new Error(`HTTP error! status: ${response.status}`);
+
         const data = await response.json();
-        setBlogs(data);
+        const normalizedBlogs = normalizeBlogsPayload(data);
+        setBlogs(normalizedBlogs);
+        writeBlogsCache(normalizedBlogs);
       } catch (e) {
-        setErrorBlogs(e.message);
+        if (e.name !== 'AbortError') {
+          setErrorBlogs(e.message);
+        } else if (cachedBeforeFetch.length === 0) {
+          setErrorBlogs('Timed out while loading updates.');
+        }
       } finally {
         setLoadingBlogs(false);
+        clearTimeout(timeoutId);
       }
     };
+
     fetchBlogs();
+
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, []);
 
   const fetchCommunityFeedData = async () => {
@@ -163,7 +236,7 @@ const NetBlog = () => {
                       onClick={() => setSelectedBlog(blog)}
                       className="flex items-center gap-2 font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.2em] text-brand-gold transition-colors hover:text-white"
                     >
-                      View Report <span className="text-xs">→</span>
+                      View Blog <span className="text-xs">→</span>
                     </button>
                   </div>
                 </div>
@@ -208,7 +281,7 @@ const NetBlog = () => {
             <div className="space-y-6">
               <div className="flex items-center gap-4">
                 <span className="font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.4em] text-brand-gold">
-                  Official Report
+                  Official Blog
                 </span>
                 <span className="w-1 h-1 bg-white/20 rounded-full" />
                 <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">

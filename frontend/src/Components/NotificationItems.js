@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import clsx from 'clsx';
 import { formatDistanceToNow } from 'date-fns';
 import {
@@ -65,20 +65,22 @@ const NotificationItem = ({
   return (
     <li
       className={clsx(
-        'px-4 py-8 hover:bg-gray-50 transition duration-150 ease-in-out rounded-md shadow-sm border',
-        notification.isRead ? 'bg-gray-100' : 'bg-white',
+        'group relative border-b border-white/5 bg-transparent px-4 py-6 transition-all duration-300 md:px-6',
+        notification.isRead ? 'opacity-80' : 'opacity-100',
       )}
     >
       <div className="flex justify-between items-start gap-6">
         <div className="flex-grow">
-          <p className="text-sm font-medium text-black flex items-center">
+          <p className="flex items-center text-sm font-black text-white font-spaceGrotesk uppercase tracking-wide">
             {notificationIcon}
             {truncatedMessage}
           </p>
-          <p className="text-xs text-gray-500 mt-1">{timeAgo}</p>
+          <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-gray-500">
+            {timeAgo}
+          </p>
 
           {notification.isRead && (
-            <span className="inline-flex items-center px-2.5 py-0.5 mt-1 rounded-full text-xs font-medium bg-green-100 text-green-800 ml-1">
+            <span className="ml-1 mt-2 inline-flex items-center rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-emerald-400">
               Read
             </span>
           )}
@@ -86,7 +88,7 @@ const NotificationItem = ({
           {notification.message.length > truncateLength && (
             <button
               onClick={() => onViewDetails(notification)}
-              className="mt-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 text-gray-700 text-xs rounded hover:bg-gray-100 transition"
+              className="mt-2 inline-flex items-center rounded-xl border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:border-brand-gold/30 hover:text-brand-gold"
             >
               <FaExternalLinkAlt className="mr-1 h-3 w-3" />
               View More
@@ -98,7 +100,7 @@ const NotificationItem = ({
           {!notification.isRead && (
             <button
               onClick={() => onMarkAsRead(notification._id)}
-              className="text-green-600 hover:text-green-800 p-2 rounded-full border border-green-200 hover:bg-green-100 transition"
+              className="rounded-full border border-emerald-500/20 bg-emerald-500/5 p-2 text-emerald-400 transition hover:border-emerald-400/40 hover:bg-emerald-500/10"
               title="Mark as Read"
             >
               <FaCheck size={12} />
@@ -106,7 +108,7 @@ const NotificationItem = ({
           )}
           <button
             onClick={() => onDelete(notification._id)}
-            className="text-red-600 hover:text-red-800 p-2 rounded-full border border-red-200 hover:bg-red-100 transition"
+            className="rounded-full border border-rose-500/20 bg-rose-500/5 p-2 text-rose-400 transition hover:border-rose-400/40 hover:bg-rose-500/10"
             title="Delete"
           >
             <FaTrash size={12} />

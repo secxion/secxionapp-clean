@@ -237,22 +237,24 @@ const NotificationsPage = () => {
   // Loading State Component
   const LoadingState = () => (
     <div className="flex flex-col items-center justify-center py-16">
-      <FaSpinner className="animate-spin text-4xl text-indigo-500 mb-4" />
-      <p className="text-gray-500 text-lg">Loading notifications...</p>
+      <FaSpinner className="mb-4 animate-spin text-4xl text-brand-gold" />
+      <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+        Loading notifications...
+      </p>
     </div>
   );
 
   // Error State Component
   const ErrorState = () => (
     <div className="flex flex-col items-center justify-center py-16">
-      <div className="text-red-500 text-5xl mb-4">⚠️</div>
-      <p className="text-red-600 text-lg font-medium mb-2">
+      <div className="mb-4 text-5xl text-rose-400">⚠️</div>
+      <p className="mb-2 font-spaceGrotesk text-lg font-black uppercase tracking-tight text-rose-300">
         Error Loading Notifications
       </p>
-      <p className="text-gray-500 text-sm mb-4">{error}</p>
+      <p className="mb-4 text-sm text-gray-500">{error}</p>
       <button
         onClick={fetchNotifications}
-        className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+        className="rounded-xl border border-rose-400/30 bg-rose-500/10 px-5 py-2 text-[10px] font-black uppercase tracking-widest text-rose-300 transition-colors hover:bg-rose-500/20"
       >
         Try Again
       </button>
@@ -262,20 +264,22 @@ const NotificationsPage = () => {
   // Empty State Component
   const EmptyState = () => (
     <div className="flex flex-col items-center justify-center py-16">
-      <FaInbox className="text-6xl text-gray-300 mb-4" />
-      <p className="text-gray-500 text-lg font-medium mb-2">
+      <FaInbox className="mb-4 text-6xl text-gray-700" />
+      <p className="mb-2 font-spaceGrotesk text-lg font-black uppercase tracking-tight text-white">
         No notifications yet
       </p>
-      <p className="text-gray-400 text-sm">You're all caught up! 🎉</p>
+      <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+        You're all caught up.
+      </p>
     </div>
   );
 
   if (!user?._id) {
     return (
-      <div className="min-h-screen py-20 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-            <p className="text-gray-500">
+      <div className="premium-bg min-h-screen py-24">
+        <div className="mx-auto max-w-4xl px-4">
+          <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-8 text-center">
+            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
               Please log in to view your notifications.
             </p>
           </div>
@@ -285,66 +289,61 @@ const NotificationsPage = () => {
   }
 
   return (
-    <div className="min-h-screen py-20 bg-gray-50">
-      <div className="mx-auto">
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          {/* Header */}
-          <div className="fixed bg-white z-10">
-            <div className="flex items-center fixed justify-between p-4 mx-auto w-full bg-white shadow-md z-10">
-              <nav className="flex space-x-3 w-full" aria-label="Tabs">
-                {['all', 'unread', 'read'].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setFilter(tab)}
-                    className={`${
-                      filter === tab
-                        ? 'border-indigo-500 text-indigo-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-                  >
-                    {tab === 'all' && (
-                      <>
-                        <FaBell className="mr-1 inline-block" /> All
-                      </>
-                    )}
-                    {tab === 'unread' && (
-                      <>
-                        <FaEnvelopeOpen className="mr-1 inline-block" /> Unread
-                      </>
-                    )}
-                    {tab === 'read' && (
-                      <>
-                        <FaCheckDouble className="mr-1 inline-block" /> Read
-                      </>
-                    )}
-                  </button>
-                ))}
+    <div className="premium-bg min-h-screen pb-24 pt-[var(--total-content-offset)]">
+      <div className="h-full px-2 sm:px-4">
+        <div className="mx-auto max-w-7xl">
+          <div className="relative z-10 mb-6 flex-shrink-0 p-4 md:p-8">
+            <h2 className="mb-8 font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.4em] text-brand-gold">
+              Notifications
+            </h2>
+
+            <div className="mb-6 flex flex-wrap items-center gap-3">
+              {['all', 'unread', 'read'].map((tab) => (
                 <button
-                  onClick={handleDeleteAll}
-                  className=" px-3 text-red-600 hover:bg-red-600 hover:text-white text-xs"
+                  key={tab}
+                  onClick={() => setFilter(tab)}
+                  className={`flex items-center gap-2 rounded-xl border px-5 py-2.5 font-spaceGrotesk text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
+                    filter === tab
+                      ? 'border-brand-gold bg-brand-gold text-brand-dark-base shadow-brand-gold'
+                      : 'border-white/10 bg-white/5 text-gray-500 hover:border-brand-gold/30 hover:text-white'
+                  }`}
                 >
-                  Delete All
+                  {tab === 'all' && <FaBell className="h-3.5 w-3.5" />}
+                  {tab === 'unread' && (
+                    <FaEnvelopeOpen className="h-3.5 w-3.5" />
+                  )}
+                  {tab === 'read' && <FaCheckDouble className="h-3.5 w-3.5" />}
+                  <span>{tab}</span>
                 </button>
-                {hasUnread && (
-                  <button
-                    onClick={handleMarkAllAsRead}
-                    className=" px-3 text-blue-600 hover:bg-blue-600 hover:text-white text-xs"
-                  >
-                    Mark All Read
-                  </button>
-                )}
-              </nav>
+              ))}
+            </div>
+
+            <div className="mt-2 flex flex-wrap gap-4 text-[10px] font-bold uppercase tracking-widest text-gray-600">
+              <span>{filteredNotifications().length} visible records</span>
+              <button
+                onClick={handleDeleteAll}
+                className="text-rose-400 transition-colors hover:text-rose-300"
+              >
+                Delete All
+              </button>
+              {hasUnread && (
+                <button
+                  onClick={handleMarkAllAsRead}
+                  className="text-sky-400 transition-colors hover:text-sky-300"
+                >
+                  Mark All Read
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Content */}
-          <div className="min-h-96 mt-20">
+          <div className="min-h-96 overflow-hidden px-4 pb-10 md:px-8">
             {loading ? (
               <LoadingState />
             ) : error ? (
               <ErrorState />
             ) : filteredNotifications().length > 0 ? (
-              <div className="divide-y mt-20 divide-gray-200">
+              <ul className="space-y-1">
                 {filteredNotifications().map((notification) => (
                   <NotificationItem
                     key={notification._id}
@@ -357,7 +356,7 @@ const NotificationsPage = () => {
                     onViewCreditDetails={handleViewCreditDetails}
                   />
                 ))}
-              </div>
+              </ul>
             ) : (
               <EmptyState />
             )}
