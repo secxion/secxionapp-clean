@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { FaEdit, FaTrash, FaTag, FaClock, FaDownload } from 'react-icons/fa';
 import { jsPDF } from 'jspdf';
+import SecxionLogo from '../Assets/optimized/secxion-logo-224.png';
 import SecxionShimmer from './SecxionShimmer';
 
 const DataPadList = ({
@@ -71,6 +72,35 @@ const DataPadList = ({
     };
   };
 
+  const loadImageDataUrl = (src, { maxWidth = 0, alpha = 1 } = {}) =>
+    new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const scale =
+          maxWidth > 0 && img.width > maxWidth ? maxWidth / img.width : 1;
+        const width = Math.max(1, Math.round(img.width * scale));
+        const height = Math.max(1, Math.round(img.height * scale));
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+          reject(new Error('Canvas context unavailable'));
+          return;
+        }
+
+        ctx.clearRect(0, 0, width, height);
+        ctx.globalAlpha = alpha;
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = () => reject(new Error('Failed to load logo image'));
+      img.src = src;
+    });
+
   const downloadBlob = (fileName, mimeType, content) => {
     const blob = new Blob([content], { type: mimeType });
     const blobUrl = URL.createObjectURL(blob);
@@ -86,14 +116,25 @@ const DataPadList = ({
   const exportAsTxt = (pad) => {
     const meta = getPadMeta(pad);
     const lines = [
-      `Title: ${meta.title}`,
-      `Created: ${meta.createdAt}`,
-      `Updated: ${meta.updatedAt}`,
-      `Tags: ${meta.tags.length > 0 ? meta.tags.join(', ') : 'None'}`,
-      `Images: ${meta.mediaCount}`,
+      'SECXION DATAPAD EXPORT',
+      '========================================',
+      'Letterhead: Secxion Official',
+      'Watermark: SECXION',
+      `Exported: ${new Date().toLocaleString()}`,
+      '========================================',
       '',
-      'Content:',
+      `Title   : ${meta.title}`,
+      `Created : ${meta.createdAt}`,
+      `Updated : ${meta.updatedAt}`,
+      `Tags    : ${meta.tags.length > 0 ? meta.tags.join(', ') : 'None'}`,
+      `Images  : ${meta.mediaCount}`,
+      '',
+      'CONTENT',
+      '----------------------------------------',
       meta.content,
+      '',
+      '========================================',
+      'Secxion DataPad Export',
     ];
 
     downloadBlob(
@@ -104,25 +145,118 @@ const DataPadList = ({
     toast.success('Data exported as TXT.');
   };
 
-  const exportAsDoc = (pad) => {
+  const exportAsDoc = async (pad) => {
     const meta = getPadMeta(pad);
+    let logoDataUrl = '';
+
+    try {
+      logoDataUrl = await loadImageDataUrl(SecxionLogo, {
+        maxWidth: 120,
+        alpha: 1,
+      });
+    } catch (error) {
+      console.warn('DOC logo load failed:', error);
+    }
+
     const html = `<!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
     <title>${escapeHtml(meta.title)}</title>
     <style>
-      body { font-family: Arial, sans-serif; color: #0f172a; margin: 28px; }
-      h1 { margin-bottom: 8px; }
-      .meta { font-size: 12px; color: #475569; margin-bottom: 16px; }
-      .content { white-space: pre-wrap; line-height: 1.6; }
+      body {
+        font-family: Arial, sans-serif;
+        color: #0f172a;
+        margin: 36px;
+        position: relative;
+        letter-spacing: 0.1px;
+      }
+      .watermark {
+        position: fixed;
+        top: 54%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0.045;
+        z-index: 0;
+        pointer-events: none;
+      }
+      .watermark img { width: 460px; height: auto; }
+      .header {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 3px solid #d4af37;
+        border-bottom: 1px solid #d5dbe5;
+        padding: 12px 0 12px;
+        margin-bottom: 24px;
+      }
+      .brand-title {
+        margin: 0;
+        font-size: 28px;
+        color: #16213b;
+        letter-spacing: 0.2px;
+      }
+      .brand-subtitle {
+        margin: 6px 0 0;
+        font-size: 13px;
+        color: #62748f;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+      }
+      .brand-logo {
+        width: 72px;
+        height: 72px;
+        object-fit: contain;
+      }
+      h1 { margin: 0 0 10px; font-size: 36px; color: #16213b; }
+      .summary {
+        border: 1px solid #dbe4f1;
+        background: #f7f9fc;
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #334155;
+      }
+      .summary-row { margin: 0 0 7px; }
+      .section-title {
+        margin: 0 0 10px;
+        font-size: 18px;
+        color: #1f2937;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .content { white-space: pre-wrap; line-height: 1.7; font-size: 14px; color: #1f2937; }
+      .footer {
+        margin-top: 26px;
+        padding-top: 10px;
+        border-top: 1px solid #d5dbe5;
+        font-size: 11px;
+        color: #64748b;
+      }
     </style>
   </head>
   <body>
+    ${logoDataUrl ? `<div class="watermark"><img src="${logoDataUrl}" alt="Secxion watermark" /></div>` : ''}
+    <div class="header">
+      <div>
+        <h2 class="brand-title">Secxion DataPad Export</h2>
+        <p class="brand-subtitle">Generated from your private archive</p>
+      </div>
+      ${logoDataUrl ? `<img class="brand-logo" src="${logoDataUrl}" alt="Secxion logo" />` : ''}
+    </div>
     <h1>${escapeHtml(meta.title)}</h1>
-    <div class="meta">Created: ${escapeHtml(meta.createdAt)} | Updated: ${escapeHtml(meta.updatedAt)}</div>
-    <div class="meta">Tags: ${escapeHtml(meta.tags.length > 0 ? meta.tags.join(', ') : 'None')} | Images: ${meta.mediaCount}</div>
+    <div class="summary">
+      <p class="summary-row"><strong>Created:</strong> ${escapeHtml(meta.createdAt)}</p>
+      <p class="summary-row"><strong>Updated:</strong> ${escapeHtml(meta.updatedAt)}</p>
+      <p class="summary-row"><strong>Tags:</strong> ${escapeHtml(meta.tags.length > 0 ? meta.tags.join(', ') : 'None')}</p>
+      <p class="summary-row"><strong>Images:</strong> ${meta.mediaCount}</p>
+    </div>
+    <h3 class="section-title">Content</h3>
     <div class="content">${escapeHtml(meta.content)}</div>
+    <div class="footer">Exported: ${escapeHtml(new Date().toLocaleString())}</div>
   </body>
 </html>`;
 
@@ -134,31 +268,143 @@ const DataPadList = ({
     toast.success('Data exported as DOC.');
   };
 
-  const exportAsPdf = (pad) => {
+  const exportAsPdf = async (pad) => {
     const meta = getPadMeta(pad);
     try {
+      let logoDataUrl = '';
+      let watermarkDataUrl = '';
+
+      try {
+        logoDataUrl = await loadImageDataUrl(SecxionLogo, {
+          maxWidth: 140,
+          alpha: 1,
+        });
+        watermarkDataUrl = await loadImageDataUrl(SecxionLogo, {
+          maxWidth: 620,
+          alpha: 0.03,
+        });
+      } catch (error) {
+        console.warn('PDF logo load failed:', error);
+      }
+
       const doc = new jsPDF({ unit: 'pt', format: 'a4' });
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
       const margin = 44;
+      const headerHeight = 88;
       const contentWidth = pageWidth - margin * 2;
-      let y = margin;
+      let y = margin + headerHeight;
+
+      const drawPageShell = () => {
+        if (watermarkDataUrl) {
+          const watermarkSize = Math.min(pageWidth, pageHeight) * 0.58;
+          doc.addImage(
+            watermarkDataUrl,
+            'PNG',
+            (pageWidth - watermarkSize) / 2,
+            (pageHeight - watermarkSize) / 2 + 18,
+            watermarkSize,
+            watermarkSize,
+            undefined,
+          );
+        }
+
+        doc.setDrawColor(212, 175, 55);
+        doc.setLineWidth(2.2);
+        doc.line(margin, margin + 4, pageWidth - margin, margin + 4);
+
+        doc.setDrawColor(230, 230, 230);
+        doc.setLineWidth(1);
+        doc.line(
+          margin,
+          margin + headerHeight - 18,
+          pageWidth - margin,
+          margin + headerHeight - 18,
+        );
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(18);
+        doc.setTextColor(15, 23, 42);
+        doc.text('Secxion DataPad Export', margin, margin + 32);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9.5);
+        doc.setTextColor(100, 116, 139);
+        doc.text('Generated from your private archive', margin, margin + 50);
+
+        if (logoDataUrl) {
+          doc.addImage(
+            logoDataUrl,
+            'PNG',
+            pageWidth - margin - 58,
+            margin + 10,
+            58,
+            58,
+            undefined,
+          );
+        }
+      };
+
+      const drawFooter = () => {
+        const pageCount = doc.getNumberOfPages();
+        const exportedAt = new Date().toLocaleString();
+
+        for (let page = 1; page <= pageCount; page += 1) {
+          doc.setPage(page);
+          doc.setDrawColor(230, 230, 230);
+          doc.setLineWidth(1);
+          doc.line(
+            margin,
+            pageHeight - 42,
+            pageWidth - margin,
+            pageHeight - 42,
+          );
+
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(9);
+          doc.setTextColor(100, 116, 139);
+          doc.text(`Exported: ${exportedAt}`, margin, pageHeight - 26);
+          doc.text(
+            `Page ${page} of ${pageCount}`,
+            pageWidth - margin,
+            pageHeight - 26,
+            { align: 'right' },
+          );
+        }
+      };
+
+      drawPageShell();
 
       const ensurePageSpace = (nextBlockHeight = 0) => {
-        if (y + nextBlockHeight > pageHeight - margin) {
+        if (y + nextBlockHeight > pageHeight - margin - 52) {
           doc.addPage();
-          y = margin;
+          drawPageShell();
+          y = margin + headerHeight;
         }
       };
 
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(18);
+      doc.setFontSize(20);
+      doc.setTextColor(15, 23, 42);
       doc.text(meta.title, margin, y);
-      y += 24;
+      y += 22;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      doc.setTextColor(71, 85, 105);
+      doc.text('Record summary', margin, y);
+      y += 18;
+
+      const boxPadding = 12;
+      const metaBoxHeight = 78;
+      ensurePageSpace(metaBoxHeight + 16);
+      doc.setFillColor(247, 249, 252);
+      doc.setDrawColor(226, 232, 240);
+      doc.roundedRect(margin, y, contentWidth, metaBoxHeight, 8, 8, 'FD');
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
-      doc.setTextColor(80, 80, 80);
+      doc.setTextColor(51, 65, 85);
 
       const metaLines = [
         `Created: ${meta.createdAt}`,
@@ -167,13 +413,13 @@ const DataPadList = ({
         `Images: ${meta.mediaCount}`,
       ];
 
+      let metaY = y + boxPadding + 10;
       metaLines.forEach((line) => {
-        ensurePageSpace(14);
-        doc.text(line, margin, y);
-        y += 14;
+        doc.text(line, margin + boxPadding, metaY);
+        metaY += 16;
       });
 
-      y += 10;
+      y += metaBoxHeight + 20;
       ensurePageSpace(20);
 
       doc.setFont('helvetica', 'bold');
@@ -184,14 +430,28 @@ const DataPadList = ({
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(11);
-      const contentText = meta.content || 'No content';
-      const contentLines = doc.splitTextToSize(contentText, contentWidth);
+      doc.setTextColor(31, 41, 55);
 
-      contentLines.forEach((line) => {
-        ensurePageSpace(16);
-        doc.text(line, margin, y);
-        y += 16;
+      const paragraphs = (meta.content || 'No content')
+        .split(/\n+/)
+        .map((chunk) => chunk.trim())
+        .filter(Boolean);
+
+      paragraphs.forEach((paragraph, paragraphIndex) => {
+        const paragraphLines = doc.splitTextToSize(paragraph, contentWidth);
+
+        paragraphLines.forEach((line) => {
+          ensurePageSpace(16);
+          doc.text(line, margin, y);
+          y += 16;
+        });
+
+        if (paragraphIndex < paragraphs.length - 1) {
+          y += 8;
+        }
       });
+
+      drawFooter();
 
       doc.save(`${safeFileName(meta.title)}.pdf`);
       toast.success('Data exported as PDF.');

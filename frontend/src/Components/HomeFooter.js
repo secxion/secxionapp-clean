@@ -5,8 +5,12 @@ import { useSelector } from 'react-redux';
 import NairaButtonImg from '../app/Buttons/nairabutton.png';
 import EthereumButtonImg from '../app/Buttons/ethereumbutton.png';
 
+const CONNECTIVITY_CHECK_URL = 'https://www.gstatic.com/generate_204';
+const CONNECTIVITY_TIMEOUT_MS = 3000;
+const CONNECTIVITY_POLL_MS = 4000;
+
 const HomeFooter = () => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [imagesLoaded, setImagesLoaded] = useState({
     naira: false,
     eth: false,
@@ -16,12 +20,67 @@ const HomeFooter = () => {
   const { profilePic } = user || {};
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
+    let isMounted = true;
+    let isChecking = false;
+
+    const checkConnectivity = async () => {
+      if (!navigator.onLine) {
+        if (isMounted) setIsOnline(false);
+        return;
+      }
+
+      if (isChecking) return;
+      isChecking = true;
+
+      const controller = new AbortController();
+      const timeout = setTimeout(
+        () => controller.abort(),
+        CONNECTIVITY_TIMEOUT_MS,
+      );
+
+      try {
+        await fetch(`${CONNECTIVITY_CHECK_URL}?t=${Date.now()}`, {
+          method: 'GET',
+          mode: 'no-cors',
+          cache: 'no-store',
+          signal: controller.signal,
+        });
+
+        if (isMounted) setIsOnline(true);
+      } catch {
+        if (isMounted) setIsOnline(false);
+      } finally {
+        clearTimeout(timeout);
+        isChecking = false;
+      }
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    const handleOnline = () => {
+      void checkConnectivity();
+    };
+
+    const handleOffline = () => {
+      if (isMounted) setIsOnline(false);
+    };
+
+    // Immediate check on mount.
+    void checkConnectivity();
+
+    // React instantly to browser connectivity events.
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    // Polling keeps status fresh if browser events are delayed/missed.
+    const interval = setInterval(() => {
+      void checkConnectivity();
+    }, CONNECTIVITY_POLL_MS);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+      clearInterval(interval);
+    };
   }, []);
 
   return (
@@ -38,7 +97,15 @@ const HomeFooter = () => {
               alt="Profile"
               className="w-10 h-10 object-cover rounded-xl border-2 border-brand-dark-base group-hover:border-brand-gold transition-colors"
             />
-            <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-brand-dark-base shadow-emerald-400"></div>
+            <div
+              className={`absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full border-2 border-brand-dark-base ${
+                isOnline
+                  ? 'bg-emerald-400 shadow-emerald-400'
+                  : 'bg-rose-500 shadow-rose-500'
+              }`}
+              title={isOnline ? 'Online' : 'Offline'}
+              aria-label={isOnline ? 'Online' : 'Offline'}
+            ></div>
           </div>
         </Link>
 
