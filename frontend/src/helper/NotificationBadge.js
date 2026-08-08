@@ -270,6 +270,7 @@ const NotificationBadge = () => {
                 id: notification._id,
                 message: notification.message || 'New notification received!',
                 type: notification.type || 'default',
+                relatedObjectId: notification.relatedObjectId,
                 autoClose: true,
               };
             });

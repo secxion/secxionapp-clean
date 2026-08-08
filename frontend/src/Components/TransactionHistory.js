@@ -4,8 +4,6 @@ import TransactionCard from './TransactionCard';
 import SummaryApi from '../common';
 import {
   FaFilter,
-  FaEye,
-  FaEyeSlash,
   FaHistory,
   FaSearch,
   FaTimes,
@@ -20,7 +18,7 @@ import { exportTransactionsToCSV } from '../utils/csvExport';
 const TransactionHistory = () => {
   const { user } = useSelector((state) => state.user);
   const [transactions, setTransactions] = useState([]);
-  const [loadingTransactions, setLoadingTransactions] = useState(false);
+  const [loadingTransactions, setLoadingTransactions] = useState(true);
   const [errorTransactions, setErrorTransactions] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [visibleTransactions, setVisibleTransactions] = useState(6);
@@ -29,6 +27,7 @@ const TransactionHistory = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showScrollTop, setShowScrollTop] = useState(false);
   const scrollContainerRef = useRef(null);
+  const syncInFlightRef = useRef(false);
 
   // Auto scroll detection
   useEffect(() => {
@@ -57,15 +56,23 @@ const TransactionHistory = () => {
   };
 
   const fetchTransactions = useCallback(
-    async (currentStatusFilter) => {
+    async (currentStatusFilter, options = {}) => {
+      const { showLoading = false, surfaceError = false } = options;
+
+      if (syncInFlightRef.current) return;
+
       if (!user?.id && !user?._id) {
         console.warn('User not found in Redux. Cannot fetch transactions.');
-        setErrorTransactions('User authentication details not found.');
+        if (surfaceError) {
+          setErrorTransactions('User authentication details not found.');
+        }
         return;
       }
 
-      setLoadingTransactions(true);
-      setErrorTransactions('');
+      syncInFlightRef.current = true;
+      if (showLoading) setLoadingTransactions(true);
+      if (surfaceError) setErrorTransactions('');
+
       try {
         let url = `${SummaryApi.transactions.url}`;
         const userId = user?.id || user?._id;
@@ -85,25 +92,40 @@ const TransactionHistory = () => {
         const data = await response.json();
         if (data.success && data.transactions) {
           setTransactions(data.transactions);
+          setErrorTransactions('');
         } else {
-          setErrorTransactions(data.message || 'Failed to fetch transactions.');
+          if (surfaceError) {
+            setErrorTransactions(
+              data.message || 'Failed to fetch transactions.',
+            );
+          }
         }
       } catch (err) {
         console.error('Error fetching transactions:', err);
-        setErrorTransactions(
-          'An unexpected error occurred while fetching transactions.',
-        );
+        if (surfaceError) {
+          setErrorTransactions(
+            'An unexpected error occurred while fetching transactions.',
+          );
+        }
       } finally {
-        setLoadingTransactions(false);
+        syncInFlightRef.current = false;
+        if (showLoading) setLoadingTransactions(false);
       }
     },
     [user],
   );
 
   useEffect(() => {
-    fetchTransactions(statusFilter);
+    fetchTransactions(statusFilter, {
+      showLoading: true,
+      surfaceError: true,
+    });
     setVisibleTransactions(6);
     setShowAll(false);
+
+    const interval = setInterval(() => fetchTransactions(statusFilter), 30000);
+
+    return () => clearInterval(interval);
   }, [statusFilter, fetchTransactions]);
 
   const handleFilterChange = (statusText) => {
@@ -169,7 +191,12 @@ const TransactionHistory = () => {
           </h3>
           <p className="text-red-200 text-sm mb-4">{errorTransactions}</p>
           <button
-            onClick={() => fetchTransactions(statusFilter)}
+            onClick={() =>
+              fetchTransactions(statusFilter, {
+                showLoading: true,
+                surfaceError: true,
+              })
+            }
             className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
           >
             Try Again

@@ -76,9 +76,17 @@ const LastMarketStatus = () => {
   }, [showImageModal, handleCloseModal]);
 
   useEffect(() => {
-    const fetchLastMarketStatus = async () => {
-      setLoading(true);
-      setError(null);
+    let syncInFlight = false;
+
+    const fetchLastMarketStatus = async (options = {}) => {
+      const { showLoading = false, surfaceError = false } = options;
+
+      if (syncInFlight) return;
+      syncInFlight = true;
+
+      if (showLoading) setLoading(true);
+      if (surfaceError) setError(null);
+
       try {
         const response = await apiFetch(SummaryApi.lastUserMarketStatus.url);
         const dataResponse = await handleApiResponse(response);
@@ -97,20 +105,25 @@ const LastMarketStatus = () => {
           // Only show error if not a 401 (401 is handled by interceptor)
           const errorMsg =
             dataResponse.error || 'Failed to fetch market status.';
-          setError(errorMsg);
-          setLastMarket(null);
+          if (surfaceError) {
+            setError(errorMsg);
+            setLastMarket(null);
+          }
         }
       } catch (err) {
         console.error('Error fetching last market status:', err);
-        setError('An error occurred while fetching data. Please try again.');
-        setLastMarket(null);
+        if (surfaceError) {
+          setError('An error occurred while fetching data. Please try again.');
+          setLastMarket(null);
+        }
       } finally {
-        setLoading(false);
+        syncInFlight = false;
+        if (showLoading) setLoading(false);
       }
     };
 
-    fetchLastMarketStatus();
-    const interval = setInterval(fetchLastMarketStatus, 30000);
+    fetchLastMarketStatus({ showLoading: true, surfaceError: true });
+    const interval = setInterval(() => fetchLastMarketStatus(), 30000);
     return () => clearInterval(interval);
   }, [user]);
 

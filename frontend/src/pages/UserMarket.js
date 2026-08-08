@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import SummaryApi from '../common';
 import UserUploadMarket from '../Components/UserUploadMarket';
@@ -26,48 +32,70 @@ const UserMarket = () => {
     useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const syncInFlightRef = useRef(false);
 
-  const fetchAllProduct = useCallback(async () => {
-    if (!user || !user._id) {
-      console.warn('User is not defined or userId is missing.');
-      setError('User information not available');
-      return;
-    }
+  const fetchAllProduct = useCallback(
+    async (options = {}) => {
+      const { showLoading = false, surfaceError = false } = options;
 
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `${SummaryApi.myMarket.url}?userId=${user._id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-          credentials: 'include',
-        },
-      );
+      if (syncInFlightRef.current) return;
 
-      const dataResponse = await response.json();
-      setAllProduct(dataResponse?.data || []);
-    } catch (error) {
-      console.error('Failed to fetch all products:', error);
-      setError('Failed to load your products. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
-
-  const fetchProductById = useCallback(
-    async (id) => {
-      if (!user || !user._id || !id) {
-        console.warn('User or market ID is missing.');
-        setAllProduct([]);
-        setError('Invalid product ID');
+      if (!user || !user._id) {
+        console.warn('User is not defined or userId is missing.');
+        if (surfaceError) setError('User information not available');
         return;
       }
 
-      setLoading(true);
-      setError(null);
+      syncInFlightRef.current = true;
+      if (showLoading) setLoading(true);
+      if (surfaceError) setError(null);
+
+      try {
+        const response = await fetch(
+          `${SummaryApi.myMarket.url}?userId=${user._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+            credentials: 'include',
+          },
+        );
+
+        const dataResponse = await response.json();
+        setAllProduct(dataResponse?.data || []);
+        setError(null);
+      } catch (error) {
+        console.error('Failed to fetch all products:', error);
+        if (surfaceError) {
+          setError('Failed to load your products. Please try again.');
+        }
+      } finally {
+        syncInFlightRef.current = false;
+        if (showLoading) setLoading(false);
+      }
+    },
+    [user],
+  );
+
+  const fetchProductById = useCallback(
+    async (id, options = {}) => {
+      const { showLoading = false, surfaceError = false } = options;
+
+      if (syncInFlightRef.current) return;
+
+      if (!user || !user._id || !id) {
+        console.warn('User or market ID is missing.');
+        if (surfaceError) {
+          setAllProduct([]);
+          setError('Invalid product ID');
+        }
+        return;
+      }
+
+      syncInFlightRef.current = true;
+      if (showLoading) setLoading(true);
+      if (surfaceError) setError(null);
+
       try {
         const response = await fetch(
           SummaryApi.myMarketById.url.replace(':marketId', id),
@@ -82,24 +110,36 @@ const UserMarket = () => {
         const dataResponse = await response.json();
         setAllProduct(dataResponse?.data ? [dataResponse.data] : []);
         setSelectedProductForDetail(dataResponse?.data || null);
+        setError(null);
       } catch (error) {
         console.error(`Failed to fetch product with ID ${id}:`, error);
-        setError('Failed to load product details.');
-        setAllProduct([]);
-        setSelectedProductForDetail(null);
+        if (surfaceError) {
+          setError('Failed to load product details.');
+          setAllProduct([]);
+          setSelectedProductForDetail(null);
+        }
       } finally {
-        setLoading(false);
+        syncInFlightRef.current = false;
+        if (showLoading) setLoading(false);
       }
     },
     [user],
   );
 
   useEffect(() => {
-    if (marketId) {
-      fetchProductById(marketId);
-    } else if (user && user._id) {
-      fetchAllProduct();
-    }
+    const syncRecords = (options) => {
+      if (marketId) {
+        fetchProductById(marketId, options);
+      } else if (user && user._id) {
+        fetchAllProduct(options);
+      }
+    };
+
+    syncRecords({ showLoading: true, surfaceError: true });
+
+    const interval = setInterval(() => syncRecords(), 30000);
+
+    return () => clearInterval(interval);
   }, [fetchAllProduct, fetchProductById, marketId, user]);
 
   const handleCloseDetailView = () => {
@@ -108,9 +148,12 @@ const UserMarket = () => {
 
   const handleRetry = () => {
     if (marketId) {
-      fetchProductById(marketId);
+      fetchProductById(marketId, {
+        showLoading: true,
+        surfaceError: true,
+      });
     } else {
-      fetchAllProduct();
+      fetchAllProduct({ showLoading: true, surfaceError: true });
     }
   };
 

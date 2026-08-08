@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -26,11 +26,17 @@ const NotificationsPage = () => {
 
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const previousCountRef = useRef(0);
+  const syncInFlightRef = useRef(false);
 
-  const fetchNotifications = async () => {
-    setLoading(true);
-    setError('');
+  const fetchNotifications = useCallback(async (options = {}) => {
+    const { showLoading = false, surfaceError = false } = options;
+
+    if (syncInFlightRef.current) return;
+    syncInFlightRef.current = true;
+
+    if (showLoading) setLoading(true);
+    if (surfaceError) setError('');
+
     try {
       const [transactionRes, reportRes, marketRes] = await Promise.all([
         fetch(SummaryApi.getTransactionNotifications.url, {
@@ -71,39 +77,44 @@ const NotificationsPage = () => {
           ...marketData.data,
         ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-        previousCountRef.current = all.length;
         setNotifications(all);
+        setError('');
       } else {
         const errorMessage =
           [transactionData.message, reportData.message, marketData.message]
             .filter(Boolean)
             .join(' ') || 'Failed to fetch notifications.';
-        setError(
-          toUserSafeMessage(errorMessage, 'Failed to fetch notifications.'),
-        );
+        if (surfaceError) {
+          setError(
+            toUserSafeMessage(errorMessage, 'Failed to fetch notifications.'),
+          );
+        }
       }
     } catch (err) {
       console.error('[Fetch Notifications Error]', err);
-      setError(
-        toUserSafeMessage(
-          err?.message,
-          'An unexpected error occurred while fetching notifications.',
-        ),
-      );
+      if (surfaceError) {
+        setError(
+          toUserSafeMessage(
+            err?.message,
+            'An unexpected error occurred while fetching notifications.',
+          ),
+        );
+      }
     } finally {
-      setLoading(false);
+      syncInFlightRef.current = false;
+      if (showLoading) setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (user?._id) {
-      fetchNotifications();
-      const interval = setInterval(fetchNotifications, 30000);
+      fetchNotifications({ showLoading: true, surfaceError: true });
+      const interval = setInterval(() => fetchNotifications(), 30000);
       return () => clearInterval(interval);
     } else {
       setLoading(false);
     }
-  }, [user]);
+  }, [user?._id, fetchNotifications]);
 
   const handleMarkAsRead = async (id) => {
     try {
@@ -261,7 +272,9 @@ const NotificationsPage = () => {
       </p>
       <p className="mb-4 text-sm text-gray-500">{error}</p>
       <button
-        onClick={fetchNotifications}
+        onClick={() =>
+          fetchNotifications({ showLoading: true, surfaceError: true })
+        }
         className="rounded-xl border border-rose-400/30 bg-rose-500/10 px-5 py-2 text-[10px] font-black uppercase tracking-widest text-rose-300 transition-colors hover:bg-rose-500/20"
       >
         Try Again

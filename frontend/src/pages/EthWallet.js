@@ -6,6 +6,7 @@ import React, {
   useCallback,
 } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import QrScanner from 'react-qr-scanner';
 import { EthContext } from '../Context/EthContext';
 import SummaryApi from '../common';
@@ -18,7 +19,6 @@ import {
   CheckCircleIcon,
   InformationCircleIcon,
   XCircleIcon,
-  ClockIcon,
   QrCodeIcon,
   EyeSlashIcon,
   ArrowPathIcon,
@@ -87,9 +87,96 @@ const Notification = ({ type, message, onDismiss }) => {
   );
 };
 
+const WithdrawalLimitDialog = ({ message, onClose, onCompleteKyc }) => {
+  useEffect(() => {
+    if (!message) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') onClose();
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [message, onClose]);
+
+  if (!message) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="withdrawal-limit-title"
+        aria-describedby="withdrawal-limit-message"
+        className="w-full max-w-md rounded-lg border border-red-500/40 bg-brand-dark-elevated p-6 text-white shadow-2xl sm:p-8"
+      >
+        <div className="mb-5 flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="rounded-full bg-red-500/15 p-2 text-red-400">
+              <ExclamationCircleIcon className="h-6 w-6" />
+            </div>
+            <h2
+              id="withdrawal-limit-title"
+              className="font-spaceGrotesk text-lg font-black uppercase tracking-tight"
+            >
+              Verification Required
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-white/5 hover:text-white"
+            aria-label="Close withdrawal limit dialog"
+          >
+            <XCircleIcon className="h-5 w-5" />
+          </button>
+        </div>
+
+        <p
+          id="withdrawal-limit-message"
+          className="text-sm leading-7 text-gray-300"
+        >
+          {message}
+        </p>
+
+        <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg border border-white/10 bg-brand-dark-base px-5 py-3 text-xs font-black uppercase tracking-widest text-gray-300 transition-colors hover:border-white/20 hover:text-white"
+          >
+            Dismiss
+          </button>
+          <button
+            type="button"
+            onClick={onCompleteKyc}
+            autoFocus
+            className="rounded-lg border border-brand-gold bg-brand-gold px-5 py-3 text-xs font-black uppercase tracking-widest text-brand-dark-base transition-colors hover:bg-brand-gold-light"
+          >
+            Complete KYC
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const SERVICE_FEE_PERCENT = 1.5; // default service fee if context doesn't provide one
 
 const EthWallet = () => {
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.user || {});
   const {
     ethRate,
@@ -112,17 +199,17 @@ const EthWallet = () => {
   const [lastUpdated, setLastUpdated] = useState(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-  const [loading, setLoading] = useState(true);
   const [scannerVisible, setScannerVisible] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [notification, setNotification] = useState({ type: '', message: '' });
 
   const [withdrawLoading, setWithdrawLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [withdrawalLimitMessage, setWithdrawalLimitMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [countdown, setCountdown] = useState(0);
   const [withdrawalStatus, setWithdrawalStatus] = useState(null);
-  const [rejectedNotice, setRejectedNotice] = useState('');
+  const [, setRejectedNotice] = useState('');
 
   // Refs for intervals
   const countdownRef = useRef(null);
@@ -169,17 +256,19 @@ const EthWallet = () => {
   }, [fetchEthRate, fetchWalletBalance, user, showNotification]);
 
   const refreshWalletData = useCallback(
-    async (isManualRefresh = false) => {
+    async (options = {}) => {
+      const { isManualRefresh = false, showInitialLoading = false } = options;
+
       if (isManualRefresh) setIsRefreshing(true);
-      else setIsInitialLoading(true);
-      if (isManualRefresh || isInitialLoading) clearNotification();
+      if (showInitialLoading) setIsInitialLoading(true);
+      if (isManualRefresh || showInitialLoading) clearNotification();
 
       await refreshWalletDataInternal();
 
       if (isManualRefresh) setIsRefreshing(false);
-      else setIsInitialLoading(false);
+      if (showInitialLoading) setIsInitialLoading(false);
     },
-    [refreshWalletDataInternal, clearNotification, isInitialLoading],
+    [refreshWalletDataInternal, clearNotification],
   );
 
   // refresh gas fee data
@@ -251,7 +340,7 @@ const EthWallet = () => {
     }
 
     // fetch fresh data
-    refreshWalletData();
+    refreshWalletData({ showInitialLoading: true });
     refreshGasFee();
     resetLocalStorageIfNoRequests();
 
@@ -511,6 +600,9 @@ const EthWallet = () => {
           if (!displayMessage.includes('Your non-KYC available withdrawal')) {
             displayMessage = `${displayMessage}${remainingLine}`.trim();
           }
+
+          setWithdrawalLimitMessage(displayMessage);
+          return;
         }
 
         throw new Error(displayMessage);
@@ -621,6 +713,12 @@ const EthWallet = () => {
 
   return (
     <div className="mt-28 p-4 sm:p-8 max-w-max mx-auto">
+      <WithdrawalLimitDialog
+        message={withdrawalLimitMessage}
+        onClose={() => setWithdrawalLimitMessage('')}
+        onCompleteKyc={() => navigate('/kyc')}
+      />
+
       {/* Static Background only */}
       <div className="fixed inset-0 pointer-events-none opacity-20">
         <div className="absolute inset-0 bg-grid-slate-100/[0.02] bg-grid-16"></div>
@@ -637,7 +735,7 @@ const EthWallet = () => {
           </p>
         </div>
         <button
-          onClick={() => refreshWalletData(true)}
+          onClick={() => refreshWalletData({ isManualRefresh: true })}
           className="inline-flex items-center gap-3 px-6 py-3 text-xs font-black uppercase tracking-widest text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all duration-300 font-spaceGrotesk"
           disabled={isRefreshing || withdrawLoading}
           title="Refresh Data"

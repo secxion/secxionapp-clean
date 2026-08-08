@@ -45,9 +45,16 @@ const NotificationStack = ({ notifications = [], onRemove = () => {} }) => {
   );
 
   const handleViewMore = useCallback(
-    (id) => {
-      navigate('/notifications');
-      handleClose(id);
+    (notification) => {
+      const isReportReply =
+        notification.type === 'report_reply' && notification.relatedObjectId;
+
+      navigate(
+        isReportReply
+          ? `/chat/${notification.relatedObjectId}`
+          : '/notifications',
+      );
+      handleClose(notification.id);
     },
     [navigate, handleClose],
   );
@@ -124,7 +131,7 @@ const NotificationStack = ({ notifications = [], onRemove = () => {} }) => {
                   <>
                     {' '}
                     <button
-                      onClick={() => handleViewMore(notification.id)}
+                      onClick={() => handleViewMore(notification)}
                       aria-label="View full notification details"
                     >
                       View more
@@ -138,9 +145,13 @@ const NotificationStack = ({ notifications = [], onRemove = () => {} }) => {
                 <div className="pop-alert-actions">
                   {!shouldTruncate && (
                     <button
-                      onClick={() => handleViewMore(notification.id)}
+                      onClick={() => handleViewMore(notification)}
                       className="pop-alert-action-btn"
-                      aria-label="View all notifications"
+                      aria-label={
+                        notification.type === 'report_reply'
+                          ? 'Open report chat'
+                          : 'View all notifications'
+                      }
                     >
                       View all →
                     </button>
