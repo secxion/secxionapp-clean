@@ -6,6 +6,7 @@ import uploadImage from '../helpers/uploadImage';
 import { toast } from 'react-toastify';
 import SummaryApi from '../common';
 import { useNavigate } from 'react-router-dom';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 const ReportForm = ({ onReportSubmit }) => {
   const { user } = useSelector((state) => state.user);
@@ -29,7 +30,12 @@ const ReportForm = ({ onReportSubmit }) => {
       setUploadedImage(uploadResponse.url);
       toast.success('Image uploaded!');
     } catch (error) {
-      toast.error('Upload failed.');
+      toast.error(
+        toUserSafeMessage(
+          error,
+          'We could not upload the image. Please try again.',
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -82,7 +88,9 @@ const ReportForm = ({ onReportSubmit }) => {
       const responseData = await response.json();
 
       if (response.ok && responseData.success) {
-        toast.success('Report submitted!');
+        toast.success(
+          'Support ticket submitted. You can continue the conversation in chat.',
+        );
         setReportText('');
         setUploadedImage(null);
         const updatedReport = {
@@ -92,10 +100,21 @@ const ReportForm = ({ onReportSubmit }) => {
         onReportSubmit(updatedReport);
         navigate(`/chat/${responseData.data?._id}`);
       } else {
-        toast.error(responseData.message || 'Submission failed.');
+        toast.error(
+          toUserSafeMessage(
+            responseData.message,
+            'We could not submit your support ticket. Please try again.',
+            { status: response.status },
+          ),
+        );
       }
     } catch (error) {
-      toast.error('Error submitting.');
+      toast.error(
+        toUserSafeMessage(
+          error,
+          'We could not submit your support ticket. Please try again.',
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -187,7 +206,7 @@ const ReportForm = ({ onReportSubmit }) => {
       >
         <MdSend className="inline-block mr-3 text-lg" />
         {loading && uploadedImage === null
-          ? 'Synchronizing...'
+          ? 'Submitting...'
           : loading
             ? 'Submitting...'
             : 'Submit Ticket'}

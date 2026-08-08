@@ -7,6 +7,7 @@
 
 import { store } from '../store/store';
 import { logout, setUserDetails } from '../store/userSlice';
+import { toUserSafeMessage, USER_MESSAGE } from './userSafeMessage';
 
 const getStoredToken = () => {
   const token = localStorage.getItem('token');
@@ -116,27 +117,9 @@ export const isSuccess = (response) => {
  * @returns {string}
  */
 export const getErrorMessage = (status, defaultMessage) => {
-  const safeDefaultMessage = defaultMessage ?? 'An error occurred';
-  switch (status) {
-    case 400:
-      return 'Invalid request. Please check your input.';
-    case 401:
-      return 'Your session has expired. Please log in again.';
-    case 403:
-      return 'You do not have permission to access this resource.';
-    case 404:
-      return 'Resource not found.';
-    case 409:
-      return 'Conflict: This resource already exists.';
-    case 429:
-      return 'Too many requests. Please wait a moment and try again.';
-    case 500:
-      return 'Server error. Please try again later.';
-    case 503:
-      return 'Service unavailable. Please try again later.';
-    default:
-      return safeDefaultMessage;
-  }
+  return toUserSafeMessage('', defaultMessage || USER_MESSAGE.DEFAULT, {
+    status,
+  });
 };
 
 /**
@@ -147,7 +130,11 @@ export const getErrorMessage = (status, defaultMessage) => {
 export const handleApiResponse = async (response) => {
   // 401 is already handled in apiFetch to avoid duplicate logout flows
   if (isUnauthorized(response)) {
-    return { success: false, error: 'Unauthorized' };
+    return {
+      success: false,
+      error: getErrorMessage(401),
+      status: 401,
+    };
   }
 
   try {
@@ -156,16 +143,29 @@ export const handleApiResponse = async (response) => {
     if (isSuccess(response)) {
       return data;
     } else {
-      // API returned error status with message
-      const errorMessage = data?.message || getErrorMessage(response.status);
-      console.error(`[API] Error ${response.status}:`, errorMessage);
-      return { success: false, error: errorMessage, status: response.status };
+      const rawMessage = data?.message || data?.error;
+      const errorMessage = toUserSafeMessage(
+        rawMessage,
+        getErrorMessage(response.status),
+        { status: response.status },
+      );
+      console.error(
+        `[API] Error ${response.status}:`,
+        rawMessage || 'No message',
+      );
+      return {
+        success: false,
+        error: errorMessage,
+        message: errorMessage,
+        status: response.status,
+      };
     }
   } catch (error) {
     console.error('[API] Failed to parse response:', error.message);
     return {
       success: false,
-      error: 'Failed to parse server response',
+      error: getErrorMessage(response.status),
+      message: getErrorMessage(response.status),
       status: response.status,
     };
   }

@@ -3,6 +3,7 @@ import SummaryApi from '../common';
 import SecxionSpinner from './SecxionSpinner';
 import { motion } from 'framer-motion';
 import { FaTimes, FaUniversity } from 'react-icons/fa';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 const AddBankAccountForm = ({ onCancel, onSuccess }) => {
   const [banks, setBanks] = useState([]);
@@ -44,7 +45,12 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
           throw new Error(data.message || 'Failed to load banks');
         setBanks(data.data);
       } catch (err) {
-        setError(err.message);
+        setError(
+          toUserSafeMessage(
+            err,
+            'We could not load the bank list. Please try again.',
+          ),
+        );
       } finally {
         setLoadingBanks(false);
       }
@@ -82,7 +88,12 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
           setResolvedAccountName(data.data.account_name);
           setShowConfirmModal(true);
         } catch (err) {
-          setError(err.message);
+          setError(
+            toUserSafeMessage(
+              err,
+              'We could not verify this account. Check the details and try again.',
+            ),
+          );
         } finally {
           setLoadingResolve(false);
         }
@@ -107,9 +118,14 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
       setCodeSent(true);
       setResendTimer(60); // Start countdown
       setShowConfirmModal(false); // Close modal after sending code
-      setSuccessMsg('Verification code sent to your email!');
+      setSuccessMsg('Verification code sent. Check your email.');
     } catch (err) {
-      setError(err.message);
+      setError(
+        toUserSafeMessage(
+          err,
+          'We could not send the verification code. Please try again.',
+        ),
+      );
     } finally {
       setSendingCode(false);
     }
@@ -154,7 +170,12 @@ const AddBankAccountForm = ({ onCancel, onSuccess }) => {
       if (onSuccess) onSuccess();
       if (onCancel) onCancel();
     } catch (err) {
-      setError(err.message);
+      setError(
+        toUserSafeMessage(
+          err,
+          'We could not add this bank account. Check the code and try again.',
+        ),
+      );
     } finally {
       setSubmitLoading(false);
     }

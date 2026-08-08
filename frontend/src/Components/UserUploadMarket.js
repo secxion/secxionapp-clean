@@ -11,6 +11,7 @@ import currencyData from '../helpers/currencyData';
 import flagImageMap from '../helpers/flagImageMap';
 import { FaTimes } from 'react-icons/fa';
 import { emitTransactionActivity } from '../utils/transactionEvents';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 const UserUploadMarket = ({
   onClose = () => {},
@@ -113,7 +114,12 @@ const UserUploadMarket = ({
         Image: [...prev.Image, result.url],
       }));
     } catch (err) {
-      toast.error('⚠️ Error uploading image. Try again.');
+      toast.error(
+        toUserSafeMessage(
+          err,
+          'We could not upload the image. Please try again.',
+        ),
+      );
     } finally {
       setUploading(false);
     }
@@ -123,7 +129,7 @@ const UserUploadMarket = ({
     const newImages = [...data.Image];
     newImages.splice(index, 1);
     setData((prev) => ({ ...prev, Image: newImages }));
-    toast.info('🗑️ Image removed.');
+    toast.info('Image removed.');
   };
 
   const handleSubmit = async (e) => {
@@ -131,7 +137,7 @@ const UserUploadMarket = ({
     setSubmitError(null);
 
     if (!data.pricing || data.pricing.length === 0) {
-      toast.error('💰 Please add at least one pricing entry.');
+      toast.error('Add at least one pricing entry before continuing.');
       return;
     }
 
@@ -141,7 +147,7 @@ const UserUploadMarket = ({
     ) {
       const message = 'Please enter a valid amount before submitting.';
       setSubmitError({ message });
-      toast.error(`🚨 ${message}`);
+      toast.error(message);
       return;
     }
 
@@ -167,7 +173,9 @@ const UserUploadMarket = ({
       }
 
       if (res.ok && result.success) {
-        toast.success(`🎉 ${result.message}`);
+        toast.success(
+          'Trade submitted. You can track its progress in your records.',
+        );
         emitTransactionActivity({
           source: 'user-market-upload',
           status: 'submitted',
@@ -183,17 +191,24 @@ const UserUploadMarket = ({
             message,
             kycRedirectPath: result.kycRedirectPath || '/kyc',
           });
-          toast.error(`🚫 ${message}`, { autoClose: 8000 });
+          toast.error(message, { autoClose: 8000 });
         } else {
-          setSubmitError({ message });
-          toast.error(`🚨 ${message}`);
+          const safeMessage = toUserSafeMessage(
+            message,
+            'We could not submit this trade. Please try again.',
+            { status: res.status },
+          );
+          setSubmitError({ message: safeMessage });
+          toast.error(safeMessage);
         }
       }
     } catch (err) {
-      const message =
-        'Submission failed. Please check your connection and try again.';
+      const message = toUserSafeMessage(
+        err,
+        'We could not submit this trade. Please try again.',
+      );
       setSubmitError({ message });
-      toast.error(`❌ ${message}`);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

@@ -9,6 +9,7 @@ import {
   FaSpinner,
 } from 'react-icons/fa';
 import SecxionSpinner from './SecxionSpinner';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 const BankAccountList = ({ onBankAccountsUpdated, onBankAccountsUpdating }) => {
   const [bankAccounts, setBankAccounts] = useState([]);
@@ -40,11 +41,22 @@ const BankAccountList = ({ onBankAccountsUpdated, onBankAccountsUpdating }) => {
           onBankAccountsUpdated(data.data);
         }
       } else {
-        setError(data.message || 'Failed to fetch bank accounts.');
+        setError(
+          toUserSafeMessage(
+            data.message,
+            'We could not load your bank accounts. Please try again.',
+            { status: response.status },
+          ),
+        );
       }
     } catch (err) {
       console.error('Error fetching bank accounts:', err);
-      setError('An unexpected error occurred while fetching bank accounts.');
+      setError(
+        toUserSafeMessage(
+          err,
+          'We could not load your bank accounts. Please try again.',
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -90,12 +102,21 @@ const BankAccountList = ({ onBankAccountsUpdated, onBankAccountsUpdating }) => {
       if (data.success) {
         fetchBankAccounts();
       } else {
-        setDeleteError(data.message || 'Failed to delete bank account.');
+        setDeleteError(
+          toUserSafeMessage(
+            data.message,
+            'We could not remove this bank account. Please try again.',
+            { status: response.status },
+          ),
+        );
       }
     } catch (err) {
       console.error('Error deleting bank account:', err);
       setDeleteError(
-        'An unexpected error occurred while deleting the account.',
+        toUserSafeMessage(
+          err,
+          'We could not remove this bank account. Please try again.',
+        ),
       );
     } finally {
       setDeleteLoading(null);

@@ -10,6 +10,7 @@ import {
 } from 'react-icons/fa';
 import SummaryApi from '../common';
 import uploadImage from '../helpers/uploadImage';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 const emptyForm = {
   fullName: '',
@@ -385,7 +386,12 @@ const KycVerification = () => {
         }));
       }
     } catch (error) {
-      toast.error(error.message || 'Failed to load KYC status.');
+      toast.error(
+        toUserSafeMessage(
+          error,
+          'We could not load your verification status. Please try again.',
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -486,7 +492,12 @@ const KycVerification = () => {
 
       toast.success(result.message || 'Verification code sent.');
     } catch (error) {
-      toast.error(error.message || 'Failed to send verification code.');
+      toast.error(
+        toUserSafeMessage(
+          error,
+          'We could not send the verification code. Please try again.',
+        ),
+      );
     } finally {
       setPhoneVerification((prev) => ({ ...prev, sending: false }));
     }
@@ -532,7 +543,12 @@ const KycVerification = () => {
       toast.success(result.message || 'Phone verified successfully.');
     } catch (error) {
       setPhoneVerification((prev) => ({ ...prev, isVerified: false }));
-      toast.error(error.message || 'Phone verification failed.');
+      toast.error(
+        toUserSafeMessage(
+          error,
+          'We could not verify that code. Check it and try again.',
+        ),
+      );
     } finally {
       setPhoneVerification((prev) => ({ ...prev, verifying: false }));
     }
@@ -553,7 +569,12 @@ const KycVerification = () => {
       setForm((prev) => ({ ...prev, [`${field}Url`]: uploaded.url }));
       toast.success('Image uploaded successfully.');
     } catch (error) {
-      toast.error(error.message || 'Upload failed.');
+      toast.error(
+        toUserSafeMessage(
+          error,
+          'We could not upload the image. Please try again.',
+        ),
+      );
     } finally {
       setUploading((prev) => ({ ...prev, [field]: false }));
     }
@@ -653,7 +674,12 @@ const KycVerification = () => {
           toast.success('Selfie captured and uploaded successfully.');
           closeCamera();
         } catch (error) {
-          toast.error(error.message || 'Selfie upload failed.');
+          toast.error(
+            toUserSafeMessage(
+              error,
+              'We could not upload your selfie. Please try again.',
+            ),
+          );
         } finally {
           setUploading((prev) => ({ ...prev, selfie: false }));
         }
@@ -705,7 +731,12 @@ const KycVerification = () => {
       toast.success(result.message || 'KYC submitted successfully.');
       await loadKyc();
     } catch (error) {
-      toast.error(error.message || 'KYC submission failed.');
+      toast.error(
+        toUserSafeMessage(
+          error,
+          'We could not submit your verification details. Please try again.',
+        ),
+      );
     } finally {
       setSubmitting(false);
     }

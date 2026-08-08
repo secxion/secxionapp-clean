@@ -7,6 +7,7 @@ import AddBankAccountForm from './AddBankAccountForm';
 import { FaWallet, FaEye, FaEyeSlash, FaTimes } from 'react-icons/fa';
 import { emitTransactionActivity } from '../utils/transactionEvents';
 import { createIdempotencyKey } from '../utils/idempotency';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 const PaymentRequestForm = ({
   fetchWalletBalance,
@@ -47,11 +48,20 @@ const PaymentRequestForm = ({
       if (data.success) {
         setBankAccounts(data.data);
       } else {
-        setErrorBankAccounts(data.message || 'Failed to fetch bank accounts.');
+        setErrorBankAccounts(
+          toUserSafeMessage(
+            data.message,
+            'We could not load your bank accounts. Please try again.',
+            { status: response.status },
+          ),
+        );
       }
     } catch (err) {
       setErrorBankAccounts(
-        'An unexpected error occurred while fetching bank accounts.',
+        toUserSafeMessage(
+          err,
+          'We could not load your bank accounts. Please try again.',
+        ),
       );
     } finally {
       setIsLoadingBankAccounts(false);
@@ -154,8 +164,10 @@ const PaymentRequestForm = ({
       const data = await response.json();
       if (data.success) {
         idempotencyKeyRef.current = '';
-        toast.success(data.message || 'Payment request submitted!');
-        setSuccessMessage(data.message);
+        const successMessage =
+          'Withdrawal request submitted. We will notify you when it is processed.';
+        toast.success(successMessage);
+        setSuccessMessage(successMessage);
         setAmount('');
         setSelectedBankAccount('');
 
@@ -174,7 +186,11 @@ const PaymentRequestForm = ({
           }, 2000);
         }
       } else {
-        const fallbackMessage = data.message || 'Payment request failed.';
+        const fallbackMessage = toUserSafeMessage(
+          data.message,
+          'We could not submit your withdrawal request. Please try again.',
+          { status: response.status },
+        );
         let displayMessage = fallbackMessage;
 
         if (data.code === 'UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_REACHED') {
@@ -192,8 +208,12 @@ const PaymentRequestForm = ({
         toast.error(displayMessage);
       }
     } catch (err) {
-      setError('An unexpected error occurred.');
-      toast.error('Request failed.');
+      const message = toUserSafeMessage(
+        err,
+        'We could not submit your withdrawal request. Please try again.',
+      );
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }

@@ -6,6 +6,7 @@ import { MdSend, MdImage, MdClose } from 'react-icons/md';
 import { FaUserCircle } from 'react-icons/fa';
 import uploadImage from '../helpers/uploadImage';
 import { format } from 'date-fns';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 const ReportChat = ({ category, newReport, setNewReport }) => {
   const { user } = useSelector((state) => state.user);
@@ -84,7 +85,12 @@ const ReportChat = ({ category, newReport, setNewReport }) => {
         setMessages([]);
       }
     } catch (error) {
-      toast.error('Could not fetch messages.');
+      toast.error(
+        toUserSafeMessage(
+          error,
+          'We could not load this conversation. Please try again.',
+        ),
+      );
     } finally {
       setFetchingMessages(false);
     }
@@ -104,7 +110,12 @@ const ReportChat = ({ category, newReport, setNewReport }) => {
       setMessageImage(uploadResponse.url);
       toast.success('Image uploaded!');
     } catch (error) {
-      toast.error('Failed to upload image.');
+      toast.error(
+        toUserSafeMessage(
+          error,
+          'We could not upload the image. Please try again.',
+        ),
+      );
     } finally {
       setUploadingImage(false);
     }
@@ -140,15 +151,26 @@ const ReportChat = ({ category, newReport, setNewReport }) => {
 
       const data = await response.json();
       if (data.success) {
-        toast.success('Message sent!');
+        toast.success('Message sent.');
         setMessageText('');
         setMessageImage(null);
         fetchMessages(); // Re-fetch messages to update the chat
       } else {
-        toast.error(data.message || 'Failed to send message.');
+        toast.error(
+          toUserSafeMessage(
+            data.message,
+            'We could not send your message. Please try again.',
+            { status: response.status },
+          ),
+        );
       }
     } catch (error) {
-      toast.error('Error sending message.');
+      toast.error(
+        toUserSafeMessage(
+          error,
+          'We could not send your message. Please try again.',
+        ),
+      );
     }
   };
 

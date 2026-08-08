@@ -2,11 +2,13 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { toast } from 'react-toastify';
 import SummaryApi from '../common';
 import { useNavigate } from 'react-router-dom';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 const ReportList = ({ newReport }) => {
   const [reports, setReports] = useState([]);
   const [fetchingReports, setFetchingReports] = useState(true);
   const pollingInterval = useRef(null);
+  const hasShownFetchError = useRef(false);
   const navigate = useNavigate();
 
   const fetchReports = useCallback(async () => {
@@ -30,8 +32,17 @@ const ReportList = ({ newReport }) => {
           ? currentReports
           : data.data,
       );
+      hasShownFetchError.current = false;
     } catch (error) {
-      toast.error('Could not fetch reports.');
+      if (!hasShownFetchError.current) {
+        toast.error(
+          toUserSafeMessage(
+            error,
+            'We could not load your support tickets. Please try again.',
+          ),
+        );
+        hasShownFetchError.current = true;
+      }
       console.error('User Fetch error:', error);
     } finally {
       setFetchingReports(false);

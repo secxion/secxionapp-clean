@@ -19,6 +19,7 @@ import SummaryApi from '../common';
 import uploadImage from '../helpers/uploadImage';
 import SecxionSpinner from './SecxionSpinner';
 import BackButton from './BackButton';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
   const { user } = useSelector((state) => state.user);
@@ -131,13 +132,13 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
         ),
       );
 
-      toast.success(`${uploadedUrls.length} image(s) uploaded successfully!`, {
+      toast.success(`${uploadedUrls.length} image(s) uploaded.`, {
         position: 'top-right',
         autoClose: 3000,
       });
     } catch (error) {
       console.error('Image upload failed:', error);
-      toast.error('Some images failed to upload. Please try again.', {
+      toast.error('Some images could not be uploaded. Please try again.', {
         position: 'top-right',
         autoClose: 5000,
       });
@@ -332,9 +333,7 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
       const responseData = await response.json();
 
       if (responseData.success) {
-        const successMessage = editingDataPad
-          ? 'Data updated successfully!'
-          : 'Data created successfully!';
+        const successMessage = editingDataPad ? 'Note updated.' : 'Note saved.';
 
         toast.success(successMessage, {
           position: 'top-right',
@@ -362,14 +361,20 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
       }
     } catch (error) {
       console.error('Error submitting data:', error);
-      toast.error(error.message || 'Error submitting data. Please try again.', {
-        position: 'top-right',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.error(
+        toUserSafeMessage(
+          error,
+          'We could not save this note. Please try again.',
+        ),
+        {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        },
+      );
     } finally {
       setLoading(false);
       setIsSubmitting(false);

@@ -26,6 +26,7 @@ import {
 import { emitTransactionActivity } from '../utils/transactionEvents';
 import { createIdempotencyKey } from '../utils/idempotency';
 import BackButton from '../Components/BackButton';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 const COUNTDOWN_DURATION = 600;
 const LOCAL_STORAGE_KEY = 'ethWithdrawalCountdownEnd';
@@ -680,7 +681,12 @@ const EthWallet = () => {
       setAddressHistory(updated.map((entry) => entry.address));
       localStorage.setItem('eth_addresses', JSON.stringify(updated));
     } catch (error) {
-      setErrorMessage(error.message || 'Error submitting withdrawal.');
+      setErrorMessage(
+        toUserSafeMessage(
+          error,
+          'We could not submit your ETH withdrawal. Please try again.',
+        ),
+      );
     } finally {
       setWithdrawLoading(false);
     }
@@ -1107,7 +1113,7 @@ const EthWallet = () => {
       <div className="mt-16 flex items-center justify-center gap-3 border-t border-white/5 pt-8">
         <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full shadow-[0_0_8px_#4ade80]"></div>
         <p className="text-[10px] text-gray-600 font-black uppercase tracking-[0.2em] font-spaceGrotesk">
-          Last Registry Sync: {lastUpdated}
+          Last updated: {lastUpdated}
         </p>
       </div>
     </div>

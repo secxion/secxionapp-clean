@@ -3,6 +3,7 @@
  * Single source of truth for all toast notifications
  */
 import { toast } from 'react-toastify';
+import { toUserSafeMessage } from './userSafeMessage';
 
 export const TOAST_CONFIG = {
   position: 'top-right',
@@ -67,7 +68,7 @@ class ToastNotification {
    * Show error toast
    */
   error(message, title = 'Error', options = {}) {
-    return this._show(message, 'error', title, options);
+    return this._show(toUserSafeMessage(message), 'error', title, options);
   }
 
   /**

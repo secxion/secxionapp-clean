@@ -23,6 +23,49 @@ import { Link } from 'react-router-dom';
 import SecxionLogo from '../app/slogo.png';
 import SecxionSpinner from '../Components/SecxionSpinner';
 import BackButton from '../Components/BackButton';
+import { toUserSafeMessage, USER_MESSAGE } from '../utils/userSafeMessage';
+
+const WALLET_BALANCE_CACHE_PREFIX = 'walletBalanceSnapshot';
+
+const getWalletBalanceCacheKey = (userId) =>
+  `${WALLET_BALANCE_CACHE_PREFIX}:${userId}`;
+
+const readSavedWalletBalance = (userId) => {
+  if (!userId) return null;
+
+  try {
+    const snapshot = JSON.parse(
+      localStorage.getItem(getWalletBalanceCacheKey(userId)),
+    );
+    return Number.isFinite(snapshot?.balance) ? snapshot.balance : null;
+  } catch {
+    return null;
+  }
+};
+
+const saveWalletBalance = (userId, balance) => {
+  const normalizedBalance = Number(balance);
+  if (!userId || !Number.isFinite(normalizedBalance)) return;
+
+  localStorage.setItem(
+    getWalletBalanceCacheKey(userId),
+    JSON.stringify({ balance: normalizedBalance, savedAt: Date.now() }),
+  );
+};
+
+const getWalletErrorMessage = (error, status, hasSavedBalance) => {
+  const safeMessage = toUserSafeMessage(
+    error,
+    'We could not load your balance. Please try again.',
+    { status },
+  );
+
+  if (hasSavedBalance && safeMessage === USER_MESSAGE.NETWORK) {
+    return 'We could not refresh your balance. Your last saved balance is still available. Check your internet connection and try again.';
+  }
+
+  return safeMessage;
+};
 
 const WalletDashboard = () => {
   const { user } = useSelector((state) => state.user);
@@ -43,10 +86,16 @@ const WalletDashboard = () => {
   };
 
   const fetchWalletBalance = useCallback(async () => {
-    if (!user?.id && !user?._id) {
+    const userId = user?.id || user?._id;
+    if (!userId) {
       console.warn('User not loaded, skipping wallet balance fetch');
       setIsLoadingBalance(false);
       return;
+    }
+
+    const savedBalance = readSavedWalletBalance(userId);
+    if (savedBalance !== null) {
+      setWalletBalance((currentBalance) => currentBalance ?? savedBalance);
     }
 
     setIsLoadingBalance(true);
@@ -81,21 +130,24 @@ const WalletDashboard = () => {
       const data = await response.json();
 
       if (data.success) {
-        setWalletBalance(data.balance);
+        const balance = Number(data.balance);
+        setWalletBalance(balance);
+        saveWalletBalance(userId, balance);
       } else {
-        setErrorBalance(data.message || 'Failed to fetch wallet balance.');
+        setErrorBalance(
+          getWalletErrorMessage(
+            data.message || data.error,
+            response.status,
+            savedBalance !== null,
+          ),
+        );
       }
     } catch (err) {
       const totalTime = Date.now() - startTime;
-      if (err.name === 'AbortError') {
-        setErrorBalance('Request timeout. Please try again later.');
-        console.error(`Wallet balance request timed out after ${totalTime}ms`);
-      } else {
-        setErrorBalance(
-          'An unexpected error occurred while fetching wallet balance.',
-        );
-        console.error('Error fetching wallet balance:', err);
-      }
+      setErrorBalance(
+        getWalletErrorMessage(err, undefined, savedBalance !== null),
+      );
+      console.error(`Wallet balance refresh failed after ${totalTime}ms:`, err);
     } finally {
       clearTimeout(timeoutId);
       setIsLoadingBalance(false);
@@ -206,7 +258,7 @@ const WalletDashboard = () => {
                         onClick={fetchWalletBalance}
                         className="mt-3 text-red-400 hover:text-red-300 text-[10px] font-black uppercase tracking-widest transition-all"
                       >
-                        Retry Sync
+                        Try again
                       </button>
                     </div>
                   )}
@@ -271,12 +323,14 @@ const WalletDashboard = () => {
         <div className="text-center">
           {userLoadTimeout ? (
             <div className="p-6 bg-red-900/20 border border-red-500/30 rounded-lg">
-              <p className="text-red-400 mb-4">Failed to load user data</p>
+              <p className="text-red-400 mb-4">
+                We could not open your wallet. Please try again.
+              </p>
               <button
                 onClick={() => window.location.reload()}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
               >
-                Retry
+                Try again
               </button>
             </div>
           ) : (

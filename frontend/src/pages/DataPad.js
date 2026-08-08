@@ -14,6 +14,7 @@ import SearchAndFilter from '../Components/SearchAndFilter';
 import SecxionSpinner from '../Components/SecxionSpinner';
 import SecxionLoader from '../Components/SecxionLoader';
 import SummaryApi from '../common';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 const SORT_OPTIONS = {
   NEWEST: 'newest',
@@ -55,7 +56,9 @@ const DataPad = () => {
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const requestError = new Error('');
+          requestError.status = response.status;
+          throw requestError;
         }
 
         const data = await response.json();
@@ -67,7 +70,7 @@ const DataPad = () => {
           setDataPads(userDataPads);
 
           if (showToast && userDataPads.length > 0) {
-            toast.success(`Loaded ${userDataPads.length} Data`, {
+            toast.success(`${userDataPads.length} notes loaded.`, {
               position: 'top-right',
               autoClose: 3000,
               hideProgressBar: false,
@@ -81,14 +84,21 @@ const DataPad = () => {
         }
       } catch (error) {
         console.error('Error fetching data:', error);
-        toast.error('Failed to load data. Please try again.', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+        toast.error(
+          toUserSafeMessage(
+            error,
+            'We could not load your notes. Please try again.',
+            { status: error.status },
+          ),
+          {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          },
+        );
       } finally {
         setIsLoading(false);
       }
@@ -231,7 +241,7 @@ const DataPad = () => {
       const responseData = await response.json();
 
       if (responseData.success) {
-        toast.success('Data deleted successfully!', {
+        toast.success('Note deleted.', {
           position: 'top-right',
           autoClose: 3000,
           hideProgressBar: false,
@@ -245,14 +255,20 @@ const DataPad = () => {
       }
     } catch (error) {
       console.error('Error deleting data:', error);
-      toast.error('Failed to delete data. Please try again.', {
-        position: 'top-right',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.error(
+        toUserSafeMessage(
+          error,
+          'We could not delete this note. Please try again.',
+        ),
+        {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        },
+      );
     }
   }, []);
 

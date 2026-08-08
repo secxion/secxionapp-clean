@@ -9,6 +9,7 @@ import currencyFullNames from '../helpers/currencyFullNames';
 import flagImageMap from '../helpers/flagImageMap';
 import Loader from './Loader';
 import BackButton from './BackButton';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 // Constants
 const DEBOUNCE_DELAY = 300;
@@ -108,16 +109,12 @@ const ProductDetails = () => {
       setRetryCount(0); // Reset retry count on success
     } catch (err) {
       console.error('⚠️ Error fetching product details:', err);
-
-      if (err.name === 'AbortError') {
-        setError(
-          'Request timed out. Please check your connection and try again.',
-        );
-      } else {
-        setError(err.message);
-      }
-
-      toast.error(`⚠️ ${err.message}`);
+      const message = toUserSafeMessage(
+        err,
+        'We could not load this product. Please try again.',
+      );
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }

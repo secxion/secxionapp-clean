@@ -4,6 +4,7 @@ import SummaryApi from '../common';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import SecxionSpinner from '../Components/SecxionSpinner';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 const ReportDetailsPage = () => {
   const { reportId } = useParams();
@@ -32,9 +33,11 @@ const ReportDetailsPage = () => {
             errorMessage = errorData.message || errorMessage;
           } catch (jsonError) {
             console.error('Error parsing error JSON:', jsonError);
-            errorMessage = `Failed to fetch report details. Status: ${response.status}`;
+            errorMessage = '';
           }
-          throw new Error(errorMessage);
+          const requestError = new Error(errorMessage);
+          requestError.status = response.status;
+          throw requestError;
         }
 
         const data = await response.json();
@@ -42,14 +45,22 @@ const ReportDetailsPage = () => {
         if (data.success && data.data) {
           setReport(data.data);
         } else {
-          setError(data.message || 'Failed to fetch report details.');
+          setError(
+            toUserSafeMessage(
+              data.message,
+              'We could not load this support ticket. Please try again.',
+              { status: response.status },
+            ),
+          );
         }
       } catch (err) {
-        setError(
-          err.message ||
-            'An unexpected error occurred while fetching report details.',
+        const message = toUserSafeMessage(
+          err,
+          'We could not load this support ticket. Please try again.',
+          { status: err.status },
         );
-        toast.error(err.message || 'Could not fetch report details.');
+        setError(message);
+        toast.error(message);
         console.error('Fetch error:', err);
       } finally {
         setLoading(false);
