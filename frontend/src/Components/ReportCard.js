@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import SummaryApi from '../common';
 import { MdSend, MdClose, MdAdd } from 'react-icons/md';
 import uploadImage from '../helpers/uploadImage';
@@ -60,7 +61,7 @@ const ReportCard = () => {
   useEffect(() => {
     const shell = chatShellRef.current;
     const viewport = window.visualViewport;
-    if (!shell || !viewport) return undefined;
+    if (!shell) return undefined;
 
     let animationFrameId;
     const syncShellToViewport = () => {
@@ -72,8 +73,15 @@ const ReportCard = () => {
               '--net-height',
             ),
           ) || 0;
-        const visibleBottom = viewport.offsetTop + viewport.height;
-        shell.style.height = `${Math.max(0, visibleBottom - netHeight)}px`;
+        const viewportTop = viewport?.pageTop || window.scrollY;
+        const viewportLeft = viewport?.pageLeft || window.scrollX;
+        const viewportHeight = viewport?.height || window.innerHeight;
+        const viewportWidth = viewport?.width || window.innerWidth;
+
+        shell.style.top = `${viewportTop + netHeight}px`;
+        shell.style.left = `${viewportLeft}px`;
+        shell.style.width = `${viewportWidth}px`;
+        shell.style.height = `${Math.max(0, viewportHeight - netHeight)}px`;
 
         if (document.activeElement === replyInputRef.current) {
           scrollToLatestMessage();
@@ -82,13 +90,17 @@ const ReportCard = () => {
     };
 
     syncShellToViewport();
-    viewport.addEventListener('resize', syncShellToViewport);
-    viewport.addEventListener('scroll', syncShellToViewport);
+    viewport?.addEventListener('resize', syncShellToViewport);
+    viewport?.addEventListener('scroll', syncShellToViewport);
+    window.addEventListener('resize', syncShellToViewport);
+    window.addEventListener('scroll', syncShellToViewport, { passive: true });
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      viewport.removeEventListener('resize', syncShellToViewport);
-      viewport.removeEventListener('scroll', syncShellToViewport);
+      viewport?.removeEventListener('resize', syncShellToViewport);
+      viewport?.removeEventListener('scroll', syncShellToViewport);
+      window.removeEventListener('resize', syncShellToViewport);
+      window.removeEventListener('scroll', syncShellToViewport);
     };
   }, [report?._id, scrollToLatestMessage]);
 
@@ -283,11 +295,9 @@ const ReportCard = () => {
     setPendingMessages((prev) => prev.filter((msg) => msg.id !== msgId)); // Remove the canceled image
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleSendTextMessage();
-    }
+  const handleComposerSubmit = (event) => {
+    event.preventDefault();
+    handleSendTextMessage();
   };
 
   const handleComposerPointerDown = (event) => {
@@ -354,10 +364,10 @@ const ReportCard = () => {
     );
   }
 
-  return (
+  const chatInterface = (
     <div
       ref={chatShellRef}
-      className="fixed inset-x-0 top-[var(--net-height)] z-50 grid h-[calc(100dvh-var(--net-height))] w-full max-w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black text-gray-100"
+      className="absolute z-[60] grid grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black text-gray-100"
     >
       {/* Header */}
       <div className="z-50 flex w-full shrink-0 items-center justify-between border-b border-white/10 bg-brand-dark-elevated/90 px-4 py-4 backdrop-blur-xl sm:px-6">
@@ -402,24 +412,24 @@ const ReportCard = () => {
           <div
             key={i}
             className={`flex w-fit max-w-[88%] items-start rounded-xl px-4 py-3 text-sm shadow-md sm:max-w-2xl ${
-              msg.sender === 'admin'
+              msg.sender === 'user'
                 ? 'ml-auto flex-row-reverse border border-brand-gold/20 bg-brand-gold/10 text-brand-gold-light'
                 : 'mr-auto border border-white/10 bg-white/[0.04] text-gray-200'
             }`}
           >
             {/* Avatar */}
-            {msg.sender !== 'admin' && (
+            {msg.sender === 'user' && (
               <img
                 src={user?.profilePic || 'https://via.placeholder.com/50'}
                 alt="User Avatar"
-                className="mr-3 h-8 w-8 shrink-0 rounded-full border border-white/10"
+                className="ml-3 h-8 w-8 shrink-0 rounded-full border border-white/10"
               />
             )}
             {msg.sender === 'admin' && (
               <img
                 src={SecxionLogo}
                 alt="Admin Avatar"
-                className="ml-3 h-8 w-8 shrink-0 rounded-full border border-brand-gold/30 bg-black/20"
+                className="mr-3 h-8 w-8 shrink-0 rounded-full border border-brand-gold/30 bg-black/20"
               />
             )}
             <div className="min-w-0">
@@ -455,12 +465,12 @@ const ReportCard = () => {
         {pendingMessages.map((msg) => (
           <div
             key={msg.id}
-            className="relative mr-auto flex max-w-2xl items-start rounded-xl border border-dashed border-brand-gold/25 bg-brand-dark-elevated/70 px-4 py-3 text-sm text-gray-200 opacity-80 shadow-md"
+            className="relative ml-auto flex max-w-[88%] flex-row-reverse items-start rounded-xl border border-dashed border-brand-gold/25 bg-brand-gold/10 px-4 py-3 text-sm text-brand-gold-light opacity-80 shadow-md sm:max-w-2xl"
           >
             <img
               src={user?.profilePic || 'https://via.placeholder.com/50'} // Default avatar
               alt="User Avatar"
-              className="mr-3 h-8 w-8 rounded-full border border-white/10"
+              className="ml-3 h-8 w-8 rounded-full border border-white/10"
             />
             <div>
               {msg.message && (
@@ -508,59 +518,63 @@ const ReportCard = () => {
 
       {/* Input */}
       <div
-        className="z-50 shrink-0 space-y-2 border-t border-white/10 bg-brand-dark-elevated/95 px-4 pt-3 backdrop-blur-xl sm:px-6"
-        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+        className="z-50 bg-[#11151c] px-2 pt-2"
+        style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
       >
-        <div className="relative">
-          <input
-            ref={replyInputRef}
-            type="text"
-            className="block h-12 w-full rounded-xl border border-white/10 bg-black/20 px-3 pr-28 text-base text-gray-200 placeholder-gray-600 focus:border-brand-gold/40 focus:outline-none"
-            placeholder={
-              uploadingReplyImage
-                ? 'Uploading images...'
-                : 'Type your message...'
-            }
-            value={userReplyText}
-            onChange={(e) => setUserReplyText(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onPointerDown={handleComposerPointerDown}
-            enterKeyHint="send"
-            autoComplete="off"
-            autoCorrect="on"
-            spellCheck="true"
-            onFocus={() => {
-              setIsAutoScrolling(true);
-            }}
-            disabled={uploadingReplyImage}
-          />
-          <label className="absolute right-12 top-3 cursor-pointer text-gray-500 transition-colors hover:text-brand-gold">
-            <MdAdd className="text-xl" />
+        <form
+          className="flex h-12 w-full items-center gap-2"
+          onSubmit={handleComposerSubmit}
+        >
+          <label className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-gray-300 transition-colors hover:bg-white/5 hover:text-brand-gold">
+            <MdAdd className="text-2xl" />
             <input
               type="file"
+              accept="image/*"
               className="hidden"
               onChange={handleImageUpload}
               multiple
               disabled={uploadingReplyImage}
             />
           </label>
+          <div className="flex h-11 min-w-0 flex-1 items-center rounded-full bg-white/[0.07] pl-3 pr-1">
+            <input
+              ref={replyInputRef}
+              type="text"
+              className="h-full min-w-0 flex-1 border-0 bg-transparent px-1 text-base text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-0"
+              placeholder={
+                uploadingReplyImage ? 'Uploading images...' : 'Type a message'
+              }
+              value={userReplyText}
+              onChange={(e) => setUserReplyText(e.target.value)}
+              onPointerDown={handleComposerPointerDown}
+              enterKeyHint="send"
+              autoComplete="off"
+              autoCorrect="on"
+              spellCheck="true"
+              onFocus={() => {
+                setIsAutoScrolling(true);
+              }}
+              disabled={uploadingReplyImage}
+            />
+            <button
+              type="button"
+              onClick={handleToggleEmojiPicker}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg transition-colors hover:bg-white/5"
+              aria-label="Choose an emoji"
+              aria-expanded={showEmojiPicker}
+            >
+              😊
+            </button>
+          </div>
           <button
-            className="absolute right-3 top-3 text-brand-gold transition-colors hover:text-brand-gold-light disabled:opacity-50"
-            onClick={handleSendTextMessage}
+            type="submit"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-gold text-brand-dark-base transition-colors hover:bg-brand-gold-light disabled:bg-white/[0.07] disabled:text-gray-600"
             disabled={isSending || uploadingReplyImage || !userReplyText.trim()}
+            aria-label="Send message"
           >
             <MdSend className="text-xl" />
           </button>
-          <button
-            type="button"
-            onClick={handleToggleEmojiPicker}
-            className="absolute right-20 top-3 text-brand-gold transition-colors hover:text-brand-gold-light"
-            aria-label="Choose an emoji"
-            aria-expanded={showEmojiPicker}
-          >
-            😊
-          </button>
-        </div>
+        </form>
       </div>
 
       {showEmojiPicker && (
@@ -603,6 +617,8 @@ const ReportCard = () => {
       )}
     </div>
   );
+
+  return createPortal(chatInterface, document.body);
 };
 
 export default ReportCard;
