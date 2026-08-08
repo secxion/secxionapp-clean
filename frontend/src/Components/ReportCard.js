@@ -6,15 +6,18 @@ import { format } from 'date-fns';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Picker from 'emoji-picker-react';
+import { toast } from 'react-toastify';
 import SecxionLogo from '../app/slogo.png';
 import SecxionSpinner from './SecxionSpinner';
 import BackButton from './BackButton';
+import { toUserSafeMessage } from '../utils/userSafeMessage';
 
 const ReportCard = () => {
   const { reportId } = useParams();
   const navigate = useNavigate();
   const [report, setReport] = useState(null);
   const [isLoadingInitial, setIsLoadingInitial] = useState(true);
+  const [fetchError, setFetchError] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [userReplyText, setUserReplyText] = useState('');
   // ...existing code...
@@ -23,16 +26,16 @@ const ReportCard = () => {
   const chatHistoryRef = useRef(null);
   const replyInputRef = useRef(null);
   const pollingIntervalRef = useRef(null);
+  const isFetchingRef = useRef(false);
+  const fetchRequestIdRef = useRef(0);
+  const hasShownFetchErrorRef = useRef(false);
   const { user } = useSelector((state) => state.user);
   const [hasReceivedReply, setHasReceivedReply] = useState(false);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const [pendingMessages, setPendingMessages] = useState([]); // Track messages waiting to be sent
-  const [visualViewport, setVisualViewport] = useState(() => ({
-    height: window.visualViewport?.height || window.innerHeight,
-    width: window.visualViewport?.width || window.innerWidth,
-    offsetTop: window.visualViewport?.offsetTop || 0,
-    offsetLeft: window.visualViewport?.offsetLeft || 0,
-  }));
+  const [viewportHeight, setViewportHeight] = useState(
+    () => window.visualViewport?.height || window.innerHeight,
+  );
 
   const scrollToLatestMessage = useCallback(() => {
     requestAnimationFrame(() => {
@@ -45,53 +48,92 @@ const ReportCard = () => {
 
   useEffect(() => {
     const viewport = window.visualViewport;
-    if (!viewport) return undefined;
-
-    const updateVisualViewport = () => {
-      setVisualViewport({
-        height: viewport.height,
-        width: viewport.width,
-        offsetTop: viewport.offsetTop,
-        offsetLeft: viewport.offsetLeft,
-      });
-      scrollToLatestMessage();
+    const updateViewportHeight = () => {
+      setViewportHeight(viewport?.height || window.innerHeight);
     };
 
-    updateVisualViewport();
-    viewport.addEventListener('resize', updateVisualViewport);
-    viewport.addEventListener('scroll', updateVisualViewport);
+    updateViewportHeight();
+    viewport?.addEventListener('resize', updateViewportHeight);
+    window.addEventListener('resize', updateViewportHeight);
 
     return () => {
-      viewport.removeEventListener('resize', updateVisualViewport);
-      viewport.removeEventListener('scroll', updateVisualViewport);
+      viewport?.removeEventListener('resize', updateViewportHeight);
+      window.removeEventListener('resize', updateViewportHeight);
     };
-  }, [scrollToLatestMessage]);
+  }, []);
 
-  const fetchReport = useCallback(async () => {
-    try {
-      const response = await fetch(SummaryApi.getReports.url, {
-        method: SummaryApi.getReports.method,
-        credentials: 'include',
-      });
-      if (!response.ok) throw new Error('Network response was not ok');
-      const data = await response.json();
-      const foundReport = data.data.find((r) => r._id === reportId);
-      if (foundReport) {
-        setReport(foundReport);
-        const adminReply = foundReport.chatHistory?.some(
-          (msg) => msg.sender === 'admin',
-        );
-        setHasReceivedReply(adminReply);
-      } else {
-        navigate('/report');
-      }
-    } catch (error) {
-      console.error('Error fetching report:', error);
-      navigate('/report');
-    } finally {
-      setIsLoadingInitial(false);
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isAutoScrolling) {
+      scrollToLatestMessage();
     }
-  }, [reportId, navigate]);
+  }, [viewportHeight, isAutoScrolling, scrollToLatestMessage]);
+
+  const fetchReport = useCallback(
+    async (force = false) => {
+      if (isFetchingRef.current && !force) return;
+
+      const requestId = ++fetchRequestIdRef.current;
+      isFetchingRef.current = true;
+
+      try {
+        const response = await fetch(SummaryApi.getReports.url, {
+          method: SummaryApi.getReports.method,
+          credentials: 'include',
+        });
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        if (!data.success || !Array.isArray(data.data)) {
+          throw new Error('Invalid report data received');
+        }
+        if (requestId !== fetchRequestIdRef.current) return;
+
+        const foundReport = data.data.find((r) => r._id === reportId);
+        if (foundReport) {
+          setReport((currentReport) =>
+            JSON.stringify(currentReport) === JSON.stringify(foundReport)
+              ? currentReport
+              : foundReport,
+          );
+          const adminReply = foundReport.chatHistory?.some(
+            (msg) => msg.sender === 'admin',
+          );
+          setHasReceivedReply(adminReply);
+          setFetchError('');
+          hasShownFetchErrorRef.current = false;
+        } else {
+          navigate('/report');
+        }
+      } catch (error) {
+        if (requestId !== fetchRequestIdRef.current) return;
+
+        console.error('Error fetching report:', error);
+        const message = toUserSafeMessage(
+          error,
+          'We could not refresh this conversation. Your chat remains open.',
+        );
+        setFetchError(message);
+        if (!hasShownFetchErrorRef.current) {
+          toast.error(message);
+          hasShownFetchErrorRef.current = true;
+        }
+      } finally {
+        if (requestId === fetchRequestIdRef.current) {
+          isFetchingRef.current = false;
+          setIsLoadingInitial(false);
+        }
+      }
+    },
+    [reportId, navigate],
+  );
 
   useEffect(() => {
     fetchReport();
@@ -106,7 +148,7 @@ const ReportCard = () => {
   }, [report?.chatHistory, isAutoScrolling, scrollToLatestMessage]);
 
   const handleSendTextMessage = async () => {
-    if (!userReplyText.trim()) return; // Ensure the message is not empty
+    if (isSending || !userReplyText.trim()) return;
 
     const newMessage = {
       id: Date.now(),
@@ -116,7 +158,8 @@ const ReportCard = () => {
     };
 
     setPendingMessages((prev) => [...prev, newMessage]);
-    setUserReplyText(''); // Clear the input field
+    setUserReplyText('');
+    setIsSending(true);
 
     try {
       const response = await fetch(
@@ -130,16 +173,27 @@ const ReportCard = () => {
       );
 
       const data = await response.json();
-      if (data.success) {
-        setPendingMessages((prev) =>
-          prev.filter((msg) => msg.id !== newMessage.id),
-        ); // Remove the pending message
-        await fetchReport(); // Refresh the chat
-      } else {
-        console.error('Failed to send message');
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to send message');
       }
-    } catch (err) {
-      console.error(err);
+
+      setPendingMessages((prev) =>
+        prev.filter((msg) => msg.id !== newMessage.id),
+      );
+      await fetchReport(true);
+    } catch (error) {
+      setPendingMessages((prev) =>
+        prev.filter((msg) => msg.id !== newMessage.id),
+      );
+      setUserReplyText((currentText) => currentText || newMessage.message);
+      toast.error(
+        toUserSafeMessage(
+          error,
+          'We could not send your message. Please try again.',
+        ),
+      );
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -231,22 +285,50 @@ const ReportCard = () => {
 
   if (isLoadingInitial) {
     return (
-      <div className="premium-bg flex h-screen items-center justify-center">
+      <div
+        className="premium-bg fixed left-0 z-50 flex w-full items-center justify-center"
+        style={{
+          height: `calc(${viewportHeight}px - var(--net-height))`,
+          top: 'var(--net-height)',
+        }}
+      >
         <SecxionSpinner size="large" message="Loading support chat..." />
       </div>
     );
   }
 
-  if (!report) return null;
+  if (!report) {
+    return (
+      <div
+        className="fixed left-0 z-50 flex w-full flex-col items-center justify-center gap-5 bg-brand-dark-base px-6 text-center text-gray-100"
+        style={{
+          height: `calc(${viewportHeight}px - var(--net-height))`,
+          top: 'var(--net-height)',
+        }}
+      >
+        <p className="max-w-sm text-sm text-gray-400">
+          {fetchError || 'This support conversation is unavailable.'}
+        </p>
+        <div className="flex items-center gap-3">
+          <BackButton fallbackTo="/report" ariaLabel="Go back" />
+          <button
+            type="button"
+            onClick={() => fetchReport(true)}
+            className="rounded-lg border border-brand-gold/40 px-4 py-3 text-xs font-black uppercase tracking-widest text-brand-gold"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
       className="fixed left-0 z-50 flex w-full max-w-full flex-col overflow-hidden bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black text-gray-100"
       style={{
-        height: `${visualViewport.height}px`,
-        width: `${visualViewport.width}px`,
-        top: `${visualViewport.offsetTop}px`,
-        left: `${visualViewport.offsetLeft}px`,
+        height: `calc(${viewportHeight}px - var(--net-height))`,
+        top: 'var(--net-height)',
       }}
     >
       {/* Header */}
@@ -404,13 +486,13 @@ const ReportCard = () => {
         <div className="relative">
           <textarea
             ref={replyInputRef}
-            className="block max-h-32 min-h-20 w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 pr-28 text-base text-gray-200 placeholder-gray-600 focus:border-brand-gold/40 focus:outline-none"
+            className="block max-h-28 min-h-12 w-full resize-none rounded-xl border border-white/10 bg-black/20 px-3 py-3 pr-28 text-base text-gray-200 placeholder-gray-600 focus:border-brand-gold/40 focus:outline-none"
             placeholder={
               uploadingReplyImage
                 ? 'Uploading images...'
                 : 'Type your message...'
             }
-            rows={2}
+            rows={1}
             value={userReplyText}
             onChange={(e) => setUserReplyText(e.target.value)}
             onKeyDown={handleKeyDown}

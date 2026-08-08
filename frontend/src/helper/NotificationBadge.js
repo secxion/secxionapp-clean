@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FaBell } from 'react-icons/fa';
 import SummaryApi from '../common';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import notificationSound from '../Assets/notification.mp3';
 import NotificationStack from './NotificationStack';
@@ -21,10 +21,19 @@ const USER_ACTION_POPUP_BLOCKLIST = new Set([
 
 const getStorageKey = (userId) => `secxion:shown-notifications:${userId}`;
 
-const shouldShowPopupNotification = (notification) => {
+const shouldShowPopupNotification = (notification, pathname) => {
   const type = notification?.type || 'default';
 
   if (USER_ACTION_POPUP_BLOCKLIST.has(type)) {
+    return false;
+  }
+
+  const activeReportId = pathname.match(/^\/chat\/([^/]+)\/?$/)?.[1];
+  if (
+    type === 'report_reply' &&
+    activeReportId &&
+    String(notification.relatedObjectId) === activeReportId
+  ) {
     return false;
   }
 
@@ -36,6 +45,7 @@ const NotificationBadge = () => {
   const UNREAD_COUNT_POLL_MS = 15000;
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const [popupNotifications, setPopupNotifications] = useState([]);
+  const { pathname } = useLocation();
   const { user } = useSelector((state) => state.user);
   const { soundEnabled, volume } = useSound();
   const audioRef = useRef(null);
@@ -226,7 +236,7 @@ const NotificationBadge = () => {
             if (!notifId) return false;
 
             // Only show popup/sound for pushed account updates, not user-initiated actions.
-            if (!shouldShowPopupNotification(notif)) return false;
+            if (!shouldShowPopupNotification(notif, pathname)) return false;
 
             // Skip duplicates from the same server payload
             if (seenInBatch.has(notifId)) return false;
@@ -310,6 +320,7 @@ const NotificationBadge = () => {
     triggerVibration,
     persistShownIds,
     fetchUnreadCount,
+    pathname,
   ]);
 
   useEffect(() => {

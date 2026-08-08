@@ -17,6 +17,7 @@ const ReportForm = ({ onReportSubmit }) => {
   });
   const [uploadedImage, setUploadedImage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const navigate = useNavigate();
 
   const categories = ['Fraud', 'Transaction Issue', 'Bug Report', 'Other'];
@@ -24,7 +25,7 @@ const ReportForm = ({ onReportSubmit }) => {
   const handleUploadImage = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setLoading(true);
+    setUploadingImage(true);
     try {
       const uploadResponse = await uploadImage(file);
       setUploadedImage(uploadResponse.url);
@@ -37,18 +38,27 @@ const ReportForm = ({ onReportSubmit }) => {
         ),
       );
     } finally {
-      setLoading(false);
+      setUploadingImage(false);
+      e.target.value = '';
     }
   };
 
   const handleSubmitReport = async () => {
+    if (loading || uploadingImage) return;
+
     if (!user) {
       toast.error('Please log in.');
       return;
     }
 
-    if (!reportText && !uploadedImage) {
-      toast.error('Message or image required.');
+    if (!selectedCategory.category) {
+      toast.error('Please select a support category.');
+      return;
+    }
+
+    const trimmedReportText = reportText.trim();
+    if (!trimmedReportText) {
+      toast.error('Please describe the issue before submitting.');
       return;
     }
 
@@ -57,7 +67,7 @@ const ReportForm = ({ onReportSubmit }) => {
     try {
       const initialChatHistory = [
         {
-          message: reportText,
+          message: trimmedReportText,
           sender: 'user',
           createdAt: new Date().toISOString(),
           image: uploadedImage,
@@ -69,7 +79,7 @@ const ReportForm = ({ onReportSubmit }) => {
         email: user?.email || '',
         name: user?.name || 'Anonymous',
         category: selectedCategory.category,
-        message: reportText,
+        message: trimmedReportText,
         image: uploadedImage || '',
         status: 'Pending',
         adminReply: '',
@@ -88,17 +98,18 @@ const ReportForm = ({ onReportSubmit }) => {
       const responseData = await response.json();
 
       if (response.ok && responseData.success) {
+        const submittedReport = responseData.data;
+        if (!submittedReport?._id) {
+          throw new Error('Support ticket response did not include an ID');
+        }
+
         toast.success(
           'Support ticket submitted. You can continue the conversation in chat.',
         );
         setReportText('');
         setUploadedImage(null);
-        const updatedReport = {
-          ...newReport,
-          _id: responseData.data?._id || Date.now(),
-        };
-        onReportSubmit(updatedReport);
-        navigate(`/chat/${responseData.data?._id}`);
+        onReportSubmit(submittedReport);
+        navigate(`/chat/${submittedReport._id}`);
       } else {
         toast.error(
           toUserSafeMessage(
@@ -177,8 +188,10 @@ const ReportForm = ({ onReportSubmit }) => {
             <span>Upload File</span>
             <input
               type="file"
+              accept="image/*"
               className="hidden"
               onChange={handleUploadImage}
+              disabled={uploadingImage || loading}
             />
           </label>
           {uploadedImage && (
@@ -189,8 +202,10 @@ const ReportForm = ({ onReportSubmit }) => {
                 className="h-16 w-16 rounded-lg border border-brand-gold/30 object-cover"
               />
               <button
+                type="button"
                 className="absolute -right-2 -top-2 rounded-full bg-red-600 p-1.5 text-white opacity-0 transition-opacity group-hover/img:opacity-100"
                 onClick={() => setUploadedImage(null)}
+                aria-label="Remove attachment"
               >
                 <MdDelete className="text-xs" />
               </button>
@@ -200,13 +215,14 @@ const ReportForm = ({ onReportSubmit }) => {
       </div>
 
       <button
+        type="button"
         className="w-full rounded-lg border border-brand-gold bg-brand-gold px-12 py-5 font-spaceGrotesk text-sm font-black uppercase tracking-wider text-brand-dark-base transition-colors hover:bg-brand-gold-light disabled:cursor-not-allowed disabled:opacity-30 sm:w-auto"
         onClick={handleSubmitReport}
-        disabled={loading}
+        disabled={loading || uploadingImage}
       >
         <MdSend className="inline-block mr-3 text-lg" />
-        {loading && uploadedImage === null
-          ? 'Submitting...'
+        {uploadingImage
+          ? 'Uploading...'
           : loading
             ? 'Submitting...'
             : 'Submit Ticket'}
