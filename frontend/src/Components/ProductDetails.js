@@ -418,62 +418,36 @@ const ProductDetails = () => {
                 >
                   {currentFaceValues.map((fv, index) => (
                     <div key={`${fv.faceValue}-${index}`} className="">
-                      {/* Top row: Face value info + Sell button */}
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                        <div className="flex items-center space-x-4">
-                          {selectedCurrencyInfo?.flag && (
-                            <img
-                              src={selectedCurrencyInfo.flag}
-                              alt={`${selectedCurrencyInfo.currency} flag`}
-                              className="w-6 h-6 rounded-sm object-contain shadow-sm flex-shrink-0"
-                              style={{ minWidth: '20px', minHeight: '20px' }}
-                              loading="lazy"
-                            />
-                          )}
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0">
-                            <div className="flex items-center space-x-2">
-                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 font-spaceGrotesk">
-                                Face Value:
-                              </span>
-                              <span className="font-semibold text-white">
-                                {fv.faceValue}
-                              </span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 font-spaceGrotesk">
-                                Rate:
-                              </span>
-                              <span className="font-semibold text-brand-gold">
-                                {fv.sellingPrice}
-                              </span>
-                            </div>
+                      <div className="flex items-center space-x-4">
+                        {selectedCurrencyInfo?.flag && (
+                          <img
+                            src={selectedCurrencyInfo.flag}
+                            alt={`${selectedCurrencyInfo.currency} flag`}
+                            className="w-6 h-6 rounded-sm object-contain shadow-sm flex-shrink-0"
+                            style={{ minWidth: '20px', minHeight: '20px' }}
+                            loading="lazy"
+                          />
+                        )}
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 font-spaceGrotesk">
+                              Face Value:
+                            </span>
+                            <span className="font-semibold text-white">
+                              {fv.faceValue}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 font-spaceGrotesk">
+                              Rate:
+                            </span>
+                            <span className="font-semibold text-brand-gold">
+                              {fv.sellingPrice}
+                            </span>
                           </div>
                         </div>
-
-                        <button
-                          className="inline-flex flex-shrink-0 items-center justify-center rounded-xl bg-brand-gold px-5 py-2.5 text-[10px] font-black uppercase tracking-[0.3em] text-brand-dark-base transition-all duration-200 hover:bg-yellow-500 focus:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-brand-gold/50 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
-                          onClick={() => handleSell(fv)}
-                          disabled={!user}
-                          aria-label={`Sell ${fv.faceValue} ${selectedCurrencyInfo?.currency} at rate ${fv.sellingPrice}`}
-                        >
-                          <svg
-                            className="w-4 h-4 mr-2"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                            />
-                          </svg>
-                          Sell Now
-                        </button>
                       </div>
 
-                      {/* Requirement block - always full width below */}
                       {fv.requirement && (
                         <div
                           className="mt-3 bg-white/[0.03] px-3 py-3 text-sm italic text-gray-400"
@@ -482,6 +456,28 @@ const ProductDetails = () => {
                           {fv.requirement}
                         </div>
                       )}
+
+                      <button
+                        className="mt-3 inline-flex w-full items-center justify-center rounded-xl bg-brand-gold px-5 py-2.5 text-[10px] font-black uppercase tracking-[0.3em] text-brand-dark-base transition-all duration-200 hover:bg-yellow-500 focus:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-brand-gold/50 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
+                        onClick={() => handleSell(fv)}
+                        disabled={!user}
+                        aria-label={`Sell ${fv.faceValue} ${selectedCurrencyInfo?.currency} at rate ${fv.sellingPrice}`}
+                      >
+                        <svg
+                          className="w-4 h-4 mr-2"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                          />
+                        </svg>
+                        Sell Now
+                      </button>
                     </div>
                   ))}
                 </div>

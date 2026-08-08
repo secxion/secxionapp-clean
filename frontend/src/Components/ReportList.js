@@ -60,7 +60,7 @@ const ReportList = ({ newReport }) => {
   };
 
   return (
-    <div className="mt-6 border-t border-white/10 pt-6">
+    <div className="mt-6 w-full pt-2">
       <h3 className="mb-6 font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold">
         Previous Reports
       </h3>

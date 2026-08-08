@@ -102,7 +102,7 @@ const ReportForm = ({ onReportSubmit }) => {
   };
 
   return (
-    <div className="border-t border-white/10 pt-8">
+    <div className="w-full pt-2">
       <h2 className="text-[10px] font-black mb-8 text-brand-gold uppercase tracking-[0.4em] font-spaceGrotesk">
         New Support Ticket
       </h2>

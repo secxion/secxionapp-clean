@@ -76,9 +76,9 @@ const CategoryProduct = () => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 top-[126px] flex flex-col bg-brand-dark-base p-2 text-white md:top-[153px] md:flex-row">
+    <div className="fixed bottom-[69px] left-0 right-0 top-[126px] flex min-h-0 flex-col bg-brand-dark-base text-white md:top-[153px] md:flex-row">
       {/* Mobile Top Bar Filter */}
-      <div className="md:hidden w-full bg-brand-dark-base px-2 py-3 flex overflow-x-auto gap-3 scrollbar-hide border-b border-white/5">
+      <div className="flex w-full shrink-0 gap-3 overflow-x-auto border-b border-white/5 bg-brand-dark-base px-4 py-3 scrollbar-hide md:hidden">
         {productCategory.map((category) => (
           <label
             key={category.id}
@@ -138,54 +138,51 @@ const CategoryProduct = () => {
         </form>
       </aside>
       {/* Product List */}
-      <main className="flex-1 overflow-hidden premium-bg p-6 pb-28 md:pb-24">
-        <div className="h-full flex flex-col">
-          <div className="flex items-center justify-between mb-4">
-            {filterCategoryList.length > 0 && (
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold/60 font-spaceGrotesk">
-                ACTIVE SECTORS:{' '}
-                {filterCategoryList.map((cat, i) => (
-                  <span key={cat}>
-                    <span className="text-white">
-                      {productCategory.find((p) => p.value === cat)?.label ||
-                        cat}
-                    </span>
-                    {i < filterCategoryList.length - 1 ? ' | ' : ''}
+      <main className="flex min-h-0 flex-1 flex-col overflow-hidden premium-bg">
+        {filterCategoryList.length > 0 && (
+          <div className="flex shrink-0 items-center justify-between px-4 py-4 md:px-6">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold/60 font-spaceGrotesk">
+              ACTIVE SECTORS:{' '}
+              {filterCategoryList.map((cat, i) => (
+                <span key={cat}>
+                  <span className="text-white">
+                    {productCategory.find((p) => p.value === cat)?.label || cat}
                   </span>
-                ))}
-              </p>
-            )}
+                  {i < filterCategoryList.length - 1 ? ' | ' : ''}
+                </span>
+              ))}
+            </p>
           </div>
+        )}
 
-          <div className="flex-1 overflow-y-auto rounded-3xl glass-panel p-6 shadow-2xl scrollbar-hide border-white/5">
-            {loading ? (
-              <div className="flex items-center justify-center h-full">
-                <SecxionSpinner size="large" message="Loading products..." />
-              </div>
-            ) : error ? (
-              <p
-                className="text-red-400 font-semibold text-center "
-                aria-live="assertive"
-                role="alert"
-                tabIndex={0}
-              >
-                {error}
-              </p>
-            ) : data.length === 0 ? (
-              <p
-                className="text-gray-400 text-center text-sm "
-                aria-live="polite"
-                role="status"
-                tabIndex={0}
-              >
-                {filterCategoryList.length === 0
-                  ? 'Select a category.'
-                  : 'No products found.'}
-              </p>
-            ) : (
-              <ProductListView data={data} loading={loading} />
-            )}
-          </div>
+        <div className="min-h-0 flex-1 overflow-y-auto border-y border-white/5 p-4 glass-panel shadow-inner scrollbar-hide md:border md:p-6">
+          {loading ? (
+            <div className="flex items-center justify-center h-full">
+              <SecxionSpinner size="large" message="Loading products..." />
+            </div>
+          ) : error ? (
+            <p
+              className="text-red-400 font-semibold text-center "
+              aria-live="assertive"
+              role="alert"
+              tabIndex={0}
+            >
+              {error}
+            </p>
+          ) : data.length === 0 ? (
+            <p
+              className="text-gray-400 text-center text-sm "
+              aria-live="polite"
+              role="status"
+              tabIndex={0}
+            >
+              {filterCategoryList.length === 0
+                ? 'Select a category.'
+                : 'No products found.'}
+            </p>
+          ) : (
+            <ProductListView data={data} loading={loading} />
+          )}
         </div>
       </main>
       <GetInTouchFooter />
