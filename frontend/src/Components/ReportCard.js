@@ -35,7 +35,7 @@ const ReportCard = () => {
   const [pendingMessages, setPendingMessages] = useState([]); // Track messages waiting to be sent
   const [visualViewport, setVisualViewport] = useState(() => ({
     height: window.visualViewport?.height || window.innerHeight,
-    offsetTop: window.visualViewport?.offsetTop || 0,
+    bottomInset: 0,
   }));
 
   const scrollToLatestMessage = useCallback(() => {
@@ -54,9 +54,11 @@ const ReportCard = () => {
     const updateVisualViewport = () => {
       cancelAnimationFrame(animationFrameId);
       animationFrameId = requestAnimationFrame(() => {
+        const height = viewport?.height || window.innerHeight;
+        const offsetTop = viewport?.offsetTop || 0;
         setVisualViewport({
-          height: viewport?.height || window.innerHeight,
-          offsetTop: viewport?.offsetTop || 0,
+          height,
+          bottomInset: Math.max(0, window.innerHeight - height - offsetTop),
         });
       });
     };
@@ -85,7 +87,7 @@ const ReportCard = () => {
     document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
     document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
+    document.body.style.top = '0';
     document.body.style.width = '100%';
 
     return () => {
@@ -330,8 +332,8 @@ const ReportCard = () => {
       <div
         className="premium-bg fixed left-0 z-50 flex w-full items-center justify-center"
         style={{
-          height: `calc(${visualViewport.height}px - var(--net-height))`,
-          top: `calc(${visualViewport.offsetTop}px + var(--net-height))`,
+          top: 'var(--net-height)',
+          bottom: `${visualViewport.bottomInset}px`,
         }}
       >
         <SecxionSpinner size="large" message="Loading support chat..." />
@@ -344,8 +346,8 @@ const ReportCard = () => {
       <div
         className="fixed left-0 z-50 flex w-full flex-col items-center justify-center gap-5 bg-brand-dark-base px-6 text-center text-gray-100"
         style={{
-          height: `calc(${visualViewport.height}px - var(--net-height))`,
-          top: `calc(${visualViewport.offsetTop}px + var(--net-height))`,
+          top: 'var(--net-height)',
+          bottom: `${visualViewport.bottomInset}px`,
         }}
       >
         <p className="max-w-sm text-sm text-gray-400">
@@ -369,8 +371,8 @@ const ReportCard = () => {
     <div
       className="fixed left-0 z-50 flex w-full max-w-full flex-col overflow-hidden bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black text-gray-100"
       style={{
-        height: `calc(${visualViewport.height}px - var(--net-height))`,
-        top: `calc(${visualViewport.offsetTop}px + var(--net-height))`,
+        top: 'var(--net-height)',
+        bottom: `${visualViewport.bottomInset}px`,
       }}
     >
       {/* Header */}
