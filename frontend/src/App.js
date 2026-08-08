@@ -21,6 +21,7 @@ function setViewportHeight() {
 
 const Header = lazy(() => import('./Components/Header'));
 const Net = lazy(() => import('./Components/Net'));
+const HiRateSlider = lazy(() => import('./Components/HiRateSlider'));
 
 function Loader() {
   return <SecxionLoader size="large" message="Initializing Secxion..." />;
@@ -116,9 +117,10 @@ function App() {
     enabled: !!user,
   });
 
-  if (isUserLoading || isMarketLoading || isBlogsLoading || isWalletLoading) {
-    return <Loader />;
-  }
+  const isAppLoading =
+    isUserLoading || isMarketLoading || isBlogsLoading || isWalletLoading;
+  const showRateSlider =
+    Boolean(user) && ['/home', '/product-category'].includes(location.pathname);
 
   return (
     <ContextProvider>
@@ -138,12 +140,13 @@ function App() {
         {/* Regular app with header/nav */}
         <div className="global-container">
           <Suspense fallback={<Loader />}>
-            {user && <Net blogs={blogs} fetchBlogs={fetchBlogs} />}
+            {user && !isAppLoading && (
+              <Net blogs={blogs} fetchBlogs={fetchBlogs} />
+            )}
             <main className="main-content">
-              {user && <Header />}
-              <div>
-                <Outlet />
-              </div>
+              {user && !isAppLoading && <Header />}
+              <HiRateSlider visible={showRateSlider && !isAppLoading} />
+              <div>{isAppLoading ? <Loader /> : <Outlet />}</div>
             </main>
           </Suspense>
           <InstallPrompt />

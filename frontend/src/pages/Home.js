@@ -18,7 +18,6 @@ import {
 import SummaryApi from '../common';
 import HomeFooter from '../Components/HomeFooter';
 import NetBlog from '../Components/NetBlog';
-import HiRateSlider from '../Components/HiRateSlider';
 import LastMarketStatus from '../Components/LastMarketStatus';
 import Hero from '../Components/Hero';
 import {
@@ -356,14 +355,6 @@ const Home = () => {
             Last updated: {lastUpdated}
           </p>
         )}
-      </section>
-
-      {/* High Rate Slider */}
-      <section
-        className="max-w-7xl mx-auto mb-8 px-2 sm:px-4"
-        aria-label="High Rate Slider"
-      >
-        <HiRateSlider />
       </section>
 
       {/* Last Market Status */}

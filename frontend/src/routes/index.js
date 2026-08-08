@@ -46,7 +46,6 @@ import EthWallet from '../pages/EthWallet';
 import KycVerification from '../pages/KycVerification';
 // import AdminEthWithdrawals from '../pages/AdminEthWithdrawals';
 // import AdminLiveScript from '../pages/AdminLiveScript';
-import HiRateSlider from '../Components/HiRateSlider';
 
 const publicRoutes = [
   {
@@ -94,7 +93,6 @@ const publicInfoRoutes = [
     path: '/verify-email',
     element: <VerifyEmail />,
   },
-  { path: 'rateslider', element: <HiRateSlider /> },
 ];
 
 const protectedRoutes = [

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import productCategory from '../helpers/productCategory';
 import SummaryApi from '../common';
 import { FaFilter } from 'react-icons/fa';
 import ProductListView from '../Components/ProductListView';
 import debounce from 'lodash.debounce';
 import SecxionSpinner from '../Components/SecxionSpinner';
+import GetInTouchFooter from '../Components/GetInTouchFooter';
 
 const CategoryProduct = () => {
   const [data, setData] = useState([]);
@@ -75,7 +76,7 @@ const CategoryProduct = () => {
   };
 
   return (
-    <div className="p-2 fixed top-20 md:mt-6 lg:mt-6 left-0 right-0 bottom-0 flex flex-col md:flex-row bg-brand-dark-base text-white">
+    <div className="fixed bottom-0 left-0 right-0 top-[126px] flex flex-col bg-brand-dark-base p-2 text-white md:top-[153px] md:flex-row">
       {/* Mobile Top Bar Filter */}
       <div className="md:hidden w-full bg-brand-dark-base px-2 py-3 flex overflow-x-auto gap-3 scrollbar-hide border-b border-white/5">
         {productCategory.map((category) => (
@@ -135,18 +136,9 @@ const CategoryProduct = () => {
             </label>
           ))}
         </form>
-        <div className="mt-8 border-t border-white/5 pt-6 text-[10px] font-bold tracking-[0.08em] text-gray-500 font-spaceGrotesk md:hidden">
-          Can't find what you're looking for?
-          <Link
-            to="/report"
-            className="mt-2 block text-brand-gold transition-colors hover:text-white underline underline-offset-8"
-          >
-            Contact Support
-          </Link>
-        </div>
       </aside>
       {/* Product List */}
-      <main className="flex-1 premium-bg p-6 overflow-hidden">
+      <main className="flex-1 overflow-hidden premium-bg p-6 pb-28 md:pb-24">
         <div className="h-full flex flex-col">
           <div className="flex items-center justify-between mb-4">
             {filterCategoryList.length > 0 && (
@@ -196,6 +188,7 @@ const CategoryProduct = () => {
           </div>
         </div>
       </main>
+      <GetInTouchFooter />
     </div>
   );
 };

@@ -391,7 +391,7 @@ const WalletDashboard = () => {
 
       {/* Main Content */}
       <main
-        className="pt-32 pb-32 md:pb-20 relative z-10"
+        className="pt-40 pb-32 md:pb-20 relative z-10"
         style={{
           paddingBottom: 'max(8rem, calc(5rem + env(safe-area-inset-bottom)))',
         }}
