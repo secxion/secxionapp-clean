@@ -33,9 +33,10 @@ const ReportCard = () => {
   const [hasReceivedReply, setHasReceivedReply] = useState(false);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const [pendingMessages, setPendingMessages] = useState([]); // Track messages waiting to be sent
-  const [viewportHeight, setViewportHeight] = useState(
-    () => window.visualViewport?.height || window.innerHeight,
-  );
+  const [visualViewport, setVisualViewport] = useState(() => ({
+    height: window.visualViewport?.height || window.innerHeight,
+    offsetTop: window.visualViewport?.offsetTop || 0,
+  }));
 
   const scrollToLatestMessage = useCallback(() => {
     requestAnimationFrame(() => {
@@ -48,26 +49,52 @@ const ReportCard = () => {
 
   useEffect(() => {
     const viewport = window.visualViewport;
-    const updateViewportHeight = () => {
-      setViewportHeight(viewport?.height || window.innerHeight);
+    let animationFrameId;
+
+    const updateVisualViewport = () => {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = requestAnimationFrame(() => {
+        setVisualViewport({
+          height: viewport?.height || window.innerHeight,
+          offsetTop: viewport?.offsetTop || 0,
+        });
+      });
     };
 
-    updateViewportHeight();
-    viewport?.addEventListener('resize', updateViewportHeight);
-    window.addEventListener('resize', updateViewportHeight);
+    updateVisualViewport();
+    viewport?.addEventListener('resize', updateVisualViewport);
+    viewport?.addEventListener('scroll', updateVisualViewport);
+    window.addEventListener('resize', updateVisualViewport);
 
     return () => {
-      viewport?.removeEventListener('resize', updateViewportHeight);
-      window.removeEventListener('resize', updateViewportHeight);
+      cancelAnimationFrame(animationFrameId);
+      viewport?.removeEventListener('resize', updateVisualViewport);
+      viewport?.removeEventListener('scroll', updateVisualViewport);
+      window.removeEventListener('resize', updateVisualViewport);
     };
   }, []);
 
   useEffect(() => {
+    const scrollY = window.scrollY;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
     const previousOverflow = document.body.style.overflow;
+    const previousPosition = document.body.style.position;
+    const previousTop = document.body.style.top;
+    const previousWidth = document.body.style.width;
+
+    document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
 
     return () => {
+      document.documentElement.style.overflow = previousHtmlOverflow;
       document.body.style.overflow = previousOverflow;
+      document.body.style.position = previousPosition;
+      document.body.style.top = previousTop;
+      document.body.style.width = previousWidth;
+      window.scrollTo(0, scrollY);
     };
   }, []);
 
@@ -75,7 +102,7 @@ const ReportCard = () => {
     if (isAutoScrolling) {
       scrollToLatestMessage();
     }
-  }, [viewportHeight, isAutoScrolling, scrollToLatestMessage]);
+  }, [visualViewport.height, isAutoScrolling, scrollToLatestMessage]);
 
   const fetchReport = useCallback(
     async (force = false) => {
@@ -303,8 +330,8 @@ const ReportCard = () => {
       <div
         className="premium-bg fixed left-0 z-50 flex w-full items-center justify-center"
         style={{
-          height: `calc(${viewportHeight}px - var(--net-height))`,
-          top: 'var(--net-height)',
+          height: `calc(${visualViewport.height}px - var(--net-height))`,
+          top: `calc(${visualViewport.offsetTop}px + var(--net-height))`,
         }}
       >
         <SecxionSpinner size="large" message="Loading support chat..." />
@@ -317,8 +344,8 @@ const ReportCard = () => {
       <div
         className="fixed left-0 z-50 flex w-full flex-col items-center justify-center gap-5 bg-brand-dark-base px-6 text-center text-gray-100"
         style={{
-          height: `calc(${viewportHeight}px - var(--net-height))`,
-          top: 'var(--net-height)',
+          height: `calc(${visualViewport.height}px - var(--net-height))`,
+          top: `calc(${visualViewport.offsetTop}px + var(--net-height))`,
         }}
       >
         <p className="max-w-sm text-sm text-gray-400">
@@ -342,8 +369,8 @@ const ReportCard = () => {
     <div
       className="fixed left-0 z-50 flex w-full max-w-full flex-col overflow-hidden bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black text-gray-100"
       style={{
-        height: `calc(${viewportHeight}px - var(--net-height))`,
-        top: 'var(--net-height)',
+        height: `calc(${visualViewport.height}px - var(--net-height))`,
+        top: `calc(${visualViewport.offsetTop}px + var(--net-height))`,
       }}
     >
       {/* Header */}
@@ -513,7 +540,6 @@ const ReportCard = () => {
             onKeyDown={handleKeyDown}
             onFocus={() => {
               setIsAutoScrolling(true);
-              scrollToLatestMessage();
             }}
             disabled={uploadingReplyImage}
           />
@@ -553,20 +579,20 @@ const ReportCard = () => {
           role="presentation"
         >
           <div
-            className="w-full max-w-sm overflow-hidden rounded-lg border border-brand-gold/30 bg-brand-dark-elevated shadow-2xl"
+            className="w-full max-w-xs overflow-hidden rounded-lg border border-brand-gold/30 bg-brand-dark-elevated shadow-2xl"
             onClick={(event) => event.stopPropagation()}
             role="dialog"
             aria-modal="true"
             aria-label="Select emoji"
           >
-            <div className="flex h-12 items-center justify-between border-b border-white/10 px-4">
+            <div className="flex h-10 items-center justify-between border-b border-white/10 px-3">
               <span className="font-spaceGrotesk text-xs font-black uppercase tracking-widest text-gray-200">
                 Select Emoji
               </span>
               <button
                 type="button"
                 onClick={() => setShowEmojiPicker(false)}
-                className="rounded-full p-2 text-gray-400 transition-colors hover:bg-white/5 hover:text-white"
+                className="rounded-full p-1.5 text-gray-400 transition-colors hover:bg-white/5 hover:text-white"
                 aria-label="Close emoji picker"
               >
                 <MdClose className="text-xl" />
@@ -579,7 +605,7 @@ const ReportCard = () => {
               theme="dark"
               lazyLoadEmojis
               width="100%"
-              height={Math.max(240, Math.min(420, viewportHeight - 120))}
+              height={Math.max(220, Math.min(320, visualViewport.height - 140))}
             />
           </div>
         </div>
