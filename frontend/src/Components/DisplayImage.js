@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
 
@@ -24,33 +25,32 @@ const DisplayImage = ({ imgUrl, onClose }) => {
     return null;
   }
 
-  return (
+  const viewer = (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
+        className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
         onClick={onClose}
       >
-        <div className="relative">
-          {/* Close Button - Fixed Position */}
-          <motion.button
-            onClick={onClose}
-            className="fixed top-14 right-6 z-[10000] rounded-full border-2 border-white/20 bg-red-600/90 p-3 text-white shadow-2xl transition-all duration-200 hover:scale-110 hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500/50"
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ opacity: 1, rotate: 0 }}
-            exit={{ opacity: 0, rotate: 0 }}
-            transition={{ duration: 0.2 }}
-            aria-label="Close image"
-          >
-            <FaTimes className="w-6 h-6" />
-          </motion.button>
+        <motion.button
+          onClick={onClose}
+          className="absolute right-4 top-16 z-10 inline-flex h-11 w-11 min-w-11 max-w-11 items-center justify-center rounded-xl border-2 border-white/20 bg-red-600 p-0 text-white shadow-2xl transition-colors hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500/50 sm:right-6"
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ opacity: 1, rotate: 0, scale: 1 }}
+          exit={{ opacity: 0, rotate: 0, scale: 0 }}
+          transition={{ duration: 0.2 }}
+          aria-label="Close full image"
+        >
+          <FaTimes className="h-5 w-5 shrink-0" />
+        </motion.button>
 
+        <div className="relative">
           {/* Image Container */}
           <motion.div
-            className="relative max-w-[95vw] max-h-[95vh] bg-white/5 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/10 overflow-hidden"
+            className="relative max-h-[calc(100dvh-8rem)] max-w-[95vw] overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -62,7 +62,7 @@ const DisplayImage = ({ imgUrl, onClose }) => {
               <motion.img
                 src={imgUrl}
                 alt="Full size preview"
-                className="w-full h-auto rounded-lg shadow-lg"
+                className="max-h-[calc(100dvh-10rem)] max-w-[calc(100vw-3rem)] rounded-lg object-contain shadow-lg"
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
@@ -107,6 +107,8 @@ const DisplayImage = ({ imgUrl, onClose }) => {
       </motion.div>
     </AnimatePresence>
   );
+
+  return createPortal(viewer, document.body);
 };
 
 export default DisplayImage;

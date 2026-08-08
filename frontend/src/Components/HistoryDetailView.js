@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { CgClose } from 'react-icons/cg';
 import DisplayImage from './DisplayImage';
-import { toast } from 'react-toastify';
-import SummaryApi from '../common';
 import { motion } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
+import { Maximize2 } from 'lucide-react';
 
 const HistoryDetailView = ({
   onClose = () => {},
@@ -28,33 +26,6 @@ const HistoryDetailView = ({
   const handleImageClick = (imageUrl) => {
     setFullScreenImage(imageUrl);
     setOpenFullScreenImage(true);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await fetch(SummaryApi.marketRecord.url, {
-        method: SummaryApi.marketRecord.method,
-        credentials: 'include',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      const responseData = await response.json();
-
-      if (responseData.success) {
-        toast.success(responseData.message);
-        onClose();
-        fetchData();
-      } else {
-        toast.error(responseData.message || 'An error occurred.');
-      }
-    } catch (error) {
-      toast.error('Failed to update record.');
-    }
   };
 
   return (
@@ -96,14 +67,24 @@ const HistoryDetailView = ({
             <div className="mb-6 overflow-x-hidden rounded-2xl border border-white/10 bg-brand-dark-base/70 p-4 shadow-inner">
               <div className="flex items-center gap-4">
                 {productDetails?.productImage?.[0] && (
-                  <img
-                    src={productDetails.productImage[0]}
-                    alt="Product"
-                    className="w-24 h-24 object-cover rounded-lg border border-yellow-700 cursor-pointer hover:scale-105 transition-transform duration-200"
+                  <button
+                    type="button"
                     onClick={() =>
                       handleImageClick(productDetails.productImage[0])
                     }
-                  />
+                    className="group relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border border-yellow-700 transition-colors hover:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold/60"
+                    aria-label="View product image full size"
+                    title="View full image"
+                  >
+                    <img
+                      src={productDetails.productImage[0]}
+                      alt="Product"
+                      className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                    />
+                    <span className="absolute right-1.5 top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-lg bg-black/75 text-white shadow-lg">
+                      <Maximize2 className="h-3.5 w-3.5" />
+                    </span>
+                  </button>
                 )}
                 <div>
                   <h3 className="text-lg font-bold font-spaceGrotesk text-white">
@@ -141,14 +122,23 @@ const HistoryDetailView = ({
             <div className="flex gap-2 mt-4 flex-wrap">
               {data?.Image.length > 0 ? (
                 data.Image.map((el, index) => (
-                  <div className="relative group" key={index}>
+                  <button
+                    type="button"
+                    className="group relative h-20 w-20 overflow-hidden rounded-lg border border-yellow-700 transition-colors hover:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold/60"
+                    key={index}
+                    onClick={() => handleImageClick(el)}
+                    aria-label={`View uploaded image ${index + 1} full size`}
+                    title="View full image"
+                  >
                     <img
                       src={el}
                       alt={`product-${index}`}
-                      className="w-20 h-20 object-cover rounded-lg border border-yellow-700 cursor-pointer hover:scale-105 transition-transform duration-200"
-                      onClick={() => handleImageClick(el)}
+                      className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
                     />
-                  </div>
+                    <span className="absolute right-1 top-1 inline-flex h-6 w-6 items-center justify-center rounded-md bg-black/75 text-white shadow-lg">
+                      <Maximize2 className="h-3 w-3" />
+                    </span>
+                  </button>
                 ))
               ) : (
                 <p className="text-sm text-red-300">*No images uploaded</p>
@@ -195,15 +185,22 @@ const HistoryDetailView = ({
               <label className="mb-2 block font-spaceGrotesk text-xs font-black uppercase tracking-[0.3em] text-brand-gold">
                 Cancel Reason Image
               </label>
-              <img
-                src={productDetails.crImage}
-                alt="Cancel Reason"
-                className="w-20 h-20 object-cover rounded-lg border border-yellow-700 cursor-pointer hover:scale-105 transition-transform duration-200"
-                onClick={() => {
-                  setOpenFullScreenImage(true);
-                  setFullScreenImage(productDetails.crImage);
-                }}
-              />
+              <button
+                type="button"
+                className="group relative h-20 w-20 overflow-hidden rounded-lg border border-yellow-700 transition-colors hover:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold/60"
+                onClick={() => handleImageClick(productDetails.crImage)}
+                aria-label="View cancellation image full size"
+                title="View full image"
+              >
+                <img
+                  src={productDetails.crImage}
+                  alt="Cancel Reason"
+                  className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                />
+                <span className="absolute right-1 top-1 inline-flex h-6 w-6 items-center justify-center rounded-md bg-black/75 text-white shadow-lg">
+                  <Maximize2 className="h-3 w-3" />
+                </span>
+              </button>
             </div>
           )}
 

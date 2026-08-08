@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import SummaryApi from '../common';
 import UserContext from '../Context';
 import { CircleCheck, CircleX, Loader, Clock, Image } from 'lucide-react';
@@ -12,28 +13,27 @@ import { ensureHttpsUrl } from '../utils/secureUrl';
 const ImageModal = ({ imageUrl, onClose }) => {
   if (!imageUrl) return null;
 
-  return (
+  const modal = (
     <div
-      className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 p-4"
       onClick={onClose}
     >
+      <motion.button
+        onClick={onClose}
+        className="absolute right-4 top-16 z-10 inline-flex h-11 w-11 min-w-11 max-w-11 shrink-0 items-center justify-center rounded-xl border-2 border-white/20 bg-red-600 p-0 text-white shadow-2xl transition-colors hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500/50 sm:right-6"
+        initial={{ scale: 0, rotate: -180 }}
+        animate={{ opacity: 1, rotate: 0, scale: 1 }}
+        exit={{ opacity: 0, rotate: 0 }}
+        transition={{ duration: 0.2 }}
+        aria-label="Close image viewer"
+      >
+        <FaTimes className="h-5 w-5 shrink-0" />
+      </motion.button>
+
       <div
         className="relative bg-white p-2 rounded-lg shadow-xl max-w-full max-h-full flex flex-col items-center"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button - Fixed Position */}
-        <motion.button
-          onClick={onClose}
-          className="fixed top-14 right-6 z-[10000] bg-red-600 hover:bg-red-700 text-white p-3 rounded-full shadow-2xl transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-500/50 border-2 border-white/20"
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ opacity: 1, rotate: 0 }}
-          exit={{ opacity: 0, rotate: 0 }}
-          transition={{ duration: 0.2 }}
-          aria-label="Close image viewer"
-        >
-          <FaTimes className="w-6 h-6" />
-        </motion.button>
-
         <img
           src={ensureHttpsUrl(imageUrl)}
           alt="Expanded view"
@@ -42,6 +42,8 @@ const ImageModal = ({ imageUrl, onClose }) => {
       </div>
     </div>
   );
+
+  return createPortal(modal, document.body);
 };
 
 const LastMarketStatus = () => {
