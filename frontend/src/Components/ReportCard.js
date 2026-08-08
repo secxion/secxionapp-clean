@@ -269,6 +269,21 @@ const ReportCard = () => {
     }
   };
 
+  const handleToggleEmojiPicker = () => {
+    if (!showEmojiPicker) {
+      replyInputRef.current?.blur();
+    }
+    setShowEmojiPicker((isOpen) => !isOpen);
+  };
+
+  const handleEmojiClick = (emojiObject) => {
+    setUserReplyText((currentText) => currentText + emojiObject.emoji);
+    setShowEmojiPicker(false);
+    requestAnimationFrame(() => {
+      replyInputRef.current?.focus({ preventScroll: true });
+    });
+  };
+
   const handleScroll = () => {
     const element = chatHistoryRef.current;
     if (!element) return;
@@ -520,32 +535,55 @@ const ReportCard = () => {
             <MdSend className="text-xl" />
           </button>
           <button
-            onClick={() => setShowEmojiPicker((prev) => !prev)}
+            type="button"
+            onClick={handleToggleEmojiPicker}
             className="absolute right-20 top-3 text-brand-gold transition-colors hover:text-brand-gold-light"
+            aria-label="Choose an emoji"
+            aria-expanded={showEmojiPicker}
           >
             😊
           </button>
-          {showEmojiPicker && (
-            <div className="absolute bottom-14 right-3 z-50 rounded-lg border border-brand-gold/30 bg-brand-dark-base p-2 shadow-lg">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-gray-300">Select Emoji</span>
-                <button
-                  onClick={() => setShowEmojiPicker(false)}
-                  className="text-white bg-red-500 hover:bg-red-600 rounded-full p-2 transition-all duration-200"
-                  aria-label="Close Emoji Picker"
-                >
-                  <MdClose className="text-xl" />
-                </button>
-              </div>
-              <Picker
-                onEmojiClick={(emojiObject) =>
-                  setUserReplyText((prev) => prev + emojiObject.emoji)
-                }
-              />
-            </div>
-          )}
         </div>
       </div>
+
+      {showEmojiPicker && (
+        <div
+          className="absolute inset-0 z-[70] flex items-end justify-center bg-black/70 p-3 backdrop-blur-sm sm:items-center"
+          onClick={() => setShowEmojiPicker(false)}
+          role="presentation"
+        >
+          <div
+            className="w-full max-w-sm overflow-hidden rounded-lg border border-brand-gold/30 bg-brand-dark-elevated shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Select emoji"
+          >
+            <div className="flex h-12 items-center justify-between border-b border-white/10 px-4">
+              <span className="font-spaceGrotesk text-xs font-black uppercase tracking-widest text-gray-200">
+                Select Emoji
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowEmojiPicker(false)}
+                className="rounded-full p-2 text-gray-400 transition-colors hover:bg-white/5 hover:text-white"
+                aria-label="Close emoji picker"
+              >
+                <MdClose className="text-xl" />
+              </button>
+            </div>
+            <Picker
+              onEmojiClick={handleEmojiClick}
+              autoFocusSearch={false}
+              previewConfig={{ showPreview: false }}
+              theme="dark"
+              lazyLoadEmojis
+              width="100%"
+              height={Math.max(240, Math.min(420, viewportHeight - 120))}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
