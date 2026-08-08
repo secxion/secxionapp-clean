@@ -518,14 +518,14 @@ const ReportCard = () => {
 
       {/* Input */}
       <div
-        className="z-50 bg-[#11151c] px-2 pt-2"
+        className="z-50 border-t border-brand-gold/20 bg-brand-dark-elevated/95 px-3 pt-2 backdrop-blur-xl"
         style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
       >
         <form
           className="flex h-12 w-full items-center gap-2"
           onSubmit={handleComposerSubmit}
         >
-          <label className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-gray-300 transition-colors hover:bg-white/5 hover:text-brand-gold">
+          <label className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-white/10 bg-black/20 text-gray-400 transition-colors hover:border-brand-gold/40 hover:text-brand-gold">
             <MdAdd className="text-2xl" />
             <input
               type="file"
@@ -536,13 +536,13 @@ const ReportCard = () => {
               disabled={uploadingReplyImage}
             />
           </label>
-          <div className="flex h-11 min-w-0 flex-1 items-center rounded-full bg-white/[0.07] pl-3 pr-1">
+          <div className="flex h-10 min-w-0 flex-1 items-center rounded-lg border border-white/10 bg-brand-dark-base/80 pl-3 pr-1 shadow-inner focus-within:border-brand-gold/50">
             <input
               ref={replyInputRef}
               type="text"
-              className="h-full min-w-0 flex-1 border-0 bg-transparent px-1 text-base text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-0"
+              className="h-full min-w-0 flex-1 border-0 bg-transparent px-1 font-spaceGrotesk text-base text-gray-100 placeholder:text-gray-600 focus:outline-none focus:ring-0"
               placeholder={
-                uploadingReplyImage ? 'Uploading images...' : 'Type a message'
+                uploadingReplyImage ? 'Uploading media...' : 'Message Secxion'
               }
               value={userReplyText}
               onChange={(e) => setUserReplyText(e.target.value)}
@@ -559,7 +559,7 @@ const ReportCard = () => {
             <button
               type="button"
               onClick={handleToggleEmojiPicker}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg transition-colors hover:bg-white/5"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-base opacity-80 transition-colors hover:bg-brand-gold/10 hover:opacity-100"
               aria-label="Choose an emoji"
               aria-expanded={showEmojiPicker}
             >
@@ -568,7 +568,7 @@ const ReportCard = () => {
           </div>
           <button
             type="submit"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-gold text-brand-dark-base transition-colors hover:bg-brand-gold-light disabled:bg-white/[0.07] disabled:text-gray-600"
+            className="brand-gradient-gold flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-brand-dark-base shadow-[0_0_14px_rgba(212,175,55,0.16)] transition-colors disabled:bg-none disabled:bg-white/5 disabled:text-gray-600 disabled:shadow-none"
             disabled={isSending || uploadingReplyImage || !userReplyText.trim()}
             aria-label="Send message"
           >
