@@ -292,10 +292,17 @@ const ReportCard = () => {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter') {
       e.preventDefault();
-      handleSendTextMessage(); // Send text message on Enter
+      handleSendTextMessage();
     }
+  };
+
+  const handleComposerPointerDown = (event) => {
+    if (document.activeElement === event.currentTarget) return;
+
+    event.preventDefault();
+    event.currentTarget.focus({ preventScroll: true });
   };
 
   const handleToggleEmojiPicker = () => {
@@ -528,18 +535,23 @@ const ReportCard = () => {
         style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
       >
         <div className="relative">
-          <textarea
+          <input
             ref={replyInputRef}
-            className="block max-h-28 min-h-12 w-full resize-none rounded-xl border border-white/10 bg-black/20 px-3 py-3 pr-28 text-base text-gray-200 placeholder-gray-600 focus:border-brand-gold/40 focus:outline-none"
+            type="text"
+            className="block h-12 w-full rounded-xl border border-white/10 bg-black/20 px-3 pr-28 text-base text-gray-200 placeholder-gray-600 focus:border-brand-gold/40 focus:outline-none"
             placeholder={
               uploadingReplyImage
                 ? 'Uploading images...'
                 : 'Type your message...'
             }
-            rows={1}
             value={userReplyText}
             onChange={(e) => setUserReplyText(e.target.value)}
             onKeyDown={handleKeyDown}
+            onPointerDown={handleComposerPointerDown}
+            enterKeyHint="send"
+            autoComplete="off"
+            autoCorrect="on"
+            spellCheck="true"
             onFocus={() => {
               setIsAutoScrolling(true);
             }}
