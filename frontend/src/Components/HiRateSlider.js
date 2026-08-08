@@ -264,7 +264,7 @@ const HiRateSlider = () => {
 
   const animationDuration = slides.length * 5;
   return (
-    <div className="fixed top-20 py-2.5 md:mt-9 lg:mt-9 left-0 right-0 z-30 w-full bg-brand-dark-base/60 backdrop-blur-xl border-b border-white/5 overflow-hidden shadow-2xl">
+    <div className="fixed left-0 right-0 top-[89px] z-30 w-full overflow-hidden border-b border-white/5 bg-brand-dark-base/60 py-0.5 shadow-2xl backdrop-blur-xl md:top-20 md:mt-9 lg:mt-9">
       <div
         className="hirate-slider-track"
         style={{ animationDuration: `${animationDuration}s` }}

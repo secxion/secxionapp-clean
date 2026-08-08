@@ -140,7 +140,7 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
           <Dialog.Panel className="relative flex flex-col w-full max-w-sm h-full overflow-hidden bg-brand-dark-base text-gray-200 shadow-2xl border-r border-white/5">
             <div className="relative z-10 flex flex-col w-full h-full premium-bg">
               {/* Header */}
-              <div className="flex items-center justify-between px-6 py-4 mt-6 border-b border-white/5">
+              <div className="mt-9 flex items-center justify-between border-b border-white/5 px-6 py-0.5">
                 {/* Logo */}
                 <Link
                   to="/home"
