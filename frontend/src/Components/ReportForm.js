@@ -102,7 +102,7 @@ const ReportForm = ({ onReportSubmit }) => {
   };
 
   return (
-    <div className="glass-card bg-black/20 p-8 rounded-3xl border-white/5">
+    <div className="border-t border-white/10 pt-8">
       <h2 className="text-[10px] font-black mb-8 text-brand-gold uppercase tracking-[0.4em] font-spaceGrotesk">
         New Support Ticket
       </h2>
@@ -113,7 +113,7 @@ const ReportForm = ({ onReportSubmit }) => {
           </label>
           <div className="relative">
             <select
-              className="w-full px-5 py-4 rounded-2xl bg-black/40 border border-white/10 text-sm font-medium text-white focus:border-brand-gold/50 outline-none appearance-none transition-all"
+              className="w-full appearance-none rounded-lg border border-white/10 bg-brand-dark-base px-5 py-4 text-sm font-medium text-white outline-none transition-colors focus:border-brand-gold/60"
               value={selectedCategory.category}
               onChange={(e) =>
                 setSelectedCategory({
@@ -139,7 +139,7 @@ const ReportForm = ({ onReportSubmit }) => {
             Message
           </label>
           <textarea
-            className="w-full px-5 py-4 rounded-2xl bg-black/40 border border-white/10 text-sm font-medium text-white placeholder-gray-700 focus:border-brand-gold/50 outline-none transition-all resize-none"
+            className="w-full resize-none rounded-lg border border-white/10 bg-brand-dark-base px-5 py-4 text-sm font-medium text-white outline-none transition-colors placeholder:text-gray-600 focus:border-brand-gold/60"
             placeholder="Describe your issue..."
             value={reportText}
             onChange={(e) => setReportText(e.target.value)}
@@ -153,7 +153,7 @@ const ReportForm = ({ onReportSubmit }) => {
           Attachment
         </label>
         <div className="flex items-center gap-6">
-          <label className="cursor-pointer flex items-center gap-3 px-6 py-3.5 rounded-2xl bg-white/5 text-gray-400 font-black font-spaceGrotesk text-[10px] uppercase tracking-widest border border-white/5 hover:text-white hover:border-white/10 transition-all active:scale-95">
+          <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-white/10 bg-brand-dark-base px-6 py-3.5 font-spaceGrotesk text-[10px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:border-brand-gold/40 hover:text-white">
             <FaPaperclip className="text-brand-gold" />
             <span>Upload File</span>
             <input
@@ -167,10 +167,10 @@ const ReportForm = ({ onReportSubmit }) => {
               <img
                 src={uploadedImage}
                 alt="Uploaded"
-                className="w-16 h-16 object-cover rounded-xl border border-brand-gold/30 shadow-brand-gold"
+                className="h-16 w-16 rounded-lg border border-brand-gold/30 object-cover"
               />
               <button
-                className="absolute -top-2 -right-2 p-1.5 bg-red-600 text-white rounded-full shadow-lg opacity-0 group-hover/img:opacity-100 transition-opacity"
+                className="absolute -right-2 -top-2 rounded-full bg-red-600 p-1.5 text-white opacity-0 transition-opacity group-hover/img:opacity-100"
                 onClick={() => setUploadedImage(null)}
               >
                 <MdDelete className="text-xs" />
@@ -181,7 +181,7 @@ const ReportForm = ({ onReportSubmit }) => {
       </div>
 
       <button
-        className="w-full sm:w-auto px-12 py-5 rounded-2xl bg-brand-gold text-brand-dark-base font-black font-spaceGrotesk text-sm uppercase tracking-wider shadow-[0_10px_30px_rgba(212,175,55,0.2)] hover:bg-brand-gold-light transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
+        className="w-full rounded-lg border border-brand-gold bg-brand-gold px-12 py-5 font-spaceGrotesk text-sm font-black uppercase tracking-wider text-brand-dark-base transition-colors hover:bg-brand-gold-light disabled:cursor-not-allowed disabled:opacity-30 sm:w-auto"
         onClick={handleSubmitReport}
         disabled={loading}
       >

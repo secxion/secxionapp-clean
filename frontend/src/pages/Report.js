@@ -10,25 +10,25 @@ const Report = () => {
   }, []);
 
   return (
-    <main className="mt-28 min-h-screen premium-bg px-4 py-10 md:mt-32">
-      <div className="max-w-4xl mx-auto space-y-12">
-        <div className="glass-card p-8 rounded-3xl border-white/10 shadow-2xl">
-          <h1 className="text-2xl font-black neon-gold-text font-spaceGrotesk uppercase tracking-tighter mb-4">
+    <main className="mt-28 min-h-screen overflow-x-hidden bg-brand-dark-base px-4 py-10 text-gray-100 md:mt-32 sm:px-6">
+      <div className="mx-auto max-w-4xl space-y-8">
+        <section className="rounded-lg border border-white/10 bg-brand-dark-elevated p-6 sm:p-8">
+          <h1 className="mb-4 font-spaceGrotesk text-2xl font-black uppercase tracking-tight text-brand-gold">
             Support & Feedback
           </h1>
-          <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-10 leading-relaxed max-w-2xl">
+          <p className="mb-10 max-w-2xl text-[10px] font-bold uppercase leading-relaxed tracking-[0.2em] text-gray-400">
             Submit a ticket regarding bugs, transaction issues, or feedback. Our
             support team will review your request shortly.
           </p>
           <ReportForm onReportSubmit={handleReportSubmit} />
-        </div>
-        <div className="glass-card p-8 rounded-3xl border-white/10 shadow-2xl">
-          <h2 className="text-lg font-black text-white font-spaceGrotesk uppercase tracking-widest mb-8 flex items-center">
-            <span className="w-2 h-2 bg-brand-gold rounded-full mr-3 shadow-brand-gold"></span>
+        </section>
+        <section className="rounded-lg border border-white/10 bg-brand-dark-elevated p-6 sm:p-8">
+          <h2 className="mb-8 flex items-center font-spaceGrotesk text-lg font-black uppercase tracking-widest text-white">
+            <span className="mr-3 h-2 w-2 rounded-full bg-brand-gold"></span>
             Support History
           </h2>
           <ReportList newReport={newReport} />
-        </div>
+        </section>
       </div>
     </main>
   );

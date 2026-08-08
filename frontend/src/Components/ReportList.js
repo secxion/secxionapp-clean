@@ -25,14 +25,16 @@ const ReportList = ({ newReport }) => {
         setReports([]);
         throw new Error('Invalid report data received');
       }
-      if (JSON.stringify(data.data) !== JSON.stringify(reports)) {
-        setReports(data.data);
-      }
+      setReports((currentReports) =>
+        JSON.stringify(data.data) === JSON.stringify(currentReports)
+          ? currentReports
+          : data.data,
+      );
     } catch (error) {
       toast.error('Could not fetch reports.');
       console.error('User Fetch error:', error);
     } finally {
-      if (fetchingReports) setFetchingReports(false);
+      setFetchingReports(false);
     }
   }, []);
 
@@ -58,7 +60,7 @@ const ReportList = ({ newReport }) => {
   };
 
   return (
-    <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.02] p-6 shadow-2xl">
+    <div className="mt-6 border-t border-white/10 pt-6">
       <h3 className="mb-6 font-spaceGrotesk text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold">
         Previous Reports
       </h3>
@@ -74,7 +76,7 @@ const ReportList = ({ newReport }) => {
         reports.map((report, index) => (
           <div
             key={report._id || `report-${index}`}
-            className="mb-4 rounded-2xl border border-white/10 bg-black/20 p-5 transition-all duration-300 hover:border-brand-gold/30 hover:bg-white/[0.03]"
+            className="mb-4 rounded-lg border border-white/10 bg-brand-dark-base p-5 transition-colors hover:border-brand-gold/30"
           >
             <div className="flex justify-between items-center mb-2">
               <p className="font-spaceGrotesk text-sm font-black uppercase tracking-wide text-white">
@@ -82,7 +84,7 @@ const ReportList = ({ newReport }) => {
               </p>
               <button
                 onClick={() => handleOpenChat(report._id)}
-                className="rounded-xl border border-brand-gold/30 bg-brand-gold/10 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-brand-gold transition-colors hover:bg-brand-gold/20 hover:text-white focus:outline-none"
+                className="rounded-lg border border-brand-gold/40 bg-brand-dark-elevated px-4 py-2 text-[10px] font-black uppercase tracking-widest text-brand-gold transition-colors hover:border-brand-gold hover:text-white focus:outline-none"
               >
                 Open Chat
               </button>
