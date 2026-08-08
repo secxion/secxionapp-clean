@@ -21,11 +21,51 @@ const ReportCard = () => {
   const [uploadingReplyImage, setUploadingReplyImage] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const chatHistoryRef = useRef(null);
+  const replyInputRef = useRef(null);
   const pollingIntervalRef = useRef(null);
   const { user } = useSelector((state) => state.user);
   const [hasReceivedReply, setHasReceivedReply] = useState(false);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const [pendingMessages, setPendingMessages] = useState([]); // Track messages waiting to be sent
+  const [visualViewport, setVisualViewport] = useState(() => ({
+    height: window.visualViewport?.height || window.innerHeight,
+    width: window.visualViewport?.width || window.innerWidth,
+    offsetTop: window.visualViewport?.offsetTop || 0,
+    offsetLeft: window.visualViewport?.offsetLeft || 0,
+  }));
+
+  const scrollToLatestMessage = useCallback(() => {
+    requestAnimationFrame(() => {
+      const chatHistory = chatHistoryRef.current;
+      if (chatHistory) {
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return undefined;
+
+    const updateVisualViewport = () => {
+      setVisualViewport({
+        height: viewport.height,
+        width: viewport.width,
+        offsetTop: viewport.offsetTop,
+        offsetLeft: viewport.offsetLeft,
+      });
+      scrollToLatestMessage();
+    };
+
+    updateVisualViewport();
+    viewport.addEventListener('resize', updateVisualViewport);
+    viewport.addEventListener('scroll', updateVisualViewport);
+
+    return () => {
+      viewport.removeEventListener('resize', updateVisualViewport);
+      viewport.removeEventListener('scroll', updateVisualViewport);
+    };
+  }, [scrollToLatestMessage]);
 
   const fetchReport = useCallback(async () => {
     try {
@@ -60,10 +100,10 @@ const ReportCard = () => {
   }, [fetchReport]);
 
   useEffect(() => {
-    if (report && chatHistoryRef.current && isAutoScrolling) {
-      chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+    if (chatHistoryRef.current && isAutoScrolling) {
+      scrollToLatestMessage();
     }
-  }, [report?.chatHistory, isAutoScrolling]);
+  }, [report?.chatHistory, isAutoScrolling, scrollToLatestMessage]);
 
   const handleSendTextMessage = async () => {
     if (!userReplyText.trim()) return; // Ensure the message is not empty
@@ -200,13 +240,21 @@ const ReportCard = () => {
   if (!report) return null;
 
   return (
-    <div className="fixed z-50 flex h-screen w-full flex-col bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black text-gray-100">
+    <div
+      className="fixed left-0 z-50 flex w-full max-w-full flex-col overflow-hidden bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black text-gray-100"
+      style={{
+        height: `${visualViewport.height}px`,
+        width: `${visualViewport.width}px`,
+        top: `${visualViewport.offsetTop}px`,
+        left: `${visualViewport.offsetLeft}px`,
+      }}
+    >
       {/* Header */}
-      <div className="z-50 mt-8 flex w-full items-center justify-between border-b border-white/10 bg-brand-dark-elevated/90 px-6 py-4 backdrop-blur-xl">
-        <div className="flex items-center gap-4">
+      <div className="z-50 flex w-full shrink-0 items-center justify-between border-b border-white/10 bg-brand-dark-elevated/90 px-4 py-4 backdrop-blur-xl sm:px-6">
+        <div className="flex min-w-0 items-center gap-4">
           <BackButton iconOnly fallbackTo="/report" ariaLabel="Go back" />
-          <div className="flex flex-col">
-            <h2 className="font-spaceGrotesk text-xl font-black uppercase tracking-tight text-white">
+          <div className="flex min-w-0 flex-col">
+            <h2 className="truncate font-spaceGrotesk text-xl font-black uppercase tracking-tight text-white">
               {report.category}
             </h2>
             <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">
@@ -216,7 +264,8 @@ const ReportCard = () => {
         </div>
         <button
           onClick={() => navigate('/report')}
-          className="rounded-full border border-white/10 bg-white/5 p-2 text-gray-300 transition-all duration-200 hover:border-brand-gold/30 hover:text-brand-gold"
+          className="ml-3 shrink-0 rounded-full border border-white/10 bg-white/5 p-2 text-gray-300 transition-all duration-200 hover:border-brand-gold/30 hover:text-brand-gold"
+          aria-label="Close support chat"
         >
           <MdClose className="text-2xl" />
         </button>
@@ -225,7 +274,7 @@ const ReportCard = () => {
       {/* Chat history */}
       <div
         ref={chatHistoryRef}
-        className="flex-1 space-y-4 overflow-y-auto bg-gradient-to-b from-brand-dark-base via-brand-dark-base to-black px-6 py-4"
+        className="min-h-0 flex-1 space-y-4 overflow-x-hidden overflow-y-auto overscroll-contain bg-gradient-to-b from-brand-dark-base via-brand-dark-base to-black px-4 py-4 sm:px-6"
         onScroll={handleScroll}
       >
         {/* Auto-reply */}
@@ -242,7 +291,7 @@ const ReportCard = () => {
         {report.chatHistory?.map((msg, i) => (
           <div
             key={i}
-            className={`flex items-start max-w-2xl rounded-xl px-4 py-3 shadow-md text-sm transition-transform transform hover:scale-105 ${
+            className={`flex w-fit max-w-[88%] items-start rounded-xl px-4 py-3 text-sm shadow-md sm:max-w-2xl ${
               msg.sender === 'admin'
                 ? 'ml-auto flex-row-reverse border border-brand-gold/20 bg-brand-gold/10 text-brand-gold-light'
                 : 'mr-auto border border-white/10 bg-white/[0.04] text-gray-200'
@@ -253,17 +302,17 @@ const ReportCard = () => {
               <img
                 src={user?.profilePic || 'https://via.placeholder.com/50'}
                 alt="User Avatar"
-                className="mr-3 h-8 w-8 rounded-full border border-white/10"
+                className="mr-3 h-8 w-8 shrink-0 rounded-full border border-white/10"
               />
             )}
             {msg.sender === 'admin' && (
               <img
                 src={SecxionLogo}
                 alt="Admin Avatar"
-                className="ml-3 h-8 w-8 rounded-full border border-brand-gold/30 bg-black/20"
+                className="ml-3 h-8 w-8 shrink-0 rounded-full border border-brand-gold/30 bg-black/20"
               />
             )}
-            <div>
+            <div className="min-w-0">
               {msg.message && (
                 <p className="whitespace-pre-line break-words">{msg.message}</p>
               )}
@@ -348,19 +397,27 @@ const ReportCard = () => {
       </div>
 
       {/* Input */}
-      <div className="z-50 space-y-2 border-t border-white/10 bg-brand-dark-elevated/90 px-6 py-4 backdrop-blur-xl">
+      <div
+        className="z-50 shrink-0 space-y-2 border-t border-white/10 bg-brand-dark-elevated/95 px-4 pt-3 backdrop-blur-xl sm:px-6"
+        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+      >
         <div className="relative">
           <textarea
-            className="w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 pr-16 text-sm text-gray-200 focus:border-brand-gold/40 focus:outline-none"
+            ref={replyInputRef}
+            className="block max-h-32 min-h-20 w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 pr-28 text-base text-gray-200 placeholder-gray-600 focus:border-brand-gold/40 focus:outline-none"
             placeholder={
               uploadingReplyImage
                 ? 'Uploading images...'
                 : 'Type your message...'
             }
-            rows={3}
+            rows={2}
             value={userReplyText}
             onChange={(e) => setUserReplyText(e.target.value)}
             onKeyDown={handleKeyDown}
+            onFocus={() => {
+              setIsAutoScrolling(true);
+              scrollToLatestMessage();
+            }}
             disabled={uploadingReplyImage}
           />
           <label className="absolute right-12 top-3 cursor-pointer text-gray-500 transition-colors hover:text-brand-gold">
