@@ -10,7 +10,6 @@ import {
   DocumentTextIcon,
   ChatBubbleBottomCenterTextIcon,
   ShoppingBagIcon,
-  ClockIcon,
   ShieldCheckIcon,
   ChevronDownIcon,
   CheckIcon,
@@ -164,12 +163,12 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
                 {/* Close Button */}
                 <motion.button
                   onClick={() => setOpen(false)}
-                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 bg-red-500/90 p-0 text-white shadow-[0_0_20px_rgba(239,68,68,0.25)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400/60"
+                  className="inline-flex h-10 w-10 min-w-10 max-w-10 shrink-0 basis-10 items-center justify-center rounded-xl border border-white/15 bg-red-500/90 p-0 text-white shadow-[0_0_20px_rgba(239,68,68,0.25)] transition-colors duration-200 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400/60"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   aria-label="Close side panel"
                 >
-                  <FaTimes className="h-5 w-5" />
+                  <FaTimes className="h-5 w-5 shrink-0" />
                 </motion.button>
               </div>
 

@@ -528,13 +528,13 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
 
             <button
               onClick={toggleSidebar}
-              className="rounded-2xl border border-white/8 bg-white/5 p-2 text-gray-400 transition-colors duration-200 hover:bg-white/10 hover:text-white md:hidden"
+              className="inline-flex h-10 w-10 min-w-10 max-w-10 shrink-0 basis-10 items-center justify-center rounded-xl border border-white/8 bg-white/5 p-0 text-gray-400 transition-colors hover:bg-white/10 hover:text-white md:hidden"
               title="Toggle menu"
             >
               {showSidebar ? (
-                <FaTimes className="w-4 h-4" />
+                <FaTimes className="h-4 w-4 shrink-0" />
               ) : (
-                <FaBars className="w-4 h-4" />
+                <FaBars className="h-4 w-4 shrink-0" />
               )}
             </button>
           </div>

@@ -82,10 +82,14 @@ const Navigation = ({ currentPage }) => {
           {/* Mobile menu button */}
           <button
             onClick={toggleMenu}
-            className="md:hidden p-2 rounded-xl border border-yellow-700/40 bg-gray-900/80 text-yellow-400 hover:bg-yellow-900/30 transition-colors"
+            className="inline-flex h-11 w-11 min-w-11 max-w-11 shrink-0 basis-11 items-center justify-center rounded-xl border border-yellow-700/40 bg-gray-900/80 p-0 text-yellow-400 transition-colors hover:bg-yellow-900/30 md:hidden"
             aria-label={isOpen ? 'Close menu' : 'Open menu'}
           >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isOpen ? (
+              <X className="h-5 w-5 shrink-0" />
+            ) : (
+              <Menu className="h-5 w-5 shrink-0" />
+            )}
           </button>
         </div>
       </div>

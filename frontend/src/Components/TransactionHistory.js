@@ -488,14 +488,6 @@ const TransactionHistory = () => {
           }
         }
 
-        /* Ensure proper touch targets */
-        @media (max-width: 768px) {
-          button {
-            min-height: 44px;
-            min-width: 80px;
-          }
-        }
-
         /* Custom pulse animation for indicators */
         @keyframes scroll-hint {
           0%,

@@ -69,14 +69,14 @@ const TransactionCard = ({ transaction }) => {
   }
 
   return (
-    <div className="group relative border-b border-white/5 bg-transparent px-6 py-6 transition-all duration-300">
-      <div className="mb-4 flex items-start justify-between gap-4">
-        <div className="flex min-w-0 items-center">
-          <div className="mr-4 rounded-xl border border-white/5 bg-transparent p-2.5 transition-colors">
+    <div className="group relative border-b border-white/5 bg-transparent px-2 py-6 transition-colors sm:px-6">
+      <div className="mb-4 flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 flex-1 items-center">
+          <div className="mr-4 shrink-0 rounded-xl border border-white/5 bg-transparent p-2.5 transition-colors">
             {transactionIcon}
           </div>
-          <div className="flex flex-col">
-            <span className="truncate font-black text-white font-spaceGrotesk text-sm tracking-wide uppercase">
+          <div className="flex min-w-0 flex-1 flex-col">
+            <span className="block max-w-full break-words text-sm font-black uppercase leading-5 tracking-wide text-white font-spaceGrotesk sm:truncate sm:whitespace-nowrap">
               {description ||
                 (isCredit
                   ? 'Credit'
@@ -91,9 +91,9 @@ const TransactionCard = ({ transaction }) => {
             </span>
           </div>
         </div>
-        <div className="text-right">
+        <div className="shrink-0 pl-14 text-left sm:pl-0 sm:text-right">
           <span
-            className={`shrink-0 font-black font-spaceGrotesk text-lg tracking-tighter ${transactionColor.replace('600', '400')}`}
+            className={`block whitespace-nowrap text-lg font-black tracking-tighter font-spaceGrotesk ${transactionColor.replace('600', '400')}`}
           >
             {isCredit ? '+' : '-'}₦
             {Math.abs(amount).toLocaleString(undefined, {
@@ -103,7 +103,7 @@ const TransactionCard = ({ transaction }) => {
           </span>
         </div>
       </div>
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-start pl-14 sm:justify-end sm:pl-0">
         {status && (
           <span className={statusBadgeClass}>
             {statusIcon}

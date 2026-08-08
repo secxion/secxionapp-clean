@@ -652,13 +652,14 @@ export default function Landing() {
               )}
             </div>
             <button
-              className="md:hidden p-2 rounded-lg hover:bg-gray-800 transition-colors text-yellow-400"
+              className="inline-flex h-11 w-11 min-w-11 max-w-11 shrink-0 basis-11 items-center justify-center rounded-lg p-0 text-yellow-400 transition-colors hover:bg-gray-800 md:hidden"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             >
               {isMenuOpen ? (
-                <X className="h-6 w-6" />
+                <X className="h-5 w-5 shrink-0" />
               ) : (
-                <Menu className="h-6 w-6" />
+                <Menu className="h-5 w-5 shrink-0" />
               )}
             </button>
           </div>

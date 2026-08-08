@@ -174,10 +174,10 @@ const Header = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={toggleMobileMenu}
-              className="inline-flex items-center justify-center px-4 py-1 rounded-xl font-bold text-base transition-all duration-200 border-2 border-yellow-600 bg-gray-800/50 hover:bg-yellow-700/20 text-yellow-400 hover:text-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 text-gray-100 mt-1 md:hidden"
+              className="mt-1 inline-flex h-11 w-11 min-w-11 max-w-11 shrink-0 basis-11 items-center justify-center rounded-xl border-2 border-yellow-600 bg-gray-800/50 p-0 text-yellow-400 transition-colors hover:bg-yellow-700/20 hover:text-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 md:hidden"
               aria-label="Open menu"
             >
-              <FontAwesomeIcon icon={faBars} className="h-6 w-6" />
+              <FontAwesomeIcon icon={faBars} className="h-5 w-5 shrink-0" />
             </button>
 
             <div className="md:hidden flex-1 flex items-center justify-center">
