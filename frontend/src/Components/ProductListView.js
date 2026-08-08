@@ -1,6 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Image as ImageIcon } from 'lucide-react';
 import scrollTop from '../helpers/scrollTop';
+import { ensureHttpsUrl } from '../utils/secureUrl';
+
+const ProductThumbnail = ({ product }) => {
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageUrl = product?.productImage?.[0];
+
+  return (
+    <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-md border border-white/10 bg-black/30 p-0.5 shadow-inner">
+      {imageUrl && !imageFailed ? (
+        <img
+          src={ensureHttpsUrl(imageUrl)}
+          alt=""
+          className="h-full w-full object-contain transition-transform duration-300 group-hover/item:scale-105"
+          loading="lazy"
+          onError={() => setImageFailed(true)}
+        />
+      ) : (
+        <ImageIcon
+          className="h-3.5 w-3.5 text-brand-gold/35"
+          aria-hidden="true"
+        />
+      )}
+    </span>
+  );
+};
 
 const ProductListView = React.memo(({ loading, data = [] }) => {
   const loadingList = new Array(6).fill(null);
@@ -22,10 +48,10 @@ const ProductListView = React.memo(({ loading, data = [] }) => {
         {loadingList.map((_, index) => (
           <div
             key={index}
-            className="glass-card p-6 rounded-2xl animate-pulse space-y-4"
+            className="glass-card flex items-center justify-between gap-2.5 rounded-xl p-2.5 animate-pulse"
           >
-            <div className="h-4 bg-white/10 rounded-full w-3/4"></div>
-            <div className="h-3 bg-white/5 rounded-full w-1/2"></div>
+            <div className="h-4 w-1/2 rounded-full bg-white/10"></div>
+            <div className="h-8 w-8 shrink-0 rounded-md bg-white/5"></div>
           </div>
         ))}
       </div>
@@ -51,9 +77,10 @@ const ProductListView = React.memo(({ loading, data = [] }) => {
                 <Link
                   to={`/product/${product._id}`}
                   onClick={scrollTop}
-                  className="block glass-card p-4 rounded-xl hover:border-brand-gold/30 group/item transition-all duration-300"
+                  className="group/item flex min-h-16 items-center gap-2.5 rounded-xl p-2.5 glass-card transition-all duration-300 hover:border-brand-gold/30"
                 >
-                  <span className="text-sm font-bold font-spaceGrotesk tracking-wide text-gray-200 group-hover/item:text-brand-gold transition-colors uppercase">
+                  <ProductThumbnail product={product} />
+                  <span className="min-w-0 text-sm font-bold font-spaceGrotesk tracking-wide text-gray-200 group-hover/item:text-brand-gold transition-colors uppercase">
                     {product.productName}
                   </span>
                 </Link>

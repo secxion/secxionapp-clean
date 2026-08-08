@@ -157,10 +157,6 @@ const ProductDetails = () => {
     [user, navigate],
   );
 
-  const handleGoBack = useCallback(() => {
-    navigate(-1);
-  }, [navigate]);
-
   const handleCloseUploadForm = useCallback(() => {
     setShowUploadForm(false);
     setSelectedFaceValue(null);
@@ -284,7 +280,7 @@ const ProductDetails = () => {
                 )}
               </button>
               <BackButton
-                onClick={handleGoBack}
+                fallbackTo="/product-category"
                 label="Go Back"
                 ariaLabel="Go back to previous page"
               />
@@ -367,6 +363,13 @@ const ProductDetails = () => {
         {' '}
         {/* Changed to white background */}
         <div className="max-w-7xl mx-auto">
+          <div className="mb-4 flex items-center">
+            <BackButton
+              fallbackTo="/product-category"
+              ariaLabel="Back to product categories"
+              className="border-white/10 bg-white/5 text-gray-300 hover:border-brand-gold/30 hover:text-brand-gold"
+            />
+          </div>
           {/* Product Description */}
           <div className="mb-6 p-0">
             {' '}
