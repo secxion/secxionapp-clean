@@ -142,7 +142,7 @@ const CategoryProduct = () => {
         {filterCategoryList.length > 0 && (
           <div className="flex shrink-0 items-center justify-between px-4 py-4 md:px-6">
             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold/60 font-spaceGrotesk">
-              ACTIVE SECTORS:{' '}
+              {filterCategoryList.length === 1 ? 'SECTOR' : 'SECTORS'}:{' '}
               {filterCategoryList.map((cat, i) => (
                 <span key={cat}>
                   <span className="text-white">
