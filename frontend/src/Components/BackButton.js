@@ -6,7 +6,7 @@ const BackButton = ({
   to = -1,
   fallbackTo = '/',
   label = 'Back',
-  iconOnly = false,
+  iconOnly = true,
   onClick,
   className = '',
   ariaLabel,
