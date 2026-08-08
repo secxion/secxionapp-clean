@@ -73,7 +73,7 @@ const DisplayImage = ({ imgUrl, onClose }) => {
 
             {/* Image Info Bar */}
             <motion.div
-              className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4"
+              className="absolute bottom-0 left-0 right-0 hidden bg-gradient-to-t from-black/70 to-transparent p-4 sm:block"
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.3 }}
@@ -92,7 +92,7 @@ const DisplayImage = ({ imgUrl, onClose }) => {
 
           {/* Keyboard hint */}
           <motion.div
-            className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm border border-white/20"
+            className="fixed bottom-6 left-1/2 hidden -translate-x-1/2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm text-white backdrop-blur-sm sm:block"
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 50, opacity: 0 }}
