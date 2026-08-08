@@ -11,9 +11,7 @@ import {
   FaCalendarAlt,
   FaCheckCircle,
   FaTimesCircle,
-  FaUserShield,
   FaUserCheck,
-  FaImage,
   FaIdCard,
 } from 'react-icons/fa';
 import { PiUserSquare } from 'react-icons/pi';
@@ -21,6 +19,7 @@ import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 import SecxionShimmer from './SecxionShimmer';
 import SecxionSpinner from './SecxionSpinner';
+import BackButton from './BackButton';
 
 const Profile = () => {
   const { user } = useSelector((state) => state.user);
@@ -90,11 +89,6 @@ const Profile = () => {
     return text.length > maxLength
       ? `${text.substring(0, maxLength)}...`
       : text;
-  };
-
-  const getDaysActive = () => {
-    if (!profileData?.createdAt) return 0;
-    return moment().diff(moment(profileData.createdAt), 'days');
   };
 
   const getAccountAge = () => {
@@ -195,6 +189,8 @@ const Profile = () => {
       transition={{ duration: 0.5 }}
       className="mt-28 p-4 sm:p-8 max-w-5xl mx-auto"
     >
+      <BackButton fallbackTo="/home" className="mb-6" />
+
       {/* Header Section */}
       <div className="border-b border-white/10 pb-8 mb-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">

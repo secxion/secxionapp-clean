@@ -1,17 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import {
-  Shield,
-  Eye,
-  Lock,
-  FileText,
-  Mail,
-  Calendar,
-  ArrowLeft,
-} from 'lucide-react';
+import { Shield, Eye, Lock, FileText, Mail, Calendar } from 'lucide-react';
 import Navigation from './Navigation';
-import { useNavigate } from 'react-router-dom';
 import SecxionLogo from '../app/slogo.png';
+import BackButton from './BackButton';
 
 const Privacy = () => {
   const containerVariants = {
@@ -38,15 +30,6 @@ const Privacy = () => {
       <div className="text-gray-300 leading-relaxed space-y-4">{children}</div>
     </motion.div>
   );
-
-  const navigate = useNavigate();
-  const handleGoBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/');
-    }
-  };
 
   return (
     <motion.div
@@ -80,15 +63,7 @@ const Privacy = () => {
       <main className="relative z-10 pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
-          <button
-            onClick={handleGoBack}
-            className="flex items-center gap-2 mb-6 text-yellow-400 hover:text-yellow-200 font-semibold transition-colors focus:outline-none"
-            aria-label="Go back"
-            type="button"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back</span>
-          </button>
+          <BackButton fallbackTo="/" className="mb-6" />
           {/* Header */}
           <motion.div className="text-center mb-16" variants={itemVariants}>
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-black to-yellow-700 rounded-2xl mb-6 shadow-lg">

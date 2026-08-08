@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import SummaryApi from '../common';
-import { MdSend, MdClose, MdAdd, MdArrowBack } from 'react-icons/md';
+import { MdSend, MdClose, MdAdd } from 'react-icons/md';
 import uploadImage from '../helpers/uploadImage';
 import { format } from 'date-fns';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import Picker from 'emoji-picker-react';
 import SecxionLogo from '../app/slogo.png';
 import SecxionSpinner from './SecxionSpinner';
+import BackButton from './BackButton';
 
 const ReportCard = () => {
   const { reportId } = useParams();
@@ -203,12 +204,7 @@ const ReportCard = () => {
       {/* Header */}
       <div className="z-50 mt-8 flex w-full items-center justify-between border-b border-white/10 bg-brand-dark-elevated/90 px-6 py-4 backdrop-blur-xl">
         <div className="flex items-center gap-4">
-          <button
-            onClick={() => navigate(-1)}
-            className="rounded-full border border-white/10 bg-white/5 p-2 text-gray-300 transition-all duration-200 hover:border-brand-gold/30 hover:text-brand-gold"
-          >
-            <MdArrowBack className="text-2xl" />
-          </button>
+          <BackButton iconOnly fallbackTo="/report" ariaLabel="Go back" />
           <div className="flex flex-col">
             <h2 className="font-spaceGrotesk text-xl font-black uppercase tracking-tight text-white">
               {report.category}

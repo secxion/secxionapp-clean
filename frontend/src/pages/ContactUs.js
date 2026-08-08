@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import {
-  Mail,
-  Phone,
-  Send,
-  CheckCircle,
-  AlertCircle,
-  ArrowLeft,
-} from 'lucide-react';
+import { Mail, Phone, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import Navigation from '../Components/Navigation';
 import SummaryApi from '../common';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 import SecxionLogo from '../app/slogo.png';
+import BackButton from '../Components/BackButton';
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -24,15 +17,6 @@ const ContactUs = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [submissionError, setSubmissionError] = useState('');
-  const navigate = useNavigate();
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 },
-    },
-  };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -85,15 +69,6 @@ const ContactUs = () => {
     }
   };
 
-  // Back button handler
-  const handleGoBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/');
-    }
-  };
-
   return (
     <>
       <main
@@ -130,16 +105,7 @@ const ContactUs = () => {
         >
           <div className="max-w-4xl mx-auto">
             {/* Back Button */}
-            <button
-              onClick={handleGoBack}
-              className="flex items-center gap-2 mb-6 text-yellow-400 hover:text-yellow-200 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400"
-              aria-label="Go back"
-              type="button"
-              tabIndex={0}
-            >
-              <ArrowLeft className="w-5 h-5" aria-hidden="true" />
-              <span>Back</span>
-            </button>
+            <BackButton fallbackTo="/" className="mb-6" />
             {/* Header */}
             <motion.div className="text-center mb-16" variants={itemVariants}>
               <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-700 rounded-2xl mb-6 shadow-lg">

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import Navigation from './Navigation';
 import SecxionLogo from '../app/slogo.png';
+import BackButton from './BackButton';
 
 const Terms = () => {
   const [expandedSections, setExpandedSections] = useState({});
@@ -100,6 +101,7 @@ const Terms = () => {
 
       <main className="relative z-10 pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
+          <BackButton fallbackTo="/" className="mb-6" />
           {/* Header */}
           <motion.div className="text-center mb-16" variants={itemVariants}>
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-black to-yellow-700 rounded-2xl mb-6 shadow-lg">

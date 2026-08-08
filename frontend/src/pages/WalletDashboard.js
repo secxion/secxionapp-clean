@@ -22,6 +22,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import SecxionLogo from '../app/slogo.png';
 import SecxionSpinner from '../Components/SecxionSpinner';
+import BackButton from '../Components/BackButton';
 
 const WalletDashboard = () => {
   const { user } = useSelector((state) => state.user);
@@ -305,6 +306,13 @@ const WalletDashboard = () => {
               >
                 <FaBars className="w-5 h-5" />
               </button>
+
+              <BackButton
+                iconOnly
+                fallbackTo="/home"
+                ariaLabel="Back to home"
+                className="h-11 w-11 rounded-2xl border-white/10 bg-white/5 p-0 text-gray-400 hover:bg-white/10 hover:text-brand-gold"
+              />
 
               {/* Desktop Logo */}
               <Link

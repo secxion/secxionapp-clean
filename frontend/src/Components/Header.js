@@ -20,7 +20,6 @@ import {
   faVolumeUp,
   faVolumeMute,
   faVolumeDown,
-  faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons';
 import { Activity, Layout } from 'lucide-react';
 import notificationSound from '../Assets/notification.mp3';
@@ -30,6 +29,7 @@ import SidePanel from './SidePanel';
 import LiveScript from './LiveScript';
 import Slogo from '../app/slogo.png';
 import SidePanelLogo from '../Assets/optimized/secxion-logo-112.png';
+import BackButton from './BackButton';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -160,7 +160,6 @@ const Header = () => {
     return 'text-green-400';
   };
 
-  const goBack = () => navigate(-1);
   const toggleMobileMenu = () => setMobileMenuOpen((prev) => !prev);
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
@@ -212,13 +211,12 @@ const Header = () => {
 
           <div className="hidden md:flex gap-3 items-center">
             {location.pathname === '/search' && (
-              <button
-                onClick={goBack}
-                className="inline-flex items-center justify-center px-4 py-1 rounded-xl font-bold text-base transition-all duration-200 border-2 border-brand-gold bg-brand-dark-elevated hover:bg-brand-gold/20 text-brand-gold hover:text-brand-gold-light focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2"
-                aria-label="Go back"
-              >
-                <FontAwesomeIcon icon={faArrowLeft} className="h-5 w-5" />
-              </button>
+              <BackButton
+                iconOnly
+                fallbackTo="/home"
+                ariaLabel="Go back"
+                className="px-4 py-1"
+              />
             )}
 
             <div className="relative w-72">

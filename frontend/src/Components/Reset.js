@@ -6,7 +6,6 @@ import {
   MessageSquare,
   Send,
   CheckCircle,
-  ArrowLeft,
   Shield,
   AlertCircle,
   Clock,
@@ -16,6 +15,7 @@ import SummaryApi from '../common';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import SecxionLogo from '../app/slogo.png';
+import BackButton from './BackButton';
 
 const Reset = () => {
   const [step, setStep] = useState('select');
@@ -189,6 +189,7 @@ const Reset = () => {
 
       <main className="relative z-10 pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
+          <BackButton fallbackTo="/login" className="mb-6" />
           {/* Header */}
           <motion.div className="text-center mb-12" variants={itemVariants}>
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-700 rounded-2xl mb-6 shadow-lg">
@@ -390,17 +391,11 @@ const Reset = () => {
                     </div>
 
                     <div className="flex space-x-4">
-                      <motion.button
-                        className="flex-1 bg-gray-800 text-gray-300 font-semibold py-4 rounded-xl hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all duration-200"
+                      <BackButton
                         onClick={handleBackToSelect}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <div className="flex items-center justify-center">
-                          <ArrowLeft className="h-5 w-5 mr-2" />
-                          Back
-                        </div>
-                      </motion.button>
+                        label="Back"
+                        className="flex-1 justify-center py-4 text-xs"
+                      />
 
                       <motion.button
                         className="flex-1 bg-gradient-to-r from-yellow-600 to-yellow-800 text-gray-900 font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"

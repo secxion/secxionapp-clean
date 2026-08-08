@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import SummaryApi from '../common';
 import UserUploadMarket from '../Components/UserUploadMarket';
 import HistoryCard from '../Components/HistoryCard';
@@ -9,6 +9,7 @@ import LoadingCard from '../Components/Marketplace/LoadingCard';
 import ErrorState from '../Components/Marketplace/ErrorState';
 import EmptyState from '../Components/Marketplace/EmptyState';
 import { motion } from 'framer-motion';
+import BackButton from '../Components/BackButton';
 import '../styles/marketplaceUtilities.css';
 
 /**
@@ -16,6 +17,7 @@ import '../styles/marketplaceUtilities.css';
  * Displays user's market products/transactions with status management
  */
 const UserMarket = () => {
+  const navigate = useNavigate();
   const [openUploadProduct, setOpenUploadProduct] = useState(false);
   const [allProduct, setAllProduct] = useState([]);
   const { user } = useContext(UserContext);
@@ -112,6 +114,15 @@ const UserMarket = () => {
     }
   };
 
+  const handleGoBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate('/home');
+  };
+
   return (
     <motion.div
       className="relative min-h-screen overflow-hidden px-4 py-4 pb-20 sm:px-6 lg:px-8 premium-bg"
@@ -122,6 +133,8 @@ const UserMarket = () => {
       transition={{ duration: 0.5 }}
     >
       <div className="mx-auto max-w-7xl">
+        <BackButton fallbackTo="/home" className="mb-6" />
+
         <div className="mb-8 rounded-3xl border border-white/10 bg-brand-dark-elevated/75 p-6 shadow-2xl backdrop-blur-xl">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
@@ -207,7 +220,7 @@ const UserMarket = () => {
               title="Transaction Not Found"
               message="The requested market record could not be found."
               emoji="🔍"
-              onAction={() => window.history.back()}
+              onAction={handleGoBack}
               actionLabel="← Go Back"
             />
           ) : (

@@ -16,10 +16,10 @@ import {
   FaBars,
   FaTimes,
   FaEthereum,
-  FaArrowLeft,
   FaSignOutAlt,
 } from 'react-icons/fa';
 import SecxionSpinner from '../Components/SecxionSpinner';
+import BackButton from '../Components/BackButton';
 
 const AdminPanel = () => {
   const user = useSelector((state) => state?.user?.user);
@@ -70,12 +70,12 @@ const AdminPanel = () => {
                 <FaBars className="w-5 h-5" />
               )}
             </button>
-            <Link
+            <BackButton
               to="/home"
-              className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors"
-            >
-              <FaArrowLeft className="w-4 h-4" />
-            </Link>
+              iconOnly
+              ariaLabel="Back to app"
+              className="rounded-lg p-2"
+            />
           </div>
           <div className="flex items-center space-x-3">
             <FaTachometerAlt className="text-yellow-500" />
@@ -158,13 +158,12 @@ const AdminPanel = () => {
         {/* Desktop Header */}
         <div className="hidden lg:flex items-center justify-between p-6 border-b border-slate-800 bg-slate-900/50 backdrop-blur-xl sticky top-0 z-20">
           <div className="flex items-center space-x-4">
-            <Link
+            <BackButton
               to="/home"
-              className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors"
-              title="Back to App"
-            >
-              <FaArrowLeft className="w-4 h-4" />
-            </Link>
+              iconOnly
+              ariaLabel="Back to app"
+              className="rounded-lg p-2"
+            />
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-yellow-500/10 rounded-xl">
                 <FaTachometerAlt className="text-yellow-500 text-xl" />

@@ -8,10 +8,8 @@ import {
   FaTelegram,
   FaTag,
   FaSave,
-  FaTimes,
   FaEye,
   FaEyeSlash,
-  FaArrowLeft,
   FaUpload,
   FaLock,
 } from 'react-icons/fa';
@@ -21,6 +19,7 @@ import { setUserDetails } from '../store/userSlice';
 import uploadImage from '../helpers/uploadImage';
 import SecxionShimmer from '../Components/SecxionShimmer';
 import { notifyUser } from '../utils/toastConfig';
+import BackButton from '../Components/BackButton';
 
 const Settings = () => {
   const { user } = useSelector((state) => state.user);
@@ -279,12 +278,12 @@ const Settings = () => {
       {/* Header */}
       <div className="mb-8 flex items-center justify-between border-b border-white/10 pb-6 sm:mb-10 sm:pb-8">
         <div className="flex items-center space-x-6">
-          <button
+          <BackButton
+            iconOnly
             onClick={handleCancel}
-            className="inline-flex items-center justify-center rounded-full border border-white/10 bg-red-500/10 p-3 text-red-300 shadow-[0_0_20px_rgba(239,68,68,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-red-500/20 hover:text-white"
-          >
-            <FaArrowLeft className="w-4 h-4" />
-          </button>
+            ariaLabel="Back to profile"
+            className="rounded-full p-3"
+          />
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-white font-spaceGrotesk uppercase tracking-tighter">
               Profile Settings

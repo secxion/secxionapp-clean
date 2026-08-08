@@ -11,6 +11,7 @@ import Navigation from '../Components/Navigation';
 import SecxionLogo from '../app/slogo.png';
 import NFTBadge from '../Components/NFTBadge';
 import { toUserSafeMessage } from '../utils/userSafeMessage';
+import BackButton from '../Components/BackButton';
 
 const Button = ({
   children,
@@ -269,6 +270,7 @@ const Login = () => {
       <div className="absolute inset-0 bg-black/70 z-0"></div>
 
       <div className="relative p-6 sm:p-10 mt-10 w-full max-w-md z-10 bg-transparent shadow-none border-none">
+        <BackButton fallbackTo="/" className="mb-6" />
         <div className="flex items-center justify-center mb-4">
           <a href="/" className="relative">
             <div className="flex py-1 flex-col justify-center">

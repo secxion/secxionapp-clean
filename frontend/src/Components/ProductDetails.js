@@ -8,6 +8,7 @@ import SummaryApi from '../common';
 import currencyFullNames from '../helpers/currencyFullNames';
 import flagImageMap from '../helpers/flagImageMap';
 import Loader from './Loader';
+import BackButton from './BackButton';
 
 // Constants
 const DEBOUNCE_DELAY = 300;
@@ -282,13 +283,11 @@ const ProductDetails = () => {
                   `Retry ${retryCount > 0 ? `(${retryCount}/${MAX_RETRY_ATTEMPTS})` : ''}`
                 )}
               </button>
-              <button
+              <BackButton
                 onClick={handleGoBack}
-                className="rounded border border-white/10 bg-slate-800 px-4 py-2 font-semibold text-slate-200 transition-colors hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-white/20"
-                aria-label="Go back to previous page"
-              >
-                Go Back
-              </button>
+                label="Go Back"
+                ariaLabel="Go back to previous page"
+              />
             </div>
           </div>
         </div>

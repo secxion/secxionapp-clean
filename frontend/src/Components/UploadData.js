@@ -4,7 +4,6 @@ import {
   FaCloudUploadAlt,
   FaTrash,
   FaEye,
-  FaArrowLeft,
   FaChevronLeft,
   FaChevronRight,
   FaTag,
@@ -19,6 +18,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import SummaryApi from '../common';
 import uploadImage from '../helpers/uploadImage';
 import SecxionSpinner from './SecxionSpinner';
+import BackButton from './BackButton';
 
 const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
   const { user } = useSelector((state) => state.user);
@@ -519,14 +519,12 @@ const UploadData = ({ editingDataPad, closeUpload, refreshData }) => {
       <div className="sticky top-0 z-20 mt-10 border-b border-white/8 bg-brand-dark-elevated/95 shadow-[0_12px_30px_rgba(0,0,0,0.25)] backdrop-blur-xl">
         <div className="flex items-center justify-between px-4 py-4">
           <div className="flex items-center space-x-2">
-            <button
+            <BackButton
               onClick={handleClose}
-              className="group inline-flex items-center gap-2 rounded-2xl border border-brand-gold/20 bg-brand-gold px-3.5 py-2 text-[9px] font-black uppercase tracking-[0.24em] text-brand-dark-base shadow-brand-gold transition-all duration-200 hover:bg-brand-gold-light"
-              title="Go back to your DataPad"
-            >
-              <FaArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-              <span className="font-black">MyData</span>
-            </button>
+              label="MyData"
+              ariaLabel="Go back to your DataPad"
+              className="rounded-2xl border-brand-gold/20 bg-brand-gold px-3.5 py-2 text-brand-dark-base hover:bg-brand-gold-light hover:text-brand-dark-base"
+            />
 
             <button
               onClick={toggleSidebar}

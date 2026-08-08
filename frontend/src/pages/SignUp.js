@@ -14,10 +14,10 @@ import { notifyUser } from '../utils/toastConfig';
 import { motion, AnimatePresence } from 'framer-motion';
 import signupBackground from './signupbk.png';
 import Navigation from '../Components/Navigation';
-import { ArrowLeft } from 'lucide-react';
 import SecxionLogo from '../app/slogo.png';
 import NFTBadge from '../Components/NFTBadge';
 import { toUserSafeMessage } from '../utils/userSafeMessage';
+import BackButton from '../Components/BackButton';
 
 const SignUp = () => {
   const [step, setStep] = useState(1);
@@ -281,15 +281,6 @@ const SignUp = () => {
     }
   };
 
-  // Back button handler
-  const handleGoBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/');
-    }
-  };
-
   const stepVariants = {
     hidden: { opacity: 0, x: 50 },
     visible: { opacity: 1, x: 0 },
@@ -397,15 +388,12 @@ const SignUp = () => {
       <div className="relative z-10 flex items-center justify-center mt-11 grow px-4 py-8">
         <div className="w-full max-w-lg p-8 sm:p-10 shadow-2xl rounded-3xl border border-white/5 bg-black/40 backdrop-blur-2xl">
           {/* Back Button */}
-          <button
-            onClick={handleGoBack}
-            className="flex items-center gap-2 mb-8 text-gray-500 hover:text-white font-black font-spaceGrotesk text-[10px] uppercase tracking-widest transition-colors focus:outline-none"
-            aria-label="Go back"
-            type="button"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back</span>
-          </button>
+          <BackButton
+            fallbackTo="/"
+            className="mb-8"
+            label="Back"
+            ariaLabel="Go back"
+          />
           <div className="flex items-center justify-center mb-4">
             <a href="/" className="relative">
               <div className="flex py-1 flex-col justify-center">

@@ -24,6 +24,7 @@ import {
   ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 import { emitTransactionActivity } from '../utils/transactionEvents';
+import BackButton from '../Components/BackButton';
 
 const COUNTDOWN_DURATION = 600;
 const LOCAL_STORAGE_KEY = 'ethWithdrawalCountdownEnd';
@@ -627,6 +628,7 @@ const EthWallet = () => {
       {/* Header Section */}
       <div className="border-b border-white/10 pb-8 mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div>
+          <BackButton fallbackTo="/home" className="mb-4" />
           <h2 className="text-3xl sm:text-4xl font-black text-white font-spaceGrotesk uppercase tracking-tighter">
             Ethereum Wallet
           </h2>
