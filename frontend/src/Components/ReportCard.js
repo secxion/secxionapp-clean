@@ -23,6 +23,7 @@ const ReportCard = () => {
   // ...existing code...
   const [uploadingReplyImage, setUploadingReplyImage] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const chatShellRef = useRef(null);
   const chatHistoryRef = useRef(null);
   const replyInputRef = useRef(null);
   const pollingIntervalRef = useRef(null);
@@ -44,28 +45,52 @@ const ReportCard = () => {
   }, []);
 
   useEffect(() => {
-    const scrollY = window.scrollY;
     const previousHtmlOverflow = document.documentElement.style.overflow;
     const previousOverflow = document.body.style.overflow;
-    const previousPosition = document.body.style.position;
-    const previousTop = document.body.style.top;
-    const previousWidth = document.body.style.width;
 
     document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.top = '0';
-    document.body.style.width = '100%';
 
     return () => {
       document.documentElement.style.overflow = previousHtmlOverflow;
       document.body.style.overflow = previousOverflow;
-      document.body.style.position = previousPosition;
-      document.body.style.top = previousTop;
-      document.body.style.width = previousWidth;
-      window.scrollTo(0, scrollY);
     };
   }, []);
+
+  useEffect(() => {
+    const shell = chatShellRef.current;
+    const viewport = window.visualViewport;
+    if (!shell || !viewport) return undefined;
+
+    let animationFrameId;
+    const syncShellToViewport = () => {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = requestAnimationFrame(() => {
+        const netHeight =
+          Number.parseFloat(
+            getComputedStyle(document.documentElement).getPropertyValue(
+              '--net-height',
+            ),
+          ) || 0;
+        const visibleBottom = viewport.offsetTop + viewport.height;
+        shell.style.height = `${Math.max(0, visibleBottom - netHeight)}px`;
+
+        if (document.activeElement === replyInputRef.current) {
+          scrollToLatestMessage();
+        }
+      });
+    };
+
+    syncShellToViewport();
+    viewport.addEventListener('resize', syncShellToViewport);
+    viewport.addEventListener('scroll', syncShellToViewport);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      viewport.removeEventListener('resize', syncShellToViewport);
+      viewport.removeEventListener('scroll', syncShellToViewport);
+    };
+  }, [report?._id, scrollToLatestMessage]);
 
   useEffect(() => {
     if (isAutoScrolling) {
@@ -330,7 +355,10 @@ const ReportCard = () => {
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-0 top-[var(--net-height)] z-50 grid w-full max-w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black text-gray-100">
+    <div
+      ref={chatShellRef}
+      className="fixed inset-x-0 top-[var(--net-height)] z-50 grid h-[calc(100dvh-var(--net-height))] w-full max-w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black text-gray-100"
+    >
       {/* Header */}
       <div className="z-50 flex w-full shrink-0 items-center justify-between border-b border-white/10 bg-brand-dark-elevated/90 px-4 py-4 backdrop-blur-xl sm:px-6">
         <div className="flex min-w-0 items-center gap-4">
