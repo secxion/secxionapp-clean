@@ -10,7 +10,7 @@ const Report = () => {
   }, []);
 
   return (
-    <div className="min-h-screen premium-bg text-gray-100 py-10 px-4">
+    <main className="mt-28 min-h-screen premium-bg px-4 py-10 md:mt-32">
       <div className="max-w-4xl mx-auto space-y-12">
         <div className="glass-card p-8 rounded-3xl border-white/10 shadow-2xl">
           <h1 className="text-2xl font-black neon-gold-text font-spaceGrotesk uppercase tracking-tighter mb-4">
@@ -30,7 +30,7 @@ const Report = () => {
           <ReportList newReport={newReport} />
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 
