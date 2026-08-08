@@ -31,6 +31,9 @@ const COUNTDOWN_DURATION = 600;
 const LOCAL_STORAGE_KEY = 'ethWithdrawalCountdownEnd';
 const LOCAL_STORAGE_STATUS_KEY = 'ethWithdrawalStatus';
 const LOCAL_STORAGE_MESSAGE_KEY = 'ethWithdrawalSuccessMessage';
+const LOCAL_STORAGE_REQUEST_ID_KEY = 'ethWithdrawalRequestId';
+const LOCAL_STORAGE_ACKNOWLEDGED_REQUEST_ID_KEY =
+  'ethWithdrawalAcknowledgedRequestId';
 const MAX_ADDRESS_HISTORY = 3;
 const LIVE_REFRESH_INTERVAL_MS = 60000;
 
@@ -307,6 +310,8 @@ const EthWallet = () => {
         localStorage.removeItem(LOCAL_STORAGE_KEY);
         localStorage.removeItem(LOCAL_STORAGE_STATUS_KEY);
         localStorage.removeItem(LOCAL_STORAGE_MESSAGE_KEY);
+        localStorage.removeItem(LOCAL_STORAGE_REQUEST_ID_KEY);
+        localStorage.removeItem(LOCAL_STORAGE_ACKNOWLEDGED_REQUEST_ID_KEY);
         setCountdown(0);
         setWithdrawalStatus(null);
         setSuccessMessage('');
@@ -321,6 +326,7 @@ const EthWallet = () => {
     const storedEndTimestamp = localStorage.getItem(LOCAL_STORAGE_KEY);
     const storedStatus = localStorage.getItem(LOCAL_STORAGE_STATUS_KEY);
     const storedMessage = localStorage.getItem(LOCAL_STORAGE_MESSAGE_KEY);
+    const storedRequestId = localStorage.getItem(LOCAL_STORAGE_REQUEST_ID_KEY);
 
     if (storedEndTimestamp) {
       const endTime = parseInt(storedEndTimestamp, 10);
@@ -337,7 +343,7 @@ const EthWallet = () => {
       setWithdrawalStatus(storedStatus);
     }
 
-    if (storedMessage) {
+    if (storedMessage && storedStatus !== 'paid') {
       setSuccessMessage(storedMessage);
     }
 
@@ -358,15 +364,25 @@ const EthWallet = () => {
           const normalizedStatus = data.status.toLowerCase();
 
           if (['paid', 'processed'].includes(normalizedStatus)) {
+            const requestId =
+              data.requestId?.toString() ||
+              storedRequestId ||
+              'legacy-completed-withdrawal';
+            const acknowledgedRequestId = localStorage.getItem(
+              LOCAL_STORAGE_ACKNOWLEDGED_REQUEST_ID_KEY,
+            );
+            const message = `Transaction Successful! Your last withdrawal is ${normalizedStatus}.`;
+
             setWithdrawalStatus('paid');
-            setSuccessMessage(
-              `Transaction Successful! Your last withdrawal is ${normalizedStatus}.`,
-            );
             localStorage.setItem(LOCAL_STORAGE_STATUS_KEY, 'paid');
-            localStorage.setItem(
-              LOCAL_STORAGE_MESSAGE_KEY,
-              `Transaction Successful! Your last withdrawal is ${normalizedStatus}.`,
-            );
+            localStorage.setItem(LOCAL_STORAGE_REQUEST_ID_KEY, requestId);
+            if (requestId !== acknowledgedRequestId) {
+              setSuccessMessage(message);
+              localStorage.setItem(LOCAL_STORAGE_MESSAGE_KEY, message);
+            } else {
+              setSuccessMessage('');
+              localStorage.removeItem(LOCAL_STORAGE_MESSAGE_KEY);
+            }
             setCountdown(0);
             localStorage.removeItem(LOCAL_STORAGE_KEY);
           } else if (normalizedStatus === 'pending') {
@@ -448,19 +464,29 @@ const EthWallet = () => {
             if (res.ok && data.status) {
               const normalizedStatus = data.status.toLowerCase();
               if (['paid', 'processed'].includes(normalizedStatus)) {
-                setWithdrawalStatus('paid');
-                setSuccessMessage(
-                  `Transaction Successful! Your withdrawal is ${normalizedStatus}.`,
+                const requestId =
+                  data.requestId?.toString() ||
+                  localStorage.getItem(LOCAL_STORAGE_REQUEST_ID_KEY) ||
+                  'legacy-completed-withdrawal';
+                const acknowledgedRequestId = localStorage.getItem(
+                  LOCAL_STORAGE_ACKNOWLEDGED_REQUEST_ID_KEY,
                 );
+                const message = `Transaction Successful! Your withdrawal is ${normalizedStatus}.`;
+
+                setWithdrawalStatus('paid');
+                localStorage.setItem(LOCAL_STORAGE_REQUEST_ID_KEY, requestId);
+                if (requestId !== acknowledgedRequestId) {
+                  setSuccessMessage(message);
+                  localStorage.setItem(LOCAL_STORAGE_MESSAGE_KEY, message);
+                } else {
+                  setSuccessMessage('');
+                  localStorage.removeItem(LOCAL_STORAGE_MESSAGE_KEY);
+                }
                 emitTransactionActivity({
                   source: 'eth-withdrawal',
                   status: 'paid',
                 });
                 localStorage.setItem(LOCAL_STORAGE_STATUS_KEY, 'paid');
-                localStorage.setItem(
-                  LOCAL_STORAGE_MESSAGE_KEY,
-                  `Transaction Successful! Your withdrawal is ${normalizedStatus}.`,
-                );
                 setCountdown(0);
                 localStorage.removeItem(LOCAL_STORAGE_KEY);
 
@@ -621,6 +647,10 @@ const EthWallet = () => {
       setSuccessMessage('Withdrawal submitted and processing.');
       withdrawalIdempotencyKeyRef.current = '';
       setWithdrawalStatus('pending');
+      const requestId = data.data?._id?.toString();
+      if (requestId) {
+        localStorage.setItem(LOCAL_STORAGE_REQUEST_ID_KEY, requestId);
+      }
       emitTransactionActivity({
         source: 'eth-withdrawal',
         status: 'pending',
@@ -714,7 +744,20 @@ const EthWallet = () => {
 
   // small helper to dismiss error/success
   const dismissError = () => setErrorMessage('');
-  const dismissSuccess = () => setSuccessMessage('');
+  const dismissSuccess = () => {
+    setSuccessMessage('');
+    localStorage.removeItem(LOCAL_STORAGE_MESSAGE_KEY);
+
+    if (withdrawalStatus === 'paid') {
+      const requestId = localStorage.getItem(LOCAL_STORAGE_REQUEST_ID_KEY);
+      if (requestId) {
+        localStorage.setItem(
+          LOCAL_STORAGE_ACKNOWLEDGED_REQUEST_ID_KEY,
+          requestId,
+        );
+      }
+    }
+  };
 
   // derived values to display safely - full precision, no rounding
   const gasFeeDisplay = gasFee ? parseFloat(gasFee).toFixed(8) : '0.00000000';

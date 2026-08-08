@@ -429,6 +429,7 @@ export const getEthWithdrawalStatus = async (req, res) => {
     return res.status(200).json({
       success: true,
       status: latestRequest.status,
+      requestId: latestRequest._id,
     });
   } catch (error) {
     console.error("Error checking withdrawal status:", error);
