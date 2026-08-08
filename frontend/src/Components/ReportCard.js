@@ -33,10 +33,6 @@ const ReportCard = () => {
   const [hasReceivedReply, setHasReceivedReply] = useState(false);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const [pendingMessages, setPendingMessages] = useState([]); // Track messages waiting to be sent
-  const [visualViewport, setVisualViewport] = useState(() => ({
-    height: window.visualViewport?.height || window.innerHeight,
-    bottomInset: 0,
-  }));
 
   const scrollToLatestMessage = useCallback(() => {
     requestAnimationFrame(() => {
@@ -45,35 +41,6 @@ const ReportCard = () => {
         chatHistory.scrollTop = chatHistory.scrollHeight;
       }
     });
-  }, []);
-
-  useEffect(() => {
-    const viewport = window.visualViewport;
-    let animationFrameId;
-
-    const updateVisualViewport = () => {
-      cancelAnimationFrame(animationFrameId);
-      animationFrameId = requestAnimationFrame(() => {
-        const height = viewport?.height || window.innerHeight;
-        const offsetTop = viewport?.offsetTop || 0;
-        setVisualViewport({
-          height,
-          bottomInset: Math.max(0, window.innerHeight - height - offsetTop),
-        });
-      });
-    };
-
-    updateVisualViewport();
-    viewport?.addEventListener('resize', updateVisualViewport);
-    viewport?.addEventListener('scroll', updateVisualViewport);
-    window.addEventListener('resize', updateVisualViewport);
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      viewport?.removeEventListener('resize', updateVisualViewport);
-      viewport?.removeEventListener('scroll', updateVisualViewport);
-      window.removeEventListener('resize', updateVisualViewport);
-    };
   }, []);
 
   useEffect(() => {
@@ -104,7 +71,7 @@ const ReportCard = () => {
     if (isAutoScrolling) {
       scrollToLatestMessage();
     }
-  }, [visualViewport.height, isAutoScrolling, scrollToLatestMessage]);
+  }, [isAutoScrolling, scrollToLatestMessage]);
 
   const fetchReport = useCallback(
     async (force = false) => {
@@ -336,13 +303,7 @@ const ReportCard = () => {
 
   if (isLoadingInitial) {
     return (
-      <div
-        className="premium-bg fixed left-0 z-50 flex w-full items-center justify-center"
-        style={{
-          top: 'var(--net-height)',
-          bottom: `${visualViewport.bottomInset}px`,
-        }}
-      >
+      <div className="premium-bg fixed inset-x-0 bottom-0 top-[var(--net-height)] z-50 flex items-center justify-center">
         <SecxionSpinner size="large" message="Loading support chat..." />
       </div>
     );
@@ -350,13 +311,7 @@ const ReportCard = () => {
 
   if (!report) {
     return (
-      <div
-        className="fixed left-0 z-50 flex w-full flex-col items-center justify-center gap-5 bg-brand-dark-base px-6 text-center text-gray-100"
-        style={{
-          top: 'var(--net-height)',
-          bottom: `${visualViewport.bottomInset}px`,
-        }}
-      >
+      <div className="fixed inset-x-0 bottom-0 top-[var(--net-height)] z-50 flex flex-col items-center justify-center gap-5 bg-brand-dark-base px-6 text-center text-gray-100">
         <p className="max-w-sm text-sm text-gray-400">
           {fetchError || 'This support conversation is unavailable.'}
         </p>
@@ -375,13 +330,7 @@ const ReportCard = () => {
   }
 
   return (
-    <div
-      className="fixed left-0 z-50 flex w-full max-w-full flex-col overflow-hidden bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black text-gray-100"
-      style={{
-        top: 'var(--net-height)',
-        bottom: `${visualViewport.bottomInset}px`,
-      }}
-    >
+    <div className="fixed inset-x-0 bottom-0 top-[var(--net-height)] z-50 grid w-full max-w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden bg-gradient-to-br from-brand-dark-base via-brand-dark-elevated to-black text-gray-100">
       {/* Header */}
       <div className="z-50 flex w-full shrink-0 items-center justify-between border-b border-white/10 bg-brand-dark-elevated/90 px-4 py-4 backdrop-blur-xl sm:px-6">
         <div className="flex min-w-0 items-center gap-4">
@@ -407,7 +356,7 @@ const ReportCard = () => {
       {/* Chat history */}
       <div
         ref={chatHistoryRef}
-        className="min-h-0 flex-1 space-y-4 overflow-x-hidden overflow-y-auto overscroll-contain bg-gradient-to-b from-brand-dark-base via-brand-dark-base to-black px-4 py-4 sm:px-6"
+        className="min-h-0 space-y-4 overflow-x-hidden overflow-y-auto overscroll-contain bg-gradient-to-b from-brand-dark-base via-brand-dark-base to-black px-4 py-4 sm:px-6"
         onScroll={handleScroll}
       >
         {/* Auto-reply */}
@@ -619,7 +568,7 @@ const ReportCard = () => {
               theme="dark"
               lazyLoadEmojis
               width="100%"
-              height={Math.max(220, Math.min(320, visualViewport.height - 140))}
+              height={280}
             />
           </div>
         </div>
