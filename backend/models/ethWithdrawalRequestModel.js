@@ -35,6 +35,11 @@ const ethWithdrawalRequestSchema = new mongoose.Schema(
     processedAt: {
       type: Date,
     },
+    idempotencyKey: {
+      type: String,
+      trim: true,
+      maxlength: 128,
+    },
   },
   {
     timestamps: true,
@@ -43,6 +48,13 @@ const ethWithdrawalRequestSchema = new mongoose.Schema(
 
 ethWithdrawalRequestSchema.index({ userId: 1 });
 ethWithdrawalRequestSchema.index({ status: 1 });
+ethWithdrawalRequestSchema.index(
+  { userId: 1, idempotencyKey: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { idempotencyKey: { $type: "string" } },
+  },
+);
 
 const EthWithdrawalRequest = mongoose.model(
   "EthWithdrawalRequest",

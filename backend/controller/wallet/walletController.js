@@ -29,11 +29,14 @@ const getNonKycCreditTransactionVolume = (transactions = []) =>
   }, 0);
 
 // Ensure wallet exists for a user
-export const ensureWalletExists = async (userId) => {
-  let wallet = await Wallet.findOne({ userId });
+export const ensureWalletExists = async (userId, { session = null } = {}) => {
+  let walletQuery = Wallet.findOne({ userId });
+  if (session) walletQuery = walletQuery.session(session);
+
+  let wallet = await walletQuery;
   if (!wallet) {
     wallet = new Wallet({ userId });
-    await wallet.save();
+    await wallet.save(session ? { session } : undefined);
   }
   return wallet;
 };
@@ -98,6 +101,11 @@ export const updateWalletBalance = async (
   referenceId,
   referenceType,
   status = "completed",
+  {
+    session = null,
+    skipNotification = false,
+    throwOnError = false,
+  } = {},
 ) => {
   try {
     const validModels = [
@@ -111,7 +119,7 @@ export const updateWalletBalance = async (
       throw new Error(`Invalid referenceType: ${referenceType}`);
     }
 
-    const wallet = await ensureWalletExists(userId);
+    const wallet = await ensureWalletExists(userId, { session });
 
     if (amount < 0) {
       if (Math.abs(amount) < 1000) {
@@ -135,7 +143,9 @@ export const updateWalletBalance = async (
         type === "credit" &&
         KYC_BALANCE_CAPPED_REFERENCE_TYPES.has(referenceType)
       ) {
-        const user = await userModel.findById(userId).select("kycStatus");
+        let userQuery = userModel.findById(userId).select("kycStatus");
+        if (session) userQuery = userQuery.session(session);
+        const user = await userQuery;
         const limits = getKycFinancialLimits(user?.kycStatus);
 
         if (limits.isRestricted) {
@@ -178,10 +188,10 @@ export const updateWalletBalance = async (
     };
 
     wallet.transactions.push(transaction);
-    await wallet.save();
+    await wallet.save(session ? { session } : undefined);
 
     // Skip notification for ETH withdrawals - they have their own local toast in the frontend
-    if (referenceType !== "EthWithdrawalRequest") {
+    if (!skipNotification && referenceType !== "EthWithdrawalRequest") {
       const formattedAmount = `₦${Math.abs(amount).toLocaleString()}`;
       const message =
         type === "credit"
@@ -208,6 +218,8 @@ export const updateWalletBalance = async (
     };
   } catch (error) {
     console.error("Error updating wallet balance:", error);
+    if (throwOnError) throw error;
+
     return {
       success: false,
       message: "Failed to update wallet balance.",

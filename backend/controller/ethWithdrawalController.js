@@ -1,6 +1,7 @@
 import EthWithdrawalRequest from "../models/ethWithdrawalRequestModel.js";
 import PaymentRequest from "../models/paymentRequestModel.js";
 import axios from "axios";
+import mongoose from "mongoose";
 import { updateWalletBalance } from "./wallet/walletController.js";
 import { createTransactionNotification } from "./notifications/notificationsController.js";
 import Wallet from "../models/walletModel.js";
@@ -9,13 +10,32 @@ import {
   getKycFinancialLimits,
   UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_NGN,
 } from "../utils/kycLimitPolicy.js";
+import {
+  FinancialOperationError,
+  getIdempotencyKey,
+  isDuplicateKeyError,
+  isValidIdempotencyKey,
+} from "../utils/idempotency.js";
 
 export const createEthWithdrawalRequest = async (req, res) => {
+  const idempotencyKey = getIdempotencyKey(req);
+  let session;
+
   try {
     const { ethRecipientAddress, nairaRequestedAmount, ethNetAmountToSend } =
       req.body;
     const userId = req.userId;
     const requestedNaira = Number(nairaRequestedAmount);
+    const submittedNetEth = Number(ethNetAmountToSend);
+
+    if (!isValidIdempotencyKey(idempotencyKey)) {
+      return res.status(400).json({
+        success: false,
+        code: "INVALID_IDEMPOTENCY_KEY",
+        message:
+          "A valid Idempotency-Key header (16-128 letters, numbers, _ or -) is required.",
+      });
+    }
 
     if (!ethRecipientAddress || !nairaRequestedAmount || !ethNetAmountToSend) {
       return res
@@ -30,68 +50,23 @@ export const createEthWithdrawalRequest = async (req, res) => {
       });
     }
 
-    const user = await userModel.findById(userId).select("kycStatus");
-    const limits = getKycFinancialLimits(user?.kycStatus);
-
-    if (limits.isRestricted) {
-      const [paymentRequests, ethRequests] = await Promise.all([
-        PaymentRequest.find(
-          {
-            userId,
-            status: { $ne: "rejected" },
-          },
-          { amount: 1 },
-        ).lean(),
-        EthWithdrawalRequest.find(
-          {
-            userId,
-            status: { $ne: "Rejected" },
-          },
-          { nairaRequestedAmount: 1 },
-        ).lean(),
-      ]);
-
-      const paymentUsed = paymentRequests.reduce(
-        (sum, item) => sum + Number(item.amount || 0),
-        0,
-      );
-      const ethUsed = ethRequests.reduce(
-        (sum, item) => sum + Number(item.nairaRequestedAmount || 0),
-        0,
-      );
-
-      const usedWithoutKyc = paymentUsed + ethUsed;
-      const projectedUsed = usedWithoutKyc + requestedNaira;
-
-      if (projectedUsed > UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_NGN) {
-        const remainingAmount = Math.max(
-          0,
-          UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_NGN - usedWithoutKyc,
-        );
-
-        return res.status(403).json({
-          success: false,
-          message: `Unverified accounts can withdraw up to a total of ₦${UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_NGN.toLocaleString()}. Your non-KYC available withdrawal is ₦${remainingAmount.toLocaleString()}. Please complete KYC to continue withdrawing. Unlimited balance and withdrawals are available once KYC is verified.`,
-          code: "UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_REACHED",
-          totalLimit: UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_NGN,
-          usedAmount: usedWithoutKyc,
-          remainingAmount,
-          kycRedirectPath: "/kyc",
-        });
-      }
-    }
-
-    const wallet = await Wallet.findOne({ userId });
-    if (!wallet) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Wallet not found." });
-    }
-
-    if (requestedNaira > wallet.balance) {
+    if (!Number.isFinite(submittedNetEth) || submittedNetEth <= 0) {
       return res.status(400).json({
         success: false,
-        message: "Withdrawal amount exceeds wallet balance.",
+        message: "Please enter a valid net ETH amount.",
+      });
+    }
+
+    const replay = await EthWithdrawalRequest.findOne({
+      userId,
+      idempotencyKey,
+    });
+    if (replay) {
+      return res.status(200).json({
+        success: true,
+        message: "ETH withdrawal request already submitted.",
+        data: replay,
+        idempotentReplay: true,
       });
     }
 
@@ -99,62 +74,207 @@ export const createEthWithdrawalRequest = async (req, res) => {
       "https://api.coingecko.com/api/v3/simple/price",
       {
         params: { ids: "ethereum", vs_currencies: "ngn" },
+        timeout: 8000,
       },
     );
-    const ethRate = ethRateRes.data?.ethereum?.ngn;
-    if (!ethRate) {
+    const ethRate = Number(ethRateRes.data?.ethereum?.ngn);
+    if (!Number.isFinite(ethRate) || ethRate <= 0) {
       return res
-        .status(500)
+        .status(502)
         .json({ success: false, message: "Unable to fetch ETH rate." });
     }
 
     const ethCalculatedAmount = requestedNaira / ethRate;
-
-    const newRequest = new EthWithdrawalRequest({
-      userId,
-      ethRecipientAddress,
-      nairaRequestedAmount: requestedNaira,
-      ethCalculatedAmount,
-      ethNetAmountToSend,
-      status: "Pending",
-    });
-
-    await newRequest.save();
-
-    const walletUpdate = await updateWalletBalance(
-      userId,
-      -requestedNaira,
-      "debit",
-      "ETH withdrawal initiated",
-      newRequest._id,
-      "EthWithdrawalRequest",
-    );
-
-    if (!walletUpdate.success) {
-      console.error("Wallet update failed:", walletUpdate.error);
-    } else {
-      await createTransactionNotification(
-        userId,
-        requestedNaira,
-        "debit",
-        `${ethNetAmountToSend} ETH to ${ethRecipientAddress} initiated.`,
-        `/eth-withdrawals`,
-        newRequest._id,
-      );
+    if (submittedNetEth > ethCalculatedAmount) {
+      return res.status(400).json({
+        success: false,
+        code: "INVALID_ETH_NET_AMOUNT",
+        message: "Net ETH amount cannot exceed the server-calculated amount.",
+      });
     }
 
-    return res.status(201).json({
+    session = await mongoose.startSession();
+    let savedRequest;
+    let idempotentReplay = false;
+
+    await session.withTransaction(async () => {
+      const existingRequest = await EthWithdrawalRequest.findOne({
+        userId,
+        idempotencyKey,
+      }).session(session);
+
+      if (existingRequest) {
+        savedRequest = existingRequest;
+        idempotentReplay = true;
+        return;
+      }
+
+      const user = await userModel
+        .findById(userId)
+        .select("kycStatus")
+        .session(session);
+      const limits = getKycFinancialLimits(user?.kycStatus);
+
+      if (limits.isRestricted) {
+        const [paymentRequests, ethRequests] = await Promise.all([
+          PaymentRequest.find(
+            {
+              userId,
+              status: { $ne: "rejected" },
+            },
+            { amount: 1 },
+          )
+            .session(session)
+            .lean(),
+          EthWithdrawalRequest.find(
+            {
+              userId,
+              status: { $ne: "Rejected" },
+            },
+            { nairaRequestedAmount: 1 },
+          )
+            .session(session)
+            .lean(),
+        ]);
+
+        const paymentUsed = paymentRequests.reduce(
+          (sum, item) => sum + Number(item.amount || 0),
+          0,
+        );
+        const ethUsed = ethRequests.reduce(
+          (sum, item) => sum + Number(item.nairaRequestedAmount || 0),
+          0,
+        );
+
+        const usedWithoutKyc = paymentUsed + ethUsed;
+        const projectedUsed = usedWithoutKyc + requestedNaira;
+
+        if (projectedUsed > UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_NGN) {
+          const remainingAmount = Math.max(
+            0,
+            UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_NGN - usedWithoutKyc,
+          );
+
+          const error = new FinancialOperationError(
+            `Unverified accounts can withdraw up to a total of ₦${UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_NGN.toLocaleString()}. Your non-KYC available withdrawal is ₦${remainingAmount.toLocaleString()}. Please complete KYC to continue withdrawing. Unlimited balance and withdrawals are available once KYC is verified.`,
+            403,
+            "UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_REACHED",
+          );
+          error.details = {
+            totalLimit: UNVERIFIED_WITHDRAWAL_TOTAL_LIMIT_NGN,
+            usedAmount: usedWithoutKyc,
+            remainingAmount,
+            kycRedirectPath: "/kyc",
+          };
+          throw error;
+        }
+      }
+
+      const wallet = await Wallet.findOne({ userId }).session(session);
+      if (!wallet) {
+        throw new FinancialOperationError(
+          "Wallet not found.",
+          404,
+          "WALLET_NOT_FOUND",
+        );
+      }
+
+      if (requestedNaira > wallet.balance) {
+        throw new FinancialOperationError(
+          "Withdrawal amount exceeds wallet balance.",
+          400,
+          "INSUFFICIENT_BALANCE",
+        );
+      }
+
+      [savedRequest] = await EthWithdrawalRequest.create(
+        [
+          {
+            userId,
+            ethRecipientAddress,
+            nairaRequestedAmount: requestedNaira,
+            ethCalculatedAmount,
+            ethNetAmountToSend: submittedNetEth,
+            status: "Pending",
+            idempotencyKey,
+          },
+        ],
+        { session },
+      );
+
+      const walletUpdate = await updateWalletBalance(
+        userId,
+        -requestedNaira,
+        "debit",
+        "ETH withdrawal initiated",
+        savedRequest._id,
+        "EthWithdrawalRequest",
+        "completed",
+        { session, skipNotification: true, throwOnError: true },
+      );
+
+      if (!walletUpdate.success) {
+        throw new FinancialOperationError(
+          walletUpdate.message || "Failed to debit wallet.",
+          400,
+          "WALLET_DEBIT_FAILED",
+        );
+      }
+    });
+
+    if (!idempotentReplay) {
+      try {
+        await createTransactionNotification(
+          userId,
+          requestedNaira,
+          "debit",
+          `${submittedNetEth} ETH to ${ethRecipientAddress} initiated.`,
+          `/eth-withdrawals`,
+          savedRequest._id,
+        );
+      } catch (notificationError) {
+        console.error(
+          "ETH withdrawal committed, but notification failed:",
+          notificationError,
+        );
+      }
+    }
+
+    return res.status(idempotentReplay ? 200 : 201).json({
       success: true,
-      message: "ETH withdrawal request submitted successfully.",
-      data: newRequest,
+      message: idempotentReplay
+        ? "ETH withdrawal request already submitted."
+        : "ETH withdrawal request submitted successfully.",
+      data: savedRequest,
+      idempotentReplay,
     });
   } catch (error) {
+    if (isDuplicateKeyError(error) && idempotencyKey) {
+      const replay = await EthWithdrawalRequest.findOne({
+        userId: req.userId,
+        idempotencyKey,
+      });
+      if (replay) {
+        return res.status(200).json({
+          success: true,
+          message: "ETH withdrawal request already submitted.",
+          data: replay,
+          idempotentReplay: true,
+        });
+      }
+    }
+
     console.error("ETH withdrawal error:", error);
-    return res.status(500).json({
+    return res.status(error.statusCode || 500).json({
       success: false,
-      message: "Error processing ETH withdrawal.",
-      error: error.message,
+      message: error.statusCode
+        ? error.message
+        : "Error processing ETH withdrawal.",
+      code: error.code || "ETH_WITHDRAWAL_FAILED",
+      ...(error.details || {}),
     });
+  } finally {
+    await session?.endSession();
   }
 };
 

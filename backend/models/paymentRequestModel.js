@@ -54,16 +54,25 @@ const paymentRequestSchema = new mongoose.Schema(
     referenceId: {
       type: String,
     },
+    idempotencyKey: {
+      type: String,
+      trim: true,
+      maxlength: 128,
+    },
   },
   { timestamps: true },
 );
 
 paymentRequestSchema.index({ userId: 1 });
 paymentRequestSchema.index({ status: 1 });
+paymentRequestSchema.index(
+  { userId: 1, idempotencyKey: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { idempotencyKey: { $type: "string" } },
+  },
+);
 
 const PaymentRequest = mongoose.model("PaymentRequest", paymentRequestSchema);
-
-paymentRequestSchema.index({ userId: 1 });
-paymentRequestSchema.index({ status: 1 });
 
 export default PaymentRequest;

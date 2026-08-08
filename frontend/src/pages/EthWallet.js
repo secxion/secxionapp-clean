@@ -24,6 +24,7 @@ import {
   ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 import { emitTransactionActivity } from '../utils/transactionEvents';
+import { createIdempotencyKey } from '../utils/idempotency';
 import BackButton from '../Components/BackButton';
 
 const COUNTDOWN_DURATION = 600;
@@ -214,6 +215,7 @@ const EthWallet = () => {
   // Refs for intervals
   const countdownRef = useRef(null);
   const statusIntervalRef = useRef(null);
+  const withdrawalIdempotencyKeyRef = useRef('');
 
   // notification helpers
   const clearNotification = useCallback(
@@ -571,6 +573,11 @@ const EthWallet = () => {
 
     setWithdrawLoading(true);
     try {
+      if (!withdrawalIdempotencyKeyRef.current) {
+        withdrawalIdempotencyKeyRef.current =
+          createIdempotencyKey('eth_withdrawal');
+      }
+
       // payload includes service fee info and computed eth amounts for server-side enforcement
       const payload = {
         ethRecipientAddress: ethAddress,
@@ -583,7 +590,10 @@ const EthWallet = () => {
       const res = await fetch(SummaryApi.ethWithdrawal.url, {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Idempotency-Key': withdrawalIdempotencyKeyRef.current,
+        },
         body: JSON.stringify(payload),
       });
 
@@ -609,6 +619,7 @@ const EthWallet = () => {
       }
 
       setSuccessMessage('Withdrawal submitted and processing.');
+      withdrawalIdempotencyKeyRef.current = '';
       setWithdrawalStatus('pending');
       emitTransactionActivity({
         source: 'eth-withdrawal',
@@ -657,6 +668,7 @@ const EthWallet = () => {
 
         // basic ETH address check
         if (/^(0x)?[0-9a-fA-F]{40}$/.test(scannedAddress)) {
+          withdrawalIdempotencyKeyRef.current = '';
           setEthAddress(scannedAddress);
           setScannerVisible(false);
           showNotification(
@@ -857,7 +869,10 @@ const EthWallet = () => {
                   id="ethAddress"
                   type="text"
                   value={ethAddress}
-                  onChange={(e) => setEthAddress(e.target.value)}
+                  onChange={(e) => {
+                    withdrawalIdempotencyKeyRef.current = '';
+                    setEthAddress(e.target.value);
+                  }}
                   placeholder="0x..."
                   className="w-full pl-6 pr-14 py-5 rounded-2xl bg-black/20 text-white border border-white/10 focus:border-brand-gold/50 outline-none transition-all font-mono text-sm placeholder-gray-800"
                   disabled={
@@ -894,7 +909,10 @@ const EthWallet = () => {
                       type="button"
                       key={index}
                       className="px-3 py-1 bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg text-[10px] font-bold text-gray-400 hover:text-brand-gold transition-all"
-                      onClick={() => setEthAddress(addr)}
+                      onClick={() => {
+                        withdrawalIdempotencyKeyRef.current = '';
+                        setEthAddress(addr);
+                      }}
                       disabled={
                         countdown > 0 ||
                         withdrawLoading ||
@@ -938,7 +956,10 @@ const EthWallet = () => {
                 id="nairaAmount"
                 type="number"
                 value={nairaWithdrawAmount}
-                onChange={(e) => setNairaWithdrawAmount(e.target.value)}
+                onChange={(e) => {
+                  withdrawalIdempotencyKeyRef.current = '';
+                  setNairaWithdrawAmount(e.target.value);
+                }}
                 placeholder="0.00"
                 min="1"
                 step="any"

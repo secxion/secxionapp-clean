@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import SummaryApi from '../common';
@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import AddBankAccountForm from './AddBankAccountForm';
 import { FaWallet, FaEye, FaEyeSlash, FaTimes } from 'react-icons/fa';
 import { emitTransactionActivity } from '../utils/transactionEvents';
+import { createIdempotencyKey } from '../utils/idempotency';
 
 const PaymentRequestForm = ({
   fetchWalletBalance,
@@ -28,6 +29,7 @@ const PaymentRequestForm = ({
   const [isLoadingBankAccounts, setIsLoadingBankAccounts] = useState(false);
   const [errorBankAccounts, setErrorBankAccounts] = useState('');
   const [showAddBankForm, setShowAddBankForm] = useState(false);
+  const idempotencyKeyRef = useRef('');
 
   const MIN_REQUEST_AMOUNT = 1000;
 
@@ -63,6 +65,7 @@ const PaymentRequestForm = ({
   }, [user, fetchBankAccounts]);
 
   const handleAmountChange = (e) => {
+    idempotencyKeyRef.current = '';
     const value = e.target.value.replace(/[^\d]/g, '');
     const formatted = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     setAmount(formatted);
@@ -71,18 +74,21 @@ const PaymentRequestForm = ({
 
   const handleWithdrawAll = () => {
     if (walletBalance !== null) {
+      idempotencyKeyRef.current = '';
       setAmount(walletBalance.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
       setError('');
     }
   };
 
   const handlePaymentMethodChange = (e) => {
+    idempotencyKeyRef.current = '';
     const selected = e.target.value;
     setPaymentMethod(selected);
     if (selected === 'Ethereum') navigate('/eth');
   };
 
   const handleBankAccountChange = (e) => {
+    idempotencyKeyRef.current = '';
     const value = e.target.value;
     if (value === 'add_new') {
       setShowAddBankForm(true);
@@ -127,9 +133,16 @@ const PaymentRequestForm = ({
     }
 
     try {
+      if (!idempotencyKeyRef.current) {
+        idempotencyKeyRef.current = createIdempotencyKey('bank_withdrawal');
+      }
+
       const response = await fetch(SummaryApi.createPayment.url, {
         method: SummaryApi.createPayment.method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Idempotency-Key': idempotencyKeyRef.current,
+        },
         credentials: 'include',
         body: JSON.stringify({
           amount: parsedAmount,
@@ -140,6 +153,7 @@ const PaymentRequestForm = ({
 
       const data = await response.json();
       if (data.success) {
+        idempotencyKeyRef.current = '';
         toast.success(data.message || 'Payment request submitted!');
         setSuccessMessage(data.message);
         setAmount('');
