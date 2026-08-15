@@ -59,37 +59,50 @@ const API_TO_DEPARTMENT_ROUTES = {
   '/kyc/admin': 'kyc-verification',
 };
 
+const ADMIN_ONLY_PATTERNS = [
+  '/all-user',
+  '/update-user',
+  '/delete-user',
+  '/update-product',
+  '/upload-product',
+  '/eth-withdrawals',
+  '/eth-withdrawal',
+  '/get-all-users-market',
+  '/update-market-status',
+  '/create-blog',
+  '/update-blog',
+  '/delete-blog',
+  '/all-reports',
+  '/reply-report',
+  '/anonymous-reports',
+  '/community/pending',
+  '/community/approve',
+  '/community/reject',
+  '/all-datapads-admin',
+  '/livescript/admin',
+  '/pr/getall',
+  '/pr/update',
+  '/kyc/admin',
+];
+
+export const assertDepartmentRouteMappings = () => {
+  const mappingKeys = Object.keys(API_TO_DEPARTMENT_ROUTES);
+  const unmappedAdminPatterns = ADMIN_ONLY_PATTERNS.filter(
+    (pattern) => !mappingKeys.some((mapped) => pattern.includes(mapped) || mapped.includes(pattern)),
+  );
+
+  if (unmappedAdminPatterns.length > 0) {
+    throw new Error(
+      `[DepartmentAuth] Unmapped admin route patterns: ${unmappedAdminPatterns.join(', ')}`,
+    );
+  }
+};
+
 /**
  * Check if a route is an admin-only route that needs department verification
  */
 const isAdminRoute = (path) => {
-  const adminOnlyPatterns = [
-    '/all-user',
-    '/update-user',
-    '/delete-user',
-    '/update-product',
-    '/upload-product',
-    '/eth-withdrawals',
-    '/eth-withdrawal',
-    '/get-all-users-market',
-    '/update-market-status',
-    '/create-blog',
-    '/update-blog',
-    '/delete-blog',
-    '/all-reports',
-    '/reply-report',
-    '/anonymous-reports',
-    '/community/pending',
-    '/community/approve',
-    '/community/reject',
-    '/all-datapads-admin',
-    '/livescript/admin',
-    '/pr/getall',
-    '/pr/update',
-    '/kyc/admin',
-  ];
-  
-  return adminOnlyPatterns.some(pattern => path.includes(pattern));
+  return ADMIN_ONLY_PATTERNS.some(pattern => path.includes(pattern));
 };
 
 /**
@@ -152,10 +165,14 @@ export const verifyDepartmentAccess = (req, res, next) => {
     // Get the frontend route this API corresponds to
     const requiredRoute = getFrontendRoute(path);
     
-    // If we can't map this route, allow access (for safety)
+    // If we can't map this route, deny access until explicitly mapped.
     if (!requiredRoute) {
-      console.log(`[DepartmentAuth] No mapping for API: ${path}, allowing access`);
-      return next();
+      console.warn(`[DepartmentAuth] Unmapped admin API denied: ${path}`);
+      return res.status(403).json({
+        success: false,
+        error: true,
+        message: 'Access denied. This admin API is not mapped to a department route.',
+      });
     }
     
     // Check if department has access

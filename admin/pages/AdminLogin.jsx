@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaUserShield, FaLock, FaEye, FaEyeSlash, FaKey } from 'react-icons/fa';
@@ -11,10 +11,36 @@ const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showKey, setShowKey] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [csrfToken, setCsrfToken] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCsrfToken = async () => {
+      try {
+        const response = await fetch(`${summaryApi.baseURL}/api/csrf-token`, {
+          method: 'GET',
+          credentials: 'include',
+        });
+        const result = await response.json();
+        if (result.success && result.csrfToken) {
+          setCsrfToken(result.csrfToken);
+        }
+      } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+      }
+    };
+
+    fetchCsrfToken();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!csrfToken) {
+      toast.error('Security token not ready yet. Please try again.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -24,6 +50,7 @@ const AdminLogin = () => {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
         },
         body: JSON.stringify({ email, password, departmentKey }),
       });
@@ -32,8 +59,7 @@ const AdminLogin = () => {
 
       if (data.success) {
         toast.success(data.message || 'Welcome!');
-        // Store JWT token and auth data for cross-origin API calls
-        localStorage.setItem('adminToken', data.data.token);
+        // Persist only non-sensitive session metadata on client side.
         localStorage.setItem('adminAuth', 'true');
         localStorage.setItem('adminUser', JSON.stringify(data.data.user));
         localStorage.setItem('adminDepartment', JSON.stringify(data.data.department));

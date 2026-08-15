@@ -3,6 +3,38 @@ import logger from "../utils/logger.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 
+const CSRF_HEADER_NAME = "x-csrf-token";
+const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+
+const issueCsrfToken = (req, res) => {
+  if (!req.session) {
+    return null;
+  }
+
+  if (!req.session.csrfToken) {
+    req.session.csrfToken = crypto.randomBytes(32).toString("hex");
+  }
+
+  res.locals.csrfToken = req.session.csrfToken;
+  res.setHeader("X-CSRF-Token", req.session.csrfToken);
+  return req.session.csrfToken;
+};
+
+const tokensMatch = (tokenA, tokenB) => {
+  if (!tokenA || !tokenB) {
+    return false;
+  }
+
+  const a = Buffer.from(String(tokenA));
+  const b = Buffer.from(String(tokenB));
+
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(a, b);
+};
+
 /**
  * Security Middleware Suite
  * - CSRF Protection
@@ -15,26 +47,21 @@ import jwt from "jsonwebtoken";
 // ============================================
 
 export const csrfProtection = (req, res, next) => {
-  // Generate CSRF token if not present
-  let csrfToken =
-    req.headers["x-csrf-token"] || req.body?.csrfToken || req.query?.csrfToken;
+  const sessionToken = issueCsrfToken(req, res);
 
-  // If no token provided, generate a new one
-  if (!csrfToken) {
-    csrfToken = crypto.randomBytes(32).toString("hex");
+  if (!sessionToken) {
+    return res.status(500).json({
+      success: false,
+      message: "Session unavailable for CSRF validation",
+      code: "CSRF_SESSION_UNAVAILABLE",
+    });
   }
 
-  // Store token in response locals for this request
-  res.locals.csrfToken = csrfToken;
-  res.setHeader("X-CSRF-Token", csrfToken);
-
-  // Skip CSRF verification for GET requests
-  if (req.method === "GET") {
+  if (SAFE_METHODS.has(req.method)) {
     return next();
   }
 
-  // For POST/PUT/DELETE/PATCH, token must be in header
-  const tokenFromHeader = req.headers["x-csrf-token"];
+  const tokenFromHeader = req.headers[CSRF_HEADER_NAME];
 
   if (!tokenFromHeader) {
     logger.logError(
@@ -50,13 +77,34 @@ export const csrfProtection = (req, res, next) => {
 
     return res.status(403).json({
       success: false,
-      message: "CSRF token validation failed",
+      message: "CSRF token required",
+      code: "CSRF_VALIDATION_FAILED",
+    });
+  }
+
+  if (!tokensMatch(tokenFromHeader, sessionToken)) {
+    logger.logError(
+      "CSRF",
+      "CSRF token mismatch",
+      null,
+      {
+        userId: req.user?.id,
+        endpoint: req.originalUrl,
+        method: req.method,
+      },
+    );
+
+    return res.status(403).json({
+      success: false,
+      message: "Invalid CSRF token",
       code: "CSRF_VALIDATION_FAILED",
     });
   }
 
   next();
 };
+
+export { issueCsrfToken };
 
 // ============================================
 // RATE LIMITING MIDDLEWARE

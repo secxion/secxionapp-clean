@@ -1,6 +1,5 @@
 import express from "express";
 import axios from "axios";
-import crypto from "crypto";
 import dotenv from "dotenv";
 import helmet from "helmet";
 
@@ -170,6 +169,7 @@ import noCache from "../middleware/noCache.js";
 import { verifyAdmin } from "../middleware/authMiddleware.js";
 import {
   csrfProtection,
+  issueCsrfToken,
   apiLimiter,
   authLimiter,
   signupLimiter,
@@ -179,9 +179,13 @@ import {
   refreshAccessToken,
   revokeRefreshToken,
 } from "../middleware/securityMiddleware.js";
-import verifyDepartmentAccess from "../middleware/departmentAuth.js";
+import verifyDepartmentAccess, {
+  assertDepartmentRouteMappings,
+} from "../middleware/departmentAuth.js";
 
 const router = express.Router();
+
+assertDepartmentRouteMappings();
 
 // Apply department access verification to all routes
 router.use(verifyDepartmentAccess);
@@ -515,7 +519,15 @@ router.get("/health/sms", (req, res) => {
 
 // Get CSRF token (required for POST requests) - No middleware, pure JSON response
 router.get("/csrf-token", (req, res) => {
-  const csrfToken = crypto.randomBytes(32).toString("hex");
+  const csrfToken = issueCsrfToken(req, res);
+
+  if (!csrfToken) {
+    return res.status(500).json({
+      success: false,
+      message: "Unable to create CSRF token",
+    });
+  }
+
   res.json({
     success: true,
     csrfToken,
@@ -529,10 +541,10 @@ router.get("/slider-verification", (req, res) => {
 });
 
 // Authentication routes with rate limiting (no CSRF - unauthenticated endpoints)
-router.post("/signup", signupLimiter, userSignUpController);
+router.post("/signup", csrfProtection, signupLimiter, userSignUpController);
 router.get("/verify-email", verifyEmailController);
-router.post("/signin", authLimiter, userSignInController);
-router.post("/admin-signin", authLimiter, adminSignInController);
+router.post("/signin", csrfProtection, authLimiter, userSignInController);
+router.post("/admin-signin", csrfProtection, authLimiter, adminSignInController);
 router.get("/user-details", authToken, noCache, userDetailsController);
 router.get("/userLogout", authToken, noCache, userLogout);
 router.post("/request-reset", passwordResetLimiter, sendResetCode);

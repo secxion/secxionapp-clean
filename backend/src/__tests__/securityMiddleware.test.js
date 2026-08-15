@@ -26,6 +26,7 @@ describe("Security Middleware", () => {
     it("should generate and set CSRF token", () => {
       const req = createMockRequest();
       req.method = "GET";
+      req.session = {};
       const res = createMockResponse();
       res.locals = {};
       const next = jest.fn();
@@ -40,10 +41,11 @@ describe("Security Middleware", () => {
       expect(next).toHaveBeenCalled();
     });
 
-    it("should return existing CSRF token if present", () => {
+    it("should return existing CSRF token from session", () => {
       const existingToken = "existing-token-12345";
-      const req = createMockRequest({}, {}, {}, { "x-csrf-token": existingToken });
+      const req = createMockRequest();
       req.method = "GET";
+      req.session = { csrfToken: existingToken };
       const res = createMockResponse();
       res.locals = {};
       const next = jest.fn();
@@ -53,6 +55,36 @@ describe("Security Middleware", () => {
       expect(res.locals.csrfToken).toBe(existingToken);
       expect(res.setHeader).toHaveBeenCalledWith("X-CSRF-Token", existingToken);
       expect(next).toHaveBeenCalled();
+    });
+
+    it("should reject mutating requests without CSRF header", () => {
+      const req = createMockRequest();
+      req.method = "POST";
+      req.session = { csrfToken: "token-123" };
+      req.originalUrl = "/api/signin";
+      const res = createMockResponse();
+      res.locals = {};
+      const next = jest.fn();
+
+      csrfProtection(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(403);
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it("should allow mutating requests with matching CSRF header", () => {
+      const token = "token-123";
+      const req = createMockRequest({}, {}, {}, { "x-csrf-token": token });
+      req.method = "POST";
+      req.session = { csrfToken: token };
+      const res = createMockResponse();
+      res.locals = {};
+      const next = jest.fn();
+
+      csrfProtection(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      expect(res.status).not.toHaveBeenCalledWith(403);
     });
   });
 
