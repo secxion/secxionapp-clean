@@ -17,6 +17,7 @@ import {
   FaWallet
 } from 'react-icons/fa';
 import summaryApi, { authFetch } from '../common/index.js';
+import AdminPageLayout from '../components/layout/AdminPageLayout';
 
 const AdminDashboard = () => {
   // Get department from localStorage for access control
@@ -132,7 +133,12 @@ const AdminDashboard = () => {
   );
 
   return (
-    <div className="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto">
+    <AdminPageLayout
+      title="Dashboard Overview"
+      subtitle="Monitor platform activity and jump into core operations"
+      icon={FaChartLine}
+      className="p-3 sm:p-4 md:p-6"
+    >
       {/* Stats Grid - SUPER ADMIN ONLY */}
       {isSuperAdmin && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
@@ -240,7 +246,7 @@ const AdminDashboard = () => {
           </p>
         </div>
       )}
-    </div>
+    </AdminPageLayout>
   );
 };
 

@@ -2,6 +2,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { FaCheckCircle, FaClock, FaSearch, FaTimesCircle, FaUserShield } from 'react-icons/fa';
 import SummaryApi, { authFetch } from '../common';
+import AdminPageLayout from '../components/layout/AdminPageLayout';
+import AdminTableShell from '../components/ui/AdminTableShell';
+import AdminModal from '../components/ui/AdminModal';
+import AdminModalActions from '../components/ui/AdminModalActions';
 
 const statusPill = {
   pending: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
@@ -231,24 +235,19 @@ const AdminKycVerification = () => {
   };
 
   return (
-    <div className="p-4 lg:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-yellow-500/10">
-            <FaUserShield className="text-yellow-500 text-xl" />
-          </div>
-          <div>
-            <h1 className="text-white text-xl font-bold">KYC Verification</h1>
-            <p className="text-slate-400 text-sm">Review and approve identity submissions</p>
-          </div>
-        </div>
+    <AdminPageLayout
+      title="KYC Verification"
+      subtitle="Review and approve identity submissions"
+      icon={FaUserShield}
+      actions={
         <button
           onClick={fetchSubmissions}
-          className="px-4 py-2 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700"
+          className="admin-btn-muted"
         >
           Refresh
         </button>
-      </div>
+      }
+    >
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {[
@@ -257,7 +256,7 @@ const AdminKycVerification = () => {
           { key: 'approved', label: 'Approved', icon: FaCheckCircle },
           { key: 'rejected', label: 'Rejected', icon: FaTimesCircle },
         ].map((card) => (
-          <div key={card.key} className="bg-slate-800/60 border border-slate-700 rounded-xl p-4">
+          <div key={card.key} className="admin-card p-4">
             <p className="text-slate-400 text-xs uppercase">{card.label}</p>
             <p className="text-white text-2xl font-bold mt-1">{stats[card.key] || 0}</p>
           </div>
@@ -285,21 +284,21 @@ const AdminKycVerification = () => {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search name, email, id number"
-            className="pl-9 pr-3 py-2 rounded-lg bg-slate-800 text-white border border-slate-700 focus:border-yellow-500 outline-none"
+            className="admin-input pl-9 pr-3 py-2"
           />
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-slate-700">
-        <table className="w-full text-left text-sm">
+      <AdminTableShell>
+        <table className="w-full text-left text-xs sm:text-sm">
           <thead className="bg-slate-800/80 text-slate-300">
             <tr>
-              <th className="p-3">User</th>
-              <th className="p-3">ID Type</th>
-              <th className="p-3">ID Number</th>
-              <th className="p-3">Status</th>
-              <th className="p-3">Submitted</th>
-              <th className="p-3">Action</th>
+              <th className="p-2.5 sm:p-3">User</th>
+              <th className="p-2.5 sm:p-3">ID Type</th>
+              <th className="hidden p-2.5 sm:table-cell sm:p-3">ID Number</th>
+              <th className="p-2.5 sm:p-3">Status</th>
+              <th className="hidden p-2.5 sm:table-cell sm:p-3">Submitted</th>
+              <th className="p-2.5 sm:p-3">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700 bg-slate-900/40 text-slate-200">
@@ -314,30 +313,30 @@ const AdminKycVerification = () => {
             ) : (
               filtered.map((item) => (
                 <tr key={item._id}>
-                  <td className="p-3">
+                  <td className="p-2.5 sm:p-3">
                     <p className="font-semibold">{item.fullName}</p>
                     <p className="text-xs text-slate-400">{item.userId?.email || 'No email'}</p>
                   </td>
-                  <td className="p-3">{item.idType}</td>
-                  <td className="p-3">{item.idNumber}</td>
-                  <td className="p-3">
+                  <td className="p-2.5 sm:p-3">{item.idType}</td>
+                  <td className="hidden p-2.5 sm:table-cell sm:p-3">{item.idNumber}</td>
+                  <td className="p-2.5 sm:p-3">
                     <span className={`px-2 py-1 rounded-full text-xs border ${statusPill[item.status] || statusPill.pending}`}>
                       {item.status}
                     </span>
                   </td>
-                  <td className="p-3">{new Date(item.submittedAt).toLocaleString()}</td>
-                  <td className="p-3">
+                  <td className="hidden p-2.5 sm:table-cell sm:p-3">{new Date(item.submittedAt).toLocaleString()}</td>
+                  <td className="p-2.5 sm:p-3">
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => openReview(item)}
-                        className="px-3 py-1 rounded-lg bg-yellow-500 text-slate-900 font-semibold hover:bg-yellow-400"
+                        className="admin-btn-primary px-3 py-1"
                       >
                         Review
                       </button>
                       <button
                         onClick={() => deleteSubmission(item)}
                         disabled={deletingId === item._id}
-                        className="px-3 py-1 rounded-lg bg-red-500/90 text-white font-semibold hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="admin-btn-danger px-3 py-1 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {deletingId === item._id ? 'Deleting...' : 'Delete'}
                       </button>
@@ -348,20 +347,17 @@ const AdminKycVerification = () => {
             )}
           </tbody>
         </table>
-      </div>
+      </AdminTableShell>
 
       {selected && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl bg-slate-900 border border-slate-700">
-            <div className="sticky top-0 z-10 flex justify-between items-start p-5 mb-4 border-b border-slate-700 bg-slate-900/95 backdrop-blur">
-              <div>
-                <h2 className="text-white text-lg font-bold">Review KYC: {selected.fullName}</h2>
-                <p className="text-sm text-slate-400">{selected.userId?.email}</p>
-              </div>
-              <button onClick={() => setSelected(null)} className="text-slate-400 hover:text-white">Close</button>
-            </div>
-
-            <div className="px-5">
+        <AdminModal
+          onClose={() => setSelected(null)}
+          title={`Review KYC: ${selected.fullName}`}
+          subtitle={selected.userId?.email}
+          maxWidth="max-w-3xl"
+          panelClassName="max-h-[90vh]"
+          bodyClassName="px-5 py-4"
+        >
 
             <div className="mb-4 rounded-xl border border-slate-700 bg-slate-800/40 p-4">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-3">
@@ -443,8 +439,8 @@ const AdminKycVerification = () => {
               </div>
             </div>
 
-            <div className="sticky top-[88px] z-[9] mb-4 border-b border-slate-700 bg-slate-900/95 py-3 backdrop-blur">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="mb-4 border-b border-slate-700 py-3">
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                 <a href={selected.documents?.frontUrl} target="_blank" rel="noreferrer" className="p-3 rounded-lg border border-slate-700 bg-slate-800 text-yellow-400 hover:underline">View ID Front</a>
                 {selected.documents?.backUrl ? (
                   <a href={selected.documents.backUrl} target="_blank" rel="noreferrer" className="p-3 rounded-lg border border-slate-700 bg-slate-800 text-yellow-400 hover:underline">View ID Back</a>
@@ -459,7 +455,7 @@ const AdminKycVerification = () => {
               <select
                 value={decision}
                 onChange={(event) => setDecision(event.target.value)}
-                className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-white"
+                className="admin-input px-3 py-2"
               >
                 <option value="approved">Approve</option>
                 <option value="rejected">Reject</option>
@@ -468,7 +464,7 @@ const AdminKycVerification = () => {
                 value={adminNotes}
                 onChange={(event) => setAdminNotes(event.target.value)}
                 placeholder="Admin notes (optional)"
-                className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-white"
+                className="admin-input px-3 py-2"
               />
             </div>
 
@@ -478,35 +474,33 @@ const AdminKycVerification = () => {
                 value={rejectionReason}
                 onChange={(event) => setRejectionReason(event.target.value)}
                 placeholder="Rejection reason (required)"
-                className="w-full mb-4 px-3 py-2 rounded-lg bg-slate-800 border border-red-500/50 text-white"
+                className="admin-input w-full mb-4 border-red-500/50 px-3 py-2"
               />
             )}
 
-            <div className="sticky bottom-0 z-10 flex justify-end gap-3 p-5 mt-5 border-t border-slate-700 bg-slate-900/95 backdrop-blur">
+            <AdminModalActions padded={false} className="mt-5 justify-end">
               <button
                 onClick={() => deleteSubmission(selected)}
                 disabled={deletingId === selected._id || updating}
-                className="mr-auto px-4 py-2 rounded-lg bg-red-500/90 text-white font-bold hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="admin-btn-danger mr-auto font-bold disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {deletingId === selected._id ? 'Deleting...' : 'Delete Submission'}
               </button>
-              <button onClick={() => setSelected(null)} className="px-4 py-2 rounded-lg bg-slate-700 text-slate-100">Cancel</button>
+              <button onClick={() => setSelected(null)} className="admin-btn-muted">Cancel</button>
               <button
                 onClick={submitReview}
                 disabled={
                   updating ||
                   Boolean(deletingId)
                 }
-                className="px-4 py-2 rounded-lg bg-yellow-500 text-slate-900 font-bold hover:bg-yellow-400 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="admin-btn-primary font-bold disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {updating ? 'Saving...' : 'Save Review'}
               </button>
-            </div>
-            </div>
-          </div>
-        </div>
+            </AdminModalActions>
+        </AdminModal>
       )}
-    </div>
+    </AdminPageLayout>
   );
 };
 

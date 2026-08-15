@@ -9,6 +9,7 @@ import {
   FaExclamationTriangle,
   FaSearch,
 } from 'react-icons/fa';
+import AdminPageLayout from '../components/layout/AdminPageLayout';
 
 const fetchAllProducts = async () => {
   try {
@@ -54,27 +55,19 @@ const AllProducts = () => {
   );
 
   return (
-    <div className="p-4 lg:p-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-yellow-500/10 rounded-xl">
-            <FaBoxOpen className="text-yellow-500 text-xl" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-white">Products</h2>
-            <p className="text-slate-400 text-sm">
-              {allProduct.length} total products
-            </p>
-          </div>
-        </div>
+    <AdminPageLayout
+      title="Products"
+      subtitle={`${allProduct.length} total products`}
+      icon={FaBoxOpen}
+      actions={
         <button
-          className="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-slate-900 rounded-xl text-sm font-semibold shadow-lg shadow-yellow-500/20 transition-all duration-200"
+          className="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-slate-900 rounded-xl text-sm font-semibold shadow-lg shadow-yellow-500/20 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
           onClick={() => setOpenUploadProduct(true)}
         >
           <FaPlus className="mr-2" /> Add Product
         </button>
-      </div>
+      }
+    >
 
       {/* Search */}
       <div className="relative mb-6">
@@ -84,7 +77,7 @@ const AllProducts = () => {
           placeholder="Search products..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-11 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors"
+          className="admin-input w-full pl-11 pr-4 py-3"
         />
       </div>
 
@@ -136,7 +129,7 @@ const AllProducts = () => {
           />
         </div>
       )}
-    </div>
+    </AdminPageLayout>
   );
 };
 

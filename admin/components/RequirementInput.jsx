@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaTimes, FaListOl, FaEdit, FaLightbulb } from 'react-icons/fa';
+import AdminModalActions from './ui/AdminModalActions';
 
 /**
  * RequirementInput - Expandable requirement input with formatting helper
@@ -135,7 +136,7 @@ Requirements:
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center space-x-3 p-4 border-t border-slate-700 flex-shrink-0">
+            <AdminModalActions className="flex-shrink-0">
               <button
                 type="button"
                 onClick={handleSave}
@@ -150,7 +151,7 @@ Requirements:
               >
                 Cancel
               </button>
-            </div>
+            </AdminModalActions>
           </div>
         </div>
       )}

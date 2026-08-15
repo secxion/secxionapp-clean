@@ -12,6 +12,8 @@ import {
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import ChangeUserRole from '../components/ChangeUserRole';
+import AdminPageLayout from '../components/layout/AdminPageLayout';
+import AdminTableShell from '../components/ui/AdminTableShell';
 
 const fetchAllUsers = async () => {
   const response = await authFetch(SummaryApi.allUser.url, {
@@ -107,25 +109,15 @@ const AllUsers = () => {
   };
 
   return (
-    <div className="p-4 lg:p-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-yellow-500/10 rounded-xl">
-            <FaUsers className="text-yellow-500 text-xl" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-white">All Users</h1>
-            <p className="text-slate-400 text-sm">
-              Manage platform users and roles
-            </p>
-          </div>
-        </div>
-      </div>
+    <AdminPageLayout
+      title="All Users"
+      subtitle="Manage platform users and roles"
+      icon={FaUsers}
+    >
 
       {/* Stats Cards */}
       <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
-        <div className="bg-slate-800/50 rounded-xl p-2.5 sm:p-4 border border-slate-700/50">
+        <div className="admin-card p-2.5 sm:p-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-1">
             <div>
               <p className="text-slate-400 text-[10px] sm:text-xs uppercase tracking-wide">
@@ -138,7 +130,7 @@ const AllUsers = () => {
             <FaUsers className="hidden sm:block text-slate-600 text-2xl" />
           </div>
         </div>
-        <div className="bg-slate-800/50 rounded-xl p-2.5 sm:p-4 border border-slate-700/50">
+        <div className="admin-card p-2.5 sm:p-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-1">
             <div>
               <p className="text-slate-400 text-[10px] sm:text-xs uppercase tracking-wide">
@@ -151,7 +143,7 @@ const AllUsers = () => {
             <FaUserShield className="hidden sm:block text-yellow-500/30 text-2xl" />
           </div>
         </div>
-        <div className="bg-slate-800/50 rounded-xl p-2.5 sm:p-4 border border-slate-700/50">
+        <div className="admin-card p-2.5 sm:p-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-1">
             <div>
               <p className="text-slate-400 text-[10px] sm:text-xs uppercase tracking-wide">
@@ -175,14 +167,14 @@ const AllUsers = () => {
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 sm:py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm sm:text-base text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors"
+            className="admin-input w-full pl-10 pr-4 py-2 sm:py-2.5 text-sm sm:text-base"
           />
         </div>
         <div className="flex gap-2">
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm sm:text-base text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+            className="admin-input flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base"
           >
             <option value="all">All</option>
             <option value="ADMIN">Admins</option>
@@ -204,12 +196,11 @@ const AllUsers = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-slate-800/30 rounded-xl border border-slate-700/50 overflow-hidden">
-        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
-          <table className="w-full min-w-[600px] sm:min-w-[800px]">
+      <AdminTableShell>
+          <table className="w-full min-w-full sm:min-w-[800px]">
             <thead>
               <tr className="border-b border-slate-700/50">
-                <th className="p-4 text-left">
+                <th className="p-2.5 text-left sm:p-4">
                   <input
                     type="checkbox"
                     onChange={toggleSelectAll}
@@ -220,19 +211,19 @@ const AllUsers = () => {
                     className="w-4 h-4 rounded border-slate-600 bg-slate-700 text-yellow-500 focus:ring-yellow-500/50 focus:ring-offset-0"
                   />
                 </th>
-                <th className="p-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                <th className="p-2.5 text-left text-xs font-semibold text-slate-400 uppercase tracking-wide sm:p-4">
                   #
                 </th>
-                <th className="p-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                <th className="p-2.5 text-left text-xs font-semibold text-slate-400 uppercase tracking-wide sm:p-4">
                   User
                 </th>
-                <th className="p-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                <th className="p-2.5 text-left text-xs font-semibold text-slate-400 uppercase tracking-wide sm:p-4">
                   Role
                 </th>
-                <th className="p-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                <th className="hidden p-2.5 text-left text-xs font-semibold text-slate-400 uppercase tracking-wide md:table-cell sm:p-4">
                   Joined
                 </th>
-                <th className="p-4 text-center text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                <th className="p-2.5 text-center text-xs font-semibold text-slate-400 uppercase tracking-wide sm:p-4">
                   Actions
                 </th>
               </tr>
@@ -259,7 +250,7 @@ const AllUsers = () => {
                     key={user._id}
                     className="border-b border-slate-700/30 hover:bg-slate-800/50 transition-colors"
                   >
-                    <td className="p-4">
+                    <td className="p-2.5 sm:p-4">
                       <input
                         type="checkbox"
                         checked={selectedUsers.includes(user._id)}
@@ -267,8 +258,8 @@ const AllUsers = () => {
                         className="w-4 h-4 rounded border-slate-600 bg-slate-700 text-yellow-500 focus:ring-yellow-500/50 focus:ring-offset-0"
                       />
                     </td>
-                    <td className="p-4 text-slate-500 text-sm">{index + 1}</td>
-                    <td className="p-4">
+                    <td className="p-2.5 text-slate-500 text-sm sm:p-4">{index + 1}</td>
+                    <td className="p-2.5 sm:p-4">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-600 flex items-center justify-center text-slate-900 font-bold text-sm flex-shrink-0">
                           {user.name?.charAt(0).toUpperCase()}
@@ -283,7 +274,7 @@ const AllUsers = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="p-4">
+                    <td className="p-2.5 sm:p-4">
                       <span
                         className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${
                           user.role === 'ADMIN'
@@ -297,18 +288,19 @@ const AllUsers = () => {
                         {user.role}
                       </span>
                     </td>
-                    <td className="p-4 text-slate-400 text-sm">
+                    <td className="hidden p-2.5 text-slate-400 text-sm md:table-cell sm:p-4">
                       {moment(user.createdAt).format('MMM D, YYYY')}
                     </td>
-                    <td className="p-4">
+                    <td className="p-2.5 sm:p-4">
                       <div className="flex items-center justify-center space-x-2">
                         <button
                           onClick={() => {
                             setUpdateUserDetails(user);
                             setOpenUpdateRole(true);
                           }}
-                          className="p-2 rounded-lg bg-slate-700/50 text-slate-300 hover:bg-yellow-500/20 hover:text-yellow-400 transition-colors"
+                          className="p-2 rounded-lg bg-slate-700/50 text-slate-300 hover:bg-yellow-500/20 hover:text-yellow-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                           title="Edit Role"
+                          aria-label="Edit user role"
                         >
                           <MdModeEdit size={16} />
                         </button>
@@ -316,8 +308,9 @@ const AllUsers = () => {
                           onClick={() =>
                             deleteUsers([user._id], refetch, setSelectedUsers)
                           }
-                          className="p-2 rounded-lg bg-slate-700/50 text-slate-300 hover:bg-red-500/20 hover:text-red-400 transition-colors"
+                          className="p-2 rounded-lg bg-slate-700/50 text-slate-300 hover:bg-red-500/20 hover:text-red-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                           title="Delete User"
+                          aria-label="Delete user"
                         >
                           <FaTrashAlt size={14} />
                         </button>
@@ -336,8 +329,7 @@ const AllUsers = () => {
               )}
             </tbody>
           </table>
-        </div>
-      </div>
+      </AdminTableShell>
 
       {/* Results count */}
       {!isLoading && !error && (
@@ -356,7 +348,7 @@ const AllUsers = () => {
           callFunc={refetch}
         />
       )}
-    </div>
+    </AdminPageLayout>
   );
 };
 

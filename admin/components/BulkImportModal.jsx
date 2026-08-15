@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import {
-  FaTimes,
   FaFileImport,
   FaCheck,
   FaExclamationTriangle,
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import currencyData from '../helpers/currencyData';
+import AdminModal from './ui/AdminModal';
+import AdminModalActions from './ui/AdminModalActions';
 
 /**
  * BulkImportModal - Parse pasted product data and import into form
@@ -214,38 +215,45 @@ const BulkImportModal = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-        onClick={handleClose}
-      />
-
-      <div className="relative bg-slate-900 rounded-2xl border border-slate-700 w-full max-w-3xl max-h-[85vh] overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-700 flex-shrink-0">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-yellow-500/10 rounded-xl">
-              <FaFileImport className="text-yellow-500 text-lg" />
-            </div>
-            <div>
-              <h3 className="text-white font-semibold">Bulk Import Products</h3>
-              <p className="text-slate-400 text-xs">
-                {step === 'paste'
-                  ? 'Paste product data from website'
-                  : 'Review parsed data'}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={handleClose}
-            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-          >
-            <FaTimes size={16} />
-          </button>
-        </div>
-
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto p-4">
+    <AdminModal
+      onClose={handleClose}
+      title="Bulk Import Products"
+      subtitle={step === 'paste' ? 'Paste product data from website' : 'Review parsed data'}
+      icon={FaFileImport}
+      maxWidth="max-w-3xl"
+      zIndex="z-[60]"
+      panelClassName="max-h-[85vh]"
+      bodyClassName="p-4"
+      footer={
+        <AdminModalActions divider={false} padded={false} className="justify-between">
+          {step === 'paste' ? (
+            <>
+              <button onClick={handleClose} className="admin-btn-muted text-sm">
+                Cancel
+              </button>
+              <button onClick={handleParse} className="admin-btn-primary text-sm font-semibold">
+                Parse Data
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={handleBack} className="admin-btn-muted text-sm">
+                Back to Edit
+              </button>
+              <button
+                onClick={handleImport}
+                className="rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:from-emerald-400 hover:to-emerald-500"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <FaCheck size={14} />
+                  Import to Form
+                </span>
+              </button>
+            </>
+          )}
+        </AdminModalActions>
+      }
+    >
           {step === 'paste' ? (
             <div className="space-y-4">
               {/* Instructions */}
@@ -383,45 +391,7 @@ Wait time: 6 min
               )}
             </div>
           )}
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between p-4 border-t border-slate-700 flex-shrink-0">
-          {step === 'paste' ? (
-            <>
-              <button
-                onClick={handleClose}
-                className="px-4 py-2.5 bg-slate-800 text-slate-300 font-medium rounded-xl hover:bg-slate-700 transition-colors text-sm"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleParse}
-                className="px-6 py-2.5 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 font-semibold rounded-xl hover:from-yellow-400 hover:to-yellow-500 transition-all text-sm"
-              >
-                Parse Data
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={handleBack}
-                className="px-4 py-2.5 bg-slate-800 text-slate-300 font-medium rounded-xl hover:bg-slate-700 transition-colors text-sm"
-              >
-                ← Back to Edit
-              </button>
-              <button
-                onClick={handleImport}
-                className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-xl hover:from-emerald-400 hover:to-emerald-500 transition-all text-sm flex items-center gap-2"
-              >
-                <FaCheck size={14} />
-                Import to Form
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-    </div>
+    </AdminModal>
   );
 };
 

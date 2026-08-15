@@ -28,6 +28,7 @@ const AdminPanel = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const currentRoute = location.pathname.split('/').filter(Boolean).pop() || 'dashboard';
 
 	// Get user and department from localStorage
 	const adminUser = useMemo(() => {
@@ -95,13 +96,16 @@ const AdminPanel = () => {
 	}
 
 	// Check if current route is allowed
-	const currentPath = location.pathname.split('/').pop() || 'dashboard';
 	const isCurrentRouteAllowed = () => {
 		if (!department?.allowedRoutes) return true;
 		if (department.allowedRoutes.includes('*')) return true; // Wildcard = full access
-		if (currentPath === 'dashboard') return true; // Dashboard is always allowed
-		return department.allowedRoutes.includes(currentPath);
+		if (currentRoute === 'dashboard') return true; // Dashboard is always allowed
+		return department.allowedRoutes.includes(currentRoute);
 	};
+
+	const activeMenuLabel = useMemo(() => {
+		return menuItems.find((item) => item.path === currentRoute)?.label || 'Dashboard';
+	}, [currentRoute, menuItems]);
 
 	// Block access to unauthorized routes
 	if (!isCurrentRouteAllowed()) {
@@ -168,7 +172,7 @@ const AdminPanel = () => {
 
 			{/* Sidebar */}
 			<aside
-				className={`fixed top-0 left-0 z-40 h-full w-64 bg-slate-900 border-r border-slate-800 transform transition-transform duration-300 ease-in-out ${
+				className={`fixed top-0 left-0 z-40 h-full w-64 bg-slate-900 border-r border-slate-800 transform transition-transform duration-300 ease-in-out flex flex-col ${
 					isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
 				} lg:translate-x-0`}
 			>
@@ -188,9 +192,9 @@ const AdminPanel = () => {
 				</div>
 
 				{/* Navigation */}
-				<nav className="p-3 space-y-1 overflow-y-auto h-[calc(100vh-180px)]">
+				<nav className="p-3 space-y-1 overflow-y-auto flex-1 min-h-0">
 					{menuItems.map(({ path, label, icon }) => {
-						const isActive = location.pathname.includes(path);
+						const isActive = currentRoute === path;
 						return (
 							<button
 								key={path}
@@ -213,7 +217,7 @@ const AdminPanel = () => {
 				</nav>
 
 				{/* Logout */}
-				<div className="absolute bottom-0 left-0 right-0 p-3 border-t border-slate-800 bg-slate-900">
+				<div className="p-3 border-t border-slate-800 bg-slate-900">
 					<button
 						onClick={handleLogout}
 						className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-xl text-sm font-medium bg-slate-800 text-slate-300 hover:bg-red-600/20 hover:text-red-400 transition-all duration-200"
@@ -236,6 +240,10 @@ const AdminPanel = () => {
 						>
 							<FaArrowLeft className="w-4 h-4" />
 						</button>
+						<div>
+							<h1 className="text-xl font-semibold text-white">{activeMenuLabel}</h1>
+							<p className="text-xs uppercase tracking-wider text-slate-400">Admin Console</p>
+						</div>
 					</div>
 					<div className="flex items-center space-x-4">
 						<span className="text-slate-400 text-sm">Welcome back,</span>

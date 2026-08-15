@@ -9,6 +9,7 @@ import SummaryApi, { authFetch } from '../common';
 import { toast } from 'react-toastify';
 import RequirementInput from './RequirementInput';
 import BulkImportModal from './BulkImportModal';
+import AdminModalActions from './ui/AdminModalActions';
 
 const UploadProduct = ({ onClose, fetchData }) => {
   const [data, setData] = useState({
@@ -447,7 +448,7 @@ const UploadProduct = ({ onClose, fetchData }) => {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center space-x-3 pt-4 border-t border-slate-700">
+        <AdminModalActions padded={false}>
           <button
             type="submit"
             className="flex-1 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 font-semibold rounded-xl hover:from-yellow-400 hover:to-yellow-500 transition-all"
@@ -461,7 +462,7 @@ const UploadProduct = ({ onClose, fetchData }) => {
           >
             Cancel
           </button>
-        </div>
+        </AdminModalActions>
       </form>
 
       {/* Bulk Import Modal */}

@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .admin-card {
+    @apply rounded-xl border border-slate-700/50 bg-slate-800/40;
+  }
+
+  .admin-input {
+    @apply rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-white placeholder-slate-500 focus:border-yellow-500/50 focus:outline-none;
+  }
+
+  .admin-btn-primary {
+    @apply rounded-xl bg-yellow-500 px-4 py-2 text-sm font-semibold text-slate-900 transition-colors hover:bg-yellow-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900;
+  }
+
+  .admin-btn-muted {
+    @apply rounded-xl bg-slate-800 px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900;
+  }
+
+  .admin-btn-danger {
+    @apply rounded-xl bg-red-500/90 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900;
+  }
+
+  .admin-table-shell {
+    @apply admin-card overflow-hidden;
+  }
+}
+
 /* Custom admin styles */
 body {
   @apply bg-gray-900 text-white;

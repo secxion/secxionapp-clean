@@ -1,5 +1,4 @@
 ﻿import React, { useState } from 'react';
-import { CgClose } from 'react-icons/cg';
 import productCategory from '../helpers/productCategory';
 import currencyData from '../helpers/currencyData';
 import { FaCloudUploadAlt, FaFileImport } from 'react-icons/fa';
@@ -14,6 +13,8 @@ import SummaryApi, { authFetch } from '../common';
 import { toast } from 'react-toastify';
 import RequirementInput from './RequirementInput';
 import BulkImportModal from './BulkImportModal';
+import AdminModal from './ui/AdminModal';
+import AdminModalActions from './ui/AdminModalActions';
 
 const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
   const [data, setData] = useState({
@@ -191,33 +192,35 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-        onClick={onClose}
-      />
-
-      {/* Modal */}
-      <div className="relative bg-slate-900 rounded-2xl border border-slate-700 w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-700 flex-shrink-0">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-yellow-500/10 rounded-xl">
-              <MdModeEditOutline className="text-yellow-500 text-lg" />
-            </div>
-            <h2 className="text-lg font-semibold text-white">Edit Product</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-          >
-            <CgClose size={20} />
-          </button>
-        </div>
-
-        {/* Form */}
+    <>
+      <AdminModal
+        onClose={onClose}
+        title="Edit Product"
+        icon={MdModeEditOutline}
+        maxWidth="max-w-2xl"
+        panelClassName="max-h-[85vh]"
+        bodyClassName="p-0"
+        footer={
+          <AdminModalActions divider={false} padded={false}>
+            <button
+              type="submit"
+              form="admin-edit-product-form"
+              className="flex-1 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 font-semibold rounded-xl hover:from-yellow-400 hover:to-yellow-500 transition-all"
+            >
+              Submit Update
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="admin-btn-muted px-6 py-3"
+            >
+              Cancel
+            </button>
+          </AdminModalActions>
+        }
+      >
         <form
+          id="admin-edit-product-form"
           onSubmit={handleSubmit}
           className="flex-1 overflow-y-auto p-5 space-y-5"
         >
@@ -231,7 +234,7 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
               name="productName"
               value={data.productName}
               onChange={handleOnChange}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors"
+              className="admin-input w-full px-4 py-3"
               required
               placeholder="Enter product name"
             />
@@ -247,7 +250,7 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
               name="brandName"
               value={data.brandName}
               onChange={handleOnChange}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors"
+              className="admin-input w-full px-4 py-3"
               required
               placeholder="Enter brand name"
             />
@@ -262,7 +265,7 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
               name="category"
               value={data.category}
               onChange={handleOnChange}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+              className="admin-input w-full px-4 py-3"
               required
             >
               <option value="" className="bg-slate-900">
@@ -477,29 +480,13 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
               value={data.description}
               onChange={handleOnChange}
               rows={3}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/50 transition-colors resize-none"
+              className="admin-input w-full px-4 py-3 resize-none"
               placeholder="Enter product description"
             />
           </div>
 
-          {/* Footer */}
-          <div className="flex items-center space-x-3 pt-4 border-t border-slate-700">
-            <button
-              type="submit"
-              className="flex-1 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 font-semibold rounded-xl hover:from-yellow-400 hover:to-yellow-500 transition-all"
-            >
-              Update Product
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-6 py-3 bg-slate-800 text-slate-300 font-medium rounded-xl hover:bg-slate-700 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
         </form>
-      </div>
+      </AdminModal>
 
       {openFullScreenImage && (
         <DisplayImage
@@ -515,7 +502,7 @@ const AdminEditProduct = ({ onClose, productData, fetchdata }) => {
         onImport={handleBulkImport}
         existingCurrencies={data.pricing.map((p) => p.currency)}
       />
-    </div>
+    </>
   );
 };
 

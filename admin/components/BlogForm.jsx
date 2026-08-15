@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { FaTimes } from 'react-icons/fa';
 import SummaryApi, { authFetch } from '../common';
+import AdminModalActions from './ui/AdminModalActions';
 
 const BlogForm = ({ onClose, fetchBlogs, editingBlog }) => {
   const [formData, setFormData] = useState({ title: '', content: '' });
@@ -118,7 +119,7 @@ const BlogForm = ({ onClose, fetchBlogs, editingBlog }) => {
           </div>
 
           {/* Modal Footer */}
-          <div className="flex justify-end gap-3 pt-2">
+          <AdminModalActions divider={false} padded={false} className="justify-end pt-2">
             <button
               type="button"
               onClick={onClose}
@@ -138,7 +139,7 @@ const BlogForm = ({ onClose, fetchBlogs, editingBlog }) => {
                   ? 'Update Blog'
                   : 'Create Blog'}
             </button>
-          </div>
+            </AdminModalActions>
         </form>
       </div>
     </div>

@@ -15,6 +15,8 @@ import {
 } from 'react-icons/fa';
 import SummaryApi, { authFetch } from '../common';
 import uploadImage from '../helpers/uploadImage';
+import AdminTableShell from '../components/ui/AdminTableShell';
+import AdminModal from '../components/ui/AdminModal';
 
 const CATEGORIES = {
   script: { label: 'Script', icon: '📜' },
@@ -361,8 +363,7 @@ const AdminLiveScript = () => {
           <p>No requests found</p>
         </div>
       ) : (
-        <div className="bg-slate-800/30 rounded-xl border border-slate-700/50 overflow-hidden">
-          <div className="overflow-x-auto">
+        <AdminTableShell className="bg-slate-800/30 border-slate-700/50">
             <table className="w-full min-w-[900px]">
               <thead>
                 <tr className="border-b border-slate-700/50">
@@ -472,8 +473,7 @@ const AdminLiveScript = () => {
                 ))}
               </tbody>
             </table>
-          </div>
-        </div>
+        </AdminTableShell>
       )}
 
       {/* Pagination */}
@@ -511,32 +511,24 @@ const AdminLiveScript = () => {
 
       {/* Detail Modal */}
       {selectedRequest && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-slate-900 border border-slate-700/50 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            {/* Modal Header */}
-            <div className="border-b border-slate-700/50 p-4 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-white">Request Details</h3>
-              <button
-                onClick={() => {
-                  setSelectedRequest(null);
-                  setAdminNotes('');
-                  setReplyMessage('');
-                  setPendingAttachments([]);
-                }}
-                className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
-              >
-                <FaTimes />
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            <div className="p-4 space-y-4">
+        <AdminModal
+          onClose={() => {
+            setSelectedRequest(null);
+            setAdminNotes('');
+            setReplyMessage('');
+            setPendingAttachments([]);
+          }}
+          title="Request Details"
+          maxWidth="max-w-2xl"
+          panelClassName="max-h-[90vh] border-slate-700/50"
+          bodyClassName="space-y-4 p-4"
+        >
               {/* Title & Status */}
               <div>
                 <h4 className="text-xl font-semibold text-white">
                   {selectedRequest.title}
                 </h4>
-                <div className="flex items-center space-x-2 mt-2">
+                <div className="mt-2 flex flex-wrap items-center gap-2">
                   <span
                     className={`px-2.5 py-1 rounded-lg text-xs font-medium text-white ${getStatusColor(selectedRequest.status)}`}
                   >
@@ -572,7 +564,7 @@ const AdminLiveScript = () => {
               </div>
 
               {/* Details Grid */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="bg-slate-800/30 rounded-xl p-3 border border-slate-700/50">
                   <p className="text-xs text-slate-400 mb-1">Category</p>
                   <p className="font-medium text-white">
@@ -678,7 +670,7 @@ const AdminLiveScript = () => {
                     ))}
                   </div>
                 )}
-                <div className="flex space-x-2">
+                <div className="flex gap-2">
                   <input
                     type="file"
                     ref={fileInputRef}
@@ -689,7 +681,7 @@ const AdminLiveScript = () => {
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploadingImage}
-                    className="px-3 py-2 bg-slate-800 border border-slate-700 hover:border-yellow-500/50 text-slate-300 rounded-lg transition-colors disabled:opacity-50"
+                    className="admin-btn-muted px-3 py-2 disabled:opacity-50"
                     title="Attach image"
                   >
                     {uploadingImage ? (
@@ -703,7 +695,7 @@ const AdminLiveScript = () => {
                     value={replyMessage}
                     onChange={(e) => setReplyMessage(e.target.value)}
                     placeholder="Type a message..."
-                    className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50"
+                    className="admin-input flex-1 px-3 py-2"
                     onKeyPress={(e) => e.key === 'Enter' && sendAdminReply()}
                   />
                   <button
@@ -712,7 +704,7 @@ const AdminLiveScript = () => {
                       sendingReply ||
                       (!replyMessage.trim() && pendingAttachments.length === 0)
                     }
-                    className="px-4 py-2 bg-yellow-500 text-slate-900 font-medium rounded-lg hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="admin-btn-primary px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {sendingReply ? (
                       <FaSpinner className="animate-spin" />
@@ -733,14 +725,14 @@ const AdminLiveScript = () => {
                   onChange={(e) => setAdminNotes(e.target.value)}
                   placeholder="Add notes for the user (optional)..."
                   rows={3}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50"
+                  className="admin-input w-full p-3"
                 />
               </div>
 
               {/* Status Update */}
               <div>
                 <p className="text-xs text-slate-400 mb-2">Update Status</p>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {STATUS_OPTIONS.map((s) => (
                     <button
                       key={s.value}
@@ -761,9 +753,7 @@ const AdminLiveScript = () => {
                   ))}
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+        </AdminModal>
       )}
     </div>
   );

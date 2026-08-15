@@ -4,6 +4,7 @@ import { IoMdClose } from 'react-icons/io';
 import { FaUserShield, FaTrashAlt } from 'react-icons/fa';
 import SummaryApi, { authFetch } from '../common';
 import { toast } from 'react-toastify';
+import AdminModalActions from './ui/AdminModalActions';
 
 const ChangeUserRole = ({ name, email, role, userId, onClose, callFunc }) => {
   const [userRole, setUserRole] = useState(role);
@@ -130,7 +131,7 @@ const ChangeUserRole = ({ name, email, role, userId, onClose, callFunc }) => {
         </div>
 
         {/* Footer */}
-        <div className="p-5 border-t border-slate-700 space-y-3">
+        <AdminModalActions stacked className="p-5">
           <button
             className="w-full py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 font-semibold rounded-xl hover:from-yellow-400 hover:to-yellow-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
             onClick={updateUserRole}
@@ -163,7 +164,7 @@ const ChangeUserRole = ({ name, email, role, userId, onClose, callFunc }) => {
               </>
             )}
           </button>
-        </div>
+        </AdminModalActions>
       </div>
     </div>
   );

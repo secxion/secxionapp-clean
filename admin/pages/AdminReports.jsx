@@ -5,6 +5,7 @@ import { FaCloudUploadAlt, FaFlag, FaTimes } from 'react-icons/fa';
 import uploadImage from '../helpers/uploadImage';
 import { format } from 'date-fns';
 import { MdSend } from 'react-icons/md';
+import AdminPageLayout from '../components/layout/AdminPageLayout';
 
 const AdminReports = () => {
   const [reports, setReports] = useState([]);
@@ -152,19 +153,11 @@ const AdminReports = () => {
   }
 
   return (
-    <div className="p-4 lg:p-6">
-      {/* Header */}
-      <div className="flex items-center space-x-3 mb-6">
-        <div className="p-2 bg-yellow-500/10 rounded-xl">
-          <FaFlag className="text-yellow-500 text-xl" />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-white">User Reports</h1>
-          <p className="text-slate-400 text-sm">
-            Manage and respond to user reports
-          </p>
-        </div>
-      </div>
+    <AdminPageLayout
+      title="User Reports"
+      subtitle="Manage and respond to user reports"
+      icon={FaFlag}
+    >
 
       {reports.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-slate-500">
@@ -176,7 +169,7 @@ const AdminReports = () => {
           {reports.map((report) => (
             <div
               key={report._id}
-              className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4"
+              className="admin-card p-4"
             >
               <div className="flex justify-between items-start mb-3">
                 <div>
@@ -267,7 +260,7 @@ const AdminReports = () => {
 
                   <div className="flex items-center gap-2">
                     <textarea
-                      className="flex-1 p-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500/50 resize-none"
+                      className="admin-input flex-1 p-3 resize-none"
                       placeholder="Type your message..."
                       rows={2}
                       value={newMessage}
@@ -283,7 +276,7 @@ const AdminReports = () => {
                     </label>
                     <button
                       onClick={() => handleSendMessage(report._id)}
-                      className="bg-yellow-500 text-slate-900 font-medium py-3 px-4 rounded-xl hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="bg-yellow-500 text-slate-900 font-medium py-3 px-4 rounded-xl hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                       disabled={
                         sendingMessage ||
                         uploadingImage ||
@@ -319,7 +312,7 @@ const AdminReports = () => {
           ))}
         </div>
       )}
-    </div>
+    </AdminPageLayout>
   );
 };
 
