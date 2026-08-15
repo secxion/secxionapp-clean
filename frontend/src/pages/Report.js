@@ -11,7 +11,7 @@ const Report = () => {
   }, []);
 
   return (
-    <main className="mt-28 min-h-screen w-full overflow-x-hidden px-4 py-10 text-gray-100 sm:px-6 md:mt-32 lg:px-8">
+    <main className="mt-20 min-h-screen w-full overflow-x-hidden px-4 py-10 text-gray-100 sm:px-6 md:mt-28 lg:px-8">
       <div className="w-full space-y-12">
         <section className="w-full py-2">
           <div className="mb-4 flex items-center gap-4">

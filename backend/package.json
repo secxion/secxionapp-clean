@@ -9,6 +9,7 @@
     "start": "node index.js",
     "start:prod": "node index.js",
     "dev": "nodemon index.js",
+    "clear:kyc": "node clearKycData.js",
     "test": "node --experimental-vm-modules ./node_modules/.bin/jest --coverage",
     "test:watch": "node --experimental-vm-modules ./node_modules/.bin/jest --watch",
     "test:coverage": "node --experimental-vm-modules ./node_modules/.bin/jest --coverage --collectCoverageFrom=\"**/*.js\" --coverageDirectory=\"coverage\"",

@@ -64,6 +64,9 @@ if (process.env.ADMIN_PANEL_URL) {
 
 // Add admin panel origins for development
 const adminOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:4173',
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:5175',
@@ -85,23 +88,40 @@ const adminOrigins = [
 ];
 allowedOrigins.push(...adminOrigins);
 
-const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("❌ Not allowed by CORS"));
+// In development, allow all origins so local frontend can connect without restriction
+const isDev = process.env.NODE_ENV !== "production";
+
+const corsOptions = isDev
+  ? {
+      origin: true, // reflect any origin
+      credentials: true,
+      methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+      allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "X-Platform"],
+      optionsSuccessStatus: 200,
     }
-  },
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "X-Platform"],
-};
+  : {
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
+      methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+      credentials: true,
+      allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "X-Platform"],
+      optionsSuccessStatus: 200,
+    };
+
+// Handle preflight requests before helmet or any other middleware
+app.options("*", cors(corsOptions));
 
 app.use(
   helmet({
-    contentSecurityPolicy: false, // Disable CSP if not configured
-    frameguard: { action: "deny" }, // Set X-Frame-Options to 'DENY'
+    contentSecurityPolicy: false,
+    frameguard: { action: "deny" },
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginOpenerPolicy: false,
   }),
 );
 app.use(cors(corsOptions));
@@ -170,6 +190,13 @@ if (process.env.NODE_ENV === "production" && fs.existsSync(buildPath)) {
 
 const PORT = process.env.PORT || 5000;
 
+// Start server immediately — DB connects in background
+// This ensures CORS, routes and health checks work even during DB reconnect
+app.listen(PORT, () => {
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`🔓 CORS mode: ${isDev ? "OPEN (dev — all origins allowed)" : "RESTRICTED (production)"}`);
+});
+
 connectDB()
   .then(() => {
     const db = mongoose.connection;
@@ -177,14 +204,12 @@ connectDB()
     console.log(`   Host: ${db.host}`);
     console.log(`   Port: ${db.port}`);
     console.log(`   Database: ${db.name}`);
-    console.log(`   URI: ${process.env.MONGODB_URI}`);
-
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running at http://localhost:${PORT}`);
-      console.log("🌐 Allowed origins:", allowedOrigins);
-    });
   })
   .catch((err) => {
     console.error("❌ DB Connection Failed:", err.message);
-    process.exit(1);
+    if (process.env.NODE_ENV === "production") {
+      process.exit(1);
+    } else {
+      console.warn("⚠️  Running without database — DB-dependent routes will fail.");
+    }
   });

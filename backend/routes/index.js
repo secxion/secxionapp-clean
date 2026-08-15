@@ -157,6 +157,7 @@ import {
   getMyKyc,
   getAllKycSubmissions,
   reviewKycSubmission,
+  deleteKycSubmission,
   getKycStats,
   sendKycPhoneVerificationCode,
   verifyKycPhoneCode,
@@ -829,6 +830,7 @@ router.get("/myposts", authToken, noCache, getUserPostsController);
 // KYC Admin
 router.get("/kyc/admin/submissions", authToken, noCache, getAllKycSubmissions);
 router.patch("/kyc/admin/submissions/:id", authToken, noCache, reviewKycSubmission);
+router.delete("/kyc/admin/submissions/:id", authToken, noCache, deleteKycSubmission);
 router.get("/kyc/admin/stats", authToken, noCache, getKycStats);
 
 export default router;

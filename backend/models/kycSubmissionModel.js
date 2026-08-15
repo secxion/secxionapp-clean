@@ -81,8 +81,8 @@ const kycSubmissionSchema = new mongoose.Schema(
       },
       method: {
         type: String,
-        enum: ["otp"],
-        default: "otp",
+        enum: ["otp", "not_required"],
+        default: "not_required",
       },
     },
     consent: {

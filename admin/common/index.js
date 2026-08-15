@@ -1,5 +1,5 @@
 // Use environment variable for production, fallback to localhost for development
-const backendDomain = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const backendDomain = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 /**
  * Authenticated fetch helper for cross-origin API calls
@@ -396,6 +396,10 @@ const SummaryApi = {
   reviewKycSubmission: {
     url: `${backendDomain}/api/kyc/admin/submissions`,
     method: 'PATCH',
+  },
+  deleteKycSubmission: {
+    url: `${backendDomain}/api/kyc/admin/submissions`,
+    method: 'DELETE',
   },
   adminKycStats: {
     url: `${backendDomain}/api/kyc/admin/stats`,

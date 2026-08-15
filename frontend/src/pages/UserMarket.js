@@ -168,7 +168,7 @@ const UserMarket = () => {
 
   return (
     <motion.div
-      className="relative min-h-screen overflow-hidden px-4 py-4 pb-20 sm:px-6 lg:px-8 premium-bg"
+      className="relative -mt-2 md:mt-2  min-h-screen overflow-hidden px-4 py-2 pb-20 sm:px-6 lg:px-8 premium-bg"
       style={{ minHeight: '60vh', paddingTop: '8rem', paddingBottom: '4rem' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}

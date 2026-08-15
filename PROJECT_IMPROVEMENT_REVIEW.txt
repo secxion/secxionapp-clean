@@ -1,0 +1,462 @@
+SECXION APPLICATION - PROJECT IMPROVEMENT REVIEW
+================================================
+Review status: DRAFT FOR OWNER APPROVAL - NO IMPLEMENTATION AUTHORIZED
+Review date: 2026-08-08
+Scope: Customer frontend, backend API, admin application, mobile/PWA packaging,
+testing, security, deployment, and operational readiness.
+
+PURPOSE
+-------
+This document is a decision aid for the next improvement cycle. It separates
+confirmed findings from items that still require runtime or production
+verification. No recommendation below should be implemented until its phase
+and scope are approved.
+
+EXECUTIVE SUMMARY
+-----------------
+Secxion has a broad, working product surface: authentication, marketplace,
+wallet and payment workflows, ETH withdrawal handling, KYC, reporting and
+support chat, notifications, content management, PWA support, and dedicated
+admin operations. The project also has useful security foundations, including
+Helmet, rate limiting, Mongo sanitization, JWT middleware, idempotency support
+in financial controllers, and focused integrity tests.
+
+The highest risk is authorization consistency. Several sensitive backend
+routes are public or require only an authenticated user when they should be
+restricted to an authorized administrator. This includes user deletion, role
+changes, blog mutation, financial administration, and some report/admin data.
+These are release-blocking issues because frontend route hiding cannot protect
+an API.
+
+The next concern is operational assurance. The three applications have only
+five test files across 391 JavaScript/TypeScript source files, no tracked CI
+workflow was found, and deployment is a destructive root-level copy process
+without an automated health check or rollback. Environment files are currently
+ignored, but backend/.env and frontend/.env appear in Git history; all secrets
+that may ever have been stored there should be treated as exposed and rotated.
+
+The recommended order is:
+1. Contain authorization and credential risks.
+2. Establish explicit API, financial, and audit contracts.
+3. Add automated quality and deployment gates.
+4. Consolidate frontend architecture and decompose oversized modules.
+5. Improve accessibility, resilience, observability, and product operations.
+
+SYSTEM MAP
+----------
+Customer application
+- React 18 / Create React App / React Router / Redux Toolkit / React Query.
+- PWA/service worker plus Capacitor iOS packaging.
+- Product, market, wallet, KYC, support, community, and notification workflows.
+
+Admin application
+- Separate React 18 / Vite application.
+- Department-based menu and route visibility.
+- Local storage contains the admin JWT and cached identity/department state.
+
+Backend
+- Node.js / Express / Mongoose, with approximately 128 route declarations.
+- JWT authentication, role and department middleware, rate limiting, sanitizing,
+  payments, wallets, KYC, reporting, notifications, and admin operations.
+
+Delivery
+- Four npm manifests and tracked lockfiles exist.
+- Frontend output is copied into the backend for production serving.
+- Deployment uses deploy.sh, SSH/SCP, npm install, frontend build, and PM2.
+- No tracked .github CI workflow was found.
+
+CURRENT STRENGTHS TO PRESERVE
+-----------------------------
+1. Financial controllers already contain idempotency and transaction-oriented
+   work; the right direction exists and should be made mandatory and tested.
+2. Backend security middleware includes Helmet, rate limiting, XSS/Mongo
+   sanitization, and centralized error handling.
+3. The project separates customer, admin, backend, and native packaging areas.
+4. Lockfiles are tracked for root, frontend, backend, and admin packages.
+5. PWA manifest, offline assets, and mobile packaging are established.
+6. Recent support-chat work uses focused validation and real iOS Safari checks.
+7. Existing tests target security middleware, withdrawal integrity, validation,
+   and safe user-facing messages, which are appropriate foundations.
+
+PRIORITY 0 - RELEASE BLOCKERS
+-----------------------------
+P0.1 Enforce server-side authorization on every sensitive route [CONFIRMED]
+
+Evidence
+- backend/routes/index.js exposes DELETE /delete-user without authToken.
+- POST /update-user uses authToken only; backend/controller/user/UpdateUser.js
+  accepts userId and role directly from the request body.
+- Blog create, update, and delete routes have no authentication.
+- Market status update and contact-message retrieval are also unprotected.
+- ETH withdrawal administration, all-payment-request retrieval, payment status
+  updates, all reports, admin report chat, and several admin reads use basic
+  authentication but do not consistently require verifyAdmin.
+
+Impact
+- Anonymous mass account deletion and content modification are possible.
+- A normal authenticated user may mutate roles or access administrative and
+  financial data, depending on the route/controller combination.
+- UI-level department restrictions do not mitigate direct API access.
+
+Recommended action
+- Create a route authorization matrix: endpoint, actor, permission, ownership,
+  department, sensitive fields, and audit requirement.
+- Apply authToken plus explicit permission middleware to every non-public route.
+- Separate self-service profile updates from administrator role management.
+- Permit role changes only through a dedicated, audited super-admin operation.
+- Add negative integration tests for anonymous, normal-user, wrong-department,
+  disabled-admin, and valid-admin access.
+
+Approval gate
+- No production release until the route matrix is reviewed and all P0 routes
+  return 401/403 for unauthorized actors.
+
+P0.2 Replace permissive department authorization with default deny [CONFIRMED]
+
+Evidence
+- backend/middleware/departmentAuth.js is mounted globally, which is good.
+- It checks only paths classified by isAdminRoute().
+- An admin path that has no API-to-department mapping is explicitly allowed.
+- The frontend admin route check also has permissive fallback behavior.
+
+Impact
+- New or renamed admin endpoints can silently bypass department restrictions.
+- Frontend and backend permission maps can drift independently.
+
+Recommended action
+- Use one backend-owned permission registry and default-deny all admin endpoints.
+- Return permissions in the session response so the admin UI only reflects
+  server-authoritative capabilities.
+- Add a test that fails when an admin route lacks a permission mapping.
+
+P0.3 Rotate secrets and address historical environment files [CONFIRMED]
+
+Evidence
+- Current .env files are ignored and were not found in the tracked file list.
+- Git history contains backend/.env and frontend/.env paths.
+
+Impact
+- Any credential ever committed must be considered recoverable from history,
+  forks, clones, caches, and backups even after deleting the current file.
+
+Recommended action
+- Inventory every historical key: database, JWT, mail, Cloudinary, SMS, payment,
+  OAuth, API, and deployment credentials.
+- Rotate/revoke all affected values before rewriting history.
+- Use managed deployment secrets and commit sanitized .env.example files only.
+- Decide with repository owners whether coordinated history rewriting is safe.
+- Add secret scanning to CI and a pre-commit guard.
+
+P0.4 Make financial mutation contracts mandatory [CONFIRMED DIRECTION;
+END-TO-END VERIFICATION REQUIRED]
+
+Evidence
+- Payment and ETH controllers contain idempotency handling, but keys appear to
+  be optional in at least part of the flow.
+- Multiple frontend API paths still use direct fetch calls.
+- Financial administration routes do not consistently require admin permission.
+- A withdrawal-integrity test exists, but broad workflow coverage does not.
+
+Impact
+- Retries can create duplicate intent when an idempotency key is omitted.
+- Authorization or failure-handling gaps can expose money movement and status
+  updates to the wrong actor.
+
+Recommended action
+- Require an idempotency key for every financial mutation and persist uniqueness.
+- Define transaction boundaries for debit, request creation, status transition,
+  commission, notification, and audit events.
+- Implement an explicit status state machine; reject illegal/replayed transitions.
+- Test concurrent requests, timeout/retry, partial failure, reversal, and replay.
+- Require a second approval for high-value/manual payout operations where viable.
+
+PRIORITY 1 - SECURITY AND CONTROL PLANE
+---------------------------------------
+P1.1 Introduce granular permissions and persistent audit logs [CONFIRMED]
+
+The current model combines broad ADMIN/GENERAL roles with department route lists.
+Create permissions such as user:read, user:delete, role:manage, kyc:approve,
+payment:read, payment:approve, blog:write, and report:reply. Record every role,
+KYC, payment, withdrawal, account deletion, and authorization change in an
+append-only audit collection with actor, target, before/after, reason, IP,
+user-agent, request/correlation ID, and timestamp.
+
+P1.2 Harden admin session handling [CONFIRMED]
+
+The admin JWT and identity data are stored in localStorage and page restoration
+primarily trusts local JWT expiry. Prefer Secure, HttpOnly, SameSite cookies,
+short-lived access sessions, rotation, server-side revocation, and session
+validation on app load/focus. Encryption performed by the same browser code is
+not an adequate substitute for HttpOnly storage.
+
+P1.3 Persist temporary security state [CONFIRMED]
+
+Refresh tokens and KYC phone verification state use process memory. Move them to
+Redis or MongoDB TTL records with hashed token/code values, attempt counters,
+one-time consumption, and revocation metadata. This supports restarts and more
+than one backend process.
+
+P1.4 Strengthen abuse controls and privacy [PARTLY CONFIRMED]
+
+- Add dedicated send and verify limits for password reset, bank verification,
+  KYC OTP, report/chat posting, contact forms, and expensive external APIs.
+- Replace account-enumerating responses with appropriately neutral behavior.
+- Stop logging raw emails, phone numbers, tokens, bank details, request bodies,
+  or provider payloads. Backend source contains extensive console logging.
+- Return generic production errors while retaining structured internal context.
+- Add retention/deletion rules for KYC, reports, chats, logs, and financial data.
+
+P1.5 Validate every write at the API boundary [CONFIRMED]
+
+Product and several legacy controllers construct models from request bodies or
+lack consistent validators. Use allowlisted request schemas, reject unknown
+fields, enforce lengths/enums/formats, sanitize rich text, validate Mongo IDs,
+and apply Mongoose constraints as a second line of defense.
+
+PRIORITY 2 - RELIABILITY, TESTING, AND DELIVERY
+-----------------------------------------------
+P2.1 Establish CI as the release contract [CONFIRMED]
+
+Observed baseline
+- 238 frontend, 109 backend, and 44 admin JS/TS source files.
+- Five test files were found: two backend and three frontend.
+- No admin test suite and no tracked CI workflow were found.
+- Backend has a 40% global threshold.
+- Frontend config uses coverageThresholds (plural), while Jest expects
+  coverageThreshold; confirm whether the intended threshold is currently active.
+
+Recommended CI gates
+1. Reproducible install with npm ci in all workspaces.
+2. Lint/type or syntax checks for frontend, backend, and admin.
+3. Unit and integration tests with enforced coverage configuration.
+4. Production builds for frontend and admin.
+5. Dependency, license, and secret scanning.
+6. API authorization and financial-integrity integration tests.
+7. Browser smoke tests for login, marketplace, wallet, KYC, report/chat, and
+   core admin workflows.
+8. Artifact creation only after every prior gate passes.
+
+Coverage should grow by risk, not by chasing a percentage. First cover auth and
+permissions, wallet/payment transitions, KYC decisions, role changes, account
+deletion, report ownership, and failure/retry behavior.
+
+P2.2 Replace destructive deployment with versioned releases [CONFIRMED]
+
+Current deploy.sh connects as root, disables strict host-key checking for SCP,
+deletes the live application contents, copies source, runs npm install on the
+server, builds in place, and restarts PM2. It has no automated health check,
+atomic switch, rollback, migration gate, or artifact checksum.
+
+Recommended action
+- Build an immutable, tested artifact in CI using npm ci.
+- Deploy as a restricted service user with verified host keys.
+- Upload to a versioned release directory, run preflight checks, switch an
+  atomic symlink, verify /health, then retain the previous release for rollback.
+- Back up and validate database migration/restore procedures before schema work.
+- Move the hard-coded production host and paths into protected deployment config.
+
+P2.3 Add observability and operational objectives [CONFIRMED GAP]
+
+Introduce structured JSON logs, correlation IDs, centralized error capture,
+metrics, alerting, and dashboards for API latency/error rate, auth failures,
+queue/provider failures, payment/KYC status age, notification delivery, and
+client crashes. Define service-level objectives and an incident runbook.
+
+P2.4 Clean repository artifacts and clarify ownership [CONFIRMED]
+
+Fourteen .artifacts files and multiple .txt source backups under frontend/src
+are tracked. Decide which are product documentation, archive useful material in
+a clear docs location, and remove/ignore generated agent artifacts and stale
+source copies. Keep this cleanup in a dedicated change so behavior is unaffected.
+
+PRIORITY 3 - APPLICATION ARCHITECTURE
+-------------------------------------
+P3.1 Define one authentication source of truth [CONFIRMED ARCHITECTURAL DEBT]
+
+The customer frontend uses Redux persistence, Context, and localStorage for
+related authentication/session concerns. Define one session owner and one
+logout/expiry path. Server authorization remains authoritative; route guards
+should represent session state, not infer permission independently.
+
+P3.2 Standardize API access and server state [CONFIRMED]
+
+There are approximately 134 direct fetch call sites in frontend/src, while an
+API helper and React Query also exist. Establish one transport layer with:
+- Base URL, credentials/auth, timeout/abort, JSON/error parsing, correlation ID,
+  idempotency support, and normalized user-safe errors.
+- React Query for remote cache, invalidation, polling, and mutation state.
+- Redux only for durable cross-feature client state; local state for view state.
+- Explicit endpoint request/response schemas shared through generated types or
+  an OpenAPI contract.
+
+Do not mechanically replace calls without contract tests. Migrate feature by
+feature, beginning with auth and financial flows.
+
+P3.3 Decompose large feature modules by domain [CONFIRMED]
+
+Several modules are 600-1,278 lines, including KycVerification, EthWallet,
+Landing, UploadData, LiveScript, Settings, AdminEarnings, route registration,
+and the KYC controller. Split by behavior and ownership, not arbitrary line
+counts: route/controller/service/repository/schema on the backend; page shell,
+query hooks, forms, status views, and domain utilities in React.
+
+P3.4 Remove duplicated customer/admin implementations [CONFIRMED]
+
+Similar administration screens exist in frontend and the dedicated admin app.
+Choose the dedicated admin application as the control plane, retire customer-app
+admin surfaces after parity/security review, and share schemas/design tokens/API
+clients through a package only where this removes proven duplication.
+
+P3.5 Make background work durable [REQUIRES DESIGN]
+
+Email, signup credit, SMS, notifications, and provider callbacks should use a
+durable outbox/queue with retries, deduplication, backoff, dead-letter handling,
+and operations visibility. A user record, wallet credit, and verification
+message should not silently diverge because a fire-and-forget side effect failed.
+
+PRIORITY 4 - PRODUCT QUALITY AND UX
+-----------------------------------
+P4.1 Accessibility program [CONFIRMED GAP]
+
+Audit keyboard navigation, visible focus, semantic headings, labels/errors,
+image alternatives, dialogs, focus restoration, reduced motion, color contrast,
+and dynamic announcements. Add automated axe checks plus manual VoiceOver and
+keyboard acceptance tests for login, signup, marketplace, wallet, KYC, support,
+and admin workflows. Target WCAG 2.2 AA.
+
+P4.2 Resilient loading, empty, error, and offline states [CONFIRMED GAP]
+
+Create consistent, domain-specific states that preserve user input and offer a
+safe retry. Do not cache sensitive wallet/KYC responses in a service worker
+without a threat model. For financial data, clearly show freshness and never
+present stale values as current balances.
+
+P4.3 Product analytics and support operations [RECOMMENDED]
+
+Define privacy-conscious funnels and operational metrics for signup verification,
+KYC completion/age, first market action, payment success/failure, withdrawal
+age, report first-response/resolution, and notification engagement. Give support
+and admins searchable timelines and aging queues without exposing data outside
+their permissions.
+
+P4.4 Performance budgets [REQUIRES MEASUREMENT]
+
+Measure before optimizing. Add bundle analysis, Core Web Vitals, route-level
+lazy loading, image budgets, query/polling budgets, and representative mobile
+network tests. Prioritize KYC, wallet, landing, marketplace lists, admin tables,
+and support chat because of their module size or repeated data activity.
+
+PROPOSED DELIVERY ROADMAP
+-------------------------
+Phase A - Containment (days 1-5)
+- Freeze sensitive API additions.
+- Rotate historical secrets and enable secret scanning.
+- Complete route authorization matrix and patch P0 endpoints.
+- Make department authorization default-deny.
+- Add authorization regression tests around every changed route.
+- Confirm financial idempotency and transaction behavior under concurrency.
+
+Exit criteria
+- Anonymous and normal-user attempts against admin routes consistently fail.
+- Historical credentials are revoked.
+- Critical route tests pass in an automated environment.
+
+Phase B - Control plane (weeks 2-3)
+- Add permission model and persistent audit log.
+- Harden admin sessions and revocation.
+- Persist refresh/OTP state and add abuse controls.
+- Add request schemas for sensitive writes.
+- Establish structured logging and correlation IDs.
+
+Exit criteria
+- Every sensitive action has permission, validation, and audit evidence.
+- Disabled/revoked admins lose access promptly.
+- Restarts do not invalidate valid verification/session state unexpectedly.
+
+Phase C - Release engineering (weeks 3-5)
+- Add CI gates and high-risk test suites.
+- Build immutable artifacts and versioned deployment/rollback.
+- Add health/readiness checks, backups, alerts, and incident runbooks.
+- Clean generated repository artifacts in an isolated change.
+
+Exit criteria
+- No manual production release can bypass tests/build/security checks.
+- A failed release automatically stops or rolls back.
+- Recovery procedure is documented and rehearsed.
+
+Phase D - Architecture consolidation (weeks 5-9)
+- Consolidate authentication state.
+- Introduce one API/server-state contract and migrate high-risk flows first.
+- Decompose wallet, KYC, admin, and route/controller modules.
+- Retire duplicate admin surfaces after parity review.
+- Introduce durable side-effect processing.
+
+Exit criteria
+- Auth and financial flows use one tested transport/session model.
+- Domain ownership and module boundaries are documented.
+- Duplicate control-plane behavior is removed.
+
+Phase E - Product quality (weeks 8-12)
+- Accessibility remediation and acceptance testing.
+- Consistent resilience/offline behavior with data-freshness rules.
+- Product/operations metrics and queue aging views.
+- Performance budgets and measured optimizations.
+
+Exit criteria
+- Critical journeys pass WCAG-oriented manual and automated checks.
+- Product and operations teams can observe funnel and service health.
+- Mobile performance meets agreed budgets on representative devices.
+
+DECISIONS REQUIRED BEFORE IMPLEMENTATION
+----------------------------------------
+[ ] Approve Phase A security containment as the first workstream.
+[ ] Identify who is the super-admin and define department/permission ownership.
+[ ] Confirm whether customer-app admin pages will be retired in favor of admin/.
+[ ] Approve session strategy: HttpOnly cookies plus server-side revocation.
+[ ] Select temporary-state/queue infrastructure (Redis, Mongo TTL/outbox, or
+    managed equivalent) based on hosting constraints.
+[ ] Define financial approval limits and whether dual control is required.
+[ ] Approve CI/deployment platform and production rollback expectations.
+[ ] Define data retention requirements for KYC, reports, chats, and audit logs.
+[ ] Approve target accessibility level (recommended: WCAG 2.2 AA).
+[ ] Assign owners and target dates to each approved phase.
+
+RUNTIME VERIFICATION BACKLOG
+----------------------------
+The following should not be treated as proven defects until tested in a safe
+staging environment:
+- Exact exploitability and returned fields for every authenticated admin route.
+- Atomicity of complete payment and ETH workflows under concurrent requests.
+- Token expiry, refresh, logout, and revocation behavior across browser/device
+  combinations.
+- CSRF behavior for cookie-authenticated and bearer-authenticated endpoints.
+- Service-worker cache behavior for authenticated/sensitive responses.
+- Database indexes, query plans, pool limits, and production dataset latency.
+- Provider webhook authenticity, replay handling, timeout behavior, and retries.
+- Restore time and integrity of production backups.
+- Real accessibility and performance scores; no percentage is asserted here.
+
+SUGGESTED FIRST APPROVED CHANGE SET
+-----------------------------------
+Keep the first implementation deliberately narrow:
+1. Add a route-level authorization matrix test.
+2. Protect delete-user, update-user/role, blog mutation, market status, contact
+   message retrieval, all-report/admin-chat, payment admin, and ETH admin routes.
+3. Split self-profile mutation from admin role mutation.
+4. Change department authorization to default deny.
+5. Record security audit events for user deletion and role/status changes.
+6. Run backend integration tests plus focused customer/admin smoke tests.
+
+This change set addresses the largest verified risk without mixing in UI,
+architecture refactors, or unrelated formatting.
+
+REVIEW METHOD AND LIMITATIONS
+-----------------------------
+This was a static, read-only repository review supported by targeted searches,
+source reads, Git tracking/history checks, and existing project metadata. It did
+not include penetration testing, live production access, dependency audit
+network calls, database inspection, provider account review, or complete test
+execution. Findings labeled CONFIRMED are directly evidenced by repository
+state; remaining items are explicitly marked for validation.
+
+END OF REVIEW

@@ -9,13 +9,6 @@ const statusPill = {
   rejected: 'bg-red-500/20 text-red-400 border-red-500/30',
 };
 
-const faceMatchLabels = {
-  not_started: 'Not Started',
-  pending: 'Pending Review',
-  passed: 'Passed',
-  failed: 'Failed',
-};
-
 const parseAddressString = (address = '') => {
   const parsed = {
     addressLine1: '',
@@ -69,9 +62,24 @@ const formatDateValue = (value) => {
   return parsed.toLocaleDateString();
 };
 
+const formatPhoneVerification = (phoneVerification) => {
+  if (phoneVerification?.method === 'not_required') {
+    return 'Not required';
+  }
+
+  if (phoneVerification?.isVerified) {
+    return phoneVerification?.verifiedAt
+      ? `Verified (${new Date(phoneVerification.verifiedAt).toLocaleString()})`
+      : 'Verified';
+  }
+
+  return 'Not verified';
+};
+
 const AdminKycVerification = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [deletingId, setDeletingId] = useState('');
   const [submissions, setSubmissions] = useState([]);
   const [stats, setStats] = useState({ total: 0, pending: 0, approved: 0, rejected: 0 });
   const [statusFilter, setStatusFilter] = useState('all');
@@ -187,6 +195,41 @@ const AdminKycVerification = () => {
     }
   };
 
+  const deleteSubmission = async (submission) => {
+    if (!submission?._id) return;
+
+    const confirmed = window.confirm(
+      `Delete KYC submission for ${submission.fullName || 'this user'}? This cannot be undone.`,
+    );
+
+    if (!confirmed) return;
+
+    setDeletingId(submission._id);
+    try {
+      const response = await authFetch(
+        `${SummaryApi.deleteKycSubmission.url}/${submission._id}`,
+        {
+          method: SummaryApi.deleteKycSubmission.method,
+        },
+      );
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to delete KYC submission.');
+      }
+
+      toast.success(result.message || 'KYC submission deleted.');
+      if (selected?._id === submission._id) {
+        setSelected(null);
+      }
+      await Promise.all([fetchSubmissions(), fetchStats()]);
+    } catch (error) {
+      toast.error(error.message || 'Unable to delete KYC submission.');
+    } finally {
+      setDeletingId('');
+    }
+  };
+
   return (
     <div className="p-4 lg:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
@@ -284,12 +327,21 @@ const AdminKycVerification = () => {
                   </td>
                   <td className="p-3">{new Date(item.submittedAt).toLocaleString()}</td>
                   <td className="p-3">
-                    <button
-                      onClick={() => openReview(item)}
-                      className="px-3 py-1 rounded-lg bg-yellow-500 text-slate-900 font-semibold hover:bg-yellow-400"
-                    >
-                      Review
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => openReview(item)}
+                        className="px-3 py-1 rounded-lg bg-yellow-500 text-slate-900 font-semibold hover:bg-yellow-400"
+                      >
+                        Review
+                      </button>
+                      <button
+                        onClick={() => deleteSubmission(item)}
+                        disabled={deletingId === item._id}
+                        className="px-3 py-1 rounded-lg bg-red-500/90 text-white font-semibold hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {deletingId === item._id ? 'Deleting...' : 'Delete'}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -340,9 +392,7 @@ const AdminKycVerification = () => {
                 <div>
                   <p className="text-slate-400">Phone Verification</p>
                   <p className="text-slate-100">
-                    {selected.phoneVerification?.isVerified
-                      ? `Verified${selected.phoneVerification?.verifiedAt ? ` (${new Date(selected.phoneVerification.verifiedAt).toLocaleString()})` : ''}`
-                      : 'Not verified'}
+                    {formatPhoneVerification(selected.phoneVerification)}
                   </p>
                 </div>
                 <div>
@@ -351,16 +401,6 @@ const AdminKycVerification = () => {
                     {selected.consent?.accepted
                       ? `Accepted${selected.consent?.acceptedAt ? ` (${new Date(selected.consent.acceptedAt).toLocaleString()})` : ''}`
                       : 'Not accepted'}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-slate-400">Face Match</p>
-                  <p className="text-slate-100">
-                    {faceMatchLabels[selected.faceMatch?.status] ||
-                      faceMatchLabels.not_started}
-                    {Number.isFinite(selected.faceMatch?.score)
-                      ? ` (${selected.faceMatch.score.toFixed(2)}%)`
-                      : ''}
                   </p>
                 </div>
                 <div className="md:col-span-2">
@@ -415,71 +455,6 @@ const AdminKycVerification = () => {
               </div>
             </div>
 
-            <div className="mb-4 rounded-xl border border-slate-700 bg-slate-800/40 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-3">
-                Face Match Result (Automated)
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                <div>
-                  <p className="text-slate-400">Status</p>
-                  <p className="text-slate-100">
-                    {faceMatchLabels[selected.faceMatch?.status] ||
-                      faceMatchLabels.not_started}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-slate-400">Score</p>
-                  <p className="text-slate-100">
-                    {Number.isFinite(selected.faceMatch?.score)
-                      ? `${selected.faceMatch.score.toFixed(2)}%`
-                      : 'Not available'}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-slate-400">Provider</p>
-                  <p className="text-slate-100">
-                    {selected.faceMatch?.provider || 'Not provided'}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-slate-400">Reference ID</p>
-                  <p className="text-slate-100 break-all">
-                    {selected.faceMatch?.referenceId || 'Not provided'}
-                  </p>
-                </div>
-                <div className="md:col-span-2">
-                  <p className="text-slate-400">Checked At</p>
-                  <p className="text-slate-100">
-                    {selected.faceMatch?.checkedAt
-                      ? new Date(selected.faceMatch.checkedAt).toLocaleString()
-                      : 'Not checked yet'}
-                  </p>
-                </div>
-                <div className="md:col-span-2">
-                  <p className="text-slate-400">Notes</p>
-                  <p className="text-slate-100">
-                    {selected.faceMatch?.notes || 'No notes provided'}
-                  </p>
-                </div>
-                <div className="md:col-span-2">
-                  <p className="text-slate-400">Evidence URL</p>
-                  {selected.faceMatch?.evidenceUrl ? (
-                    <a
-                      href={selected.faceMatch.evidenceUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-yellow-400 hover:underline break-all"
-                    >
-                      {selected.faceMatch.evidenceUrl}
-                    </a>
-                  ) : (
-                    <p className="text-slate-100">Not provided</p>
-                  )}
-                </div>
-              </div>
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
               <select
                 value={decision}
@@ -508,11 +483,21 @@ const AdminKycVerification = () => {
             )}
 
             <div className="sticky bottom-0 z-10 flex justify-end gap-3 p-5 mt-5 border-t border-slate-700 bg-slate-900/95 backdrop-blur">
+              <button
+                onClick={() => deleteSubmission(selected)}
+                disabled={deletingId === selected._id || updating}
+                className="mr-auto px-4 py-2 rounded-lg bg-red-500/90 text-white font-bold hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {deletingId === selected._id ? 'Deleting...' : 'Delete Submission'}
+              </button>
               <button onClick={() => setSelected(null)} className="px-4 py-2 rounded-lg bg-slate-700 text-slate-100">Cancel</button>
               <button
                 onClick={submitReview}
-                disabled={updating}
-                className="px-4 py-2 rounded-lg bg-yellow-500 text-slate-900 font-bold hover:bg-yellow-400 disabled:opacity-60"
+                disabled={
+                  updating ||
+                  Boolean(deletingId)
+                }
+                className="px-4 py-2 rounded-lg bg-yellow-500 text-slate-900 font-bold hover:bg-yellow-400 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {updating ? 'Saving...' : 'Save Review'}
               </button>

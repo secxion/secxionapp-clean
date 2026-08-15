@@ -87,17 +87,16 @@ const logger = winston.createLogger({
       maxFiles: 5,
     }),
   ],
-  exceptionHandlers: [
-    new winston.transports.File({
-      filename: path.join(logsDir, "exceptions.log"),
-    }),
-  ],
-  rejectionHandlers: [
-    new winston.transports.File({
-      filename: path.join(logsDir, "rejections.log"),
-    }),
-  ],
   exitOnError: false,
+  // Exception/rejection handlers disabled in dev — sandbox blocks uv_uptime syscall
+  ...(process.env.NODE_ENV === "production" && {
+    exceptionHandlers: [
+      new winston.transports.File({ filename: path.join(logsDir, "exceptions.log") }),
+    ],
+    rejectionHandlers: [
+      new winston.transports.File({ filename: path.join(logsDir, "rejections.log") }),
+    ],
+  }),
 });
 
 // Add custom log levels

@@ -61,7 +61,10 @@ const validateKycPayload = (payload) => {
   if (!payload.documents.selfieUrl) missing.push("documents.selfieUrl");
   if (!payload.documents.selfieCaptureMethod) {
     missing.push("documents.selfieCaptureMethod");
-  }v
+  }
+  if (!payload.documents.selfieCapturedAt) {
+    missing.push("documents.selfieCapturedAt");
+  }
 
   if (missing.length) {
     return `Missing required fields: ${missing.join(", ")}`;
@@ -91,11 +94,13 @@ const validateKycPayload = (payload) => {
     return "Selfie must be captured using live camera verification.";
   }
 
-  if (payload.documents.selfieCapturedAt) {
-    const selfieCapturedAt = new Date(payload.documents.selfieCapturedAt);
-    if (Number.isNaN(selfieCapturedAt.getTime())) {
-      return "Invalid documents.selfieCapturedAt value";
-    }
+  const selfieCapturedAt = new Date(payload.documents.selfieCapturedAt);
+  if (Number.isNaN(selfieCapturedAt.getTime())) {
+    return "Invalid documents.selfieCapturedAt value";
+  }
+
+  if (selfieCapturedAt > new Date()) {
+    return "documents.selfieCapturedAt cannot be in the future";
   }
 
   return null;
@@ -285,29 +290,13 @@ export const submitKyc = async (req, res) => {
       });
     }
 
-    const user = await userModel
-      .findById(req.userId)
-      .select("phoneNumber isPhoneVerified phoneVerifiedAt");
+    const user = await userModel.findById(req.userId).select("_id");
 
     if (!user) {
       return res.status(404).json({
         success: false,
         error: true,
         message: "User account not found.",
-      });
-    }
-
-    const userPhone = normalizePhoneNumber(user.phoneNumber);
-    if (
-      !user.isPhoneVerified ||
-      !userPhone ||
-      userPhone !== payload.phoneNumber
-    ) {
-      return res.status(400).json({
-        success: false,
-        error: true,
-        message:
-          "Phone verification is required before KYC submission. Please verify your phone number.",
       });
     }
 
@@ -334,8 +323,8 @@ export const submitKyc = async (req, res) => {
         ...payload,
         phoneVerification: {
           isVerified: true,
-          verifiedAt: user.phoneVerifiedAt || now,
-          method: "otp",
+          verifiedAt: now,
+          method: "not_required",
         },
         consent: {
           accepted: true,
@@ -372,8 +361,8 @@ export const submitKyc = async (req, res) => {
       existing.phoneNumber = payload.phoneNumber;
       existing.phoneVerification = {
         isVerified: true,
-        verifiedAt: user.phoneVerifiedAt || now,
-        method: "otp",
+        verifiedAt: now,
+        method: "not_required",
       };
       existing.consent = {
         accepted: true,
@@ -455,6 +444,12 @@ export const submitKyc = async (req, res) => {
       };
       await kycRecord.save();
     }
+
+    await userModel.findByIdAndUpdate(req.userId, {
+      $set: {
+        phoneNumber: payload.phoneNumber,
+      },
+    });
 
     await userModel.findByIdAndUpdate(req.userId, {
       $set: {
@@ -609,15 +604,6 @@ export const reviewKycSubmission = async (req, res) => {
       });
     }
 
-    if (status === "approved" && kycRecord?.faceMatch?.status !== "passed") {
-      return res.status(409).json({
-        success: false,
-        error: true,
-        message:
-          "Face match must be marked as passed before approving this KYC submission.",
-      });
-    }
-
     const now = new Date();
     const reviewerEmail = req?.user?.email || "";
 
@@ -665,6 +651,47 @@ export const reviewKycSubmission = async (req, res) => {
       success: false,
       error: true,
       message: "Failed to update KYC review status.",
+    });
+  }
+};
+
+export const deleteKycSubmission = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const kycRecord = await KycSubmission.findById(id);
+    if (!kycRecord) {
+      return res.status(404).json({
+        success: false,
+        error: true,
+        message: "KYC submission not found.",
+      });
+    }
+
+    await KycSubmission.deleteOne({ _id: kycRecord._id });
+
+    await userModel.findByIdAndUpdate(kycRecord.userId, {
+      $set: {
+        kycStatus: "unverified",
+        kycVerifiedAt: null,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      error: false,
+      message: "KYC submission deleted successfully.",
+      data: {
+        deletedSubmissionId: String(kycRecord._id),
+        userId: String(kycRecord.userId),
+      },
+    });
+  } catch (error) {
+    console.error("[KYC] deleteKycSubmission error:", error);
+    return res.status(500).json({
+      success: false,
+      error: true,
+      message: "Failed to delete KYC submission.",
     });
   }
 };

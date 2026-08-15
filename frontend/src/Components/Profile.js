@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import SummaryApi from '../common';
 import { toast } from 'react-toastify';
@@ -17,16 +17,29 @@ import {
 import { PiUserSquare } from 'react-icons/pi';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
+import { persistor } from '../store/store';
+import { clearState } from '../store/userSlice';
 import SecxionShimmer from './SecxionShimmer';
 import SecxionSpinner from './SecxionSpinner';
 import BackButton from './BackButton';
 
 const Profile = () => {
   const { user } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [errorProfile, setErrorProfile] = useState(null);
   const [profileData, setProfileData] = useState(user || null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const clearPersistedProfileState = useCallback(async () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    dispatch(clearState());
+    if (persistor) {
+      await persistor.purge();
+    }
+    setProfileData(null);
+  }, [dispatch]);
 
   const fetchUserProfile = useCallback(async () => {
     setErrorProfile(null);
@@ -39,6 +52,9 @@ const Profile = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
+        if (response.status === 401 || response.status === 404) {
+          await clearPersistedProfileState();
+        }
         throw new Error(errorData.message || 'Failed to fetch profile data');
       }
 
@@ -50,7 +66,7 @@ const Profile = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [clearPersistedProfileState]);
 
   const fetchUserDetails = useCallback(async () => {
     try {
@@ -63,12 +79,15 @@ const Profile = () => {
       if (response.ok && data.success) {
         setProfileData(data.data);
       } else {
+        if (response.status === 401 || response.status === 404) {
+          await clearPersistedProfileState();
+        }
         toast.error(data.message || 'Failed to fetch updated user details.');
       }
     } catch (error) {
       toast.error('Error fetching updated user details.');
     }
-  }, []);
+  }, [clearPersistedProfileState]);
 
   const handleEditProfile = () => {
     if (profileData) {
@@ -120,9 +139,47 @@ const Profile = () => {
     );
   };
 
+  const getKycStatusMeta = () => {
+    const status = String(profileData?.kycStatus || 'unverified').toLowerCase();
+
+    if (status === 'approved') {
+      return {
+        label: 'Verified',
+        badgeClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+        detail: profileData?.kycVerifiedAt
+          ? `Verified ${moment(profileData.kycVerifiedAt).fromNow().toUpperCase()}`
+          : 'Identity verification approved',
+      };
+    }
+
+    if (status === 'pending') {
+      return {
+        label: 'Pending Review',
+        badgeClass: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+        detail: 'Your submission is awaiting admin review.',
+      };
+    }
+
+    if (status === 'rejected') {
+      return {
+        label: 'Rejected',
+        badgeClass: 'bg-red-500/10 text-red-400 border-red-500/20',
+        detail: 'Please open Identity Verification to resubmit.',
+      };
+    }
+
+    return {
+      label: 'Not Started',
+      badgeClass: 'bg-white/5 text-gray-400 border-white/10',
+      detail: 'Identity verification has not been submitted yet.',
+    };
+  };
+
   const hasCompletedProfile = () => {
     return !!(profileData?.name && profileData?.email && profileData?.tag);
   };
+
+  const kycStatusMeta = getKycStatusMeta();
 
   useEffect(() => {
     if (!user?.name) {
@@ -171,7 +228,7 @@ const Profile = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mx-auto mt-24 max-w-4xl rounded-2xl border border-white/10 bg-black/20 p-6 text-gray-600 shadow-lg"
+        className="mx-auto mt-20 max-w-4xl rounded-2xl border border-white/10 bg-black/20 p-6 text-gray-600 shadow-lg"
       >
         <div className="flex items-center justify-center">
           <div className="text-center">
@@ -187,7 +244,7 @@ const Profile = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="mt-28 p-4 sm:p-8 max-w-5xl mx-auto"
+      className="mt-24 p-4 sm:p-8 max-w-5xl mx-auto"
     >
       <BackButton fallbackTo="/home" className="mb-6" />
 
@@ -291,6 +348,25 @@ const Profile = () => {
                       </span>
                     </div>
                   )}
+
+                  <div className="flex items-start justify-center space-x-3 sm:col-span-2 sm:justify-start">
+                    <FaIdCard className="mt-1 flex-shrink-0 text-gray-500" />
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-medium text-gray-400">
+                          KYC Status
+                        </span>
+                        <span
+                          className={`inline-flex items-center rounded-lg border px-3 py-1 text-[10px] font-black uppercase tracking-widest ${kycStatusMeta.badgeClass}`}
+                        >
+                          {kycStatusMeta.label}
+                        </span>
+                      </div>
+                      <p className="text-xs font-medium text-gray-500">
+                        {kycStatusMeta.detail}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -306,7 +382,7 @@ const Profile = () => {
                 className="inline-flex items-center gap-3 px-8 py-3.5 text-xs font-black uppercase tracking-widest text-brand-dark-base bg-brand-gold hover:bg-brand-gold-light rounded-xl transition-all duration-300 shadow-brand-gold font-spaceGrotesk"
               >
                 <FaIdCard className="w-4 h-4" />
-                <span>Identification</span>
+                <span>Identity Verification</span>
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}

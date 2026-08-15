@@ -11,6 +11,7 @@ import {
 import SummaryApi from '../common';
 import uploadImage from '../helpers/uploadImage';
 import { toUserSafeMessage } from '../utils/userSafeMessage';
+import SecxionLogo from '../app/slogo.png';
 
 const emptyForm = {
   fullName: '',
@@ -298,13 +299,6 @@ const statusConfig = {
   },
 };
 
-const faceMatchLabel = {
-  not_started: 'Not Started',
-  pending: 'Pending Review',
-  passed: 'Passed',
-  failed: 'Failed',
-};
-
 const KycVerification = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -316,13 +310,6 @@ const KycVerification = () => {
   });
   const [kycData, setKycData] = useState(null);
   const [form, setForm] = useState(emptyForm);
-  const [phoneOtp, setPhoneOtp] = useState('');
-  const [phoneVerification, setPhoneVerification] = useState({
-    sending: false,
-    verifying: false,
-    isVerified: false,
-    verifiedAt: null,
-  });
   const [selfieCapturedAt, setSelfieCapturedAt] = useState('');
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [cameraError, setCameraError] = useState('');
@@ -379,11 +366,11 @@ const KycVerification = () => {
           selfieUrl: result.data.documents?.selfieUrl || '',
         });
 
-        setPhoneVerification((prev) => ({
-          ...prev,
-          isVerified: Boolean(result.data.phoneVerification?.isVerified),
-          verifiedAt: result.data.phoneVerification?.verifiedAt || null,
-        }));
+        setSelfieCapturedAt(
+          result.data.documents?.selfieCapturedAt
+            ? new Date(result.data.documents.selfieCapturedAt).toISOString()
+            : '',
+        );
       }
     } catch (error) {
       toast.error(
@@ -426,15 +413,6 @@ const KycVerification = () => {
     }
 
     if (name === 'phoneNumber') {
-      setPhoneVerification((prev) => ({
-        ...prev,
-        isVerified: false,
-        verifiedAt: null,
-      }));
-      setPhoneOtp('');
-    }
-
-    if (name === 'phoneNumber') {
       setForm((prev) => ({
         ...prev,
         phoneNumber: String(value || '').replace(/\D/g, ''),
@@ -446,112 +424,6 @@ const KycVerification = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
-  };
-
-  const sendPhoneCode = async () => {
-    const fullPhoneNumber = buildPhoneWithDialCode(
-      form.country,
-      form.phoneNumber,
-    );
-
-    if (!form.country) {
-      toast.error('Select country before requesting a verification code.');
-      return;
-    }
-
-    if (!form.phoneNumber.trim()) {
-      toast.error(
-        'Enter your phone number before requesting a verification code.',
-      );
-      return;
-    }
-
-    setPhoneVerification((prev) => ({ ...prev, sending: true }));
-
-    try {
-      const response = await fetch(SummaryApi.sendKycPhoneCode.url, {
-        method: SummaryApi.sendKycPhoneCode.method,
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ phoneNumber: fullPhoneNumber }),
-      });
-
-      const result = await response.json();
-      if (!response.ok || !result.success) {
-        throw new Error(
-          result.message || 'Failed to send phone verification code.',
-        );
-      }
-
-      if (result.fallback && result.debugCode) {
-        setPhoneOtp(String(result.debugCode));
-        toast.info(`DEV fallback code: ${result.debugCode}`);
-      }
-
-      toast.success(result.message || 'Verification code sent.');
-    } catch (error) {
-      toast.error(
-        toUserSafeMessage(
-          error,
-          'We could not send the verification code. Please try again.',
-        ),
-      );
-    } finally {
-      setPhoneVerification((prev) => ({ ...prev, sending: false }));
-    }
-  };
-
-  const verifyPhoneCode = async () => {
-    const fullPhoneNumber = buildPhoneWithDialCode(
-      form.country,
-      form.phoneNumber,
-    );
-
-    if (!form.phoneNumber.trim() || !phoneOtp.trim()) {
-      toast.error('Phone number and verification code are required.');
-      return;
-    }
-
-    setPhoneVerification((prev) => ({ ...prev, verifying: true }));
-
-    try {
-      const response = await fetch(SummaryApi.verifyKycPhoneCode.url, {
-        method: SummaryApi.verifyKycPhoneCode.method,
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phoneNumber: fullPhoneNumber,
-          otp: phoneOtp,
-        }),
-      });
-
-      const result = await response.json();
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || 'Phone verification failed.');
-      }
-
-      setPhoneVerification({
-        sending: false,
-        verifying: false,
-        isVerified: true,
-        verifiedAt: result.data?.verifiedAt || new Date().toISOString(),
-      });
-      toast.success(result.message || 'Phone verified successfully.');
-    } catch (error) {
-      setPhoneVerification((prev) => ({ ...prev, isVerified: false }));
-      toast.error(
-        toUserSafeMessage(
-          error,
-          'We could not verify that code. Check it and try again.',
-        ),
-      );
-    } finally {
-      setPhoneVerification((prev) => ({ ...prev, verifying: false }));
-    }
   };
 
   const handleUpload = async (event, field) => {
@@ -772,33 +644,6 @@ const KycVerification = () => {
           <span>STATUS: {statusUI.label}</span>
         </div>
 
-        {kycData?.faceMatch && (
-          <div className="mb-10 p-6 rounded-2xl border border-white/5 bg-black/20">
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 font-spaceGrotesk mb-4">
-              Face Match
-            </p>
-            <div className="flex items-baseline gap-2">
-              <p className="text-lg font-bold text-white font-spaceGrotesk">
-                {faceMatchLabel[kycData.faceMatch.status] ||
-                  faceMatchLabel.not_started}
-              </p>
-              {Number.isFinite(kycData.faceMatch.score) && (
-                <span className="text-brand-gold text-xs font-black font-spaceGrotesk">
-                  {kycData.faceMatch.score.toFixed(2)}% MATCH
-                </span>
-              )}
-            </div>
-            {kycData.faceMatch.checkedAt && (
-              <p className="text-[10px] text-gray-600 mt-2 font-bold uppercase tracking-widest">
-                VERIFIED:{' '}
-                {new Date(kycData.faceMatch.checkedAt)
-                  .toLocaleString()
-                  .toUpperCase()}
-              </p>
-            )}
-          </div>
-        )}
-
         {kycData?.status === 'rejected' && (
           <div className="mb-10 p-6 rounded-2xl border border-red-500/20 bg-red-500/5 text-red-300">
             <p className="text-[10px] font-black uppercase tracking-widest mb-3">
@@ -880,7 +725,7 @@ const KycVerification = () => {
 
             <div className="md:col-span-2 rounded-3xl border border-white/5 bg-black/10 p-8">
               <p className="mb-8 text-[10px] font-black uppercase tracking-[0.3em] text-brand-gold/60 font-spaceGrotesk">
-                Phone Verification
+                Contact Phone
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -916,62 +761,6 @@ const KycVerification = () => {
                     className="w-full px-5 py-4 rounded-2xl bg-black/20 border border-white/10 text-white focus:border-brand-gold/50 outline-none transition-all font-medium"
                   />
                 </label>
-                <button
-                  type="button"
-                  disabled={
-                    !canSubmit ||
-                    loading ||
-                    phoneVerification.sending ||
-                    !form.country ||
-                    !form.phoneNumber.trim()
-                  }
-                  onClick={sendPhoneCode}
-                  className="self-end px-6 py-4 rounded-2xl bg-brand-gold text-brand-dark-base font-black font-spaceGrotesk text-[10px] uppercase tracking-widest hover:bg-brand-gold-light disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-brand-gold"
-                >
-                  {phoneVerification.sending ? 'Sending...' : 'Send Code'}
-                </button>
-
-                <label className="block md:col-span-2 group">
-                  <span className="mb-2 block text-[10px] font-bold text-gray-600 uppercase tracking-widest group-focus-within:text-emerald-400 transition-colors">
-                    Verification Code
-                  </span>
-                  <input
-                    id="kyc-phone-otp"
-                    type="text"
-                    value={phoneOtp}
-                    onChange={(event) => setPhoneOtp(event.target.value)}
-                    placeholder="Enter Code"
-                    disabled={
-                      !canSubmit || loading || phoneVerification.isVerified
-                    }
-                    className="w-full px-5 py-4 rounded-2xl bg-black/20 border border-white/10 text-white focus:border-emerald-400/50 outline-none transition-all font-mono tracking-[0.5em] text-center"
-                  />
-                </label>
-                <button
-                  type="button"
-                  disabled={
-                    !canSubmit ||
-                    loading ||
-                    phoneVerification.verifying ||
-                    phoneVerification.isVerified ||
-                    !phoneOtp.trim()
-                  }
-                  onClick={verifyPhoneCode}
-                  className="self-end px-6 py-4 rounded-2xl bg-emerald-500 text-white font-black font-spaceGrotesk text-[10px] uppercase tracking-widest hover:bg-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)]"
-                >
-                  {phoneVerification.verifying ? 'Verifying...' : 'Verify Code'}
-                </button>
-              </div>
-
-              <div className="mt-6 flex items-center gap-3">
-                <div
-                  className={`w-2 h-2 rounded-full ${phoneVerification.isVerified ? 'bg-emerald-400 shadow-[0_0_8px_#4ade80]' : 'bg-gray-700'}`}
-                ></div>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                  {phoneVerification.isVerified
-                    ? `Verified on: ${new Date(phoneVerification.verifiedAt).toLocaleString()}`
-                    : 'OTP Verification Required'}
-                </p>
               </div>
             </div>
 
@@ -1171,6 +960,10 @@ const KycVerification = () => {
                 >
                   {form.selfieUrl ? 'Status: Captured' : 'Status: Required'}
                 </div>
+
+                <p className="text-[10px] font-bold uppercase tracking-widest text-center text-gray-600">
+                  Live camera capture only
+                </p>
               </div>
             </div>
           </div>
@@ -1198,9 +991,9 @@ const KycVerification = () => {
                 !canSubmit ||
                 submitting ||
                 loading ||
-                !phoneVerification.isVerified ||
                 !form.consentAccepted ||
                 !form.frontUrl ||
+                !selfieCapturedAt ||
                 !form.selfieUrl
               }
               className="w-full sm:w-auto px-12 py-5 rounded-2xl bg-brand-gold text-brand-dark-base font-black font-spaceGrotesk text-sm uppercase tracking-wider shadow-[0_10px_30px_rgba(212,175,55,0.2)] hover:bg-brand-gold-light transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
@@ -1236,7 +1029,7 @@ const KycVerification = () => {
                 </p>
               )}
 
-              <div className="rounded-xl overflow-hidden border border-slate-700 bg-black">
+              <div className="relative rounded-xl overflow-hidden border border-slate-700 bg-black">
                 <video
                   ref={videoRef}
                   autoPlay
@@ -1244,6 +1037,29 @@ const KycVerification = () => {
                   playsInline
                   className="w-full h-[320px] object-cover"
                 />
+
+                <div className="pointer-events-none absolute inset-0">
+                  <div className="absolute inset-0 bg-black/20"></div>
+
+                  <div className="absolute left-1/2 top-1/2 h-[74%] w-[70%] -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border-2 border-brand-gold/80 shadow-[0_0_0_9999px_rgba(2,6,23,0.45)]">
+                    <img
+                      src={SecxionLogo}
+                      alt="Secxion watermark"
+                      className="pointer-events-none absolute right-3 top-3 h-10 w-10 rounded-xl border border-brand-gold/20 bg-black/30 p-1 opacity-60"
+                    />
+
+                    <div className="absolute -left-1 -top-1 h-7 w-7 border-l-4 border-t-4 border-brand-gold rounded-tl-lg"></div>
+                    <div className="absolute -right-1 -top-1 h-7 w-7 border-r-4 border-t-4 border-brand-gold rounded-tr-lg"></div>
+                    <div className="absolute -bottom-1 -left-1 h-7 w-7 border-b-4 border-l-4 border-brand-gold rounded-bl-lg"></div>
+                    <div className="absolute -bottom-1 -right-1 h-7 w-7 border-b-4 border-r-4 border-brand-gold rounded-br-lg"></div>
+
+                    <div className="absolute inset-x-6 top-1/2 h-[2px] -translate-y-1/2 bg-brand-gold/60 animate-pulse"></div>
+                  </div>
+
+                  <p className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-brand-gold font-spaceGrotesk">
+                    Align Face Inside Gold Frame
+                  </p>
+                </div>
               </div>
 
               <p className="mt-3 text-xs text-slate-400">

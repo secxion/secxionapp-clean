@@ -21,7 +21,6 @@ const ReportCard = () => {
   const [fetchError, setFetchError] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [userReplyText, setUserReplyText] = useState('');
-  // ...existing code...
   const [uploadingReplyImage, setUploadingReplyImage] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const chatShellRef = useRef(null);
@@ -326,15 +325,12 @@ const ReportCard = () => {
     const element = chatHistoryRef.current;
     if (!element) return;
 
-    // If the user scrolls to the top, disable auto-scrolling
     if (element.scrollTop + element.clientHeight < element.scrollHeight - 50) {
       setIsAutoScrolling(false);
     } else {
       setIsAutoScrolling(true);
     }
   };
-
-  // ...existing code...
 
   if (isLoadingInitial) {
     return (
