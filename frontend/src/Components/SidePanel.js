@@ -1,5 +1,5 @@
-import React, { useState, Fragment } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, Fragment, useEffect, useCallback } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
 import {
   HomeIcon,
@@ -26,6 +26,41 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
   const [timezone, setTimezone] = useState('Africa/Lagos');
   const [showTimezones, setShowTimezones] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const resetScrollPosition = useCallback(() => {
+    const targets = [
+      window,
+      document.getElementById('root'),
+      document.scrollingElement,
+      document.documentElement,
+      document.body,
+      document.querySelector('.main-content'),
+    ].filter(Boolean);
+
+    targets.forEach((target) => {
+      if (typeof target.scrollTo === 'function') {
+        target.scrollTo(0, 0);
+      } else {
+        target.scrollTop = 0;
+        target.scrollLeft = 0;
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    let animationFrameId = 0;
+    let delayedRunId = 0;
+
+    resetScrollPosition();
+    animationFrameId = window.requestAnimationFrame(resetScrollPosition);
+    delayedRunId = window.setTimeout(resetScrollPosition, 60);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId);
+      window.clearTimeout(delayedRunId);
+    };
+  }, [location.pathname, location.search, resetScrollPosition]);
 
   const toggleTimezones = () => setShowTimezones(!showTimezones);
   const handleTimezoneChange = (newTimezone) => {
@@ -36,10 +71,32 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
     const selected = timezones.find((tz) => tz.value === timezone);
     return selected ? selected.label : '';
   };
-  const handleLinkClick = () => {
+  const handleLinkClick = useCallback(() => {
     onCloseMenu?.();
     setOpen(false);
-  };
+  }, [onCloseMenu, setOpen]);
+
+  const handleNavigate = useCallback(
+    (path) => {
+      handleLinkClick();
+
+      const completeNavigation = () => {
+        navigate(path);
+        resetScrollPosition();
+        window.requestAnimationFrame(resetScrollPosition);
+        window.setTimeout(resetScrollPosition, 60);
+        window.setTimeout(resetScrollPosition, 220);
+      };
+
+      if (location.pathname === path) {
+        completeNavigation();
+        return;
+      }
+
+      window.setTimeout(completeNavigation, 210);
+    },
+    [handleLinkClick, location.pathname, navigate, resetScrollPosition],
+  );
 
   const hideTradeStatus = location.pathname === '/record';
   const hideDataPad = location.pathname === '/datapad';
@@ -145,7 +202,10 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
                 <Link
                   to="/home"
                   className="relative group"
-                  onClick={handleLinkClick}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    handleNavigate('/home');
+                  }}
                 >
                   <div className="flex py-1 flex-col justify-center">
                     <div className="relative">
@@ -179,9 +239,12 @@ const SidePanel = ({ open, setOpen, onCloseMenu, onOpenLiveScript }) => {
                     ({ path, icon: Icon, label, gradient, hide }) =>
                       !hide && (
                         <Link
-                          key={label}
                           to={path}
-                          onClick={handleLinkClick}
+                          key={label}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            handleNavigate(path);
+                          }}
                           className="group flex items-center px-4 py-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-brand-gold/20 transition-all duration-300 transform active:scale-95"
                         >
                           <div

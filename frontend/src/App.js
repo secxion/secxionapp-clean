@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect } from 'react';
+import React, { lazy, Suspense, useEffect, useLayoutEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserDetails, setLoading } from './store/userSlice';
@@ -17,6 +17,26 @@ import InstallPrompt from './Components/InstallPrompt';
 function setViewportHeight() {
   const vh = window.innerHeight * 0.01;
   document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+function resetRouteScroll() {
+  const targets = [
+    window,
+    document.getElementById('root'),
+    document.scrollingElement,
+    document.documentElement,
+    document.body,
+    document.querySelector('.main-content'),
+  ].filter(Boolean);
+
+  targets.forEach((target) => {
+    if (typeof target.scrollTo === 'function') {
+      target.scrollTo(0, 0);
+    } else {
+      target.scrollTop = 0;
+      target.scrollLeft = 0;
+    }
+  });
 }
 
 const Header = lazy(() => import('./Components/Header'));
@@ -42,17 +62,6 @@ function App() {
       window.removeEventListener('resize', setViewportHeight);
     };
   }, []);
-
-  useEffect(() => {
-    // Keep route transitions consistent by always starting at the top.
-    window.scrollTo(0, 0);
-
-    // Support layouts that may use an internal scroll container.
-    const mainContent = document.querySelector('.main-content');
-    if (mainContent) {
-      mainContent.scrollTo(0, 0);
-    }
-  }, [location.pathname, location.search]);
 
   useEffect(() => {
     if (!('scrollRestoration' in window.history)) return;
@@ -121,6 +130,24 @@ function App() {
     isUserLoading || isMarketLoading || isBlogsLoading || isWalletLoading;
   const showRateSlider =
     Boolean(user) && ['/home', '/product-category'].includes(location.pathname);
+
+  useLayoutEffect(() => {
+    let animationFrameId = 0;
+    let delayedFrameId = 0;
+
+    const scrollToTop = () => {
+      resetRouteScroll();
+    };
+
+    scrollToTop();
+    animationFrameId = window.requestAnimationFrame(scrollToTop);
+    delayedFrameId = window.setTimeout(scrollToTop, 50);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId);
+      window.clearTimeout(delayedFrameId);
+    };
+  }, [location.pathname, location.search, isAppLoading]);
 
   return (
     <ContextProvider>

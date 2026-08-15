@@ -108,7 +108,6 @@ async function adminSignInController(req, res, next) {
       .json({
         message: `Welcome to ${department.name}!`,
         data: {
-          token,
           user: {
             _id: user._id,
             email: user.email,

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PaymentRequestForm from '../Components/PaymentRequestForm';
 import BankAccountList from '../Components/BankAccountList';
@@ -80,6 +80,40 @@ const WalletDashboard = () => {
   const [userLoadTimeout, setUserLoadTimeout] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [isLiveScriptOpen, setIsLiveScriptOpen] = useState(false);
+
+  const resetScrollPosition = useCallback(() => {
+    const targets = [
+      window,
+      document.getElementById('root'),
+      document.scrollingElement,
+      document.documentElement,
+      document.body,
+      document.querySelector('.main-content'),
+    ].filter(Boolean);
+
+    targets.forEach((target) => {
+      if (typeof target.scrollTo === 'function') {
+        target.scrollTo(0, 0);
+      } else {
+        target.scrollTop = 0;
+        target.scrollLeft = 0;
+      }
+    });
+  }, []);
+
+  useLayoutEffect(() => {
+    let animationFrameId = 0;
+    let delayedRunId = 0;
+
+    resetScrollPosition();
+    animationFrameId = window.requestAnimationFrame(resetScrollPosition);
+    delayedRunId = window.setTimeout(resetScrollPosition, 60);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId);
+      window.clearTimeout(delayedRunId);
+    };
+  }, [activeTab, resetScrollPosition]);
 
   const toggleSidePanel = () => {
     setIsSidePanelOpen(!isSidePanelOpen);

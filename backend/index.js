@@ -22,7 +22,7 @@ dotenv.config({
 });
 
 const validateEnvironment = () => {
-  const requiredEnvVars = ["TOKEN_SECRET_KEY", "FRONTEND_URLS"];
+  const requiredEnvVars = ["TOKEN_SECRET_KEY", "FRONTEND_URLS", "SESSION_SECRET"];
   const missingVars = requiredEnvVars.filter((name) => !process.env[name]);
 
   if (process.env.NODE_ENV === "production") {
@@ -88,30 +88,38 @@ const adminOrigins = [
 ];
 allowedOrigins.push(...adminOrigins);
 
-// In development, allow all origins so local frontend can connect without restriction
 const isDev = process.env.NODE_ENV !== "production";
+const localhostOriginPattern = /^http:\/\/(localhost|127\.0\.0\.1):\d+$/;
 
-const corsOptions = isDev
-  ? {
-      origin: true, // reflect any origin
-      credentials: true,
-      methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-      allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "X-Platform"],
-      optionsSuccessStatus: 200,
+const isAllowedOrigin = (origin) => {
+  if (!origin) {
+    return true;
+  }
+
+  if (allowedOrigins.includes(origin)) {
+    return true;
+  }
+
+  if (isDev && localhostOriginPattern.test(origin)) {
+    return true;
+  }
+
+  return false;
+};
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (isAllowedOrigin(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
     }
-  : {
-      origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error("Not allowed by CORS"));
-        }
-      },
-      methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-      credentials: true,
-      allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "X-Platform"],
-      optionsSuccessStatus: 200,
-    };
+  },
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "X-Platform"],
+  optionsSuccessStatus: 200,
+};
 
 // Handle preflight requests before helmet or any other middleware
 app.options("*", cors(corsOptions));
@@ -131,10 +139,9 @@ app.use(cookieParser());
 // Configure session middleware for CSRF protection
 app.use(
   session({
-    secret:
-      process.env.SESSION_SECRET || "your-secret-key-change-in-production",
+    secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -194,7 +201,7 @@ const PORT = process.env.PORT || 5000;
 // This ensures CORS, routes and health checks work even during DB reconnect
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
-  console.log(`🔓 CORS mode: ${isDev ? "OPEN (dev — all origins allowed)" : "RESTRICTED (production)"}`);
+  console.log(`🔓 CORS mode: ${isDev ? "RESTRICTED (dev allowlist + localhost ports)" : "RESTRICTED (production)"}`);
 });
 
 connectDB()

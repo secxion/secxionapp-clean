@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import {
   BrowserRouter,
@@ -46,8 +46,36 @@ import './index.css';
 const ScrollToTop = () => {
   const location = useLocation();
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
+  useLayoutEffect(() => {
+    let animationFrameId = 0;
+    let delayedFrameId = 0;
+
+    const scrollToTop = () => {
+      const targets = [
+        window,
+        document.scrollingElement,
+        document.documentElement,
+        document.body,
+      ].filter(Boolean);
+
+      targets.forEach((target) => {
+        if (typeof target.scrollTo === 'function') {
+          target.scrollTo(0, 0);
+        } else {
+          target.scrollTop = 0;
+          target.scrollLeft = 0;
+        }
+      });
+    };
+
+    scrollToTop();
+    animationFrameId = window.requestAnimationFrame(scrollToTop);
+    delayedFrameId = window.setTimeout(scrollToTop, 50);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId);
+      window.clearTimeout(delayedFrameId);
+    };
   }, [location.pathname, location.search]);
 
   useEffect(() => {

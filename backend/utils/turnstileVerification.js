@@ -18,16 +18,16 @@ export const verifyTurnstileToken = async (token, remoteIp = null) => {
     process.env.NODE_ENV === "production"
       ? TURNSTILE_SECRET_KEY
       : process.env.TURNSTILE_SECRET_KEY_DEV || TURNSTILE_TEST_SECRET_KEY;
+  const isBypassEnabled = process.env.TURNSTILE_ALLOW_DEV_BYPASS === "true";
 
   if (!token) {
     return { success: false, errorCodes: ["missing-input-response"] };
   }
 
   if (!secretKey) {
-    console.warn("⚠️ TURNSTILE_SECRET_KEY not configured - allowing in development mode");
-    // In development mode without secret key, allow all tokens
-    if (process.env.NODE_ENV === "development" || process.env.NODE_ENV !== "production") {
-      console.log("✅ Turnstile bypassed (development mode)");
+    console.warn("⚠️ TURNSTILE_SECRET_KEY not configured");
+    if (process.env.NODE_ENV === "development" && isBypassEnabled) {
+      console.log("✅ Turnstile bypassed (development mode with explicit bypass flag)");
       return { success: true };
     }
     return { success: false, errorCodes: ["missing-secret-key"] };

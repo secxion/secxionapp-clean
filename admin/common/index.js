@@ -3,30 +3,23 @@ const backendDomain = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 /**
  * Authenticated fetch helper for cross-origin API calls
- * Uses JWT token from localStorage for Authorization header
- * This is required for cross-domain auth (admin panel on different domain than API)
+ * Uses secure httpOnly cookie-based auth for admin API calls.
  */
 export const authFetch = async (url, options = {}) => {
-  const token = localStorage.getItem('adminToken');
-  
   const headers = {
     ...options.headers,
   };
-  
-  // Add Authorization header if we have a token
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-  
+
   const response = await fetch(url, {
     ...options,
     headers,
-    credentials: 'include', // Still include cookies as fallback
+    credentials: 'include',
   });
-  
+
   // If unauthorized, clear auth and redirect to login
   if (response.status === 401) {
-    localStorage.removeItem('adminToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
     localStorage.removeItem('adminAuth');
     localStorage.removeItem('adminUser');
     localStorage.removeItem('adminDepartment');

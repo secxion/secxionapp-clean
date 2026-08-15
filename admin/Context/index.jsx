@@ -14,52 +14,22 @@ const Context = createContext(null);
 
 export const ContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const [walletBalance, setWalletBalance] = useState(null);
   const dispatch = useDispatch();
 
-  const isTokenExpired = useCallback((token) => {
-    if (!token) return true;
-
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const currentTime = Date.now() / 1000;
-      return payload.exp < currentTime;
-    } catch (error) {
-      return true;
-    }
-  }, []);
-
   useEffect(() => {
-    // Check for admin token (used for cross-origin auth)
-    const adminToken = localStorage.getItem('adminToken');
     const adminUser = localStorage.getItem('adminUser');
-    
+
     // Fallback to regular storage for compatibility
     const storedUser = adminUser || localStorage.getItem('user');
-    const storedToken = adminToken || localStorage.getItem('token');
 
-    if (storedUser && storedToken) {
+    if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
-
-        if (!isTokenExpired(storedToken)) {
-          setUser(parsedUser);
-          setToken(storedToken);
-        } else {
-          // Clear all auth storage
-          localStorage.removeItem('user');
-          localStorage.removeItem('token');
-          localStorage.removeItem('adminToken');
-          localStorage.removeItem('adminUser');
-          localStorage.removeItem('adminAuth');
-          localStorage.removeItem('adminDepartment');
-        }
+        setUser(parsedUser);
       } catch (error) {
         localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        localStorage.removeItem('adminToken');
         localStorage.removeItem('adminUser');
         localStorage.removeItem('adminAuth');
         localStorage.removeItem('adminDepartment');
@@ -67,28 +37,21 @@ export const ContextProvider = ({ children }) => {
     }
 
     setLoading(false);
-  }, [isTokenExpired]);
+  }, []);
 
   const getAuthHeaders = useCallback(() => {
-    const headers = {
+    return {
       'Content-Type': 'application/json',
     };
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-    return headers;
-  }, [token]);
+  }, []);
 
   const logout = useCallback(async () => {
     // Clear all auth storage
     localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    localStorage.removeItem('adminToken');
     localStorage.removeItem('adminUser');
     localStorage.removeItem('adminAuth');
     localStorage.removeItem('adminDepartment');
     setUser(null);
-    setToken(null);
     setWalletBalance(null);
     dispatch(clearState());
     if (persistor) {
@@ -105,10 +68,6 @@ export const ContextProvider = ({ children }) => {
 
   const makeAuthenticatedRequest = useCallback(
     async (url, options = {}) => {
-      if (!token || isTokenExpired(token)) {
-        logout();
-        return null;
-      }
       try {
         const response = await fetch(url, {
           ...options,
@@ -127,11 +86,10 @@ export const ContextProvider = ({ children }) => {
         throw error;
       }
     },
-    [token, isTokenExpired, logout, getAuthHeaders],
+    [logout, getAuthHeaders],
   );
 
   const fetchUserDetails = useCallback(async () => {
-    if (!token) return;
     try {
       const response = await makeAuthenticatedRequest(
         SummaryApi.current_user.url,
@@ -150,22 +108,18 @@ export const ContextProvider = ({ children }) => {
     } catch (error) {
       logout();
     }
-  }, [makeAuthenticatedRequest, dispatch, token, logout]);
+  }, [makeAuthenticatedRequest, dispatch, logout]);
 
   const fetchWalletBalance = useCallback(async () => {
-    if (!token && !user?._id) return;
+    if (!user?._id) return;
     try {
       let url = SummaryApi.walletBalance.url;
       let requestOptions = {
         method: SummaryApi.walletBalance.method,
       };
-      if (!token) {
-        url = `${url}?userId=${user._id}`;
-        requestOptions.headers = { 'Content-Type': 'application/json' };
-      }
-      const response = token
-        ? await makeAuthenticatedRequest(url, requestOptions)
-        : await fetch(url, { ...requestOptions, credentials: 'include' });
+      url = `${url}?userId=${user._id}`;
+      requestOptions.headers = { 'Content-Type': 'application/json' };
+      const response = await makeAuthenticatedRequest(url, requestOptions);
       if (!response) return;
       const data = await response.json();
       if (response.ok && data.success) {
@@ -179,62 +133,36 @@ export const ContextProvider = ({ children }) => {
     } catch (error) {
       setWalletBalance(null);
     }
-  }, [token, user, makeAuthenticatedRequest, logout]);
+  }, [user, makeAuthenticatedRequest, logout]);
 
   useEffect(() => {
-    if (!token) return;
-    const validateToken = () => {
-      if (isTokenExpired(token)) {
-        logout();
-      }
-    };
-    const interval = setInterval(validateToken, 5 * 60 * 1000);
-    window.addEventListener('focus', validateToken);
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('focus', validateToken);
-    };
-  }, [token, isTokenExpired, logout]);
-
-  useEffect(() => {
-    if (token || user) {
+    if (user) {
       fetchWalletBalance();
     }
     setLoading(false);
-  }, [token, user, fetchWalletBalance]);
+  }, [user, fetchWalletBalance]);
 
   const login = async (userData, userToken) => {
-    if (!userData || !userToken) {
+    if (!userData) {
       return;
     }
-    if (isTokenExpired(userToken)) {
-      return;
-    }
-    localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('token', userToken);
+    localStorage.setItem('adminUser', JSON.stringify(userData));
+    localStorage.setItem('adminAuth', 'true');
     setUser(userData);
-    setToken(userToken);
     dispatch(setUserDetails(userData));
     fetchWalletBalance();
   };
 
-  const isLoggedIn = !!user && !!token && !isTokenExpired(token);
+  const token = null;
+  const isLoggedIn = !!user;
 
   // --- Blog Management State & Methods ---
   const [blogs, setBlogs] = useState([]);
   const fetchBlogs = useCallback(async () => {
     try {
-      // Use token for auth header
-      const adminToken = localStorage.getItem('adminToken');
-      const headers = {};
-      if (adminToken) {
-        headers['Authorization'] = `Bearer ${adminToken}`;
-      }
-      
       const response = await fetch(SummaryApi.getBlogs.url, {
         method: SummaryApi.getBlogs.method,
         credentials: 'include',
-        headers,
       });
       if (!response.ok) {
         setBlogs([]);
