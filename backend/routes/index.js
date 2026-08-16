@@ -577,17 +577,17 @@ router.get("/kyc/me", authToken, noCache, getMyKyc);
 router.post("/kyc/face-match/result", noCache, ingestKycFaceMatchResult);
 
 // Admin panel
-router.get("/all-user", authToken, noCache, allUsers);
-router.post("/update-user", authToken, noCache, updateUser);
-router.get("/get-all-users-market", authToken, noCache, getAllUserMarkets);
-router.post("/update-market-status/:id", updateMarketStatus);
+router.get("/all-user", authToken, verifyAdmin, noCache, allUsers);
+router.post("/update-user", authToken, verifyAdmin, noCache, updateUser);
+router.get("/get-all-users-market", authToken, verifyAdmin, noCache, getAllUserMarkets);
+router.post("/update-market-status/:id", authToken, verifyAdmin, updateMarketStatus);
 router.get(
   "/getAllDataForAdmin",
   authToken,
   noCache,
   getAllUserDataPadsForAdmin,
 );
-router.delete("/delete-user", deleteUser);
+router.delete("/delete-user", authToken, verifyAdmin, deleteUser);
 
 // Wallet balance
 router.get(
@@ -614,24 +614,26 @@ router.get(
 );
 
 // Admin routes
-router.get("/eth-withdrawals", authToken, noCache, getAllEthWithdrawalRequests);
+router.get("/eth-withdrawals", authToken, verifyAdmin, noCache, getAllEthWithdrawalRequests);
 router.get(
   "/eth-withdrawal/:requestId",
   authToken,
+  verifyAdmin,
   noCache,
   getSingleEthWithdrawalRequest,
 );
 router.put(
   "/eth-withdrawal-status/:requestId",
   authToken,
+  verifyAdmin,
   noCache,
   updateEthWithdrawalStatus,
 );
 
 // Product
-router.post("/upload-product", authToken, noCache, UploadProductController);
+router.post("/upload-product", authToken, verifyAdmin, noCache, UploadProductController);
 router.get("/get-product", getProductController);
-router.post("/update-product", authToken, noCache, updateProductController);
+router.post("/update-product", authToken, verifyAdmin, noCache, updateProductController);
 router.get("/get-categoryProduct", getCategoryProduct);
 router.post("/category-product", getCategoryWiseProduct);
 router.post("/product-details", getProductDetails);
@@ -656,16 +658,16 @@ router.get(
 );
 
 // System blog
-router.post("/create-blog", createBlogNote);
+router.post("/create-blog", authToken, verifyAdmin, createBlogNote);
 router.get("/get-blogs", getAllBlogNotes);
-router.put("/update-blog/:id", updateBlogNote);
-router.delete("/delete-blog/:id", deleteBlogNote);
+router.put("/update-blog/:id", authToken, verifyAdmin, updateBlogNote);
+router.delete("/delete-blog/:id", authToken, verifyAdmin, deleteBlogNote);
 
 // Reports
 router.post("/submit-report", authToken, noCache, submitReportController);
 router.get("/get-reports", authToken, noCache, getUserReportsController);
-router.get("/all-reports", authToken, noCache, getAllReportsController);
-router.post("/reply-report/:id", authToken, noCache, replyToReportController);
+router.get("/all-reports", authToken, verifyAdmin, noCache, getAllReportsController);
+router.post("/reply-report/:id", authToken, verifyAdmin, noCache, replyToReportController);
 router.post(
   "/reports/:id/reply",
   authToken,
@@ -675,12 +677,14 @@ router.post(
 router.get(
   "/reports/admin/:id/chat",
   authToken,
+  verifyAdmin,
   noCache,
   getReportChatController,
 );
 router.post(
   "/reports/admin/:id/sendchat",
   authToken,
+  verifyAdmin,
   noCache,
   sendChatMessageController,
 );
@@ -693,7 +697,7 @@ router.delete("/deletedata/:id", authToken, noCache, deleteDataPad);
 
 // Contact us
 router.post("/contact-us-message", createContactUsMessage);
-router.get("/get-contact-us-messages", getAllContactUsMessages);
+router.get("/get-contact-us-messages", authToken, verifyAdmin, getAllContactUsMessages);
 
 // Newsletter
 router.post("/newsletter/subscribe", noCache, subscribeNewsletter);
@@ -742,9 +746,9 @@ router.get("/wallet/balance", authToken, noCache, getWalletBalance);
 
 // Payment request
 router.post("/pr/create", authToken, noCache, createPaymentRequest);
-router.get("/pr/getall", authToken, noCache, getAllPaymentRequests);
+router.get("/pr/getall", authToken, verifyAdmin, noCache, getAllPaymentRequests);
 router.get("/pr/getuser", authToken, noCache, getUserPaymentRequests);
-router.patch("/pr/update/:id", authToken, noCache, updatePaymentRequestStatus);
+router.patch("/pr/update/:id", authToken, verifyAdmin, noCache, updatePaymentRequestStatus);
 
 // Bank account
 router.post("/ba/add", authToken, noCache, addBankAccount);
@@ -869,9 +873,9 @@ router.put(
 router.get("/myposts", authToken, noCache, getUserPostsController);
 
 // KYC Admin
-router.get("/kyc/admin/submissions", authToken, noCache, getAllKycSubmissions);
-router.patch("/kyc/admin/submissions/:id", authToken, noCache, reviewKycSubmission);
-router.delete("/kyc/admin/submissions/:id", authToken, noCache, deleteKycSubmission);
-router.get("/kyc/admin/stats", authToken, noCache, getKycStats);
+router.get("/kyc/admin/submissions", authToken, verifyAdmin, noCache, getAllKycSubmissions);
+router.patch("/kyc/admin/submissions/:id", authToken, verifyAdmin, noCache, reviewKycSubmission);
+router.delete("/kyc/admin/submissions/:id", authToken, verifyAdmin, noCache, deleteKycSubmission);
+router.get("/kyc/admin/stats", authToken, verifyAdmin, noCache, getKycStats);
 
 export default router;

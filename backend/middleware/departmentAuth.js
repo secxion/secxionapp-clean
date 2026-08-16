@@ -60,6 +60,20 @@ const API_TO_DEPARTMENT_ROUTES = {
 
   // Newsletter Management APIs
   '/admin/newsletter': 'newsletter',
+
+  // Support/Contact APIs
+  '/get-contact-us-messages': 'dashboard',
+
+  // Earnings/Payouts APIs
+  '/admin/earnings': 'earnings',
+  '/admin/commission': 'earnings',
+  '/admin/payout': 'earnings',
+  '/admin/wallets': 'earnings',
+  '/admin/platform-balance': 'earnings',
+
+  // Admin Management (Super Admin)
+  '/admin/authorized': 'admin-management',
+  '/admin/migrate-admins': 'admin-management',
 };
 
 const ADMIN_ONLY_PATTERNS = [
@@ -87,6 +101,8 @@ const ADMIN_ONLY_PATTERNS = [
   '/pr/update',
   '/kyc/admin',
   '/admin/newsletter',
+  '/get-contact-us-messages',
+  '/admin/',
 ];
 
 export const assertDepartmentRouteMappings = () => {
