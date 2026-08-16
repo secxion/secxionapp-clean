@@ -174,7 +174,7 @@ const UserUploadMarket = ({
 
       if (res.ok && result.success) {
         toast.success(
-          'Trade submitted. You can track its progress in your records.',
+          'Trade submitted successfully! You can track its progress in your records.',
         );
         emitTransactionActivity({
           source: 'user-market-upload',
@@ -186,12 +186,20 @@ const UserUploadMarket = ({
       } else {
         const message =
           result?.message || 'Submission was blocked. Please try again.';
-        if (result.code === 'UNVERIFIED_MARKET_SUBMISSION_BLOCKED') {
+        if (
+          res.status === 403 ||
+          result.code === 'UNVERIFIED_MARKET_SUBMISSION_BLOCKED'
+        ) {
           setSubmitError({
-            message,
+            message:
+              message ||
+              "You've reached the cumulative transaction limit for unverified accounts. Identity verification is required to continue.",
             kycRedirectPath: result.kycRedirectPath || '/kyc',
           });
-          toast.error(message, { autoClose: 8000 });
+          toast.warning(
+            'KYC Verification Required: Transaction limit reached.',
+            { autoClose: 10000 },
+          );
         } else {
           const safeMessage = toUserSafeMessage(
             message,

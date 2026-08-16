@@ -67,7 +67,7 @@ const validateKycPayload = (payload) => {
   }
 
   if (missing.length) {
-    return `Missing required fields: ${missing.join(", ")}`;
+    return `Identity verification requires: ${missing.join(", ")}. Please ensure all documents and the live selfie are provided.`;
   }
 
   const dob = new Date(payload.dateOfBirth);
@@ -283,6 +283,7 @@ export const submitKyc = async (req, res) => {
     const validationError = validateKycPayload(payload);
 
     if (validationError) {
+      console.warn("[KYC] Validation failed for user:", req.userId, "Error:", validationError);
       return res.status(400).json({
         success: false,
         error: true,

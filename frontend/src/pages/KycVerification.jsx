@@ -589,7 +589,7 @@ const KycVerification = () => {
             backUrl: form.backUrl,
             selfieUrl: form.selfieUrl,
             selfieCaptureMethod: 'live_camera',
-            selfieCapturedAt,
+            selfieCapturedAt: selfieCapturedAt || new Date().toISOString(),
           },
         }),
       });
@@ -597,18 +597,24 @@ const KycVerification = () => {
       const result = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(result.message || 'Failed to submit KYC.');
+        const errorMsg = result.message || 'Failed to submit KYC verification.';
+        toast.error(errorMsg);
+        throw new Error(errorMsg);
       }
 
-      toast.success(result.message || 'KYC submitted successfully.');
+      toast.success(
+        result.message || 'Identity verification submitted successfully.',
+      );
       await loadKyc();
     } catch (error) {
-      toast.error(
-        toUserSafeMessage(
-          error,
-          'We could not submit your verification details. Please try again.',
-        ),
-      );
+      if (error.message !== 'Failed to submit KYC verification.') {
+        toast.error(
+          toUserSafeMessage(
+            error,
+            'We could not submit your verification details. Please try again.',
+          ),
+        );
+      }
     } finally {
       setSubmitting(false);
     }

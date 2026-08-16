@@ -129,7 +129,9 @@ const ProductDetails = () => {
               {data?.productImage?.map((imgURL, index) => (
                 <div
                   className={`h-16 w-16 sm:h-20 sm:w-20 rounded-xl p-1.5 flex-shrink-0 transition-all duration-300 border-2 cursor-pointer ${
-                    activeImage === imgURL ? 'border-brand-gold bg-brand-gold/10' : 'border-white/5 bg-white/5 hover:border-white/20'
+                    activeImage === imgURL
+                      ? 'border-brand-gold bg-brand-gold/10'
+                      : 'border-white/5 bg-white/5 hover:border-white/20'
                   }`}
                   key={imgURL}
                   onMouseEnter={() => handleMouseEnterProduct(imgURL)}
@@ -137,7 +139,11 @@ const ProductDetails = () => {
                 >
                   <img
                     src={imgURL}
-                    alt={data?.productName ? `${data.productName} thumbnail` : 'Product thumbnail'}
+                    alt={
+                      data?.productName
+                        ? `${data.productName} thumbnail`
+                        : 'Product thumbnail'
+                    }
                     className="w-full h-full object-contain mix-blend-multiply rounded-lg"
                   />
                 </div>

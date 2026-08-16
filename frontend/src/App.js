@@ -13,6 +13,8 @@ import {
 } from './services/apiService';
 import SecxionLoader from './Components/SecxionLoader';
 import InstallPrompt from './Components/InstallPrompt';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function setViewportHeight() {
   const vh = window.innerHeight * 0.01;
@@ -177,6 +179,18 @@ function App() {
             </main>
           </Suspense>
           <InstallPrompt />
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+          />
         </div>
       </Context.Provider>
     </ContextProvider>

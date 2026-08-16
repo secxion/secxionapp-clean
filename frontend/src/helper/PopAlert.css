@@ -49,25 +49,41 @@
 
 /* Type-specific background gradients */
 .pop-alert-success {
-  background: linear-gradient(135deg, rgba(5, 17, 10, 0.95) 0%, rgba(8, 39, 20, 0.94) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(5, 17, 10, 0.95) 0%,
+    rgba(8, 39, 20, 0.94) 100%
+  );
   border-color: rgba(16, 185, 129, 0.35);
   color: #d1fae5;
 }
 
 .pop-alert-warning {
-  background: linear-gradient(135deg, rgba(30, 20, 3, 0.95) 0%, rgba(62, 41, 5, 0.95) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(30, 20, 3, 0.95) 0%,
+    rgba(62, 41, 5, 0.95) 100%
+  );
   border-color: rgba(245, 158, 11, 0.35);
   color: #fef3c7;
 }
 
 .pop-alert-error {
-  background: linear-gradient(135deg, rgba(31, 7, 7, 0.96) 0%, rgba(60, 12, 12, 0.96) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(31, 7, 7, 0.96) 0%,
+    rgba(60, 12, 12, 0.96) 100%
+  );
   border-color: rgba(244, 63, 94, 0.35);
   color: #fecdd3;
 }
 
 .pop-alert-info {
-  background: linear-gradient(135deg, rgba(9, 12, 22, 0.96) 0%, rgba(20, 25, 41, 0.95) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(9, 12, 22, 0.96) 0%,
+    rgba(20, 25, 41, 0.95) 100%
+  );
   border-color: rgba(212, 175, 55, 0.3);
   color: #f5f5f4;
 }
