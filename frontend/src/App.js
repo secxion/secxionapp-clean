@@ -81,17 +81,26 @@ function App() {
     // Initialize CSRF token
     const fetchCsrf = async () => {
       try {
-        const response = await fetch(`${SummaryApi.baseURL}/api/csrf-token`, {
+        const baseURL = SummaryApi?.baseURL || '';
+        const url = `${baseURL}/api/csrf-token`;
+        console.log('[CSRF] Initializing from:', url);
+
+        const response = await fetch(url, {
+          method: 'GET',
           credentials: 'include',
         });
+
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.csrfToken) {
+            console.log('[CSRF] Successfully initialized');
             localStorage.setItem('csrfToken', data.csrfToken);
           }
+        } else {
+          console.warn('[CSRF] Failed to fetch token, status:', response.status);
         }
       } catch (err) {
-        console.error('CSRF initialization failed', err);
+        console.error('[CSRF] Initialization error:', err);
       }
     };
 
