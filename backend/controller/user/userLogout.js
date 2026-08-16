@@ -1,17 +1,25 @@
+import { revokeRefreshToken } from "../../middleware/securityMiddleware.js";
+
 async function userLogout(req, res) {
   try {
     const isProduction = process.env.NODE_ENV === "production";
 
-    // Clear the token cookie
-    res.clearCookie("token", {
+    // Revoke refresh token if present
+    const refreshToken = req.cookies?.refreshToken;
+    if (refreshToken) {
+      await revokeRefreshToken(refreshToken);
+    }
+
+    // Clear the token cookies
+    const cookieOptions = {
       path: "/",
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
-    });
+    };
 
-    // Optionally, invalidate the token (e.g., blacklist it if using JWT)
-    // Example: Add the token to a blacklist database or cache
+    res.clearCookie("token", cookieOptions);
+    res.clearCookie("refreshToken", cookieOptions);
 
     res.json({
       message: "Logged out successfully",

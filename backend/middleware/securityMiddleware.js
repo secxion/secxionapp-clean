@@ -253,8 +253,7 @@ export const passwordResetLimiter = rateLimit({
 // TOKEN REFRESH MECHANISM
 // ============================================
 
-// Store refresh tokens in memory (in production, use Redis or database)
-let refreshTokens = new Map();
+import RefreshToken from "../models/refreshTokenModel.js";
 
 /**
  * Generate new access token
@@ -266,14 +265,14 @@ let refreshTokens = new Map();
 export const generateAccessToken = (userId, email, role = "GENERAL") => {
   const token = jwt.sign(
     {
-      userId,
+      _id: userId,
       email,
       role,
       type: "access",
     },
     process.env.TOKEN_SECRET_KEY,
     {
-      expiresIn: "15m", // Short-lived access token
+      expiresIn: "1h", // Increased from 15m for production balance
       issuer: "secxion",
       audience: "secxion-app",
     },
@@ -283,35 +282,37 @@ export const generateAccessToken = (userId, email, role = "GENERAL") => {
 };
 
 /**
- * Generate new refresh token
+ * Generate new refresh token and store in DB
  * @param {string} userId - User ID
+ * @param {object} metadata - req info (ip, userAgent)
  * @returns {object} Refresh token and expiry
  */
-export const generateRefreshToken = (userId) => {
+export const generateRefreshToken = async (userId, metadata = {}) => {
   const tokenId = crypto.randomBytes(32).toString("hex");
 
   const token = jwt.sign(
     {
-      userId,
+      _id: userId,
       tokenId,
       type: "refresh",
     },
     process.env.TOKEN_SECRET_KEY,
     {
-      expiresIn: "7d", // Long-lived refresh token
+      expiresIn: "7d",
       issuer: "secxion",
       audience: "secxion-app",
     },
   );
 
-  // Store refresh token with metadata
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  refreshTokens.set(tokenId, {
+
+  await RefreshToken.create({
     userId,
+    tokenId,
     token,
-    createdAt: new Date(),
     expiresAt,
-    isRevoked: false,
+    ip: metadata.ip,
+    userAgent: metadata.userAgent,
   });
 
   logger.logAuth("REFRESH_TOKEN_GENERATED", userId, "success", { tokenId });
@@ -324,11 +325,10 @@ export const generateRefreshToken = (userId) => {
 };
 
 /**
- * Refresh access token using refresh token
+ * Refresh access token using refresh token from DB
  */
-export const refreshAccessToken = (refreshToken) => {
+export const refreshAccessToken = async (refreshToken) => {
   try {
-    // Verify refresh token
     const decoded = jwt.verify(refreshToken, process.env.TOKEN_SECRET_KEY, {
       issuer: "secxion",
       audience: "secxion-app",
@@ -338,28 +338,29 @@ export const refreshAccessToken = (refreshToken) => {
       throw new Error("Invalid token type");
     }
 
-    // Check if token is revoked
-    const storedToken = refreshTokens.get(decoded.tokenId);
+    const storedToken = await RefreshToken.findOne({
+      tokenId: decoded.tokenId,
+      userId: decoded._id
+    });
+
     if (!storedToken || storedToken.isRevoked) {
-      throw new Error("Refresh token has been revoked");
+      throw new Error("Refresh token has been revoked or not found");
     }
 
-    // Check if token is expired
     if (new Date() > storedToken.expiresAt) {
-      refreshTokens.delete(decoded.tokenId);
       throw new Error("Refresh token has expired");
     }
 
     // Generate new access token
-    const newAccessToken = generateAccessToken(decoded.userId, null, "GENERAL");
+    const newAccessToken = generateAccessToken(decoded._id, null, "GENERAL");
 
-    logger.logAuth("TOKEN_REFRESHED", decoded.userId, "success", {
+    logger.logAuth("TOKEN_REFRESHED", decoded._id, "success", {
       tokenId: decoded.tokenId,
     });
 
     return {
       accessToken: newAccessToken,
-      expiresIn: "15m",
+      expiresIn: "1h",
     };
   } catch (error) {
     logger.logError("REFRESH_TOKEN", "Token refresh failed", error, {
@@ -376,15 +377,17 @@ export const refreshAccessToken = (refreshToken) => {
 /**
  * Revoke refresh token (logout)
  */
-export const revokeRefreshToken = (refreshToken) => {
+export const revokeRefreshToken = async (refreshToken) => {
   try {
     const decoded = jwt.verify(refreshToken, process.env.TOKEN_SECRET_KEY);
 
-    const storedToken = refreshTokens.get(decoded.tokenId);
-    if (storedToken) {
-      storedToken.isRevoked = true;
-      storedToken.revokedAt = new Date();
-      logger.logAuth("TOKEN_REVOKED", decoded.userId, "success");
+    const result = await RefreshToken.updateOne(
+      { tokenId: decoded.tokenId },
+      { $set: { isRevoked: true, revokedAt: new Date() } }
+    );
+
+    if (result.modifiedCount > 0) {
+      logger.logAuth("TOKEN_REVOKED", decoded._id, "success");
     }
   } catch (error) {
     logger.logError("REVOKE_TOKEN", "Failed to revoke token", error);
@@ -392,21 +395,16 @@ export const revokeRefreshToken = (refreshToken) => {
 };
 
 /**
- * Cleanup expired refresh tokens (call periodically)
+ * Cleanup expired refresh tokens (MongoDB TTL index handles this mostly)
  */
-export const cleanupExpiredTokens = () => {
-  const now = new Date();
-  let count = 0;
-
-  for (const [tokenId, token] of refreshTokens.entries()) {
-    if (now > token.expiresAt) {
-      refreshTokens.delete(tokenId);
-      count++;
+export const cleanupExpiredTokens = async () => {
+  try {
+    const result = await RefreshToken.deleteMany({ expiresAt: { $lt: new Date() } });
+    if (result.deletedCount > 0) {
+      logger.info(`[TOKEN_CLEANUP] Removed ${result.deletedCount} expired refresh tokens`);
     }
-  }
-
-  if (count > 0) {
-    logger.info(`[TOKEN_CLEANUP] Removed ${count} expired refresh tokens`);
+  } catch (error) {
+    logger.logError("TOKEN_CLEANUP", "Failed to cleanup tokens", error);
   }
 };
 

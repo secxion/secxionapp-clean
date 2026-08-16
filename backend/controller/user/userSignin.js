@@ -1,6 +1,10 @@
 import bcrypt from "bcryptjs";
 import userModel from "../../models/userModel.js";
 import jwt from "jsonwebtoken";
+import {
+  generateAccessToken,
+  generateRefreshToken
+} from "../../middleware/securityMiddleware.js";
 import { verifyTurnstileToken } from "../../utils/turnstileVerification.js";
 
 async function userSignInController(req, res, next) {
@@ -58,9 +62,16 @@ async function userSignInController(req, res, next) {
       _id: user._id,
       email: user.email,
     };
-    const token = jwt.sign(tokenData, process.env.TOKEN_SECRET_KEY, {
-      expiresIn: 60 * 60 * 8,
-    });
+
+    // Pass metadata for refresh token storage
+    const metadata = {
+      ip: req.headers["x-forwarded-for"] || req.socket.remoteAddress,
+      userAgent: req.headers["user-agent"],
+    };
+
+    const token = await generateAccessToken(user._id, user.email, user.role);
+    const { refreshToken } = await generateRefreshToken(user._id, metadata);
+
     const isProduction = process.env.NODE_ENV === "production";
     const tokenOptions = {
       httpOnly: true,
@@ -71,11 +82,13 @@ async function userSignInController(req, res, next) {
     console.log("✅ Login successful for:", email);
     res
       .cookie("token", token, tokenOptions)
+      .cookie("refreshToken", refreshToken, tokenOptions)
       .status(200)
       .json({
         message: "Login successful",
         data: {
           token,
+          refreshToken,
           user: {
             _id: user._id,
             email: user.email,

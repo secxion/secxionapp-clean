@@ -563,6 +563,27 @@ router.post("/signup", csrfProtection, signupLimiter, userSignUpController);
 router.get("/verify-email", verifyEmailController);
 router.post("/signin", csrfProtection, authLimiter, userSignInController);
 router.post("/admin-signin", csrfProtection, authLimiter, adminSignInController);
+router.post("/refresh-token", noCache, async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
+    if (!refreshToken) {
+      return res.status(401).json({ success: false, message: "Refresh token required" });
+    }
+    const result = await refreshAccessToken(refreshToken);
+
+    const isProduction = process.env.NODE_ENV === "production";
+    res.cookie("token", result.accessToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      path: "/",
+    });
+
+    res.json({ success: true, ...result });
+  } catch (err) {
+    next(err);
+  }
+});
 router.get("/user-details", authToken, noCache, userDetailsController);
 router.get("/userLogout", authToken, noCache, userLogout);
 router.post("/request-reset", passwordResetLimiter, sendResetCode);
@@ -578,16 +599,16 @@ router.post("/kyc/face-match/result", noCache, ingestKycFaceMatchResult);
 
 // Admin panel
 router.get("/all-user", authToken, verifyAdmin, noCache, allUsers);
-router.post("/update-user", authToken, verifyAdmin, noCache, updateUser);
+router.post("/update-user", authToken, verifyAdmin, csrfProtection, noCache, updateUser);
 router.get("/get-all-users-market", authToken, verifyAdmin, noCache, getAllUserMarkets);
-router.post("/update-market-status/:id", authToken, verifyAdmin, updateMarketStatus);
+router.post("/update-market-status/:id", authToken, verifyAdmin, csrfProtection, updateMarketStatus);
 router.get(
   "/getAllDataForAdmin",
   authToken,
   noCache,
   getAllUserDataPadsForAdmin,
 );
-router.delete("/delete-user", authToken, verifyAdmin, deleteUser);
+router.delete("/delete-user", authToken, verifyAdmin, csrfProtection, deleteUser);
 
 // Wallet balance
 router.get(
@@ -598,11 +619,12 @@ router.get(
 );
 
 // ETH
-router.post("/save-eth-address", authToken, noCache, saveEthWalletAddress);
+router.post("/save-eth-address", authToken, csrfProtection, noCache, saveEthWalletAddress);
 router.get("/eth-wallet", authToken, noCache, getUserEthWallet);
 router.post(
   "/eth/withdrawal-request",
   authToken,
+  csrfProtection,
   noCache,
   createEthWithdrawalRequest,
 );
@@ -631,17 +653,17 @@ router.put(
 );
 
 // Product
-router.post("/upload-product", authToken, verifyAdmin, noCache, UploadProductController);
+router.post("/upload-product", authToken, verifyAdmin, csrfProtection, noCache, UploadProductController);
 router.get("/get-product", getProductController);
-router.post("/update-product", authToken, verifyAdmin, noCache, updateProductController);
+router.post("/update-product", authToken, verifyAdmin, csrfProtection, noCache, updateProductController);
 router.get("/get-categoryProduct", getCategoryProduct);
-router.post("/category-product", getCategoryWiseProduct);
-router.post("/product-details", getProductDetails);
+router.post("/category-product", csrfProtection, getCategoryWiseProduct);
+router.post("/product-details", csrfProtection, getProductDetails);
 router.get("/search", SearchProduct);
-router.post("/filter-product", filterProductController);
+router.post("/filter-product", csrfProtection, filterProductController);
 
 // User market
-router.post("/upload-market", authToken, noCache, UserUploadMarketController);
+router.post("/upload-market", authToken, csrfProtection, noCache, UserUploadMarketController);
 router.get("/get-market", authToken, noCache, getMarketController);
 router.get(
   "/get-market/:marketId",
@@ -658,19 +680,20 @@ router.get(
 );
 
 // System blog
-router.post("/create-blog", authToken, verifyAdmin, createBlogNote);
+router.post("/create-blog", authToken, verifyAdmin, csrfProtection, createBlogNote);
 router.get("/get-blogs", getAllBlogNotes);
-router.put("/update-blog/:id", authToken, verifyAdmin, updateBlogNote);
-router.delete("/delete-blog/:id", authToken, verifyAdmin, deleteBlogNote);
+router.put("/update-blog/:id", authToken, verifyAdmin, csrfProtection, updateBlogNote);
+router.delete("/delete-blog/:id", authToken, verifyAdmin, csrfProtection, deleteBlogNote);
 
 // Reports
-router.post("/submit-report", authToken, noCache, submitReportController);
+router.post("/submit-report", authToken, csrfProtection, noCache, submitReportController);
 router.get("/get-reports", authToken, noCache, getUserReportsController);
 router.get("/all-reports", authToken, verifyAdmin, noCache, getAllReportsController);
-router.post("/reply-report/:id", authToken, verifyAdmin, noCache, replyToReportController);
+router.post("/reply-report/:id", authToken, verifyAdmin, csrfProtection, noCache, replyToReportController);
 router.post(
   "/reports/:id/reply",
   authToken,
+  csrfProtection,
   noCache,
   userReplyReportController,
 );
@@ -691,9 +714,9 @@ router.post(
 
 // DataPad
 router.get("/alldata", authToken, noCache, getAllDataPads);
-router.post("/createdata", authToken, noCache, createDataPad);
-router.put("/updatedata/:id", authToken, noCache, updateDataPad);
-router.delete("/deletedata/:id", authToken, noCache, deleteDataPad);
+router.post("/createdata", authToken, csrfProtection, noCache, createDataPad);
+router.put("/updatedata/:id", authToken, csrfProtection, noCache, updateDataPad);
+router.delete("/deletedata/:id", authToken, csrfProtection, noCache, deleteDataPad);
 
 // Contact us
 router.post("/contact-us-message", createContactUsMessage);
@@ -705,56 +728,56 @@ router.get("/newsletter/confirm", noCache, confirmNewsletterSubscription);
 router.get("/newsletter/unsubscribe", noCache, unsubscribeNewsletter);
 
 // LiveScript (Custom Development Requests)
-router.post("/livescript/create", authToken, noCache, createLiveScriptRequest);
+router.post("/livescript/create", authToken, csrfProtection, noCache, createLiveScriptRequest);
 router.get("/livescript/user", authToken, noCache, getUserLiveScriptRequests);
 router.get("/livescript/admin/all", authToken, verifyAdmin, noCache, getAllLiveScriptRequests);
-router.patch("/livescript/admin/:id", authToken, verifyAdmin, noCache, updateLiveScriptStatus);
-router.post("/livescript/admin/:id/reply", authToken, verifyAdmin, noCache, adminReplyToLiveScriptRequest);
-router.post("/livescript/:id/reply", authToken, noCache, replyToLiveScriptRequest);
+router.patch("/livescript/admin/:id", authToken, verifyAdmin, csrfProtection, noCache, updateLiveScriptStatus);
+router.post("/livescript/admin/:id/reply", authToken, verifyAdmin, csrfProtection, noCache, adminReplyToLiveScriptRequest);
+router.post("/livescript/:id/reply", authToken, csrfProtection, noCache, replyToLiveScriptRequest);
 router.get("/livescript/:id", authToken, noCache, getLiveScriptRequestById);
-router.delete("/livescript/:id", authToken, noCache, deleteLiveScriptRequest);
+router.delete("/livescript/:id", authToken, csrfProtection, noCache, deleteLiveScriptRequest);
 
 // Admin Earnings & Commission
 router.get("/admin/earnings/summary", authToken, verifyAdmin, noCache, getAdminEarningsSummary);
 router.get("/admin/earnings", authToken, verifyAdmin, noCache, getAdminEarnings);
 router.get("/admin/commission-rates", authToken, verifyAdmin, noCache, getCommissionRates);
-router.put("/admin/commission-rates", authToken, verifyAdmin, noCache, updateCommissionRate);
+router.put("/admin/commission-rates", authToken, verifyAdmin, csrfProtection, noCache, updateCommissionRate);
 
 // Admin Wallets & Payouts
 router.get("/admin/wallets", authToken, verifyAdmin, noCache, getAdminWallets);
 router.get("/admin/wallet/me", authToken, verifyAdmin, noCache, getMyAdminWallet);
 router.get("/admin/platform-balance", authToken, verifyAdmin, noCache, getPlatformBalance);
 router.get("/admin/authorized-admins", authToken, verifyAdmin, noCache, getAuthorizedAdmins);
-router.post("/admin/payout", authToken, verifyAdmin, noCache, createAdminPayout);
+router.post("/admin/payout", authToken, verifyAdmin, csrfProtection, noCache, createAdminPayout);
 router.get("/admin/payouts", authToken, verifyAdmin, noCache, getPayoutHistory);
 
 // Admin Authorization Management (Super Admin only)
 router.get("/admin/authorized-list", authToken, verifyAdmin, noCache, getAuthorizedAdminsList);
-router.post("/admin/authorize", authToken, verifyAdmin, noCache, authorizeAdmin);
-router.delete("/admin/authorize/:id", authToken, verifyAdmin, noCache, revokeAuthorization);
-router.put("/admin/authorize/:id/toggle", authToken, verifyAdmin, noCache, toggleAdminStatus);
-router.post("/admin/migrate-admins", authToken, verifyAdmin, noCache, migrateHardcodedAdmins);
+router.post("/admin/authorize", authToken, verifyAdmin, csrfProtection, noCache, authorizeAdmin);
+router.delete("/admin/authorize/:id", authToken, verifyAdmin, csrfProtection, noCache, revokeAuthorization);
+router.put("/admin/authorize/:id/toggle", authToken, verifyAdmin, csrfProtection, noCache, toggleAdminStatus);
+router.post("/admin/migrate-admins", authToken, verifyAdmin, csrfProtection, noCache, migrateHardcodedAdmins);
 
 // Admin Newsletter
 router.get("/admin/newsletter/subscribers", authToken, verifyAdmin, noCache, getNewsletterSubscribers);
 router.get("/admin/newsletter/stats", authToken, verifyAdmin, noCache, getNewsletterStats);
 router.get("/admin/newsletter/health", authToken, verifyAdmin, noCache, getNewsletterHealth);
-router.post("/admin/newsletter/send", authToken, verifyAdmin, noCache, sendNewsletterCampaign);
+router.post("/admin/newsletter/send", authToken, verifyAdmin, csrfProtection, noCache, sendNewsletterCampaign);
 
 // Wallet
 router.get("/wallet/balance", authToken, noCache, getWalletBalance);
 
 // Payment request
-router.post("/pr/create", authToken, noCache, createPaymentRequest);
+router.post("/pr/create", authToken, csrfProtection, noCache, createPaymentRequest);
 router.get("/pr/getall", authToken, verifyAdmin, noCache, getAllPaymentRequests);
 router.get("/pr/getuser", authToken, noCache, getUserPaymentRequests);
-router.patch("/pr/update/:id", authToken, verifyAdmin, noCache, updatePaymentRequestStatus);
+router.patch("/pr/update/:id", authToken, verifyAdmin, csrfProtection, noCache, updatePaymentRequestStatus);
 
 // Bank account
-router.post("/ba/add", authToken, noCache, addBankAccount);
+router.post("/ba/add", authToken, csrfProtection, noCache, addBankAccount);
 router.get("/ba/get", authToken, noCache, getBankAccounts);
-router.delete("/ba/delete/:accountId", authToken, noCache, deleteBankAccount);
-router.post("/verify-account", authToken, noCache, resolveBankAccount);
+router.delete("/ba/delete/:accountId", authToken, csrfProtection, noCache, deleteBankAccount);
+router.post("/verify-account", authToken, csrfProtection, noCache, resolveBankAccount);
 router.get("/banks", authToken, noCache, getPaystackBanks);
 
 // Transactions
@@ -770,24 +793,28 @@ router.get(
 router.patch(
   "/tr-notifications/read/:notificationId",
   authToken,
+  csrfProtection,
   noCache,
   markNotificationAsRead,
 );
 router.delete(
   "/tr-notifications/delete/:notificationId",
   authToken,
+  csrfProtection,
   noCache,
   deleteNotification,
 );
 router.put(
   "/tr-notifications/read-all",
   authToken,
+  csrfProtection,
   noCache,
   markAllNotificationsAsRead,
 );
 router.delete(
   "/tr-notifications/all",
   authToken,
+  csrfProtection,
   noCache,
   deleteAllNotifications,
 );
@@ -841,32 +868,36 @@ router.get(
 router.put(
   "/profile/edit",
   authToken,
+  csrfProtection,
   noCache,
   userProfileController.editProfileController,
 );
 
 // Community
 router.get("/posts/approved", getApprovedPostsController);
-router.post("/posts/submit", authToken, noCache, submitNewPostController);
+router.post("/posts/submit", authToken, csrfProtection, noCache, submitNewPostController);
 router.delete(
   "/posts/:postId/delete",
   authToken,
+  csrfProtection,
   noCache,
   deletePostController,
 );
-router.post("/posts/:postId/comment", authToken, noCache, addCommentController);
+router.post("/posts/:postId/comment", authToken, csrfProtection, noCache, addCommentController);
 
 // Admin community
 router.get("/community/pending", authToken, noCache, getPendingPostsController);
 router.put(
   "/community/post/:postId/approve",
   authToken,
+  csrfProtection,
   noCache,
   approvePostController,
 );
 router.put(
   "/community/post/:postId/reject",
   authToken,
+  csrfProtection,
   noCache,
   rejectPostController,
 );
@@ -874,8 +905,8 @@ router.get("/myposts", authToken, noCache, getUserPostsController);
 
 // KYC Admin
 router.get("/kyc/admin/submissions", authToken, verifyAdmin, noCache, getAllKycSubmissions);
-router.patch("/kyc/admin/submissions/:id", authToken, verifyAdmin, noCache, reviewKycSubmission);
-router.delete("/kyc/admin/submissions/:id", authToken, verifyAdmin, noCache, deleteKycSubmission);
+router.patch("/kyc/admin/submissions/:id", authToken, verifyAdmin, csrfProtection, noCache, reviewKycSubmission);
+router.delete("/kyc/admin/submissions/:id", authToken, verifyAdmin, csrfProtection, noCache, deleteKycSubmission);
 router.get("/kyc/admin/stats", authToken, verifyAdmin, noCache, getKycStats);
 
 export default router;

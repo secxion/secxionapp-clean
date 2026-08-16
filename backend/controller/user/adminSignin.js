@@ -6,6 +6,10 @@ import {
   isEmailAuthorizedAsync, 
   getDepartmentRoutes 
 } from "../../config/adminDepartments.js";
+import {
+  generateAccessToken,
+  generateRefreshToken
+} from "../../middleware/securityMiddleware.js";
 
 /**
  * Admin Sign In Controller with Department-Based Access
@@ -78,17 +82,23 @@ async function adminSignInController(req, res, next) {
     const allowedRoutes = getDepartmentRoutes(department.id);
 
     // Step 6: Create JWT with department info
-    const tokenData = {
+    const metadata = {
+      ip: req.headers["x-forwarded-for"] || req.socket.remoteAddress,
+      userAgent: req.headers["user-agent"],
+    };
+
+    // Use customized token data for admin access including department claims
+    const token = jwt.sign({
       _id: user._id,
       email: user.email,
       department: department.id,
       departmentName: department.name,
-      allowedRoutes: allowedRoutes
-    };
-    
-    const token = jwt.sign(tokenData, process.env.TOKEN_SECRET_KEY, {
-      expiresIn: 60 * 60 * 8, // 8 hours
-    });
+      allowedRoutes: allowedRoutes,
+      type: 'access'
+    }, process.env.TOKEN_SECRET_KEY, { expiresIn: '1h' });
+
+    const { refreshToken } = await generateRefreshToken(user._id, metadata);
+
     const isProduction = process.env.NODE_ENV === "production";
     
     const tokenOptions = {
@@ -104,10 +114,13 @@ async function adminSignInController(req, res, next) {
 
     res
       .cookie("token", token, tokenOptions)
+      .cookie("refreshToken", refreshToken, tokenOptions)
       .status(200)
       .json({
         message: `Welcome to ${department.name}!`,
         data: {
+          token,
+          refreshToken,
           user: {
             _id: user._id,
             email: user.email,

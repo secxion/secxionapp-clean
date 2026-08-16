@@ -18,13 +18,26 @@ async function connectDB() {
       w: "majority",
       maxPoolSize: 10,
       minPoolSize: 2,
-      serverSelectionTimeoutMS: 10000, // Reduced timeout
+      serverSelectionTimeoutMS: 30000, // Increased from 10000
       socketTimeoutMS: 45000,
-      connectTimeoutMS: 10000, // Reduced timeout
-      family: 4, // Use IPv4 only
+      connectTimeoutMS: 30000, // Increased from 10000
+      heartbeatFrequencyMS: 10000,
     };
 
     console.log("🔗 Attempting to connect to MongoDB Atlas...");
+
+    // Add connection listeners before connecting
+    mongoose.connection.on("disconnected", () => {
+      console.warn("⚠️  Mongoose disconnected from MongoDB");
+    });
+
+    mongoose.connection.on("reconnected", () => {
+      console.log("✅ Mongoose reconnected to MongoDB");
+    });
+
+    mongoose.connection.on("error", (err) => {
+      console.error("🔥 Mongoose connection error:", err.message);
+    });
 
     await mongoose.connect(mongoUri, mongoOptions);
 

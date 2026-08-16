@@ -19,6 +19,56 @@ const getStoredToken = () => {
   return token;
 };
 
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+const subscribeTokenRefresh = (cb) => {
+  refreshSubscribers.push(cb);
+};
+
+const onTokenRefreshed = (token) => {
+  refreshSubscribers.map((cb) => cb(token));
+  refreshSubscribers = [];
+};
+
+/**
+ * Attempt to refresh access token using refresh token cookie
+ */
+const attemptTokenRefresh = async () => {
+  if (isRefreshing) {
+    return new Promise((resolve) => {
+      subscribeTokenRefresh((token) => {
+        resolve(!!token);
+      });
+    });
+  }
+
+  isRefreshing = true;
+
+  try {
+    const response = await fetch('/api/refresh-token', {
+      method: 'POST',
+      credentials: 'include',
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success && data.accessToken) {
+        localStorage.setItem('token', data.accessToken);
+        onTokenRefreshed(data.accessToken);
+        return true;
+      }
+    }
+  } catch (error) {
+    console.error('[API] Refresh error:', error);
+  } finally {
+    isRefreshing = false;
+  }
+
+  onTokenRefreshed(null);
+  return false;
+};
+
 /**
  * Enhanced fetch wrapper with automatic 401 handling
  * @param {string} url - API endpoint URL
@@ -28,6 +78,7 @@ const getStoredToken = () => {
 export const apiFetch = async (url, options = {}) => {
   try {
     const token = getStoredToken();
+    const csrfToken = localStorage.getItem('csrfToken');
 
     const response = await fetch(url, {
       ...options,
@@ -35,14 +86,30 @@ export const apiFetch = async (url, options = {}) => {
       headers: {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
         ...options.headers,
       },
     });
 
+    // Capture CSRF token from headers if provided by server
+    const newCsrf = response.headers.get('X-CSRF-Token');
+    if (newCsrf) {
+      localStorage.setItem('csrfToken', newCsrf);
+    }
+
     // Handle 401 Unauthorized - Token expired or invalid
     if (response.status === 401) {
+      // Don't attempt refresh if already on login/signup or for refresh-token itself
+      const publicPaths = ['/login', '/signup', '/api/refresh-token'];
+      if (!publicPaths.some(p => url.includes(p))) {
+        const refreshed = await attemptTokenRefresh();
+        if (refreshed) {
+          // Retry the original request with new token
+          return apiFetch(url, options);
+        }
+      }
+
       handleUnauthorized();
-      // Return error response instead of throwing
       return response;
     }
 

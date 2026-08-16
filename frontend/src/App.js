@@ -15,6 +15,7 @@ import SecxionLoader from './Components/SecxionLoader';
 import InstallPrompt from './Components/InstallPrompt';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SummaryApi from './common';
 
 function setViewportHeight() {
   const vh = window.innerHeight * 0.01;
@@ -74,6 +75,29 @@ function App() {
     return () => {
       window.history.scrollRestoration = previousScrollRestoration;
     };
+  }, []);
+
+  useEffect(() => {
+    // Initialize CSRF token
+    const fetchCsrf = async () => {
+      try {
+        const response = await fetch(`${SummaryApi.baseURL}/api/csrf-token`, {
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.csrfToken) {
+            localStorage.setItem('csrfToken', data.csrfToken);
+          }
+        }
+      } catch (err) {
+        console.error('CSRF initialization failed', err);
+      }
+    };
+
+    if (!localStorage.getItem('csrfToken')) {
+      fetchCsrf();
+    }
   }, []);
 
   const { refetch: fetchUserDetails, isLoading: isUserLoading } = useQuery({
