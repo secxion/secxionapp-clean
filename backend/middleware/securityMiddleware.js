@@ -47,19 +47,31 @@ const tokensMatch = (tokenA, tokenB) => {
 // ============================================
 
 export const csrfProtection = (req, res, next) => {
-  const sessionToken = issueCsrfToken(req, res);
+  if (SAFE_METHODS.has(req.method)) {
+    const safeToken = issueCsrfToken(req, res);
+
+    if (!safeToken) {
+      return res.status(500).json({
+        success: false,
+        message: "Session unavailable for CSRF validation",
+        code: "CSRF_SESSION_UNAVAILABLE",
+      });
+    }
+
+    return next();
+  }
+
+  const sessionToken = req.session?.csrfToken;
 
   if (!sessionToken) {
-    return res.status(500).json({
+    return res.status(403).json({
       success: false,
-      message: "Session unavailable for CSRF validation",
-      code: "CSRF_SESSION_UNAVAILABLE",
+      message: "CSRF token required",
+      code: "CSRF_VALIDATION_FAILED",
     });
   }
 
-  if (SAFE_METHODS.has(req.method)) {
-    return next();
-  }
+  res.setHeader("X-CSRF-Token", sessionToken);
 
   const tokenFromHeader = req.headers[CSRF_HEADER_NAME];
 

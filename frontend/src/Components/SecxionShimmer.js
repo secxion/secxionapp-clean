@@ -1,5 +1,5 @@
 import React from 'react';
-import SecxionLogo from '../app/slogo.png';
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png';
 
 const SecxionShimmer = ({ type = 'card', count = 1 }) => {
   const renderShimmerCard = (index) => (

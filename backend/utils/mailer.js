@@ -3,6 +3,9 @@ dotenv.config();
 
 import nodemailer from "nodemailer";
 import axios from "axios";
+import { readFile } from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const { FRONTEND_URL, BACKEND_URL } = process.env;
 
@@ -26,6 +29,28 @@ const {
 
 // Gmail as last resort fallback
 const { MAIL_USER, MAIL_PASS } = process.env;
+
+const COMPANY_DOMAIN = process.env.MAIL_COMPANY_DOMAIN || "secxion.com";
+const SUPPORT_EMAIL = process.env.MAIL_SUPPORT_EMAIL || `support@${COMPANY_DOMAIN}`;
+const NEWSLETTER_FROM_EMAIL =
+  process.env.NEWSLETTER_FROM_EMAIL || `newsletter@${COMPANY_DOMAIN}`;
+const NEWSLETTER_REPLY_TO = process.env.NEWSLETTER_REPLY_TO || SUPPORT_EMAIL;
+const NEWSLETTER_LIST_ID =
+  process.env.NEWSLETTER_LIST_ID || `Secxion Newsletter <newsletter.${COMPANY_DOMAIN}>`;
+const NEWSLETTER_RETURN_PATH =
+  process.env.NEWSLETTER_RETURN_PATH || `bounces@${COMPANY_DOMAIN}`;
+const NEWSLETTER_BRAND_NAME = process.env.NEWSLETTER_BRAND_NAME || "Secxion";
+const NEWSLETTER_BRAND_LOGO_URL = process.env.NEWSLETTER_BRAND_LOGO_URL || "";
+const MAILER_DIR = path.dirname(fileURLToPath(import.meta.url));
+const PROJECT_ROOT = path.resolve(MAILER_DIR, "..", "..");
+const NEWSLETTER_BRAND_LOGO_PATH =
+  process.env.NEWSLETTER_BRAND_LOGO_PATH ||
+  path.resolve(PROJECT_ROOT, "frontend", "public", "secxion-logo.png");
+const NEWSLETTER_BRAND_LOGO_CID = "secxion-brand-logo";
+const NEWSLETTER_STRICT_MODE =
+  String(process.env.NEWSLETTER_STRICT_MODE || "false").toLowerCase() === "true";
+const HOSTINGER_ENFORCE_AUTH_FROM =
+  String(process.env.HOSTINGER_ENFORCE_AUTH_FROM || "true").toLowerCase() !== "false";
 
 console.log("📧 Email Configuration:");
 console.log("   FRONTEND_URL:", FRONTEND_URL);
@@ -147,6 +172,156 @@ const withTimeout = (promise, ms, errorMsg = "Operation timed out") => {
   ]);
 };
 
+const htmlToPlainText = (rawHtml = "") => {
+  return String(rawHtml)
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<\/div>/gi, "\n")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/\r/g, "")
+    .replace(/\t/g, " ")
+    .replace(/[ ]{2,}/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+};
+
+const decodeHtmlEntities = (value = "") => {
+  return String(value)
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&amp;/gi, "&");
+};
+
+const normalizeCampaignHtml = (value = "") => {
+  const decoded = decodeHtmlEntities(String(value || "").trim());
+  if (!decoded) {
+    return "";
+  }
+
+  const hasHtmlTags = /<\s*([a-z][a-z0-9]*)\b[^>]*>/i.test(decoded);
+  if (hasHtmlTags) {
+    return decoded;
+  }
+
+  const escaped = decoded
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\r\n|\r|\n/g, "<br>");
+  return `<p>${escaped}</p>`;
+};
+
+const stripDocumentWrapper = (html = "") => {
+  return String(html || "")
+    .replace(/<!doctype[^>]*>/gi, "")
+    .replace(/<html[^>]*>/gi, "")
+    .replace(/<\/html>/gi, "")
+    .replace(/<body[^>]*>/gi, "")
+    .replace(/<\/body>/gi, "")
+    .trim();
+};
+
+let cachedNewsletterBrandLogoAssetPromise = null;
+
+const getNewsletterBrandLogoAsset = async () => {
+  if (cachedNewsletterBrandLogoAssetPromise) {
+    return cachedNewsletterBrandLogoAssetPromise;
+  }
+
+  cachedNewsletterBrandLogoAssetPromise = (async () => {
+  if (NEWSLETTER_BRAND_LOGO_URL) {
+    return {
+      src: NEWSLETTER_BRAND_LOGO_URL,
+      attachment: null,
+    };
+  }
+
+  try {
+    const logoBytes = await readFile(NEWSLETTER_BRAND_LOGO_PATH);
+    const contentBase64 = logoBytes.toString("base64");
+
+    return {
+      src: `cid:${NEWSLETTER_BRAND_LOGO_CID}`,
+      attachment: {
+        filename: "secxion-logo.png",
+        content: logoBytes,
+        cid: NEWSLETTER_BRAND_LOGO_CID,
+        contentType: "image/png",
+        contentDisposition: "inline",
+        contentBase64,
+      },
+    };
+  } catch (error) {
+    console.warn(
+      "⚠️ Unable to load newsletter logo asset; falling back to text-only branding:",
+      error.message,
+    );
+    return {
+      src: "",
+      attachment: null,
+    };
+  }
+  })();
+
+  return cachedNewsletterBrandLogoAssetPromise;
+};
+
+const buildNewsletterBrandedHtml = (
+  campaignHtml = "",
+  unsubscribeHtml = "",
+  brandLogoSource = "",
+) => {
+  const bodyContent = stripDocumentWrapper(campaignHtml);
+  const logoImg = brandLogoSource
+    ? `<img src="${brandLogoSource}" alt="${NEWSLETTER_BRAND_NAME} logo" width="44" height="44" style="display:block; width:44px; height:44px; border:0; outline:none; text-decoration:none; border-radius:10px;"/>`
+    : "";
+
+  return `
+    <div style="margin:0; padding:0; background:#f3f6fb;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f3f6fb; padding:24px 12px;">
+        <tr>
+          <td align="center">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:680px; background:#ffffff; border:1px solid #e5e7eb; border-radius:14px; overflow:hidden;">
+              <tr>
+                <td style="padding:18px 22px; background:#0f172a; color:#ffffff; border-bottom:3px solid #eab308;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="width:52px; vertical-align:middle;">${logoImg}</td>
+                      <td style="vertical-align:middle;">
+                        <div style="font-size:20px; font-weight:700; letter-spacing:0.2px;">${NEWSLETTER_BRAND_NAME}</div>
+                        <div style="font-size:12px; color:#cbd5e1; margin-top:3px;">Weekly Briefing</div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:28px 24px; position:relative; color:#111827; font-family:Arial, sans-serif; line-height:1.65; font-size:15px;">
+                  <div style="position:relative; z-index:1;">${bodyContent}</div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 24px 22px; color:#6b7280; font-size:12px; line-height:1.6; font-family:Arial, sans-serif;">
+                  ${unsubscribeHtml || ""}
+                  <div style="margin-top:8px;">This email was sent by ${NEWSLETTER_BRAND_NAME}.</div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  `;
+};
+
 // Default sender info - always use "Secxion" branding
 const DEFAULT_FROM_EMAIL = HOSTINGER_SMTP_USER || "verify@secxion.com";
 const DEFAULT_FROM_NAME = "Secxion";
@@ -155,27 +330,90 @@ const REPLY_TO_EMAIL = "verify@secxion.com";
 /**
  * Send email using Brevo HTTP API (works on Render free tier)
  */
+const parseFrom = (fromHeader = "") => {
+  const match = String(fromHeader).match(/"?([^"<]+)"?\s*<([^>]+)>/);
+  if (!match) {
+    return {
+      name: DEFAULT_FROM_NAME,
+      email: BREVO_SENDER_FROM_EMAIL || DEFAULT_FROM_EMAIL,
+    };
+  }
+
+  return {
+    name: String(match[1] || DEFAULT_FROM_NAME).trim(),
+    email: String(match[2] || BREVO_SENDER_FROM_EMAIL || DEFAULT_FROM_EMAIL)
+      .trim()
+      .toLowerCase(),
+  };
+};
+
 const sendViaBrevoAPI = async (options, context) => {
   if (!BREVO_API_KEY) {
     throw new Error("BREVO_API_KEY is not set. Cannot use Brevo HTTP API.");
   }
 
-  const senderEmail = BREVO_SENDER_FROM_EMAIL || DEFAULT_FROM_EMAIL;
-  const senderName = options.from?.match(/"([^"]+)"/)?.[1] || DEFAULT_FROM_NAME;
+  const from = parseFrom(options.from);
+  const senderEmail = BREVO_SENDER_FROM_EMAIL || from.email;
+  const replyToEmail = options.replyTo || REPLY_TO_EMAIL;
+
+  const inlineImage = {};
+  const attachment = [];
+
+  for (const item of options.attachments || []) {
+    let contentBase64 = "";
+
+    if (typeof item.contentBase64 === "string" && item.contentBase64) {
+      contentBase64 = item.contentBase64;
+    }
+
+    if (!contentBase64 && Buffer.isBuffer(item.content)) {
+      contentBase64 = item.content.toString("base64");
+    } else if (!contentBase64 && typeof item.content === "string") {
+      contentBase64 = item.encoding === "base64"
+        ? item.content
+        : Buffer.from(item.content).toString("base64");
+    } else if (!contentBase64 && item.path) {
+      const fileBuffer = await readFile(item.path);
+      contentBase64 = fileBuffer.toString("base64");
+    }
+
+    if (!contentBase64) {
+      continue;
+    }
+
+    if (item.cid) {
+      inlineImage[String(item.cid)] = contentBase64;
+    } else {
+      attachment.push({
+        name: item.filename || "attachment",
+        content: contentBase64,
+      });
+    }
+  }
 
   const payload = {
     sender: {
-      name: senderName,
+      name: from.name,
       email: senderEmail,
     },
     replyTo: {
-      name: DEFAULT_FROM_NAME,
-      email: REPLY_TO_EMAIL,
+      name: from.name,
+      email: replyToEmail,
     },
     to: [{ email: options.to }],
     subject: options.subject,
     htmlContent: options.html,
+    textContent: options.text,
+    headers: options.headers,
   };
+
+  if (Object.keys(inlineImage).length > 0) {
+    payload.inlineImage = inlineImage;
+  }
+
+  if (attachment.length > 0) {
+    payload.attachment = attachment;
+  }
 
   try {
     console.log(`📧 Attempting Brevo HTTP API for [${context}]...`);
@@ -211,16 +449,48 @@ const sendViaBrevoAPI = async (options, context) => {
  * @returns {Promise<object>} - Info object on success.
  * @throws {Error} - If email sending fails through all configured methods.
  */
-const sendEmail = async (options, context) => {
+const sendEmail = async (options, context, sendPolicy = {}) => {
   const errors = [];
   const SMTP_TIMEOUT = 20000; // 20 second hard timeout per method
+  const { allowGmailFallback = true } = sendPolicy;
+
+  const extractEmailFromHeader = (headerValue = "") => {
+    const match = String(headerValue).match(/<([^>]+)>/);
+    if (match?.[1]) {
+      return String(match[1]).trim().toLowerCase();
+    }
+    return String(headerValue || "").trim().toLowerCase();
+  };
+
+  const getHostingerSendOptions = (mailOptions) => {
+    if (!HOSTINGER_ENFORCE_AUTH_FROM || !HOSTINGER_SMTP_USER) {
+      return mailOptions;
+    }
+
+    const authMailbox = String(HOSTINGER_SMTP_USER).trim().toLowerCase();
+    const fromEmail = extractEmailFromHeader(mailOptions.from);
+
+    if (!authMailbox || !fromEmail || fromEmail === authMailbox) {
+      return mailOptions;
+    }
+
+    const fromName = parseFrom(mailOptions.from).name || DEFAULT_FROM_NAME;
+    const hostingerCompatible = {
+      ...mailOptions,
+      from: `"${fromName}" <${HOSTINGER_SMTP_USER}>`,
+      replyTo: mailOptions.replyTo || NEWSLETTER_REPLY_TO || REPLY_TO_EMAIL,
+    };
+
+    return hostingerCompatible;
+  };
 
   // Method 1: Try Hostinger SMTP first (primary)
   if (primaryTransporter) {
     try {
       console.log(`✉️ Attempting Hostinger SMTP for [${context}]...`);
+      const hostingerOptions = getHostingerSendOptions(options);
       const info = await withTimeout(
-        primaryTransporter.sendMail(options),
+        primaryTransporter.sendMail(hostingerOptions),
         SMTP_TIMEOUT,
         "Hostinger SMTP timeout",
       );
@@ -273,7 +543,7 @@ const sendEmail = async (options, context) => {
   }
 
   // Method 4: Try Gmail SMTP as last resort
-  if (gmailTransporter) {
+  if (allowGmailFallback && gmailTransporter) {
     try {
       console.log(`🔄 Trying Gmail SMTP for [${context}]...`);
       const modifiedOptions = { ...options };
@@ -297,6 +567,84 @@ const sendEmail = async (options, context) => {
 
   // All methods failed
   throw new Error(`All email methods failed: ${errors.join("; ")}`);
+};
+
+export const getNewsletterMailHealth = () => {
+  const usesCompanyDomain = (email = "") =>
+    String(email).toLowerCase().endsWith(`@${COMPANY_DOMAIN}`);
+
+  const normalizedHostingerUser = String(HOSTINGER_SMTP_USER || "").trim().toLowerCase();
+  const normalizedNewsletterFrom = String(NEWSLETTER_FROM_EMAIL || "").trim().toLowerCase();
+  const hostingerFromAligned =
+    !normalizedHostingerUser || normalizedHostingerUser === normalizedNewsletterFrom;
+
+  const checks = {
+    newsletterFromConfigured: Boolean(NEWSLETTER_FROM_EMAIL),
+    newsletterReplyToConfigured: Boolean(NEWSLETTER_REPLY_TO),
+    newsletterReturnPathConfigured: Boolean(NEWSLETTER_RETURN_PATH),
+    senderDomainAligned:
+      usesCompanyDomain(NEWSLETTER_FROM_EMAIL) &&
+      usesCompanyDomain(NEWSLETTER_REPLY_TO) &&
+      usesCompanyDomain(NEWSLETTER_RETURN_PATH),
+    hostingerReady: Boolean(primaryTransporter),
+    brevoApiReady: Boolean(BREVO_API_KEY),
+    brevoSmtpReady: Boolean(secondaryTransporter),
+    gmailReady: Boolean(gmailTransporter),
+    hostingerAuthFromEnforced: HOSTINGER_ENFORCE_AUTH_FROM,
+    hostingerFromAligned,
+    strictModeEnabled: NEWSLETTER_STRICT_MODE,
+  };
+
+  const hasProvider = NEWSLETTER_STRICT_MODE
+    ? checks.hostingerReady || checks.brevoApiReady || checks.brevoSmtpReady
+    : checks.hostingerReady || checks.brevoApiReady || checks.brevoSmtpReady || checks.gmailReady;
+
+  const issues = [];
+  if (NEWSLETTER_STRICT_MODE) {
+    if (!checks.newsletterFromConfigured) {
+      issues.push("NEWSLETTER_FROM_EMAIL is not configured.");
+    }
+    if (!checks.newsletterReplyToConfigured) {
+      issues.push("NEWSLETTER_REPLY_TO is not configured.");
+    }
+    if (!checks.newsletterReturnPathConfigured) {
+      issues.push("NEWSLETTER_RETURN_PATH is not configured.");
+    }
+    if (!checks.senderDomainAligned) {
+      issues.push("Newsletter sender, reply-to, and return-path should use the company domain.");
+    }
+  }
+  if (!hasProvider) {
+    issues.push("No domain-aligned mail provider is configured (Hostinger or Brevo).");
+  }
+  if (
+    NEWSLETTER_STRICT_MODE &&
+    checks.hostingerReady &&
+    checks.hostingerAuthFromEnforced &&
+    !checks.hostingerFromAligned
+  ) {
+    issues.push(
+      `Hostinger requires sender mailbox alignment. Newsletter sender will be sent via ${HOSTINGER_SMTP_USER}.`,
+    );
+  }
+
+  return {
+    ready: issues.filter((issue) => !issue.includes("will be sent via")).length === 0,
+    sender: {
+      from: NEWSLETTER_FROM_EMAIL,
+      replyTo: NEWSLETTER_REPLY_TO,
+      returnPath: NEWSLETTER_RETURN_PATH,
+      listId: NEWSLETTER_LIST_ID,
+    },
+    providers: {
+      hostinger: checks.hostingerReady,
+      brevoApi: checks.brevoApiReady,
+      brevoSmtp: checks.brevoSmtpReady,
+      gmailFallbackEnabledForNewsletter: false,
+    },
+    checks,
+    issues,
+  };
 };
 
 export const sendVerificationEmail = async (email, token) => {
@@ -423,4 +771,94 @@ export const sendKycPhoneVerificationCode = async (email, phoneNumber, code) => 
   };
 
   await sendEmail(mailOptions, "KYC Phone Verification Email");
+};
+
+export const sendNewsletterConfirmationEmail = async (email, confirmLink) => {
+  const fromEmail = NEWSLETTER_STRICT_MODE ? NEWSLETTER_FROM_EMAIL : DEFAULT_FROM_EMAIL;
+  const replyToEmail = NEWSLETTER_STRICT_MODE ? NEWSLETTER_REPLY_TO : REPLY_TO_EMAIL;
+
+  const mailOptions = {
+    from: `"${DEFAULT_FROM_NAME}" <${fromEmail}>`,
+    replyTo: replyToEmail,
+    to: email,
+    subject: "Confirm your newsletter subscription - Secxion",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #111827;">Confirm your subscription</h2>
+        <p>Thanks for subscribing to Secxion updates.</p>
+        <p>Please confirm your email to start receiving our newsletters.</p>
+        <div style="margin: 24px 0; text-align: center;">
+          <a
+            href="${confirmLink}"
+            style="display: inline-block; background: #eab308; color: #111827; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: 700;"
+          >
+            Confirm Subscription
+          </a>
+        </div>
+        <p style="font-size: 13px; color: #6b7280;">If you did not request this, you can ignore this email.</p>
+      </div>
+    `,
+  };
+
+  await sendEmail(mailOptions, "Newsletter Confirmation Email", {
+    allowGmailFallback: !NEWSLETTER_STRICT_MODE,
+  });
+};
+
+export const sendNewsletterCampaignEmail = async ({
+  to,
+  subject,
+  html,
+  text,
+  unsubscribeLink,
+}) => {
+  const fallbackHtml = text
+    ? `<pre style="white-space: pre-wrap; font-family: Arial, sans-serif;">${text}</pre>`
+    : "";
+  const normalizedHtml = normalizeCampaignHtml(html || fallbackHtml);
+  const unsubscribeHtml = unsubscribeLink
+    ? `<p style="font-size: 12px; color: #6b7280; margin-top: 28px;">If you no longer want these emails, <a href="${unsubscribeLink}" style="color: #6b7280;">unsubscribe here</a>.</p>`
+    : "";
+
+  const brandLogoAsset = await getNewsletterBrandLogoAsset();
+  const brandedHtml = buildNewsletterBrandedHtml(
+    normalizedHtml,
+    unsubscribeHtml,
+    brandLogoAsset.src,
+  );
+  const htmlBody = `<!doctype html><html><body>${brandedHtml}</body></html>`;
+  const baseTextBody = String(text || "").trim() || htmlToPlainText(normalizedHtml);
+  const textBody = unsubscribeLink
+    ? `${baseTextBody}\n\nUnsubscribe: ${unsubscribeLink}`
+    : baseTextBody;
+
+  const newsletterHeaders = {
+    "List-ID": NEWSLETTER_LIST_ID,
+    Precedence: "bulk",
+    "X-Auto-Response-Suppress": "All",
+  };
+
+  if (unsubscribeLink) {
+    newsletterHeaders["List-Unsubscribe"] = `<${unsubscribeLink}>`;
+    newsletterHeaders["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click";
+  }
+
+  const mailOptions = {
+    from: `"${DEFAULT_FROM_NAME}" <${NEWSLETTER_STRICT_MODE ? NEWSLETTER_FROM_EMAIL : DEFAULT_FROM_EMAIL}>`,
+    replyTo: NEWSLETTER_STRICT_MODE ? NEWSLETTER_REPLY_TO : REPLY_TO_EMAIL,
+    ...(NEWSLETTER_STRICT_MODE ? { returnPath: NEWSLETTER_RETURN_PATH } : {}),
+    to,
+    subject,
+    html: htmlBody,
+    text: textBody || undefined,
+    headers: newsletterHeaders,
+    date: new Date(),
+    ...(brandLogoAsset.attachment
+      ? { attachments: [brandLogoAsset.attachment] }
+      : {}),
+  };
+
+  await sendEmail(mailOptions, "Newsletter Campaign Email", {
+    allowGmailFallback: !NEWSLETTER_STRICT_MODE,
+  });
 };

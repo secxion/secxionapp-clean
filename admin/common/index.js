@@ -1,5 +1,38 @@
-// Use environment variable for production, fallback to localhost for development
-const backendDomain = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+// Use environment variable for production, otherwise match the current browser hostname in dev.
+const resolveBackendDomain = () => {
+  const envUrl = import.meta.env.VITE_API_URL?.trim();
+  if (typeof window !== 'undefined') {
+    const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
+    const pageHost = window.location.hostname;
+
+    if (envUrl) {
+      try {
+        const parsed = new URL(envUrl);
+        const isLoopbackHost = ['localhost', '127.0.0.1'].includes(parsed.hostname);
+        const isDevLoopbackPage = ['localhost', '127.0.0.1'].includes(pageHost);
+
+        // Keep dev loopback hosts aligned to avoid CSRF/session cookie split.
+        if (isLoopbackHost && isDevLoopbackPage && parsed.hostname !== pageHost) {
+          return `${parsed.protocol}//${pageHost}:${parsed.port || '5001'}`;
+        }
+
+        return parsed.origin;
+      } catch {
+        // Fall back to host-based resolution if env URL is malformed.
+      }
+    }
+
+    return `${protocol}//${pageHost}:5001`;
+  }
+
+  if (envUrl) {
+    return envUrl.replace(/\/$/, '');
+  }
+
+  return 'http://localhost:5001';
+};
+
+const backendDomain = resolveBackendDomain();
 
 /**
  * Authenticated fetch helper for cross-origin API calls
@@ -557,6 +590,24 @@ const SummaryApi = {
   },
   migrateAdmins: {
     url: `${backendDomain}/api/admin/migrate-admins`,
+    method: 'POST',
+  },
+
+  // Newsletter
+  adminNewsletterSubscribers: {
+    url: `${backendDomain}/api/admin/newsletter/subscribers`,
+    method: 'GET',
+  },
+  adminNewsletterStats: {
+    url: `${backendDomain}/api/admin/newsletter/stats`,
+    method: 'GET',
+  },
+  adminNewsletterHealth: {
+    url: `${backendDomain}/api/admin/newsletter/health`,
+    method: 'GET',
+  },
+  sendNewsletterCampaign: {
+    url: `${backendDomain}/api/admin/newsletter/send`,
     method: 'POST',
   },
 };

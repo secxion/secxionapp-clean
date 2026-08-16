@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import SecxionLogo from '../app/slogo.png';
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png';
 export default function LogoEasterEgg() {
   const [count, setCount] = useState(0);
   const [showEgg, setShowEgg] = useState(false);

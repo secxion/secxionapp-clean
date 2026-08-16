@@ -14,48 +14,73 @@ const AdminLogin = () => {
   const [csrfToken, setCsrfToken] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchCsrfToken = async () => {
-      try {
-        const response = await fetch(`${summaryApi.baseURL}/api/csrf-token`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-        const result = await response.json();
-        if (result.success && result.csrfToken) {
-          setCsrfToken(result.csrfToken);
-        }
-      } catch (error) {
-        console.error('Error fetching CSRF token:', error);
+  const fetchCsrfToken = async () => {
+    try {
+      const response = await fetch(`${summaryApi.baseURL}/api/csrf-token`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const result = await response.json();
+      if (result.success && result.csrfToken) {
+        setCsrfToken(result.csrfToken);
+        return result.csrfToken;
       }
-    };
+    } catch (error) {
+      console.error('Error fetching CSRF token:', error);
+    }
 
+    return '';
+  };
+
+  useEffect(() => {
     fetchCsrfToken();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!csrfToken) {
-      toast.error('Security token not ready yet. Please try again.');
-      return;
-    }
-
     setLoading(true);
 
     try {
-      // Use admin-specific signin endpoint with department key
-      const response = await fetch(summaryApi.adminSignIn.url, {
-        method: summaryApi.adminSignIn.method,
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken,
-        },
-        body: JSON.stringify({ email, password, departmentKey }),
-      });
+      const payload = { email, password, departmentKey };
 
-      const data = await response.json();
+      const runSigninAttempt = async (token) => {
+        const response = await fetch(summaryApi.adminSignIn.url, {
+          method: summaryApi.adminSignIn.method,
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': token,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+        return { response, data };
+      };
+
+      let tokenToUse = csrfToken;
+      if (!tokenToUse) {
+        tokenToUse = await fetchCsrfToken();
+      }
+
+      if (!tokenToUse) {
+        toast.error('Security token not ready yet. Please try again.');
+        return;
+      }
+
+      let { response, data } = await runSigninAttempt(tokenToUse);
+
+      if (
+        response.status === 403 &&
+        (data?.code === 'CSRF_VALIDATION_FAILED' ||
+          /csrf|session/i.test(String(data?.message || '')))
+      ) {
+        const refreshedToken = await fetchCsrfToken();
+        if (refreshedToken) {
+          ({ response, data } = await runSigninAttempt(refreshedToken));
+        }
+      }
 
       if (data.success) {
         toast.success(data.message || 'Welcome!');
@@ -65,6 +90,17 @@ const AdminLogin = () => {
         localStorage.setItem('adminDepartment', JSON.stringify(data.data.department));
         navigate('/dashboard');
       } else {
+        if (response.status === 429) {
+          const retryAfter = data?.retryAfter
+            ? new Date(data.retryAfter).toLocaleTimeString()
+            : null;
+          const message = retryAfter
+            ? `Too many login attempts. Try again after ${retryAfter}.`
+            : 'Too many login attempts. Please wait and try again.';
+          toast.error(message);
+          return;
+        }
+
         toast.error(data.message || 'Login failed');
       }
     } catch (error) {

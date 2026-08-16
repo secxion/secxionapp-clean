@@ -4,7 +4,7 @@ import { Mail, Phone, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import Navigation from '../Components/Navigation';
 import SummaryApi from '../common';
 import { toast } from 'react-toastify';
-import SecxionLogo from '../app/slogo.png';
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png';
 import BackButton from '../Components/BackButton';
 
 const ContactUs = () => {
@@ -14,6 +14,7 @@ const ContactUs = () => {
     phoneNumber: '',
     reason: '',
   });
+  const [newsletterOptIn, setNewsletterOptIn] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [submissionError, setSubmissionError] = useState('');
@@ -48,6 +49,23 @@ const ContactUs = () => {
       if (response.ok) {
         setSubmissionSuccess(true);
         setFormData({ name: '', email: '', phoneNumber: '', reason: '' });
+
+        if (newsletterOptIn && responseData?.data?.email) {
+          try {
+            await fetch(SummaryApi.newsletterSubscribe.url, {
+              method: SummaryApi.newsletterSubscribe.method,
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: responseData.data.email,
+                source: 'contact-us',
+              }),
+            });
+          } catch (newsletterError) {
+            // Contact form success should not fail because of newsletter errors.
+            console.warn('Newsletter subscribe failed:', newsletterError);
+          }
+        }
+
         toast.success(
           responseData.message ||
             'Thanks for contacting us! We will get back to you ASAP.',
@@ -281,6 +299,23 @@ const ContactUs = () => {
                       aria-label="Email Address"
                     />
                   </div>
+                </div>
+
+                <div className="rounded-xl border border-yellow-700/40 bg-gray-900/60 px-4 py-3">
+                  <label className="flex items-start gap-3 text-sm text-gray-200">
+                    <input
+                      type="checkbox"
+                      checked={newsletterOptIn}
+                      onChange={(event) =>
+                        setNewsletterOptIn(event.target.checked)
+                      }
+                      className="mt-1 h-4 w-4 rounded border-yellow-700 bg-gray-800 text-yellow-500 focus:ring-yellow-500"
+                    />
+                    <span>
+                      Subscribe me to the Secxion newsletter for updates and
+                      product announcements.
+                    </span>
+                  </label>
                 </div>
                 <div>
                   <label

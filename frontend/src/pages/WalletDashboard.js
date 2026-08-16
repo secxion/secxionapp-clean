@@ -20,7 +20,7 @@ import LiveScript from '../Components/LiveScript';
 import SummaryApi from '../common';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import SecxionLogo from '../app/slogo.png';
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png';
 import SecxionSpinner from '../Components/SecxionSpinner';
 import BackButton from '../Components/BackButton';
 import { toUserSafeMessage, USER_MESSAGE } from '../utils/userSafeMessage';

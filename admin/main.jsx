@@ -41,6 +41,7 @@ import AdminEarnings from './pages/AdminEarnings.jsx';
 import AdminManagement from './pages/AdminManagement.jsx';
 import UsersMarket from './pages/UsersMarket.jsx';
 import AdminKycVerification from './pages/AdminKycVerification.jsx';
+import AdminNewsletter from './pages/AdminNewsletter.jsx';
 import './index.css';
 
 const ScrollToTop = () => {
@@ -125,6 +126,7 @@ const App = () => (
             <Route path="earnings" element={<AdminEarnings />} />
             <Route path="admin-management" element={<AdminManagement />} />
             <Route path="kyc-verification" element={<AdminKycVerification />} />
+            <Route path="newsletter" element={<AdminNewsletter />} />
           </Route>
           
           {/* Catch-all redirect */}

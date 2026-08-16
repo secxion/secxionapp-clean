@@ -1,7 +1,19 @@
-// In production, use relative URLs so API calls go to same origin
-// In development, use localhost:5001 for the backend
-const backendDomain =
-  process.env.NODE_ENV === 'development' ? 'http://localhost:5001' : '';
+// In production, use relative URLs so API calls go to same origin.
+// In development, match the current browser hostname to keep session cookies and CSRF aligned.
+const resolveBackendDomain = () => {
+  if (process.env.NODE_ENV !== 'development') {
+    return '';
+  }
+
+  if (typeof window !== 'undefined') {
+    const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
+    return `${protocol}//${window.location.hostname}:5001`;
+  }
+
+  return 'http://localhost:5001';
+};
+
+const backendDomain = resolveBackendDomain();
 
 const SummaryApi = {
   baseURL: backendDomain,
@@ -215,6 +227,11 @@ const SummaryApi = {
   },
   contactUsMessage: {
     url: `${backendDomain}/api/contact-us-message`,
+    method: 'POST',
+  },
+
+  newsletterSubscribe: {
+    url: `${backendDomain}/api/newsletter/subscribe`,
     method: 'POST',
   },
 

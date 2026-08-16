@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import Picker from 'emoji-picker-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SummaryApi from '../common';
-import SecxionLogo from '../app/slogo.png'; // Import Secxion-branded logo
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png'; // Import Secxion-branded logo
 
 const CreatePostCard = ({ onPostCreated, loading, error }) => {
   const { user } = useSelector((state) => state.user);

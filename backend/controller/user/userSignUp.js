@@ -1,4 +1,5 @@
 import userModel from "../../models/userModel.js";
+import NewsletterSubscriber from "../../models/newsletterSubscriberModel.js";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 import { sendVerificationEmail } from "../../utils/mailer.js";
@@ -85,6 +86,42 @@ async function userSignUpController(req, res, next) {
         console.error(
           "⚠️ Wallet update error (non-blocking):",
           walletError.message,
+        ),
+      );
+
+    // Auto subscribe all registered users to newsletter (non-blocking).
+    NewsletterSubscriber.findOne({ email })
+      .then(async (subscriber) => {
+        const now = new Date();
+
+        if (!subscriber) {
+          await NewsletterSubscriber.create({
+            email,
+            status: "active",
+            source: "registered-user",
+            subscribedAt: now,
+            confirmedAt: now,
+          });
+          return;
+        }
+
+        // Preserve explicit unsubscribe choices.
+        if (subscriber.status === "unsubscribed") {
+          return;
+        }
+
+        if (subscriber.status !== "active") {
+          subscriber.status = "active";
+          subscriber.source = "registered-user";
+          subscriber.confirmedAt = now;
+          subscriber.unsubscribedAt = null;
+          await subscriber.save();
+        }
+      })
+      .catch((newsletterError) =>
+        console.error(
+          "⚠️ Newsletter auto-subscribe error (non-blocking):",
+          newsletterError.message,
         ),
       );
 

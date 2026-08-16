@@ -34,6 +34,17 @@ async function connectDB() {
 
     return;
   } catch (atlasErr) {
+    const allowLocalFallback =
+      String(process.env.ALLOW_LOCAL_DB_FALLBACK || "false").toLowerCase() ===
+      "true";
+
+    if (!allowLocalFallback) {
+      console.error(
+        "❌ Atlas connection failed and local fallback is disabled (ALLOW_LOCAL_DB_FALLBACK=false).",
+      );
+      throw atlasErr;
+    }
+
     console.warn(
       "⚠️  MongoDB Atlas unavailable:",
       atlasErr.code || atlasErr.message,

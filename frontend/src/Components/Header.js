@@ -27,7 +27,7 @@ import SummaryApi from '../common';
 import { BiSearch } from 'react-icons/bi';
 import SidePanel from './SidePanel';
 import LiveScript from './LiveScript';
-import Slogo from '../app/slogo.png';
+import Slogo from '../Assets/optimized/secxion-logo-112.png';
 import SidePanelLogo from '../Assets/optimized/secxion-logo-112.png';
 import BackButton from './BackButton';
 

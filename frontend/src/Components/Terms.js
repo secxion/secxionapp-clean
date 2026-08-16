@@ -10,7 +10,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import Navigation from './Navigation';
-import SecxionLogo from '../app/slogo.png';
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png';
 import BackButton from './BackButton';
 
 const Terms = () => {

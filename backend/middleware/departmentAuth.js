@@ -57,6 +57,9 @@ const API_TO_DEPARTMENT_ROUTES = {
 
   // KYC Management APIs
   '/kyc/admin': 'kyc-verification',
+
+  // Newsletter Management APIs
+  '/admin/newsletter': 'newsletter',
 };
 
 const ADMIN_ONLY_PATTERNS = [
@@ -83,6 +86,7 @@ const ADMIN_ONLY_PATTERNS = [
   '/pr/getall',
   '/pr/update',
   '/kyc/admin',
+  '/admin/newsletter',
 ];
 
 export const assertDepartmentRouteMappings = () => {

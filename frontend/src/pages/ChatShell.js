@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import ChatInterface from '../Components/ChatInterface';
-import SecxionLogo from '../app/slogo.png';
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png';
 import LoginFlow from '../chatFlows/LoginFlow';
 import SignupFlow from '../chatFlows/SignupFlow';
 import NFTBadge from '../Components/NFTBadge';

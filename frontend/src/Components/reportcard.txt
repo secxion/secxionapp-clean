@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Picker from 'emoji-picker-react';
-import SecxionLogo from "../app/slogo.png"; 
+import SecxionLogo from "../Assets/optimized/secxion-logo-112.png";
 
 const ReportCard = () => {
     const { reportId } = useParams();

@@ -23,7 +23,7 @@ import {
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaEthereum } from 'react-icons/fa';
-import SecxionLogo from '../app/slogo.png';
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png';
 import NFTBadge from '../Components/NFTBadge';
 
 const Button = ({

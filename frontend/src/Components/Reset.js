@@ -14,7 +14,7 @@ import Navigation from './Navigation';
 import SummaryApi from '../common';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import SecxionLogo from '../app/slogo.png';
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png';
 import BackButton from './BackButton';
 
 const Reset = () => {

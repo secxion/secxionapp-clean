@@ -56,7 +56,7 @@ export const DEPARTMENTS = {
   BLOG: {
     name: 'Blog Management',
     envKey: 'ADMIN_KEY_BLOG',
-    routes: ['dashboard', 'system-blog'],
+    routes: ['dashboard', 'system-blog', 'newsletter'],
     description: 'Create and manage blog posts'
   },
   EARNINGS: {

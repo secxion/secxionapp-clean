@@ -11,7 +11,7 @@ import {
 import SummaryApi from '../common';
 import uploadImage from '../helpers/uploadImage';
 import { toUserSafeMessage } from '../utils/userSafeMessage';
-import SecxionLogo from '../app/slogo.png';
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png';
 
 const emptyForm = {
   fullName: '',

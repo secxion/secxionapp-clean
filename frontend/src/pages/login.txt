@@ -8,7 +8,7 @@ import thumbsUpGif from "./thumbsup.gif";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Navigation from '../Components/Navigation';
 
-import SecxionLogo from '../app/slogo.png';
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png';
 import NFTBadge from "../Components/NFTBadge";
 
 const Button = ({ children, className = "", variant = "default", style = {}, ...props }) => {

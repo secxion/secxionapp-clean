@@ -21,6 +21,7 @@ import {
 	FaCoins,
 	FaUserShield,
 	FaIdCard,
+	FaEnvelopeOpenText,
 } from 'react-icons/fa';
 
 const AdminPanel = () => {
@@ -47,6 +48,11 @@ const AdminPanel = () => {
 		}
 	}, []);
 
+	const isSuperAdmin =
+		department?.name === 'Super Admin' ||
+		department?.id === 'SUPER' ||
+		department?.departmentId === 'SUPER';
+
 	// Check if authenticated
 	const isAuthenticated = localStorage.getItem('adminAuth') === 'true';
 
@@ -61,6 +67,7 @@ const AdminPanel = () => {
 		{ path: 'earnings', label: 'Earnings', icon: <FaCoins /> },
 		{ path: 'users-datapad', label: 'Datapad', icon: <FaMobileAlt /> },
 		{ path: 'system-blog', label: 'Blog', icon: <FaPenAlt /> },
+		{ path: 'newsletter', label: 'Newsletter', icon: <FaEnvelopeOpenText /> },
 		{ path: 'admin-report', label: 'Reports', icon: <FaFileAlt /> },
 		{ path: 'anonymous-report', label: 'Anonymous', icon: <FaUserSecret /> },
 		{ path: 'community-feeds', label: 'Community', icon: <FaChartBar /> },
@@ -71,12 +78,13 @@ const AdminPanel = () => {
 
 	// Filter menu items based on department's allowed routes
 	const menuItems = useMemo(() => {
+		if (isSuperAdmin) return allMenuItems;
 		if (!department?.allowedRoutes) return allMenuItems;
 		if (department.allowedRoutes.includes('*')) return allMenuItems; // Wildcard = full access
 		return allMenuItems.filter(item => 
 			department.allowedRoutes.includes(item.path)
 		);
-	}, [department]);
+	}, [department, isSuperAdmin]);
 
 	const handleTabClick = (path) => {
 		navigate(path);
@@ -97,6 +105,7 @@ const AdminPanel = () => {
 
 	// Check if current route is allowed
 	const isCurrentRouteAllowed = () => {
+		if (isSuperAdmin) return true;
 		if (!department?.allowedRoutes) return true;
 		if (department.allowedRoutes.includes('*')) return true; // Wildcard = full access
 		if (currentRoute === 'dashboard') return true; // Dashboard is always allowed

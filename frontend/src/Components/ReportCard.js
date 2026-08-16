@@ -1,3 +1,4 @@
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import SummaryApi from '../common';
@@ -8,7 +9,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Picker from 'emoji-picker-react';
 import { toast } from 'react-toastify';
-import SecxionLogo from '../app/slogo.png';
 import SecxionSpinner from './SecxionSpinner';
 import BackButton from './BackButton';
 import { toUserSafeMessage } from '../utils/userSafeMessage';

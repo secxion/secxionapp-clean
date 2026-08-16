@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import SecxionLogo from '../app/slogo.png';
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png';
 export default function CustomCursor() {
   useEffect(() => {
     const cursorUrl = `url(${SecxionLogo}) 16 16, auto`;

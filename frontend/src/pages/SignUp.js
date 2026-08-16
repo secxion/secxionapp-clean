@@ -14,7 +14,7 @@ import { notifyUser } from '../utils/toastConfig';
 import { motion, AnimatePresence } from 'framer-motion';
 import signupBackground from './signupbk.png';
 import Navigation from '../Components/Navigation';
-import SecxionLogo from '../app/slogo.png';
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png';
 import NFTBadge from '../Components/NFTBadge';
 import { toUserSafeMessage } from '../utils/userSafeMessage';
 import BackButton from '../Components/BackButton';

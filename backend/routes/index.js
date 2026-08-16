@@ -162,6 +162,15 @@ import {
   verifyKycPhoneCode,
   ingestKycFaceMatchResult,
 } from "../controller/kycController.js";
+import {
+  confirmNewsletterSubscription,
+  getNewsletterHealth,
+  getNewsletterStats,
+  getNewsletterSubscribers,
+  sendNewsletterCampaign,
+  subscribeNewsletter,
+  unsubscribeNewsletter,
+} from "../controller/newsletterController.js";
 import { getSmsHealthStatus } from "../utils/smsService.js";
 import { generateSliderVerification } from "../utils/sliderVerification.js";
 import getLastUserMarketStatusController from "../controller/product/getLastUserMarketStatusController.js";
@@ -528,10 +537,19 @@ router.get("/csrf-token", (req, res) => {
     });
   }
 
-  res.json({
-    success: true,
-    csrfToken,
-    message: "CSRF token retrieved successfully",
+  req.session.save((err) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        message: "Unable to persist CSRF session",
+      });
+    }
+
+    res.json({
+      success: true,
+      csrfToken,
+      message: "CSRF token retrieved successfully",
+    });
   });
 });
 
@@ -677,6 +695,11 @@ router.delete("/deletedata/:id", authToken, noCache, deleteDataPad);
 router.post("/contact-us-message", createContactUsMessage);
 router.get("/get-contact-us-messages", getAllContactUsMessages);
 
+// Newsletter
+router.post("/newsletter/subscribe", noCache, subscribeNewsletter);
+router.get("/newsletter/confirm", noCache, confirmNewsletterSubscription);
+router.get("/newsletter/unsubscribe", noCache, unsubscribeNewsletter);
+
 // LiveScript (Custom Development Requests)
 router.post("/livescript/create", authToken, noCache, createLiveScriptRequest);
 router.get("/livescript/user", authToken, noCache, getUserLiveScriptRequests);
@@ -707,6 +730,12 @@ router.post("/admin/authorize", authToken, verifyAdmin, noCache, authorizeAdmin)
 router.delete("/admin/authorize/:id", authToken, verifyAdmin, noCache, revokeAuthorization);
 router.put("/admin/authorize/:id/toggle", authToken, verifyAdmin, noCache, toggleAdminStatus);
 router.post("/admin/migrate-admins", authToken, verifyAdmin, noCache, migrateHardcodedAdmins);
+
+// Admin Newsletter
+router.get("/admin/newsletter/subscribers", authToken, verifyAdmin, noCache, getNewsletterSubscribers);
+router.get("/admin/newsletter/stats", authToken, verifyAdmin, noCache, getNewsletterStats);
+router.get("/admin/newsletter/health", authToken, verifyAdmin, noCache, getNewsletterHealth);
+router.post("/admin/newsletter/send", authToken, verifyAdmin, noCache, sendNewsletterCampaign);
 
 // Wallet
 router.get("/wallet/balance", authToken, noCache, getWalletBalance);

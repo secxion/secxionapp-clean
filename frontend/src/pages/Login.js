@@ -8,7 +8,7 @@ import { setUserDetails } from '../store/userSlice';
 import loginBackground from './loginbk.png';
 import { FaEye, FaEyeSlash, FaSyncAlt } from 'react-icons/fa';
 import Navigation from '../Components/Navigation';
-import SecxionLogo from '../app/slogo.png';
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png';
 import NFTBadge from '../Components/NFTBadge';
 import { toUserSafeMessage } from '../utils/userSafeMessage';
 import BackButton from '../Components/BackButton';
@@ -113,10 +113,13 @@ const Login = () => {
       const result = await response.json();
       if (result.success && result.csrfToken) {
         setCsrfToken(result.csrfToken);
+        return result.csrfToken;
       }
     } catch (error) {
       console.error('Error fetching CSRF token:', error);
     }
+
+    return '';
   };
 
   useEffect(() => {
@@ -144,19 +147,44 @@ const Login = () => {
     setErrorMessage('');
 
     try {
-      const response = await fetch(SummaryApi.signIn.url, {
-        method: SummaryApi.signIn.method,
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken,
-        },
-        body: JSON.stringify({
-          ...data,
-          puzzleSolved: true,
-        }),
-      });
-      const result = await response.json();
+      const payload = {
+        ...data,
+        puzzleSolved: true,
+      };
+
+      const runLoginAttempt = async (token) => {
+        const response = await fetch(SummaryApi.signIn.url, {
+          method: SummaryApi.signIn.method,
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': token,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+        return { response, result };
+      };
+
+      let tokenToUse = csrfToken;
+      if (!tokenToUse) {
+        tokenToUse = await fetchCsrfToken();
+      }
+
+      let { response, result } = await runLoginAttempt(tokenToUse);
+
+      // Session cookie/token can drift after expiry/restart; refresh CSRF and retry once.
+      if (
+        response.status === 403 &&
+        (result?.code === 'CSRF_VALIDATION_FAILED' ||
+          /csrf/i.test(String(result?.message || '')))
+      ) {
+        const refreshedToken = await fetchCsrfToken();
+        if (refreshedToken) {
+          ({ response, result } = await runLoginAttempt(refreshedToken));
+        }
+      }
 
       if (response.ok && result.success) {
         if (result?.data?.token) {
@@ -176,6 +204,19 @@ const Login = () => {
         // Close slider and show error on the login form
         setVerificationVisible(false);
         setFormSubmitting(false);
+
+        if (response.status === 429) {
+          const retryAfter = result?.retryAfter
+            ? new Date(result.retryAfter).toLocaleTimeString()
+            : null;
+          const rateMessage = retryAfter
+            ? `Too many login attempts. Try again after ${retryAfter}.`
+            : 'Too many login attempts. Please wait and try again.';
+          setErrorMessage(rateMessage);
+          toast.error(rateMessage);
+          return;
+        }
+
         const errorMsg = toUserSafeMessage(
           result.message,
           'Login failed. Please try again.',

@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Eye, Lock, FileText, Mail, Calendar } from 'lucide-react';
 import Navigation from './Navigation';
-import SecxionLogo from '../app/slogo.png';
+import SecxionLogo from '../Assets/optimized/secxion-logo-112.png';
 import BackButton from './BackButton';
 
 const Privacy = () => {

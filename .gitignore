@@ -94,3 +94,9 @@ android/.gradle/
 *.jks
 signing.properties
 android/signing.properties
+
+# =========================
+# 🏗️ IDE Artifacts
+# =========================
+.artifacts/
+
