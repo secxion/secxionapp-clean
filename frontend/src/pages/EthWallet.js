@@ -899,6 +899,7 @@ const EthWallet = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mt-12 items-start">
         {/* Withdrawal Form */}
         <form
+          id="eth-withdrawal-form"
           onSubmit={(e) => {
             e.preventDefault();
             handleWithdrawRequest();
@@ -1021,32 +1022,6 @@ const EthWallet = () => {
               />
             </div>
           </div>
-
-          <button
-            type="submit"
-            className="w-full bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base font-black font-spaceGrotesk text-sm uppercase tracking-[0.3em] py-6 rounded-2xl shadow-[0_10px_40px_rgba(212,175,55,0.2)] transition-all duration-500 transform active:scale-95 disabled:opacity-20 disabled:cursor-not-allowed group relative overflow-hidden"
-            disabled={
-              withdrawLoading ||
-              countdown > 0 ||
-              withdrawalStatus === 'pending' ||
-              isInitialLoading ||
-              !nairaWithdrawAmount ||
-              parseFloat(nairaWithdrawAmount) <= 0 ||
-              !ethAddress ||
-              (exactEthToSend !== null && exactEthToSend <= 0)
-            }
-          >
-            <div className="relative z-10 flex items-center justify-center gap-3">
-              {withdrawLoading ? (
-                <ArrowPathIcon className="h-5 w-5 animate-spin" />
-              ) : (
-                <>
-                  <CubeTransparentIcon className="h-5 w-5" />
-                  <span>Request Transfer</span>
-                </>
-              )}
-            </div>
-          </button>
         </form>
 
         {/* Summary Sidebar */}
@@ -1094,6 +1069,33 @@ const EthWallet = () => {
               </div>
             </div>
           </div>
+
+          <button
+            type="submit"
+            form="eth-withdrawal-form"
+            className="w-full bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base font-black font-spaceGrotesk text-sm uppercase tracking-[0.3em] py-6 rounded-2xl shadow-[0_10px_40px_rgba(212,175,55,0.2)] transition-all duration-500 transform active:scale-95 disabled:opacity-20 disabled:cursor-not-allowed group relative overflow-hidden"
+            disabled={
+              withdrawLoading ||
+              countdown > 0 ||
+              withdrawalStatus === 'pending' ||
+              isInitialLoading ||
+              !nairaWithdrawAmount ||
+              parseFloat(nairaWithdrawAmount) <= 0 ||
+              !ethAddress ||
+              (exactEthToSend !== null && exactEthToSend <= 0)
+            }
+          >
+            <div className="relative z-10 flex items-center justify-center gap-3">
+              {withdrawLoading ? (
+                <ArrowPathIcon className="h-5 w-5 animate-spin" />
+              ) : (
+                <>
+                  <CubeTransparentIcon className="h-5 w-5" />
+                  <span>Request Transfer</span>
+                </>
+              )}
+            </div>
+          </button>
 
           <div className="p-6 border border-white/5 rounded-2xl bg-white/5">
             <div className="flex items-center gap-3 mb-3">

@@ -42,6 +42,8 @@ import AdminManagement from './pages/AdminManagement.jsx';
 import UsersMarket from './pages/UsersMarket.jsx';
 import AdminKycVerification from './pages/AdminKycVerification.jsx';
 import AdminNewsletter from './pages/AdminNewsletter.jsx';
+import summaryApi from './common/index.js';
+import { installCsrfFetchInterceptor } from './utils/csrfFetchInterceptor';
 import './index.css';
 
 const ScrollToTop = () => {
@@ -93,50 +95,59 @@ const ScrollToTop = () => {
   return null;
 };
 
+const App = () => {
+  useEffect(() => {
+    const teardown = installCsrfFetchInterceptor({
+      baseURL: summaryApi?.baseURL || '',
+    });
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <Provider store={store}>
-      <ContextProvider>
-        <BrowserRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
-        >
-        <ScrollToTop />
-        <Routes>
-          {/* Login Page - No sidebar/layout */}
-          <Route path="/" element={<AdminLogin />} />
-          
-          {/* Admin Panel with sidebar layout */}
-          <Route element={<AdminPanel />}>
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="all-users" element={<AllUsers />} />
-            <Route path="all-products" element={<AllProducts />} />
-            <Route path="admin-rpr" element={<AdminRPR />} />
-            <Route path="eth-requests" element={<AdminEthWithdrawals />} />
-            <Route path="users-market" element={<UsersMarket />} />
-            <Route path="users-datapad" element={<AdminGetAllData />} />
-            <Route path="system-blog" element={<BlogManagement />} />
-            <Route path="admin-report" element={<AdminReports />} />
-            <Route path="anonymous-report" element={<AdminAnonymousReports />} />
-            <Route path="community-feeds" element={<AdminCommunity />} />
-            <Route path="livescript" element={<AdminLiveScript />} />
-            <Route path="earnings" element={<AdminEarnings />} />
-            <Route path="admin-management" element={<AdminManagement />} />
-            <Route path="kyc-verification" element={<AdminKycVerification />} />
-            <Route path="newsletter" element={<AdminNewsletter />} />
-          </Route>
-          
-          {/* Catch-all redirect */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-          <ToastContainer position="top-right" theme="dark" />
-        </BrowserRouter>
-      </ContextProvider>
-    </Provider>
-  </QueryClientProvider>
-);
+    return teardown;
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <ContextProvider>
+          <BrowserRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
+          <ScrollToTop />
+          <Routes>
+            {/* Login Page - No sidebar/layout */}
+            <Route path="/" element={<AdminLogin />} />
+
+            {/* Admin Panel with sidebar layout */}
+            <Route element={<AdminPanel />}>
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="all-users" element={<AllUsers />} />
+              <Route path="all-products" element={<AllProducts />} />
+              <Route path="admin-rpr" element={<AdminRPR />} />
+              <Route path="eth-requests" element={<AdminEthWithdrawals />} />
+              <Route path="users-market" element={<UsersMarket />} />
+              <Route path="users-datapad" element={<AdminGetAllData />} />
+              <Route path="system-blog" element={<BlogManagement />} />
+              <Route path="admin-report" element={<AdminReports />} />
+              <Route path="anonymous-report" element={<AdminAnonymousReports />} />
+              <Route path="community-feeds" element={<AdminCommunity />} />
+              <Route path="livescript" element={<AdminLiveScript />} />
+              <Route path="earnings" element={<AdminEarnings />} />
+              <Route path="admin-management" element={<AdminManagement />} />
+              <Route path="kyc-verification" element={<AdminKycVerification />} />
+              <Route path="newsletter" element={<AdminNewsletter />} />
+            </Route>
+
+            {/* Catch-all redirect */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+            <ToastContainer position="top-right" theme="dark" />
+          </BrowserRouter>
+        </ContextProvider>
+      </Provider>
+    </QueryClientProvider>
+  );
+};
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);

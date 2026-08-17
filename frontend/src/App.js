@@ -15,6 +15,7 @@ import SecxionLoader from './Components/SecxionLoader';
 import InstallPrompt from './Components/InstallPrompt';
 import GlobalToastContainer from './Components/GlobalToastContainer';
 import SummaryApi from './common';
+import { installCsrfFetchInterceptor } from './utils/csrfFetchInterceptor';
 
 function setViewportHeight() {
   const vh = window.innerHeight * 0.01;
@@ -74,6 +75,14 @@ function App() {
     return () => {
       window.history.scrollRestoration = previousScrollRestoration;
     };
+  }, []);
+
+  useEffect(() => {
+    const teardown = installCsrfFetchInterceptor({
+      baseURL: SummaryApi?.baseURL || '',
+    });
+
+    return teardown;
   }, []);
 
   useEffect(() => {

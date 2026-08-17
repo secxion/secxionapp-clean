@@ -112,6 +112,25 @@ const PaymentRequestForm = ({
     fetchBankAccounts();
   };
 
+  const fetchCsrfToken = useCallback(async () => {
+    const response = await fetch(`${SummaryApi.baseURL}/api/csrf-token`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+
+    const result = await response.json().catch(() => ({}));
+    const token = result?.csrfToken;
+
+    if (!response.ok || !token) {
+      throw new Error(
+        'Unable to initialize secure request token. Please retry.',
+      );
+    }
+
+    localStorage.setItem('csrfToken', token);
+    return token;
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -147,21 +166,42 @@ const PaymentRequestForm = ({
         idempotencyKeyRef.current = createIdempotencyKey('bank_withdrawal');
       }
 
-      const response = await fetch(SummaryApi.createPayment.url, {
-        method: SummaryApi.createPayment.method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Idempotency-Key': idempotencyKeyRef.current,
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          amount: parsedAmount,
-          paymentMethod,
-          bankAccountId: selectedBankAccount,
-        }),
-      });
+      const sendCreatePaymentRequest = async (csrfToken) => {
+        return fetch(SummaryApi.createPayment.url, {
+          method: SummaryApi.createPayment.method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Idempotency-Key': idempotencyKeyRef.current,
+            ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            amount: parsedAmount,
+            paymentMethod,
+            bankAccountId: selectedBankAccount,
+          }),
+        });
+      };
 
-      const data = await response.json();
+      let csrfToken = localStorage.getItem('csrfToken') || '';
+      if (!csrfToken) {
+        csrfToken = await fetchCsrfToken();
+      }
+
+      let response = await sendCreatePaymentRequest(csrfToken);
+      let data = await response.json().catch(() => ({}));
+
+      const isCsrfFailure =
+        response.status === 403 &&
+        (data?.code === 'CSRF_VALIDATION_FAILED' ||
+          /csrf/i.test(String(data?.message || '')));
+
+      if (isCsrfFailure) {
+        const refreshedToken = await fetchCsrfToken();
+        response = await sendCreatePaymentRequest(refreshedToken);
+        data = await response.json().catch(() => ({}));
+      }
+
       if (data.success) {
         idempotencyKeyRef.current = '';
         const successMessage =
