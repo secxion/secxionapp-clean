@@ -13,8 +13,7 @@ import {
 } from './services/apiService';
 import SecxionLoader from './Components/SecxionLoader';
 import InstallPrompt from './Components/InstallPrompt';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import GlobalToastContainer from './Components/GlobalToastContainer';
 import SummaryApi from './common';
 
 function setViewportHeight() {
@@ -97,7 +96,10 @@ function App() {
             localStorage.setItem('csrfToken', data.csrfToken);
           }
         } else {
-          console.warn('[CSRF] Failed to fetch token, status:', response.status);
+          console.warn(
+            '[CSRF] Failed to fetch token, status:',
+            response.status,
+          );
         }
       } catch (err) {
         console.error('[CSRF] Initialization error:', err);
@@ -212,18 +214,7 @@ function App() {
             </main>
           </Suspense>
           <InstallPrompt />
-          <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="dark"
-          />
+          <GlobalToastContainer />
         </div>
       </Context.Provider>
     </ContextProvider>

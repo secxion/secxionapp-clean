@@ -399,7 +399,7 @@ const TransactionHistory = () => {
       </AnimatePresence>
 
       {/* Enhanced Custom Styles */}
-      <style jsx>{`
+      <style>{`
         /* Enhanced scrollbar styling for horizontal scroll */
         .scrollbar-thin {
           scrollbar-width: thin;

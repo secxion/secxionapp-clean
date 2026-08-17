@@ -593,7 +593,7 @@ const WalletDashboard = () => {
       </footer>
 
       {/* Custom Styles */}
-      <style jsx>{`
+      <style>{`
         .bg-grid-16 {
           background-size: 16px 16px;
         }

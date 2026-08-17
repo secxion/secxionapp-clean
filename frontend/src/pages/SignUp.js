@@ -695,7 +695,7 @@ const SignUp = () => {
         <br />
         {clock.toLocaleDateString()} {clock.toLocaleTimeString()}
       </footer>
-      <style jsx>{`
+      <style>{`
         @keyframes animate-scroll {
           0% {
             transform: translateX(0);

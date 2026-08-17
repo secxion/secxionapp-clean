@@ -456,7 +456,7 @@ const Reset = () => {
           </motion.div>
         </div>
       </main>
-      <style jsx>{`
+      <style>{`
         @keyframes animate-scroll {
           0% {
             transform: translateX(0);

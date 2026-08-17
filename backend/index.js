@@ -117,7 +117,7 @@ const corsOptions = {
   },
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
   credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "X-Platform"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "X-Platform", "Idempotency-Key"],
   exposedHeaders: ["X-CSRF-Token"],
   optionsSuccessStatus: 200,
 };

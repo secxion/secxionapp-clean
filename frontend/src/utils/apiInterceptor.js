@@ -101,7 +101,7 @@ export const apiFetch = async (url, options = {}) => {
     if (response.status === 401) {
       // Don't attempt refresh if already on login/signup or for refresh-token itself
       const publicPaths = ['/login', '/signup', '/api/refresh-token'];
-      if (!publicPaths.some(p => url.includes(p))) {
+      if (!publicPaths.some((p) => url.includes(p))) {
         const refreshed = await attemptTokenRefresh();
         if (refreshed) {
           // Retry the original request with new token
