@@ -396,21 +396,11 @@ const PaymentRequestForm = ({
               </select>
             </div>
 
-            <div className={`flex gap-6 ${isDialog ? 'pt-6' : ''}`}>
-              {isDialog && (
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="inline-flex flex-1 items-center justify-center gap-3 px-8 py-5 border border-white/10 text-gray-400 rounded-2xl font-black font-spaceGrotesk text-[10px] uppercase tracking-widest hover:bg-white/5 hover:text-white transition-all active:scale-95"
-                >
-                  <FaTimes className="w-3.5 h-3.5" />
-                  Cancel
-                </button>
-              )}
+            <div className={isDialog ? 'pt-6' : ''}>
               <button
                 type="submit"
                 disabled={loading || isLoadingBankAccounts}
-                className={`flex-1 flex justify-center items-center gap-3 bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base py-5 rounded-2xl font-black font-spaceGrotesk text-[10px] uppercase tracking-widest shadow-brand-gold transition-all duration-300 ${
+                className={`w-full flex justify-center items-center gap-3 bg-brand-gold hover:bg-brand-gold-dark text-brand-dark-base py-5 rounded-2xl font-black font-spaceGrotesk text-[10px] uppercase tracking-widest shadow-brand-gold transition-all duration-300 ${
                   loading ? 'opacity-30 cursor-not-allowed' : 'active:scale-95'
                 }`}
               >

@@ -27,6 +27,9 @@ const AdminModal = ({
           maxWidth,
           panelClassName,
         )}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? 'admin-modal-title' : undefined}
       >
         {(title || showClose) && (
           <div
@@ -43,7 +46,11 @@ const AdminModal = ({
               )}
               {(title || subtitle) && (
                 <div className="min-w-0">
-                  {title && <h2 className="text-lg font-semibold text-white truncate">{title}</h2>}
+                  {title && (
+                    <h2 id="admin-modal-title" className="text-lg font-semibold text-white truncate">
+                      {title}
+                    </h2>
+                  )}
                   {subtitle && <p className="text-xs text-slate-400">{subtitle}</p>}
                 </div>
               )}
@@ -53,7 +60,7 @@ const AdminModal = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+                className="inline-flex h-11 w-11 min-w-11 items-center justify-center rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                 aria-label="Close dialog"
               >
                 <FaTimes size={16} />

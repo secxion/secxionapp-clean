@@ -127,11 +127,12 @@ const AdminLogin = () => {
         <div className="bg-gray-800 rounded-2xl shadow-2xl p-5 sm:p-8 border border-gray-700">
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div>
-              <label className="block text-gray-300 text-xs sm:text-sm font-medium mb-1.5 sm:mb-2">
+              <label htmlFor="admin-email" className="block text-gray-300 text-xs sm:text-sm font-medium mb-1.5 sm:mb-2">
                 Email Address
               </label>
               <div className="relative">
                 <input
+                  id="admin-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -144,11 +145,12 @@ const AdminLogin = () => {
             </div>
 
             <div>
-              <label className="block text-gray-300 text-xs sm:text-sm font-medium mb-1.5 sm:mb-2">
+              <label htmlFor="admin-password" className="block text-gray-300 text-xs sm:text-sm font-medium mb-1.5 sm:mb-2">
                 Password
               </label>
               <div className="relative">
                 <input
+                  id="admin-password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -160,7 +162,8 @@ const AdminLogin = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800 rounded"
+                  className="absolute right-1 sm:right-2 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded text-gray-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
@@ -168,11 +171,12 @@ const AdminLogin = () => {
             </div>
 
             <div>
-              <label className="block text-gray-300 text-xs sm:text-sm font-medium mb-1.5 sm:mb-2">
+              <label htmlFor="admin-department-key" className="block text-gray-300 text-xs sm:text-sm font-medium mb-1.5 sm:mb-2">
                 Department Key
               </label>
               <div className="relative">
                 <input
+                  id="admin-department-key"
                   type={showKey ? 'text' : 'password'}
                   value={departmentKey}
                   onChange={(e) => setDepartmentKey(e.target.value)}
@@ -184,7 +188,8 @@ const AdminLogin = () => {
                 <button
                   type="button"
                   onClick={() => setShowKey(!showKey)}
-                  className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800 rounded"
+                  className="absolute right-1 sm:right-2 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded text-gray-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800"
+                  aria-label={showKey ? 'Hide department key' : 'Show department key'}
                 >
                   {showKey ? <FaEyeSlash /> : <FaEye />}
                 </button>

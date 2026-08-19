@@ -389,6 +389,7 @@ const AdminEarnings = () => {
                 {editingRate === 'marketplace' ? (
                   <div className="flex items-center gap-2">
                     <input
+                      aria-label="Marketplace commission rate"
                       type="number"
                       value={newRate}
                       onChange={(e) => setNewRate(e.target.value)}
@@ -399,13 +400,15 @@ const AdminEarnings = () => {
                     />
                     <button
                       onClick={() => handleUpdateRate('marketplace')}
-                      className="p-1.5 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded bg-green-500/20 p-1.5 text-green-400 hover:bg-green-500/30"
+                      aria-label="Save marketplace commission rate"
                     >
                       <FaSave />
                     </button>
                     <button
                       onClick={() => { setEditingRate(null); setNewRate(''); }}
-                      className="p-1.5 bg-slate-700 text-slate-400 rounded hover:bg-slate-600"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded bg-slate-700 p-1.5 text-slate-400 hover:bg-slate-600"
+                      aria-label="Cancel marketplace commission edit"
                     >
                       <FaTimes />
                     </button>
@@ -415,7 +418,8 @@ const AdminEarnings = () => {
                     <span className="text-xl font-bold text-yellow-500">{commissionRates.marketplace}%</span>
                     <button
                       onClick={() => { setEditingRate('marketplace'); setNewRate(commissionRates.marketplace.toString()); }}
-                      className="p-1.5 bg-slate-700 text-slate-400 rounded hover:bg-slate-600"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded bg-slate-700 p-1.5 text-slate-400 hover:bg-slate-600"
+                      aria-label="Edit marketplace commission rate"
                     >
                       <FaEdit />
                     </button>
@@ -432,6 +436,7 @@ const AdminEarnings = () => {
                 {editingRate === 'eth_withdrawal' ? (
                   <div className="flex items-center gap-2">
                     <input
+                      aria-label="ETH withdrawal commission rate"
                       type="number"
                       value={newRate}
                       onChange={(e) => setNewRate(e.target.value)}
@@ -442,13 +447,15 @@ const AdminEarnings = () => {
                     />
                     <button
                       onClick={() => handleUpdateRate('eth_withdrawal')}
-                      className="p-1.5 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded bg-green-500/20 p-1.5 text-green-400 hover:bg-green-500/30"
+                      aria-label="Save ETH withdrawal commission rate"
                     >
                       <FaSave />
                     </button>
                     <button
                       onClick={() => { setEditingRate(null); setNewRate(''); }}
-                      className="p-1.5 bg-slate-700 text-slate-400 rounded hover:bg-slate-600"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded bg-slate-700 p-1.5 text-slate-400 hover:bg-slate-600"
+                      aria-label="Cancel ETH withdrawal commission edit"
                     >
                       <FaTimes />
                     </button>
@@ -458,7 +465,8 @@ const AdminEarnings = () => {
                     <span className="text-xl font-bold text-purple-500">{commissionRates.eth_withdrawal}%</span>
                     <button
                       onClick={() => { setEditingRate('eth_withdrawal'); setNewRate(commissionRates.eth_withdrawal.toString()); }}
-                      className="p-1.5 bg-slate-700 text-slate-400 rounded hover:bg-slate-600"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded bg-slate-700 p-1.5 text-slate-400 hover:bg-slate-600"
+                      aria-label="Edit ETH withdrawal commission rate"
                     >
                       <FaEdit />
                     </button>
@@ -471,6 +479,7 @@ const AdminEarnings = () => {
           {/* Filters */}
           <div className="flex flex-wrap gap-2 sm:gap-3 mb-4">
             <select
+              aria-label="Filter earnings by source"
               value={filters.sourceType}
               onChange={(e) => setFilters(prev => ({ ...prev, sourceType: e.target.value }))}
               className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
@@ -480,12 +489,14 @@ const AdminEarnings = () => {
               <option value="eth_withdrawal">ETH Withdrawal</option>
             </select>
             <input
+              aria-label="Earnings start date"
               type="date"
               value={filters.startDate}
               onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
               className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:border-yellow-500/50"
             />
             <input
+              aria-label="Earnings end date"
               type="date"
               value={filters.endDate}
               onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}

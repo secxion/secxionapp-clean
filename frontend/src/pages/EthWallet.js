@@ -214,7 +214,7 @@ const EthWallet = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [countdown, setCountdown] = useState(0);
   const [withdrawalStatus, setWithdrawalStatus] = useState(null);
-  const [, setRejectedNotice] = useState('');
+  const [rejectedNotice, setRejectedNotice] = useState('');
 
   // Refs for intervals
   const countdownRef = useRef(null);
@@ -390,6 +390,11 @@ const EthWallet = () => {
             setWithdrawalStatus('pending');
             localStorage.setItem(LOCAL_STORAGE_STATUS_KEY, 'pending');
             setRejectedNotice('');
+            showNotification(
+              'info',
+              'Your previous transfer is still processing. The withdrawal form will unlock when it completes.',
+              0,
+            );
           } else if (normalizedStatus === 'rejected') {
             setWithdrawalStatus('rejected');
             setSuccessMessage('');
@@ -504,6 +509,11 @@ const EthWallet = () => {
                 setWithdrawalStatus('pending');
                 localStorage.setItem(LOCAL_STORAGE_STATUS_KEY, 'pending');
                 setRejectedNotice('');
+                showNotification(
+                  'info',
+                  'Your previous transfer is still processing. The withdrawal form will unlock when it completes.',
+                  0,
+                );
               } else if (normalizedStatus === 'rejected') {
                 setWithdrawalStatus('rejected');
                 setSuccessMessage('');
@@ -826,6 +836,13 @@ const EthWallet = () => {
           type="success"
           message={successMessage}
           onDismiss={dismissSuccess}
+        />
+      )}
+      {rejectedNotice && (
+        <Notification
+          type="warning"
+          message={rejectedNotice}
+          onDismiss={() => setRejectedNotice('')}
         />
       )}
 

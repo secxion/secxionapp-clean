@@ -268,6 +268,16 @@ const Net = ({ blogs }) => {
           <div
             className="ml-2 md:ml-3 flex items-center cursor-pointer group"
             onClick={toggleDropdown}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                toggleDropdown();
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label="Open account menu"
+            aria-expanded={isDropdownOpen}
           >
             <FaCaretDown
               className={`w-7 h-7 md:w-7 md:h-7 ml-1 md:ml-1.5 text-gray-500 hover:text-black transition-transform duration-300  ${
@@ -298,8 +308,9 @@ const Net = ({ blogs }) => {
                       handleLogout();
                     }}
                     disabled={loading}
-                    className="p-1.5 text-xs ml-4 border border-red-500/50 text-red-400 rounded-lg hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                    className="ml-4 inline-flex h-11 w-11 items-center justify-center rounded-lg border border-red-500/50 p-2 text-xs text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
                     title="Logout"
+                    aria-label="Logout"
                   >
                     <FontAwesomeIcon icon={faSignOutAlt} />
                   </button>

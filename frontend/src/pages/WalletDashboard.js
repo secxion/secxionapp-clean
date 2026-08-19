@@ -504,6 +504,9 @@ const WalletDashboard = () => {
               transition={{ duration: 0.2 }}
               className="bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-700/50 max-w-2xl w-full max-h-[90vh] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="payment-request-dialog-title"
             >
               {/* Dialog Header */}
               <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
@@ -512,7 +515,10 @@ const WalletDashboard = () => {
                     <FaWallet className="w-6 h-6 text-yellow-400" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">
+                    <h3
+                      id="payment-request-dialog-title"
+                      className="text-xl font-bold text-white"
+                    >
                       Payment Request
                     </h3>
                     <p className="text-slate-400 text-sm">
@@ -522,7 +528,8 @@ const WalletDashboard = () => {
                 </div>
                 <button
                   onClick={() => setShowPaymentDialog(false)}
-                  className="p-2 bg-slate-800/60 hover:bg-slate-700/60 border border-red-500/30 rounded-xl text-red-400 hover:text-red-300 transition-all duration-200"
+                  className="inline-flex h-11 w-11 min-w-11 shrink-0 items-center justify-center rounded-xl bg-slate-800/60 p-2 text-red-400 hover:bg-slate-700/60 hover:text-red-300 border border-red-500/30 transition-all duration-200"
+                  aria-label="Close payment request"
                 >
                   <FaTimes className="w-5 h-5" />
                 </button>

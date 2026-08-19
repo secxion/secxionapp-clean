@@ -146,7 +146,9 @@ const AdminPanel = () => {
 					<div className="flex items-center space-x-2">
 						<button
 							onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-							className="p-2 rounded-lg bg-slate-800 text-yellow-500 hover:bg-slate-700 transition-colors"
+							className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-slate-800 text-yellow-500 hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500/70"
+							aria-label={isSidebarOpen ? 'Close navigation menu' : 'Open navigation menu'}
+							aria-expanded={isSidebarOpen}
 						>
 							{isSidebarOpen ? (
 								<FaTimes className="w-5 h-5" />
@@ -244,7 +246,8 @@ const AdminPanel = () => {
 					<div className="flex items-center space-x-4">
 						<button
 							onClick={() => navigate('/dashboard')}
-							className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors"
+							className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500/70"
+							aria-label="Back to dashboard"
 							title="Back to Dashboard"
 						>
 							<FaArrowLeft className="w-4 h-4" />
